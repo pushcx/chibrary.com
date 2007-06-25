@@ -76,7 +76,7 @@ class Message
   end
 
   def filename
-    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{year}/%02d/#{message_id}", month)
+    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{year}/%02d/", month) + message_id
   end
 
   def store
