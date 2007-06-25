@@ -7,7 +7,9 @@ require 'aws.rb'
 require 'md5'
 
 class Message
-  attr_reader :message
+  attr_reader :headers, :date, :message
+
+  @@addresses = {}
 
   def initialize message
     @message = message
@@ -17,13 +19,37 @@ class Message
     )
 
     @headers = /(.*?)\n\r?\n/m.match(@message)[1]
-    date_line = /^Date:\W(.*)$/.match(@headers)[1]
+    date_line = /^Date:\s(.*)$/.match(@headers)[1].chomp
     @date = Time.rfc2822(date_line).utc rescue Time.parse(date_line).utc
+    @from = /^From:\s*(.*)/.match(@headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
   end
 
   def mailing_list
-    # TODO better mailing list identification
-    /^X-Mailing-List:\W(.*)/.match(@headers)[1].chomp
+    matches = nil
+    [/^X-Mailing-List:\s.*/, /^To:\s.*/, /^C[cC]:\s.*/].each do |regexp|
+      matches = regexp.match(@headers)
+      break unless matches.nil?
+    end
+    return nil if matches.nil?
+
+    slug = nil
+    matches[0].chomp.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.each do |address|
+      slug = address_to_slug address
+      break unless slug.nil?
+    end
+
+    return nil if slug.nil?
+    slug
+  end
+
+  def address_to_slug address
+    return @@addresses[address] if @@addresses.has_key? address
+
+    @@addresses[address] = begin
+        AWS::S3::S3Object.find(address, 'listlibrary_mailing_lists').value
+      rescue AWS::S3::NoSuchKey
+        nil
+      end
   end
 
   def year
@@ -36,22 +62,25 @@ class Message
 
   def message_id
     begin
-      /^Message-[Ii][dD]:\W?<?(.*)>?/.match(@headers)[1]
+      /^Message-[Ii][dD]:\s*<?(.*)>/.match(@headers)[1].chomp
     rescue
-      from = /^From:\W?.*/.match(@headers)[1]
-      new_headers = "Message-Id: <#{mailing_list}-#{@date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net>\nX-ListLibrary-Added: Message-Id\n"
+      new_headers = "Message-Id: <#{mailing_list}-#{@date.to_i}-#{MD5.md5(@from)}@generated-message-id.listlibrary.net>\nX-ListLibrary-Added-Header: Message-Id\n"
       @headers = new_headers + @headers
       @message = new_headers + @message
       message_id
     end
   end
 
+  def bucket
+    mailing_list ? 'listlibrary_storage' : 'listlibrary_no_mailing_list'
+  end
+
   def filename
-    sprintf("#{mailing_list}/#{year}/%02d/#{message_id}", month)
+    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{year}/%02d/#{message_id}", month)
   end
 
   def store
-    AWS::S3::S3Object.store(filename, message, 'listlibrary_storage')
-    filename
+    AWS::S3::S3Object.store(filename, message, bucket)
+    [bucket, filename]
   end
 end
