@@ -7,27 +7,49 @@ require 'aws.rb'
 require 'md5'
 
 class Message
-  attr_reader :headers, :date, :message
+  attr_reader :headers, :message
+  attr_reader :from, :date, :subject, :in_reply_to
 
   @@addresses = {}
 
   def initialize message
-    @message = message
-    @connection = AWS::S3::Base.establish_connection!(
+    @@connection ||= AWS::S3::Base.establish_connection!(
       :access_key_id     => ACCESS_KEY_ID,
       :secret_access_key => SECRET_ACCESS_KEY
     )
 
-    @headers = /(.*?)\n\r?\n/m.match(@message)[1]
-    date_line = /^Date:\s(.*)$/.match(@headers)[1].chomp
-    @date = Time.rfc2822(date_line).utc rescue Time.parse(date_line).utc
-    @from = /^From:\s*(.*)/.match(@headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
+    if message.match "\n" # initialized with a message
+      @message = message
+    else                  # initialize with a url
+      @message = AWS::S3::S3Object.find(message, 'listlibrary_storage').value
+    end
+    populate_headers
+  end
+
+  def populate_headers
+    @headers     = /(.*?)\n\r?\n/m.match(message)[1]
+
+    date_line    = /^Date:\s(.*)$/.match(headers)[1].chomp
+    @date        = Time.rfc2822(date_line).utc rescue Time.parse(date_line).utc
+
+    @subject     = /^Subject:\s*(.*)/.match(headers).captures.shift
+    @from        = /^From:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
+
+    begin
+      @in_reply_to = /^In-[Rr]eply-[Tt]o:\s*<?(.*)>?/.match(headers).captures.shift
+    rescue
+      @in_reply_to = nil
+      # assume last reference is the parent and use it
+      if references = /^References:\s*(.*)/.match(headers)
+        @in_reply_to = references.captures.shift.split(/\s+/).last.match(/<?([^>]+)>?/).captures.shift
+      end
+    end
   end
 
   def mailing_list
     matches = nil
     [/^X-Mailing-List:\s.*/, /^To:\s.*/, /^C[cC]:\s.*/].each do |regexp|
-      matches = regexp.match(@headers)
+      matches = regexp.match(headers)
       break unless matches.nil?
     end
     return nil if matches.nil?
@@ -62,11 +84,11 @@ class Message
 
   def message_id
     begin
-      /^Message-[Ii][dD]:\s*<?(.*)>/.match(@headers)[1].chomp
+      /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
     rescue
-      new_headers = "Message-Id: <#{mailing_list}-#{@date.to_i}-#{MD5.md5(@from)}@generated-message-id.listlibrary.net>\nX-ListLibrary-Added-Header: Message-Id\n"
-      @headers = new_headers + @headers
-      @message = new_headers + @message
+      new_headers = "Message-Id: <#{mailing_list}-#{date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net>\nX-ListLibrary-Added-Header: Message-Id\n"
+      @headers = new_headers + headers
+      @message = new_headers + message
       message_id
     end
   end
@@ -80,7 +102,12 @@ class Message
   end
 
   def store
-    AWS::S3::S3Object.store(filename, message, bucket)
+    AWS::S3::S3Object.store(filename, message, bucket, {
+      :'x-amz-meta-from'        => from,
+      :'x-amz-meta-subject'     => subject,
+      :'x-amz-meta-in_reply_to' => in_reply_to,
+      :'x-amz-meta-date'        => date
+    })
     [bucket, filename]
   end
 end
