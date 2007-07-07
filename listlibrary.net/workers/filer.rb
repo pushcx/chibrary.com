@@ -5,8 +5,9 @@ require 'aws.rb'
 require 'md5'
 
 class Message
-  attr_reader :headers, :message
-  attr_reader :from, :date, :subject, :in_reply_to
+  attr_reader   :headers, :message
+  attr_reader   :from, :date, :subject, :in_reply_to
+  attr_accessor :overwrite
 
   @@addresses = {}
 
@@ -67,11 +68,15 @@ class Message
       end
   end
 
+  def generated_id
+    "#{mailing_list}-#{date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net"
+  end
+
   def message_id
     begin
       /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
     rescue
-      new_headers = "Message-Id: <#{mailing_list}-#{date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net>\nX-ListLibrary-Added-Header: Message-Id\n"
+      new_headers = "Message-Id: <#{generated_id}>\nX-ListLibrary-Added-Header: Message-Id\n"
       @headers = new_headers + headers
       @message = new_headers + message
       message_id
@@ -87,12 +92,15 @@ class Message
   end
 
   def store
+    unless @overwrite
+      raise "overwrite attempted" if AWS::S3::S3Object.exists?(filename, bucket)
+    end
     AWS::S3::S3Object.store(filename, message, bucket, {
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,
       :'x-amz-meta-in_reply_to' => in_reply_to,
       :'x-amz-meta-date'        => date
     })
-    [bucket, filename]
+    self
   end
 end
