@@ -1,10 +1,11 @@
 #!/usr/bin/ruby
 
-require 'filer'
 require 'net/pop'
-require 'aws.rb'
+require 'filer'
+require 'aws'
+require 'mail'
 
-Net::POP3.delete_all('mail.listlibrary.net', 110, 'archive@listlibrary.net', 'y7fX$e2Z') do |mail|
+Net::POP3.delete_all(MAIL_SERVER, MAIL_POP3_PORT, MAIL_USER, MAIL_PASSWORD) do |mail|
   next if mail.length >= (256 * 1024)
   message = Message.new(mail.pop)
   begin

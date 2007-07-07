@@ -1,12 +1,12 @@
 #!/usr/bin/ruby
 
 require 'time'
-require 'aws.rb'
 require 'md5'
+require 'aws'
 
 class Message
   attr_reader   :headers, :message
-  attr_reader   :from, :date, :subject, :in_reply_to
+  attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
   attr_accessor :overwrite
 
   @@addresses = {}
@@ -28,6 +28,7 @@ class Message
 
     @subject     = /^Subject:\s*(.*)/.match(headers).captures.shift
     @from        = /^From:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
+    @reply_to    = /^Reply-[Tt]o:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift if headers.match(/^Reply-[Tt]o/)
 
     begin
       @in_reply_to = /^In-[Rr]eply-[Tt]o:\s*<?(.*)>?/.match(headers).captures.shift
@@ -42,7 +43,7 @@ class Message
 
   def mailing_list
     matches = nil
-    [/^X-Mailing-List:\s.*/, /^To:\s.*/, /^C[cC]:\s.*/].each do |regexp|
+    [/^X-Mailing-List:\s.*/, /^To:\s.*/, /^C[cC]:\s.*/, /^Reply-[Tt]o:\s.*/].each do |regexp|
       matches = regexp.match(headers)
       break unless matches.nil?
     end
@@ -62,7 +63,7 @@ class Message
     return @@addresses[address] if @@addresses.has_key? address
 
     @@addresses[address] = begin
-        AWS::S3::S3Object.find(address, 'listlibrary_mailing_lists').value
+        AWS::S3::S3Object.find(address, 'listlibrary_mailing_lists').value.chomp
       rescue AWS::S3::NoSuchKey
         nil
       end
@@ -72,13 +73,18 @@ class Message
     "#{mailing_list}-#{date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net"
   end
 
+  def add_header(header)
+    name = header.match(/^(.+?):\s/).captures.shift
+    new_headers = "#{header.chomp}\nX-ListLibrary-Added-Header: #{name}\n"
+    @headers = new_headers + headers
+    @message = new_headers + message
+  end
+
   def message_id
     begin
       /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
     rescue
-      new_headers = "Message-Id: <#{generated_id}>\nX-ListLibrary-Added-Header: Message-Id\n"
-      @headers = new_headers + headers
-      @message = new_headers + message
+      add_header "Message-Id: <#{generated_id}>"
       message_id
     end
   end
@@ -93,9 +99,10 @@ class Message
 
   def store
     unless @overwrite
-      raise "overwrite attempted" if AWS::S3::S3Object.exists?(filename, bucket)
+      raise "overwrite attempted for #{bucket} #{filename}" if AWS::S3::S3Object.exists?(filename, bucket)
     end
     AWS::S3::S3Object.store(filename, message, bucket, {
+      :content_type             => "text/plain",
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,
       :'x-amz-meta-in_reply_to' => in_reply_to,
