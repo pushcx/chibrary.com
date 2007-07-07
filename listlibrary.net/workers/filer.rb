@@ -74,14 +74,6 @@ class Message
       end
   end
 
-  def year
-    @date.year
-  end
-
-  def month
-    @date.month
-  end
-
   def message_id
     begin
       /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
@@ -98,7 +90,7 @@ class Message
   end
 
   def filename
-    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{year}/%02d/", month) + message_id
+    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{date.year}/%02d/", date.month) + message_id
   end
 
   def store
