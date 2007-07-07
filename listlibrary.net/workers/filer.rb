@@ -1,8 +1,6 @@
 #!/usr/bin/ruby
 
 require 'time'
-require 'rubygems'
-require 'aws/s3'
 require 'aws.rb'
 require 'md5'
 
@@ -13,11 +11,6 @@ class Message
   @@addresses = {}
 
   def initialize message
-    @@connection ||= AWS::S3::Base.establish_connection!(
-      :access_key_id     => ACCESS_KEY_ID,
-      :secret_access_key => SECRET_ACCESS_KEY
-    )
-
     if message.match "\n" # initialized with a message
       @message = message
     else                  # initialize with a url
