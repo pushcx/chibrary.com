@@ -2,7 +2,7 @@
 
 require 'net/smtp'
 require 'time'
-require 'filer'
+require 'message'
 require 'aws'
 require 'mail'
 

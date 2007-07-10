@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'filer'
+require 'message'
 
 class MessageTest < Test::Unit::TestCase
   fixtures :message 

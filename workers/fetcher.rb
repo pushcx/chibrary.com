@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 require 'net/pop'
-require 'filer'
+require 'message'
 require 'aws'
 require 'mail'
 
