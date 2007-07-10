@@ -75,7 +75,8 @@ class Message
 
   def add_header(header)
     name = header.match(/^(.+?):\s/).captures.shift
-    new_headers = "#{header.chomp}\nX-ListLibrary-Added-Header: #{name}\n"
+    new_headers = "#{header.chomp}\n"
+    new_headers += "X-ListLibrary-Added-Header: #{name}\n" unless name.match(/^X-ListLibrary-/)
     @headers = new_headers + headers
     @message = new_headers + message
   end
