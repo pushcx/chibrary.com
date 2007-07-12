@@ -43,4 +43,10 @@ no_list: |
 
   Message body.
 
-missing_subject: |
+no_subject: |
+  From: Alice <alice@example.com>
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <goodid@example.com>
+
+  Message body.

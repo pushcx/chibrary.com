@@ -47,6 +47,9 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_no_subject
+    m = Message.new message(:no_subject)
+    expect_example_list m
+    assert_equal "", m.subject
   end
 
   def test_store_metadata

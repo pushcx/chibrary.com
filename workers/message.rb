@@ -28,7 +28,12 @@ class Message
     date_line    = /^Date:\s(.*)$/.match(headers)[1].chomp
     @date        = Time.rfc2822(date_line).utc rescue Time.parse(date_line).utc
 
-    @subject     = /^Subject:\s*(.*)/.match(headers).captures.shift
+    begin
+      @subject   = /^Subject:\s*(.*)/.match(headers).captures.shift
+    rescue 
+      add_header "Subject: "
+      @subject   = ''
+    end
     @from        = /^From:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
     @reply_to    = /^Reply-[Tt]o:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift if headers.match(/^Reply-[Tt]o/)
 
