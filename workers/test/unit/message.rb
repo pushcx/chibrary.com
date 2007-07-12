@@ -48,6 +48,8 @@ class MessageTest < Test::Unit::TestCase
 
   def test_generated_id
     m = Message.new message(:good) # unused, just need the object
+    m.S3Object.expect(:find, ['goodlist@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'goodlist') }
+    assert_equal 'goodlist-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.generated_id
   end
 
   def test_bucket
