@@ -2,11 +2,24 @@ good: |
   From: Alice <alice@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
-  X-Mailing-List: goodlist@list.example.com
+  X-Mailing-List: example@list.example.com
   Message-Id: <goodid@example.com>
 
   Message body.
-list_from_to: |
-list_from_cc: |
-list_from_reply_to: |
+
+list_in_to: |
+
+list_in_cc: |
+
+list_in_reply_to: |
+
+no_list: |
+  From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
+  Subject: No list message
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+  Message-Id: <goodid@example.com>
+
+  Message body.
+
 missing_subject: |
