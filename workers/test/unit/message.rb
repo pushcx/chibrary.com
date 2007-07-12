@@ -4,12 +4,6 @@ require 'message'
 class MessageTest < Test::Unit::TestCase
   fixtures :message 
 
-  def setup
-  end
-
-  def teardown
-  end
-
   def test_good_message
     m = Message.new message(:good)
     assert_equal m.class, Message
@@ -20,8 +14,6 @@ class MessageTest < Test::Unit::TestCase
     assert m.date.utc?
     assert_equal nil, m.in_reply_to
     assert_equal "goodid@example.com", m.message_id
-    m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
-    assert_equal "example", m.mailing_list
   end
 
   def test_add_header
@@ -34,13 +26,12 @@ class MessageTest < Test::Unit::TestCase
     assert_no_match /^X-ListLibrary-Added-Header: X-ListLibrary-Foo$/, m.headers
   end
 
-  def test_mailing_list_in_to
-  end
-
-  def test_mailing_list_in_cc
-  end
-
-  def test_mailing_list_in_reply_to
+  def test_mailing_list_in_various_places
+    [:good, :list_in_to, :list_in_cc, :list_in_reply_to].each do |fixture|
+      m = Message.new message(fixture)
+      expect_example_list m
+      assert_equal "example", m.mailing_list
+    end
   end
 
   def test_no_list_and_no_id
@@ -63,17 +54,24 @@ class MessageTest < Test::Unit::TestCase
 
   def test_generated_id
     m = Message.new message(:good) # unused, just need the object
-    m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
+    expect_example_list m
     assert_equal 'example-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.generated_id
   end
 
   def test_bucket
     m = Message.new message(:good)
-    m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
+    expect_example_list m
     assert_equal 'listlibrary_storage', m.bucket
     
     m = Message.new message(:no_list)
     m.S3Object.expect(:find, ['bob@example.com', 'listlibrary_mailing_lists']){ raise AWS::S3::NoSuchKey.new('', '') }
     assert_equal 'listlibrary_no_mailing_list', m.bucket
+  end
+
+  private
+
+  def expect_example_list m
+    m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
+
   end
 end
