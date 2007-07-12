@@ -7,15 +7,17 @@ require 'aws'
 class Message
   attr_reader   :headers, :message
   attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
-  attr_accessor :overwrite
+  attr_accessor :overwrite, :S3Object
 
   @@addresses = {}
 
   def initialize message
+    @S3Object = AWS::S3::S3Object
+
     if message.match "\n" # initialized with a message
       @message = message
     else                  # initialize with a url
-      @message = AWS::S3::S3Object.find(message, 'listlibrary_storage').value
+      @message = @S3Object.find(message, 'listlibrary_storage').value
     end
     populate_headers
   end
@@ -55,7 +57,6 @@ class Message
       break unless slug.nil?
     end
 
-    return nil if slug.nil?
     slug
   end
 
@@ -63,7 +64,7 @@ class Message
     return @@addresses[address] if @@addresses.has_key? address
 
     @@addresses[address] = begin
-        AWS::S3::S3Object.find(address, 'listlibrary_mailing_lists').value.chomp
+        @S3Object.find(address, 'listlibrary_mailing_lists').value.chomp
       rescue AWS::S3::NoSuchKey
         nil
       end
@@ -100,9 +101,9 @@ class Message
 
   def store
     unless @overwrite
-      raise "overwrite attempted for #{bucket} #{filename}" if AWS::S3::S3Object.exists?(filename, bucket)
+      raise "overwrite attempted for #{bucket} #{filename}" if @S3Object.exists?(filename, bucket)
     end
-    AWS::S3::S3Object.store(filename, message, bucket, {
+    @S3Object.store(filename, message, bucket, {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,

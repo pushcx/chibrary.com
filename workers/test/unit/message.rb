@@ -20,6 +20,8 @@ class MessageTest < Test::Unit::TestCase
     assert m.date.utc?
     assert_equal nil, m.in_reply_to
     assert_equal "goodid@example.com", m.message_id
+    m.S3Object.expect(:find, ['goodlist@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'goodlist') }
+    assert_equal "goodlist", m.mailing_list
   end
 
   def test_add_header
@@ -32,13 +34,6 @@ class MessageTest < Test::Unit::TestCase
     assert_no_match /^X-ListLibrary-Added-Header: X-ListLibrary-Foo$/, m.headers
   end
 
-  def test_generated_id
-    m = Message.new message(:good) # unused, just need the object
-  end
-
-  def test_bucket
-  end
-
   def test_no_list_and_no_id
   end
 
@@ -49,5 +44,12 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_store_metadata
+  end
+
+  def test_generated_id
+    m = Message.new message(:good) # unused, just need the object
+  end
+
+  def test_bucket
   end
 end
