@@ -4,20 +4,41 @@ require 'time'
 require 'md5'
 require 'aws'
 
+class Integer
+  def to_base_64
+    chars = (0..9).to_a + ('a'..'z').to_a + ('A'..'Z').to_a + ['_', '-']
+    str = ""
+    current = self
+
+    while current != 0
+      str = chars[current % 64].to_s + str
+      current = current / 64
+    end
+    raise "Unexpectedly large int converted" if str.length > 8
+    ("%8s" % str).tr(' ', '0')
+  end
+end
+
 class Message
   attr_reader   :headers, :message
   attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
-  attr_accessor :overwrite, :S3Object
+  attr_accessor :addresses, :overwrite, :S3Object
 
   @@addresses = {}
 
-  def initialize message
+  def initialize message, sequence=nil
+    # sequence is loaded from message when possible
     @S3Object = AWS::S3::S3Object
 
     if message.match "\n" # initialized with a message
       @message = message
+      @sequence = sequence
+      raise "sequence #{sequence} out of bounds" if sequence < 0 or sequence > 2 ** 28
     else                  # initialize with a url
-      @message = @S3Object.find(message, 'listlibrary_storage').value
+      o = @S3Object.find(message, 'listlibrary_storage').value
+      @message = o.value
+      @sequence = o.metadata['public_id']
+      raise "sequence #{sequence} given when none should have been" unless sequence.nil?
     end
     populate_headers
   end
@@ -101,7 +122,16 @@ class Message
   end
 
   def filename
-    ( mailing_list ? "#{mailing_list}/" : "" ) + sprintf("#{date.year}/%02d/", date.month) + message_id
+    ( mailing_list ? "#{mailing_list}/" : "" ) + "#{date.year}/%02d/" % date.month + message_id
+  end
+
+  def public_id
+    # Public IDs are 48 binary digits. First 4 are server id. Next 16
+    # are process id. Last 28 are an incremeting sequence ID. The caller
+    # is responsible for unique sequence IDs at instantiation.
+
+    # `hostname`.chomp TODO allow multiple hosts, replace 0 on next line
+    ("%04b%016b%020b" % [0, Process.pid, @sequence]).to_i(2).to_base_64
   end
 
   def store
@@ -113,7 +143,8 @@ class Message
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,
       :'x-amz-meta-in_reply_to' => in_reply_to,
-      :'x-amz-meta-date'        => date
+      :'x-amz-meta-date'        => date,
+      :'x-amz-meta-public_id'   => public_id
     })
     self
   end

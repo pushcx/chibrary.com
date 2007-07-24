@@ -5,7 +5,7 @@ class MessageTest < Test::Unit::TestCase
   fixtures :message 
 
   def test_good_message
-    m = Message.new message(:good)
+    m = Message.new message(:good), 0
     assert_equal m.class, Message
 
     assert_equal 'alice@example.com', m.from
@@ -17,7 +17,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_add_header
-    m = Message.new message(:good)
+    m = Message.new message(:good), 0
     m.add_header "X-Foo: x-foo"
     assert_match /^X-Foo: x-foo$/, m.headers
     assert_match /^X-ListLibrary-Added-Header: X-Foo$/, m.headers
@@ -28,7 +28,7 @@ class MessageTest < Test::Unit::TestCase
 
   def test_mailing_list_in_various_places
     [:good, :list_in_to, :list_in_cc, :list_in_reply_to].each do |fixture|
-      m = Message.new message(fixture)
+      m = Message.new message(fixture), 0
       expect_example_list m
       assert_equal "example", m.mailing_list
     end
@@ -47,7 +47,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_no_subject
-    m = Message.new message(:no_subject)
+    m = Message.new message(:no_subject), 0
     expect_example_list m
     assert_equal "", m.subject
   end
@@ -56,25 +56,40 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_generated_id
-    m = Message.new message(:good) # unused, just need the object
+    m = Message.new message(:good), 0 # unused, just need the object
     expect_example_list m
     assert_equal 'example-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.generated_id
   end
 
+  def test_message_id
+    m = Message.new message(:no_message_id), 0
+    assert_equal 'example-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.message_id
+  end
+
   def test_bucket
-    m = Message.new message(:good)
+    m = Message.new message(:good), 0
     expect_example_list m
     assert_equal 'listlibrary_storage', m.bucket
     
-    m = Message.new message(:no_list)
+    m = Message.new message(:no_list), 0
     m.S3Object.expect(:find, ['bob@example.com', 'listlibrary_mailing_lists']){ raise AWS::S3::NoSuchKey.new('', '') }
     assert_equal 'listlibrary_no_mailing_list', m.bucket
+  end
+
+  def test_public_id
+    m = Message.new message(:good), 0
+    m.public_id # just make sure it doesn't throw exceptions
+  end
+
+  def test_sequence
+    assert_raises RuntimeError, "sequence #{2 ** 28 + 1} out of bounds" do
+      m = Message.new message(:good), 2 ** 28 + 1
+    end
   end
 
   private
 
   def expect_example_list m
     m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
-
   end
 end
