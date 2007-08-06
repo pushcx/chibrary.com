@@ -33,6 +33,7 @@ pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
 pop.open_timeout = 300
 #pop.set_debug_output $stderr
 pop.start(MAIL_USER, MAIL_PASSWORD)
+puts "#{pop.n_mails} to process:"
 begin
   pop.delete_all do |mail|
     next if mail.length >= (256 * 1024)
