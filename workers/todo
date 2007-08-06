@@ -1,0 +1,26 @@
+Finish message tests
+  * store
+  * raises dupe message id
+  * allows overwriting
+Mock: def destroy ; unless @calls.empty? raise "foo" ; end
+Fetcher:
+  * get under test
+    * good message
+    * filing error
+    * mail server timeout
+    * s3 write just randomly fails
+  * collect mailing list slugs and leave message for threading worker
+  * genericize filing for scrapers in addition to fetcher
+  * logging
+Protect against painful message_ids
+Get Integer.to_base_64 under test
+subscriber
+  * change to look in listlibrary_archive _listlibrary_no_list
+  * get it under test
+  * acknowledge 'resume' mails
+  * logging
+address call number sequence wraparound
+overwrites:
+  * tool for resolving overwrites
+  * automatically discard duplicate overwrites
+  * logging
