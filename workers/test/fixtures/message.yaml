@@ -59,3 +59,48 @@ no_message_id: |
 
   Message body.
 
+no_list_and_no_id: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+
+  Message body.
+
+no_list_and_no_id_and_no_date: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+
+  Message body.
+
+no_id_and_no_date: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  X-Mailing-List: example@list.example.com
+
+  Message body.
+
+no_date: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  X-Mailing-List: example@list.example.com
+  Message-Id: <goodid@example.com>
+
+  Message body.
+
+wrong_format_date: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: 2007-08-07 16:06:33
+  X-Mailing-List: example@list.example.com
+  Message-Id: <goodid@example.com>
+
+  Message body.
+
+malformed_date: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: Obviously not a valid date
+  X-Mailing-List: example@list.example.com
+  Message-Id: <goodid@example.com>
+
+  Message body.

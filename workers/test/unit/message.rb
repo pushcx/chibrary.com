@@ -35,15 +35,37 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_no_list_and_no_id
-  end
-
-  def test_no_list_and_no_id_and_no_date
+    m = Message.new message(:no_list_and_no_id), '00000000'
+    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
+    assert_nil m.mailing_list
   end
 
   def test_no_id_and_no_date
+    m = Message.new message(:no_id_and_no_date), '00000000'
+    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
+    assert (Time.now.utc - m.date) < 1
   end
 
   def test_no_date
+    m = Message.new message(:no_date), '00000000'
+    assert (Time.now.utc - m.date) < 1
+  end
+
+  def test_wrong_format_date
+    m = Message.new message(:wrong_format_date), '00000000'
+    assert_equal Time.local(2007, 8, 7, 16, 6, 33), m.date
+  end
+
+  def test_malformed_date
+    m = Message.new message(:malformed_date), '00000000'
+    assert (Time.now.utc - m.date) < 1
+  end
+
+  def test_no_list_and_no_id_and_no_date
+    m = Message.new message(:no_list_and_no_id_and_no_date), '00000000'
+    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
+    assert_nil m.mailing_list
+    assert (Time.now.utc - m.date) < 1
   end
 
   def test_no_subject

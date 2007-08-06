@@ -30,8 +30,16 @@ class Message
   def populate_headers
     @headers     = /(.*?)\n\r?\n/m.match(message)[1]
 
-    date_line    = /^Date:\s(.*)$/.match(headers)[1].chomp
-    @date        = Time.rfc2822(date_line).utc rescue Time.parse(date_line).utc
+    @date        = /^Date:\s(.*)$/.match(headers)
+    begin
+      @date      = date[1].chomp
+      @date      = Time.rfc2822(@date).utc
+    rescue
+      # It's ugly to assume odd-formated dates are local time, but
+      # servers will generally be running in UTC. If you can't properly
+      # format an rfc2822 date, you're lucky to get anything I give you.
+      @date      = Time.parse(@date).utc rescue Time.now.utc
+    end
 
     begin
       @subject   = /^Subject:\s*(.*)/.match(headers).captures.shift
