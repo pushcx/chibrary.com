@@ -5,7 +5,7 @@ class MessageTest < Test::Unit::TestCase
   fixtures :message 
 
   def test_good_message
-    m = Message.new message(:good), 0
+    m = Message.new message(:good), '00000000'
     assert_equal m.class, Message
 
     assert_equal 'alice@example.com', m.from
@@ -17,7 +17,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_add_header
-    m = Message.new message(:good), 0
+    m = Message.new message(:good), '00000000'
     m.add_header "X-Foo: x-foo"
     assert_match /^X-Foo: x-foo$/, m.headers
     assert_match /^X-ListLibrary-Added-Header: X-Foo$/, m.headers
@@ -28,7 +28,7 @@ class MessageTest < Test::Unit::TestCase
 
   def test_mailing_list_in_various_places
     [:good, :list_in_to, :list_in_cc, :list_in_reply_to].each do |fixture|
-      m = Message.new message(fixture), 0
+      m = Message.new message(fixture), '00000000'
       expect_example_list m
       assert_equal "example", m.mailing_list
     end
@@ -47,7 +47,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_no_subject
-    m = Message.new message(:no_subject), 0
+    m = Message.new message(:no_subject), '00000000'
     expect_example_list m
     assert_equal "", m.subject
   end
@@ -56,35 +56,14 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_generated_id
-    m = Message.new message(:good), 0 # unused, just need the object
+    m = Message.new message(:good), '00000000' # unused, just need the object
     expect_example_list m
-    assert_equal "#{m.public_id}@generated-message-id.listlibrary.net", m.generated_id
+    assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.generated_id
   end
 
   def test_message_id
-    m = Message.new message(:no_message_id), 0
-    assert_equal "#{m.public_id}@generated-message-id.listlibrary.net", m.message_id
-  end
-
-  def test_bucket
-    m = Message.new message(:good), 0
-    expect_example_list m
-    assert_equal 'listlibrary_storage', m.bucket
-    
-    m = Message.new message(:no_list), 0
-    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
-    assert_equal 'listlibrary_no_mailing_list', m.bucket
-  end
-
-  def test_public_id
-    m = Message.new message(:good), 0
-    m.public_id # just make sure it doesn't throw exceptions
-  end
-
-  def test_sequence
-    assert_raises RuntimeError, "sequence #{2 ** 28 + 1} out of bounds" do
-      m = Message.new message(:good), 2 ** 28 + 1
-    end
+    m = Message.new message(:no_message_id), '00000000'
+    assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
   end
 
   private

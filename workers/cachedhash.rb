@@ -23,7 +23,7 @@ class CachedHash
   end
 
   def []= key, value
-    @S3Object.store("#{@prefix}/#{key}", (@@cache[@prefix][key] = value.chomp), "listlibrary_cachedhash", :content_type => 'text/plain')
+    @S3Object.store("#{@prefix}/#{key}", (@@cache[@prefix][key] = value.to_s.chomp), "listlibrary_cachedhash", :content_type => 'text/plain')
     value
   end
 end
