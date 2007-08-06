@@ -21,8 +21,9 @@ class Integer
 end
 
 def call_number server, pid, sequence
-  # call numbers are 48 binary digits. First 4 are server id. Next 16
-  # are process id. Last 28 are an incremeting sequence ID.
+  # call numbers are 48 binary digits. First 8 are 0 for future
+  # expansion. Next 4 are server id. Next 16 # are process id.
+  # Last 20 are an incremeting sequence ID.
   ("%04b%016b%020b" % [0, pid, sequence]).to_i(2).to_base_64
 end
 
