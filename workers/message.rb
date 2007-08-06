@@ -67,7 +67,7 @@ class Message
       matches = regexp.match(headers)
       break unless matches.nil?
     end
-    return nil if matches.nil?
+    return "_listlibrary_no_list" if matches.nil?
 
     slug = nil
     matches[0].chomp.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.each do |address|
@@ -100,7 +100,7 @@ class Message
   end
 
   def filename
-    ( mailing_list ? "#{mailing_list}/" : "" ) + "#{date.year}/%02d/" % date.month + message_id
+    "#{mailing_list}/#{date.year}/%02d/" % date.month + message_id
   end
 
   def store
