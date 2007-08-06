@@ -15,11 +15,20 @@ require 'aws'
 require 'message'
 require 'test/mock'
 
+class CachedHash
+  alias old_initialize initialize
+  def initialize *args
+    old_initialize *args
+    @S3Object = Mock.new
+  end
+end
+
 class Message 
   alias old_initialize initialize
   def initialize *args
     old_initialize *args
     @S3Object = Mock.new
+    @addresses = Mock.new
   end
 end
 

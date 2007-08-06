@@ -24,11 +24,10 @@ class Message
   attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
   attr_accessor :addresses, :overwrite, :S3Object
 
-  @@addresses = {}
-
   def initialize message, sequence=nil
     # sequence is loaded from message when possible
     @S3Object = AWS::S3::S3Object
+    @addresses = CachedHash.new "mailing_list_addresses"
 
     if message.match "\n" # initialized with a message
       @message = message
@@ -79,25 +78,15 @@ class Message
 
     slug = nil
     matches[0].chomp.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.each do |address|
-      slug = address_to_slug address
+      slug = @addresses[address]
       break unless slug.nil?
     end
 
     slug
   end
 
-  def address_to_slug address
-    return @@addresses[address] if @@addresses.has_key? address
-
-    @@addresses[address] = begin
-        @S3Object.find(address, 'listlibrary_mailing_lists').value.chomp
-      rescue AWS::S3::NoSuchKey
-        nil
-      end
-  end
-
   def generated_id
-    "#{mailing_list}-#{date.to_i}-#{MD5.md5(from)}@generated-message-id.listlibrary.net"
+    "#{public_id}@generated-message-id.listlibrary.net"
   end
 
   def add_header(header)

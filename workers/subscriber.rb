@@ -12,6 +12,7 @@ def yn(str, expected)
   return (answer == expected or answer.empty?)
 end
 
+mailing_list_addresses = CachedHash.new "mailing_list_addresses"
 no_mailing_list = AWS::S3::Bucket.find('listlibrary_no_mailing_list')
 
 no_mailing_list.objects(true).each do |mail|
@@ -35,7 +36,7 @@ no_mailing_list.objects(true).each do |mail|
       end
 
       addresses.each do |address|
-        AWS::S3::S3Object.store(address, slug, "listlibrary_mailing_lists", :content_type => 'text/plain')
+        mailing_list_addresses[address] = slug
       end
     end
 

@@ -58,12 +58,12 @@ class MessageTest < Test::Unit::TestCase
   def test_generated_id
     m = Message.new message(:good), 0 # unused, just need the object
     expect_example_list m
-    assert_equal 'example-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.generated_id
+    assert_equal "#{m.public_id}@generated-message-id.listlibrary.net", m.generated_id
   end
 
   def test_message_id
     m = Message.new message(:no_message_id), 0
-    assert_equal 'example-1161719268-c160f8cc69a4f0bf2b0362752353d060@generated-message-id.listlibrary.net', m.message_id
+    assert_equal "#{m.public_id}@generated-message-id.listlibrary.net", m.message_id
   end
 
   def test_bucket
@@ -72,7 +72,7 @@ class MessageTest < Test::Unit::TestCase
     assert_equal 'listlibrary_storage', m.bucket
     
     m = Message.new message(:no_list), 0
-    m.S3Object.expect(:find, ['bob@example.com', 'listlibrary_mailing_lists']){ raise AWS::S3::NoSuchKey.new('', '') }
+    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     assert_equal 'listlibrary_no_mailing_list', m.bucket
   end
 
@@ -90,6 +90,6 @@ class MessageTest < Test::Unit::TestCase
   private
 
   def expect_example_list m
-    m.S3Object.expect(:find, ['example@list.example.com', 'listlibrary_mailing_lists']){ OpenStruct.new( 'value' => 'example') }
+    m.addresses.expect(:'[]', ['example@list.example.com']){ 'example' }
   end
 end
