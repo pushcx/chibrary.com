@@ -5,13 +5,13 @@ attr_reader :calls
   end
 
   def expect(method, *args, &block)
-    @calls << [method, args.first, block]
+    @calls << {:method => method, :args => args.first, :block =>  block}
   end
 
   def method_missing(method, *args)
-    expect = @calls.first
-    raise "Unexpected mock call #{method.to_s}(#{args.join(', ')}); expected #{expect[0]}(#{expect[1].join(', ')})" if expect.nil? or method != expect[0] or args != expect[1]
-    @calls.shift
-    expect[2].call(*args)
+    expect = @calls.shift
+    raise "Unexpected mock call #{method.to_s}(#{args.join(', ')})" if expect.nil?
+    raise "Wrong mock call #{method.to_s}(#{args.join(', ')}); expected #{expect[:method]}(#{expect[:args].join(', ')})" if method != expect[:method] or args != expect[:args]
+    expect[:block].call(*args)
   end
 end
