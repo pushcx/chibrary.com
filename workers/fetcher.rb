@@ -51,7 +51,6 @@ begin
     ensure
       sequence += 1
     end
-    break if mail.number > 9
   end
 ensure
   pop.finish
