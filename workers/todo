@@ -5,7 +5,6 @@ Fetcher:
     * mail server timeout
     * s3 write just randomly fails
   * collect mailing list slugs and leave message for threading worker
-  * genericize filing for scrapers in addition to fetcher
   * logging
   * flag messages >72h old
 Protect against painful message_ids

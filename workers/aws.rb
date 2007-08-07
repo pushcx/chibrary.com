@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'aws/s3'
+
 require 'cachedhash'
+require 'message'
+require 'filer'
 
 ACCESS_KEY_ID = '0B8FSQ35925T27X8Q4R2'
 SECRET_ACCESS_KEY = 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
