@@ -29,20 +29,26 @@ end
 
 if __FILE__ == $0
 
+  # load server id and sequence number for this server and pid
   server = CachedHash.new("servers")[`hostname`].to_i
   sequence = CachedHash.new("sequences")["#{server}/#{Process.pid}"].to_i
 
+  mailing_lists = {}
+
+  # create POP3 connection
   pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
   pop.open_timeout = 300
   #pop.set_debug_output $stderr
   pop.start(MAIL_USER, MAIL_PASSWORD)
   puts "#{pop.n_mails} to process:"
+
   begin
     pop.delete_all do |mail|
       next if mail.length >= (256 * 1024)
       message = Message.new(mail.pop, call_number(server, Process.pid, sequence))
       begin
         message.store
+        mailing_lists[message.mailing_list] = true unless message.mailing_list.match /^_/
         puts "#{mail.number} #{message.filename}"
       rescue Exception => e
         puts "#{mail.number} failed to store: #{e.message}; failure stored as #{message.call_number}"
@@ -57,8 +63,11 @@ if __FILE__ == $0
       end
     end
   ensure
+    # ensure messages are actually deleted and save next sequence number
     pop.finish
     CachedHash.new("sequences")["#{server}/#{Process.pid}"] = sequence
+
+    # tell threader to start working
   end
 
 end
