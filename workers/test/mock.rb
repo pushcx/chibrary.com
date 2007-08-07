@@ -4,14 +4,16 @@ attr_reader :calls
     @calls = []
   end
 
+  # Pass nil for args to ignore the actual args in the call.
+  # Proc is optional; default is empty proc returning nil.
   def expect(method, *args, &proc)
-    @calls << {:method => method, :args => args.first, :proc =>  proc}
+    @calls << {:method => method, :args => args.first, :proc => (proc or Proc.new{})}
   end
 
   def method_missing(method, *args)
     expect = @calls.shift
     raise "Unexpected mock call #{method.to_s}(#{args.join(', ')})" if expect.nil?
-    raise "Wrong mock call #{method.to_s}(#{args.join(', ')}); expected #{expect[:method]}(#{expect[:args].join(', ')})" if method != expect[:method] or args != expect[:args]
+    raise "Wrong mock call #{method.to_s}(#{args.join(', ')}); expected #{expect[:method]}(#{expect[:args].join(', ')})" if method != expect[:method] or (expect[:args] != nil and args != expect[:args])
     expect[:proc].call(*args)
   end
 
