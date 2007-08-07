@@ -46,6 +46,7 @@ no_list: |
 no_subject: |
   From: Alice <alice@example.com>
   Date: Tue, 24 Oct 2006 15:47:48 -0400
+  To: Bob <bob@example.com>
   X-Mailing-List: example@list.example.com
   Message-Id: <goodid@example.com>
 
@@ -53,34 +54,32 @@ no_subject: |
 
 no_message_id: |
   From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
+  X-Mailing-List: example@list.example.com
+
+  Message body.
+
+no_id: |
+  From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
+  Subject: Good message
   X-Mailing-List: example@list.example.com
 
   Message body.
 
 no_list_and_no_id: |
   From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
 
   Message body.
 
-no_list_and_no_id_and_no_date: |
-  From: Alice <alice@example.com>
-  Subject: Good message
-
-  Message body.
-
-no_id_and_no_date: |
-  From: Alice <alice@example.com>
-  Subject: Good message
-  X-Mailing-List: example@list.example.com
-
-  Message body.
-
 no_date: |
   From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
   Subject: Good message
   X-Mailing-List: example@list.example.com
   Message-Id: <goodid@example.com>
@@ -89,6 +88,7 @@ no_date: |
 
 wrong_format_date: |
   From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
   Subject: Good message
   Date: 2007-08-07 16:06:33
   X-Mailing-List: example@list.example.com
@@ -98,6 +98,7 @@ wrong_format_date: |
 
 malformed_date: |
   From: Alice <alice@example.com>
+  To: Bob <bob@example.com>
   Subject: Good message
   Date: Obviously not a valid date
   X-Mailing-List: example@list.example.com

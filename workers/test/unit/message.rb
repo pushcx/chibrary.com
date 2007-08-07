@@ -34,12 +34,26 @@ class MessageTest < Test::Unit::TestCase
     end
   end
 
+  def test_no_id
+    m = Message.new message(:no_id), '00000000'
+    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
+  end
+
+  def test_no_list
+    m = Message.new message(:no_list), '00000000'
+    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
+    assert_equal '_listlibrary_no_list', m.mailing_list
+  end
+
   def test_no_list_and_no_id
     m = Message.new message(:no_list_and_no_id), '00000000'
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
+    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     assert_equal '_listlibrary_no_list', m.mailing_list
     key = '_listlibrary_no_list/2006/10/00000000@generated-message-id.listlibrary.net'
+    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ false }
+    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     m.S3Object.expect(:store, [key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => m.from,
@@ -49,12 +63,6 @@ class MessageTest < Test::Unit::TestCase
       :'x-amz-meta-call_number' => '00000000'
     }]) {}
     m.store
-  end
-
-  def test_no_id_and_no_date
-    m = Message.new message(:no_id_and_no_date), '00000000'
-    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
-    assert (Time.now.utc - m.date) < 1
   end
 
   def test_no_date
@@ -69,13 +77,6 @@ class MessageTest < Test::Unit::TestCase
 
   def test_malformed_date
     m = Message.new message(:malformed_date), '00000000'
-    assert (Time.now.utc - m.date) < 1
-  end
-
-  def test_no_list_and_no_id_and_no_date
-    m = Message.new message(:no_list_and_no_id_and_no_date), '00000000'
-    assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
-    assert_equal '_listlibrary_no_list', m.mailing_list
     assert (Time.now.utc - m.date) < 1
   end
 
