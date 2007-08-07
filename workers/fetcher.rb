@@ -27,35 +27,38 @@ def call_number server, pid, sequence
   ("%04b%016b%020b" % [0, pid, sequence]).to_i(2).to_base_64
 end
 
-server = CachedHash.new("servers")[`hostname`].to_i
-sequence = CachedHash.new("sequences")["#{server}/#{Process.pid}"].to_i
+if __FILE__ == $0
 
-pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
-pop.open_timeout = 300
-#pop.set_debug_output $stderr
-pop.start(MAIL_USER, MAIL_PASSWORD)
-puts "#{pop.n_mails} to process:"
-begin
-  pop.delete_all do |mail|
-    next if mail.length >= (256 * 1024)
-    message = Message.new(mail.pop, call_number(server, Process.pid, sequence))
-    begin
-      message.store
-      puts "#{mail.number} #{message.filename}"
-    rescue Exception => e
-      puts "#{mail.number} failed to store: #{e.message}; failure stored as #{message.call_number}"
-      AWS::S3::S3Object.store(
-        "_listlibrary_failed/#{message.call_number}",
-        e.message + "\n" + e.backtrace.join("\n") + "\n\n" + message.message,
-        'listlibrary_archive',
-        :content_type => "text/plain"
-      )
-    ensure
-      sequence += 1
+  server = CachedHash.new("servers")[`hostname`].to_i
+  sequence = CachedHash.new("sequences")["#{server}/#{Process.pid}"].to_i
+
+  pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
+  pop.open_timeout = 300
+  #pop.set_debug_output $stderr
+  pop.start(MAIL_USER, MAIL_PASSWORD)
+  puts "#{pop.n_mails} to process:"
+  begin
+    pop.delete_all do |mail|
+      next if mail.length >= (256 * 1024)
+      message = Message.new(mail.pop, call_number(server, Process.pid, sequence))
+      begin
+        message.store
+        puts "#{mail.number} #{message.filename}"
+      rescue Exception => e
+        puts "#{mail.number} failed to store: #{e.message}; failure stored as #{message.call_number}"
+        AWS::S3::S3Object.store(
+          "_listlibrary_failed/#{message.call_number}",
+          e.message + "\n" + e.backtrace.join("\n") + "\n\n" + message.message,
+          'listlibrary_archive',
+          :content_type => "text/plain"
+        )
+      ensure
+        sequence += 1
+      end
     end
+  ensure
+    pop.finish
+    CachedHash.new("sequences")["#{server}/#{Process.pid}"] = sequence
   end
-ensure
-  pop.finish
-  CachedHash.new("sequences")["#{server}/#{Process.pid}"] = sequence
-end
 
+end

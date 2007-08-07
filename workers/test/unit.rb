@@ -1,4 +1,9 @@
 require 'test/unit'
 
-require File.dirname(__FILE__) + '/unit/cachedhash'
-require File.dirname(__FILE__) + '/unit/message'
+Dir.new(File.dirname(__FILE__) + "/unit").each do |file|
+  f = File.new(File.dirname(__FILE__) + "/unit/" + file, "r")
+  next unless f.stat.file?
+  next unless f.path.match(/\.rb$/)
+  puts f.path
+  require f.path
+end
