@@ -112,6 +112,28 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
   end
 
+  def test_overwrite
+    m = Message.new message(:good), '00000000'
+    key = 'example/2006/10/goodid@example.com'
+    expect_example_list m
+    m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ true }
+    expect_example_list m
+    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive example/2006/10/goodid@example.com") do
+      m.store
+    end
+    m.overwrite = true
+    expect_example_list m
+    m.S3Object.expect(:store, [key, m.message, 'listlibrary_archive', {
+      :content_type             => "text/plain",
+      :'x-amz-meta-from'        => 'alice@example.com',
+      :'x-amz-meta-subject'     => 'Good message',
+      :'x-amz-meta-in_reply_to' => nil,
+      :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
+      :'x-amz-meta-call_number' => '00000000'
+    }]) {}
+    m.store
+  end
+
   private
 
   def expect_example_list m

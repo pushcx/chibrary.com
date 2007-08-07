@@ -1,7 +1,5 @@
 Finish message tests
   * raises dupe message id
-  * allows overwriting
-Mock: def destroy ; unless @calls.empty? raise "foo" ; end
 Fetcher:
   * get under test
     * good message
