@@ -11,8 +11,8 @@ list_in_to: |
   From: Alice <alice@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
-  X-Mailing-List: example@list.example.com
-  To: <goodid@example.com>
+  To: example@list.example.com
+  Message-Id: <goodid@example.com>
 
   Message body.
 
@@ -20,8 +20,17 @@ list_in_cc: |
   From: Alice <alice@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
-  X-Mailing-List: example@list.example.com
-  Cc: <goodid@example.com>
+  Cc: example@list.example.com
+  Message-Id: <goodid@example.com>
+
+  Message body.
+
+list_in_bcc: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+  Bcc: example@list.example.com
+  Message-Id: <goodid@example.com>
 
   Message body.
 
@@ -29,8 +38,8 @@ list_in_reply_to: |
   From: Alice <alice@example.com>
   Subject: Good message
   Date: Tue, 24 Oct 2006 15:47:48 -0400
-  X-Mailing-List: example@list.example.com
-  Reply-To: <goodid@example.com>
+  Reply-To: example@list.example.com
+  Message-Id: <goodid@example.com>
 
   Message body.
 

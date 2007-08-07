@@ -63,14 +63,21 @@ class Message
 
   def mailing_list
     matches = nil
-    [/^X-Mailing-List:\s.*/, /^To:\s.*/, /^C[cC]:\s.*/, /^Reply-[Tt]o:\s.*/].each do |regexp|
+    [ /^X-Mailing-List:\s.*/,
+      /^To:\s.*/, /^C[cC]:\s.*/,
+      /^B[cC][cC]:\s.*/,
+      /^Reply-[Tt]o:\s.*/,
+      /^List-[Pp]ost:\s.*/,
+      /^Mail-[Ff]ollowup-[Tt]o:\s.*/,
+      /Mail-[Rr]eply-[Tt]o:\s.*/
+    ].each do |regexp|
       matches = regexp.match(headers)
       break unless matches.nil?
     end
     return "_listlibrary_no_list" if matches.nil?
 
     slug = nil
-    matches[0].chomp.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.each do |address|
+    matches[0].chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }.each do |address|
       slug = @addresses[address]
       break unless slug.nil?
     end

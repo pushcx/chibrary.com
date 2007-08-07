@@ -27,7 +27,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_mailing_list_in_various_places
-    [:good, :list_in_to, :list_in_cc, :list_in_reply_to].each do |fixture|
+    [:good, :list_in_to, :list_in_cc, :list_in_bcc, :list_in_reply_to].each do |fixture|
       m = Message.new message(fixture), '00000000'
       expect_example_list m
       assert_equal "example", m.mailing_list
