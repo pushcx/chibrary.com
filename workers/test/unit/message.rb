@@ -82,7 +82,6 @@ class MessageTest < Test::Unit::TestCase
 
   def test_no_subject
     m = Message.new message(:no_subject), '00000000'
-    expect_example_list m
     assert_equal "", m.subject
   end
 
@@ -105,7 +104,6 @@ class MessageTest < Test::Unit::TestCase
 
   def test_generated_id
     m = Message.new message(:good), '00000000' # unused, just need the object
-    expect_example_list m
     assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.generated_id
   end
 
