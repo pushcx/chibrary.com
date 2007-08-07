@@ -1,5 +1,3 @@
-Finish message tests
-  * raises dupe message id
 Fetcher:
   * get under test
     * good message
