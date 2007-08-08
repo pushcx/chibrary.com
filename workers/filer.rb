@@ -73,7 +73,12 @@ class Filer
       puts "#{@message_count} failed to store: #{e.message}; failure stored as #{call_number}" if @print_status
       @S3Object.store(
         "_listlibrary_failed/#{call_number}",
-        e.message + "\n" + e.backtrace.join("\n") + "\n\n" + message.message,
+        {
+          :exception => e.class.to_s,
+          :message   => e.message,
+          :backtrace => e.backtrace,
+          :mail      => message.message
+        }.to_yaml,
         'listlibrary_archive',
         :content_type => "text/plain"
       )
