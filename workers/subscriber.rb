@@ -13,12 +13,14 @@ def yn(str, expected)
 end
 
 mailing_list_addresses = CachedHash.new "mailing_list_addresses"
-no_mailing_list = AWS::S3::Bucket.find('listlibrary_no_mailing_list')
 
-no_mailing_list.objects(true).each do |mail|
-  next if mail.key.match '2007/06' # hack workaround for http://developer.amazonwebservices.com/connect/thread.jspa?threadID=15956
-
-  message = Message.new(mail.value)
+AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/").each do |mail|
+  message = Message.new(mail.key)
+  if message.mailing_list != '_listlibrary_no_list'
+    message.store
+    mail.delete
+    next
+  end
   
   puts "\n" * 5 + mail.value
 
@@ -64,7 +66,12 @@ X-Mailing-List: listlibrary_subscriptions
     next
   end
 
-  if yn("delete? (Y/n):", 'y')
+  print "Save location(slug, '_d', or blank to skip): "
+  case list = gets.chomp
+  when '_d'
     mail.delete
+  when ''
+  else
+    mail.rename message.filename.split('/')[1..-1].unshift(list).join('/')
   end
 end

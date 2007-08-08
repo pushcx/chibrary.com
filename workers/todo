@@ -4,7 +4,6 @@ Fetcher:
   * flag messages >72h old
 Protect against painful message_ids
 subscriber
-  * change to look in listlibrary_archive _listlibrary_no_list
   * get it under test
   * acknowledge 'resume' mails
   * logging
@@ -23,3 +22,4 @@ renderer:
   * monthly archives listing threads
   * mailing list home pages
   * logging
+  * per-user archives?
