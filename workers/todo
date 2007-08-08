@@ -1,6 +1,4 @@
 Fetcher:
-    * good message
-    * mail server timeout
   * kick off threading worker
   * logging
   * flag messages >72h old
