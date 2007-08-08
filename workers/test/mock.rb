@@ -1,6 +1,7 @@
 class Mock
-attr_reader :calls
-  # the stub call makes it just record all calls
+  attr_reader :calls, :called
+
+  # the stub arg makes it just record all calls
   def initialize stub=false
     @calls = []
     @called = []
