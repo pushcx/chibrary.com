@@ -1,17 +1,3 @@
-Fetcher:
-  * kick off threading worker
-  * logging
-  * flag messages >72h old
-Protect against painful message_ids
-subscriber
-  * get it under test
-  * acknowledge 'resume' mails
-  * logging
-address call number sequence wraparound
-overwrites:
-  * tool for resolving overwrites
-  * automatically discard duplicate overwrites
-  * logging
 threader:
   * write it
   * test it
@@ -23,3 +9,17 @@ renderer:
   * mailing list home pages
   * logging
   * per-user archives?
+Protect against painful message_ids
+address call number sequence wraparound
+Fetcher:
+  * kick off threading worker
+  * logging
+  * flag messages >72h old
+subscriber
+  * get it under test
+  * acknowledge 'resume' mails
+  * logging
+overwrites:
+  * tool for resolving overwrites
+  * automatically discard duplicate overwrites
+  * logging
