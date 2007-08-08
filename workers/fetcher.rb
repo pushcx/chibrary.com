@@ -5,7 +5,7 @@ require 'net/pop'
 require 'mail'
 require 'filer'
 
-class Fetcher
+class Fetcher < Filer
   def setup
     # create POP3 connection
     @pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
@@ -16,13 +16,13 @@ class Fetcher
   end
 
   def acquire
-    pop.delete_all do |mail|
-      yield mail
+    @pop.delete_all do |mail|
+      yield mail.mail
     end
   end
 
   def teardown
-    pop.finish
+    @pop.finish
   end
 end
 

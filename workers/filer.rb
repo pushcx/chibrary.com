@@ -2,6 +2,8 @@ require 'aws'
 
 class Integer
   def to_base_64
+    raise "No negative numbers" if self < 0
+
     chars = (0..9).to_a + ('a'..'z').to_a + ('A'..'Z').to_a + ['_', '-']
     str = ""
     current = self
@@ -17,18 +19,21 @@ end
 
 class Filer
   attr_reader :server, :sequence, :mailing_lists, :message_count
-  attr_accessor :print_status
+  attr_accessor :print_status, :S3Object, :sequences
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
     @server = (server or CachedHash.new("servers")[`hostname`].to_i)
-    @sequence = (sequence or CachedHash.new("sequences")["#{server}/#{Process.pid}"].to_i)
+    @sequences = CachedHash.new("sequences")
+    @sequence = (sequence or @sequences["#{server}/#{Process.pid}"].to_i)
 
     # queue up threading workers for this mailing list, year, and month
     @mailing_lists = {}
     # count the number of messages stored
     @message_count = 0
     @print_status = true
+
+    @S3Object = AWS::S3::S3Object
   end
 
   def call_number
@@ -65,7 +70,7 @@ class Filer
       puts "#{@message_count} stored at #{message.filename}" if @print_status
     rescue Exception => e
       puts "#{@message_count} failed to store: #{e.message}; failure stored as #{call_number}" if @print_status
-      AWS::S3::S3Object.store(
+      @S3Object.store(
         "_listlibrary_failed/#{call_number}",
         e.message + "\n" + e.backtrace.join("\n") + "\n\n" + message.message,
         'listlibrary_archive',
@@ -83,9 +88,9 @@ class Filer
     setup
     begin
       stored = acquire { |m| store m }
-      sequence += 1 if stored
+      @sequence += 1 if stored
     ensure
-      CachedHash.new("sequences")["#{server}/#{Process.pid}"] = sequence
+      @sequences["#{server}/#{Process.pid}"] = sequence
       teardown
     end
 
