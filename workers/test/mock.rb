@@ -1,7 +1,10 @@
 class Mock
 attr_reader :calls
-  def initialize
+  # the stub call makes it just record all calls
+  def initialize stub=false
     @calls = []
+    @called = []
+    @stub = stub
   end
 
   # Pass nil for args to ignore the actual args in the call.
@@ -11,6 +14,9 @@ attr_reader :calls
   end
 
   def method_missing(method, *args)
+    @called << {:method => method, :args => args}
+    return if @stub
+
     expect = @calls.shift
     raise "Unexpected mock call #{method.to_s}(#{args.join(', ')})" if expect.nil?
     raise "Wrong mock call #{method.to_s}(#{args.join(', ')}); expected #{expect[:method]}(#{expect[:args].join(', ')})" if method != expect[:method] or (expect[:args] != nil and args != expect[:args])
