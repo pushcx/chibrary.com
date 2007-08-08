@@ -125,4 +125,8 @@ class FilerTest < Test::Unit::TestCase
   def test_sequence_exhaustion
   end
 
+  def test_failure_store_exception
+    # what happens when the failure storage fails?
+  end
+
 end

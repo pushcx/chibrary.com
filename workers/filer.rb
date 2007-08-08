@@ -85,6 +85,7 @@ class Filer
   end
 
   def run
+    # no error-catching for setup; if it fails we'll just stop
     setup
     begin
       stored = acquire { |m| store m }

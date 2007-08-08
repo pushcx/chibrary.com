@@ -1,9 +1,6 @@
 Fetcher:
-  * get under test
     * good message
-    * filing error
     * mail server timeout
-    * s3 write just randomly fails
   * kick off threading worker
   * logging
   * flag messages >72h old
