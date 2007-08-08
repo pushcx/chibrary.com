@@ -61,6 +61,7 @@ class Filer
     return false if mail.length >= (256 * 1024)
 
     message = new_message mail
+    @message_count += 1
     begin
       message.store
       unless message.mailing_list.match /^_/
@@ -77,7 +78,6 @@ class Filer
         :content_type => "text/plain"
       )
     ensure
-      @message_count += 1
       release
     end
 
