@@ -50,7 +50,7 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
     m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     assert_equal '_listlibrary_no_list', m.mailing_list
-    key = '_listlibrary_no_list/2006/10/00000000@generated-message-id.listlibrary.net'
+    key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
     m.addresses.expect(:'[]', ['bob@example.com']){ nil }
     m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ false }
     m.addresses.expect(:'[]', ['bob@example.com']){ nil }
@@ -87,7 +87,7 @@ class MessageTest < Test::Unit::TestCase
 
   def test_store_metadata
     m = Message.new message(:good), '00000000'
-    key = 'example/2006/10/goodid@example.com'
+    key = 'list/example/message/2006/10/goodid@example.com'
     expect_example_list m
     m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ false }
     expect_example_list m
@@ -114,11 +114,11 @@ class MessageTest < Test::Unit::TestCase
 
   def test_overwrite
     m = Message.new message(:good), '00000000'
-    key = 'example/2006/10/goodid@example.com'
+    key = 'list/example/message/2006/10/goodid@example.com'
     expect_example_list m
     m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ true }
     expect_example_list m
-    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive example/2006/10/goodid@example.com") do
+    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive list/example/message/2006/10/goodid@example.com") do
       m.store
     end
     m.overwrite = true

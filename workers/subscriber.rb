@@ -12,7 +12,7 @@ def yn(str, expected)
   return (answer == expected or answer.empty?)
 end
 
-mailing_list_addresses = CachedHash.new "mailing_list_addresses"
+list_addresses = CachedHash.new "list_address"
 
 AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/").each do |mail|
   message = Message.new(mail.key)
@@ -41,7 +41,7 @@ AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/
       end
 
       addresses.each do |address|
-        mailing_list_addresses[address] = slug
+        list_addresses[address] = slug
       end
     end
 

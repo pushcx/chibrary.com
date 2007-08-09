@@ -9,8 +9,6 @@ renderer:
   * mailing list home pages
   * logging
   * per-user archives?
-Protect against painful message_ids
-address call number sequence wraparound
 Fetcher:
   * logging
   * flag messages >72h old
@@ -22,4 +20,8 @@ overwrites:
   * tool for resolving overwrites
   * automatically discard duplicate overwrites
   * logging
+Filer:
+  * Protect against painful message_ids
+  * sequence exhaustion
+  * failure storage failure
 bots to ask majordomo and other services about lists and subscribe

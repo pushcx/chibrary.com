@@ -12,7 +12,7 @@ class Message
   def initialize message, call_number=nil
     # call_number is loaded from message when possible
     @S3Object = AWS::S3::S3Object
-    @addresses = CachedHash.new "mailing_list_addresses"
+    @addresses = CachedHash.new "list_address"
 
     if message.match "\n" # initialized with a message
       @message = message
@@ -107,7 +107,7 @@ class Message
   end
 
   def filename
-    "#{mailing_list}/#{date.year}/%02d/" % date.month + message_id
+    "list/#{mailing_list}/message/#{date.year}/%02d/" % date.month + message_id
   end
 
   def store

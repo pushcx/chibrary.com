@@ -23,8 +23,8 @@ class Filer
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
-    @server = (server or CachedHash.new("servers")[`hostname`].to_i)
-    @sequences = CachedHash.new("sequences")
+    @server = (server or CachedHash.new("server")[`hostname`].to_i)
+    @sequences = CachedHash.new("sequence")
     @sequence = (sequence or @sequences["#{@server}/#{Process.pid}"].to_i)
     @threader_queue = CachedHash.new("threader_queue")
 
@@ -73,7 +73,7 @@ class Filer
     rescue Exception => e
       puts "#{@message_count} failed to store: #{e.message}; failure stored as #{call_number}" if @print_status
       @S3Object.store(
-        "_listlibrary_failed/#{call_number}",
+        "filer_failure/#{call_number}",
         {
           :exception => e.class.to_s,
           :message   => e.message,
