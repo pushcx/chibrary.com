@@ -1,6 +1,31 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'filer'
 
+class IntegerTest < Test::Unit::TestCase
+  def test_to_base_64
+    [
+      [0, '00000000'], # base case
+      [1, '00000001'], # add one
+      [10, '0000000a'], # first lowercase letter
+      [36, '0000000A'], # first uppercase letter
+      [62, '0000000_'], # first _
+      [63, '0000000-'], # last character: -
+      [64, '00000010'], # second digit
+      [2 ** 48 - 1, '--------'], # last number
+    ].each do |from, to|
+      assert_equal to, from.to_base_64
+    end
+
+    assert_raises(RuntimeError, "Unexpectedly large int converted") do
+      (2 ** 48).to_base_64
+    end
+    assert_raises(RuntimeError, "No negative numbers") do
+      (-1).to_base_64
+    end
+  end
+end
+
+
 class FilerTest < Test::Unit::TestCase
   fixtures :message
 
@@ -49,6 +74,7 @@ class FilerTest < Test::Unit::TestCase
     f.print_status = false
     f.store message(:good)
     assert_equal 1, f.message_count
+    assert_equal({ 'example_list' => [[2006, 10]] }, f.mailing_lists)
   end
 
   class TestStoreFailsFiler < Filer
@@ -67,6 +93,7 @@ class FilerTest < Test::Unit::TestCase
     f.S3Object.expect(:store)
     f.store message(:good)
     assert_equal 1, f.message_count
+    assert_equal({}, f.mailing_lists)
   end
 
   class TestRunFiler < Filer
@@ -83,11 +110,9 @@ class FilerTest < Test::Unit::TestCase
       yield "Test message body"
     end
 
-    # override store to skip mocking it out
-    def store mail
-      @test_run_called << :store
-      true
-    end
+    # override store/queue_threader to skip mocking it out
+    def store     mail ; @test_run_called << :store          ; true ; end
+    def queue_threader ; @test_run_called << :queue_threader ; true ; end
 
     def setup    ; @test_run_called << :setup    ; end
     def teardown ; @test_run_called << :teardown ; end
@@ -97,29 +122,16 @@ class FilerTest < Test::Unit::TestCase
     f.print_status = false
     f.sequences.S3Object.expect(:store){ 0 }
     f.run
-    assert_equal [:setup, :acquire, :store, :teardown], f.test_run_called
+    assert_equal [:setup, :acquire, :store, :queue_threader, :teardown], f.test_run_called
   end
 
-  def test_to_base_64
-    [
-      [0, '00000000'], # base case
-      [1, '00000001'], # add one
-      [10, '0000000a'], # first lowercase letter
-      [36, '0000000A'], # first uppercase letter
-      [62, '0000000_'], # first _
-      [63, '0000000-'], # last character: -
-      [64, '00000010'], # second digit
-      [2 ** 48 - 1, '--------'], # last number
-    ].each do |from, to|
-      assert_equal to, from.to_base_64
-    end
-
-    assert_raises(RuntimeError, "Unexpectedly large int converted") do
-      (2 ** 48).to_base_64
-    end
-    assert_raises(RuntimeError, "No negative numbers") do
-      (-1).to_base_64
-    end
+  def test_queue_threader
+    f = Filer.new(0, 0)
+    f.mailing_lists = { 'example_list' => [[2007, 8], [2007, 9]] }
+    f.threader_queue = Mock.new
+    f.threader_queue.expect(:'[]=', ['example_list/2007/8', ''])
+    f.threader_queue.expect(:'[]=', ['example_list/2007/9', ''])
+    f.queue_threader
   end
 
   def test_sequence_exhaustion

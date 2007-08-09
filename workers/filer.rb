@@ -18,14 +18,15 @@ class Integer
 end
 
 class Filer
-  attr_reader :server, :sequence, :mailing_lists, :message_count
-  attr_accessor :print_status, :S3Object, :sequences
+  attr_reader :server, :sequence, :message_count
+  attr_accessor :mailing_lists, :print_status, :S3Object, :sequences, :threader_queue
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
     @server = (server or CachedHash.new("servers")[`hostname`].to_i)
     @sequences = CachedHash.new("sequences")
     @sequence = (sequence or @sequences["#{server}/#{Process.pid}"].to_i)
+    @threader_queue = CachedHash.new("threader_queue")
 
     # queue up threading workers for this mailing list, year, and month
     @mailing_lists = {}
@@ -97,9 +98,17 @@ class Filer
       @sequence += 1 if stored
     ensure
       @sequences["#{server}/#{Process.pid}"] = sequence
+      queue_threader
       teardown
     end
+  end
 
+  def queue_threader
+    @mailing_lists.each do |list, dates|
+      dates.each do |year, month|
+        @threader_queue[ [list, year, month].join('/') ] = ''
+      end
+    end
   end
 
 end
