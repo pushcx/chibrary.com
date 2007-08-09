@@ -25,7 +25,7 @@ class Filer
     # load server id and sequence number for this server and pid
     @server = (server or CachedHash.new("servers")[`hostname`].to_i)
     @sequences = CachedHash.new("sequences")
-    @sequence = (sequence or @sequences["#{server}/#{Process.pid}"].to_i)
+    @sequence = (sequence or @sequences["#{@server}/#{Process.pid}"].to_i)
     @threader_queue = CachedHash.new("threader_queue")
 
     # queue up threading workers for this mailing list, year, and month
@@ -97,7 +97,7 @@ class Filer
       stored = acquire { |m| store m }
       @sequence += 1 if stored
     ensure
-      @sequences["#{server}/#{Process.pid}"] = sequence
+      @sequences["#{@server}/#{Process.pid}"] = sequence
       queue_threader
       teardown
     end
