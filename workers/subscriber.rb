@@ -24,7 +24,10 @@ AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/
   
   puts "\n" * 5 + mail.value
 
-  if confirmline = message.message.match(/^confirm\s+.{8,}/) and yn("subscribe? (Y/n):", 'y')
+  if (
+    confirmline = message.message.match(/^\s*confirm\s+.{8,}/) or
+    confirmline = message.message.match(/^\s*auth\s+.{8,}/)
+  ) and yn("subscribe? (Y/n):", 'y')
     print "slug? "
     slug = gets.chomp
 
@@ -42,8 +45,7 @@ AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/
       end
     end
 
-    print confirmline
-    reply = Message.new <<-REPLY
+    reply = <<-REPLY
 From: List Library <#{MAIL_ARCHIVE}>
 To: #{message.reply_to}
 Subject: #{confirmline}
@@ -52,11 +54,9 @@ X-Mailing-List: listlibrary_subscriptions
 
 #{confirmline}
     REPLY
-    reply.message_id # force one to be generated
     Net::SMTP.start(MAIL_SERVER, MAIL_SMTP_PORT, 'listlibrary.net', MAIL_USER, MAIL_PASSWORD, :login) do |smtp|
-      print smtp.send_message(reply.message, MAIL_ARCHIVE, [message.reply_to])
+      print smtp.send_message(reply, MAIL_ARCHIVE, [(message.reply_to or message.from), 'archive@listlibrary.net'])
     end
-    reply.store
 
     message.add_header("X-Mailing-List: listlibrary_subscriptions@listlibrary.net")
     message.overwrite = true
@@ -66,12 +66,14 @@ X-Mailing-List: listlibrary_subscriptions
     next
   end
 
-  print "Save location(slug, '_d', or blank to skip): "
+  print "Save location(slug, '_l' for subscriptions, '_d' to delete, or blank to skip): "
   case list = gets.chomp
+  when '_l'
+    mail.rename message.filename.split('/')[1..-1].unshift('_listlibrary_subscriptions').join('/'), mail.metadata
   when '_d'
     mail.delete
   when ''
   else
-    mail.rename message.filename.split('/')[1..-1].unshift(list).join('/')
+    mail.rename message.filename.split('/')[1..-1].unshift(list).join('/'), mail.metadata
   end
 end
