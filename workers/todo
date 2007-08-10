@@ -1,3 +1,4 @@
+honor X-No-Archive: yes headers
 threader:
   * write it
   * test it
@@ -5,14 +6,25 @@ threader:
 renderer:
   * render messages
   * render threads
+  * protect mail addresses
+  * linkify urls
   * monthly archives listing threads
   * mailing list home pages
   * logging
   * per-user archives?
+  * js links to flag spam
+about page:
+  * subscription instructions
+  * 'this is a barking stapler project'
+  * dmca agent information
 Fetcher:
   * logging
   * flag messages >72h old
-subscriber
+scraper:
+  * mbox
+  * maildir
+  * other sites
+subscriber:
   * get it under test
   * acknowledge 'resume' mails
   * logging
