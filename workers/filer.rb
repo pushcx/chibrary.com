@@ -1,3 +1,4 @@
+require 'yaml'
 require 'aws'
 
 class Integer
