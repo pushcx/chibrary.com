@@ -70,9 +70,9 @@ class Filer
         @mailing_lists[message.mailing_list] ||= []
         @mailing_lists[message.mailing_list] << [message.date.year, message.date.month]
       end
-      puts "#{@message_count} stored at #{message.filename}" if @print_status
+      puts "#{@message_count} #{call_number} stored: #{message.filename}" if @print_status
     rescue Exception => e
-      puts "#{@message_count} failed to store: #{e.message}; failure stored as #{call_number}" if @print_status
+      puts "#{@message_count} #{call_number} FAILED: #{e.message}" if @print_status
       @S3Object.store(
         "filer_failure/#{call_number}",
         {
@@ -86,17 +86,15 @@ class Filer
       )
     ensure
       release
-      @sequence += 1 if stored
+      @sequence += 1
     end
-
-    true
   end
 
   def run
     # no error-catching for setup; if it fails we'll just stop
     setup
     begin
-      stored = acquire { |m| store m }
+      acquire { |m| store m }
     ensure
       @sequences["#{@server}/#{Process.pid}"] = sequence
       queue_threader
