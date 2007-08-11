@@ -86,6 +86,7 @@ class Filer
       )
     ensure
       release
+      @sequence += 1 if stored
     end
 
     true
@@ -96,7 +97,6 @@ class Filer
     setup
     begin
       stored = acquire { |m| store m }
-      @sequence += 1 if stored
     ensure
       @sequences["#{@server}/#{Process.pid}"] = sequence
       queue_threader
