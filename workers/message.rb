@@ -19,10 +19,10 @@ class Message
       @call_number = call_number
       raise "call_number #{call_number} invalid string" unless call_number.instance_of? String and call_number.length == 8
     else                  # initialize with a url
+      @overwrite = true
       o = @S3Object.find(message, 'listlibrary_archive')
       @message = o.value
-      @call_number = o.metadata['call_number']
-      raise "call_number #{call_number} given when none should have been" unless call_number.nil?
+      @call_number = (call_number or o.metadata['call_number'])
     end
     populate_headers
   end
