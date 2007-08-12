@@ -53,10 +53,11 @@ class Filer
   def acquire  ; raise "Filer.acquire() must be overridden by subclasses" ; end
   # hook if anything needs to be done to clean up after store
   def release  ; end
+  def source   ; 'filer' ; end
 
   # This line is in a separate method so tests can subclass and override
   def new_message mail
-    Message.new(mail, call_number)
+    Message.new(mail, source, call_number)
   end
 
   def store mail

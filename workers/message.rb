@@ -5,25 +5,27 @@ require 'md5'
 require 'aws'
 
 class Message
-  attr_reader   :headers, :message, :call_number
+  attr_reader   :headers, :message, :call_number, :source
   attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
   attr_accessor :addresses, :overwrite, :S3Object
 
-  def initialize message, call_number=nil
+  def initialize message, source=nil, call_number=nil
     # call_number is loaded from message when possible
     @S3Object = AWS::S3::S3Object
     @addresses = CachedHash.new "list_address"
 
+    @source = source
+    @call_number = call_number
     if message.match "\n" # initialized with a message
       @message = message
-      @call_number = call_number
-      raise "call_number #{call_number} invalid string" unless call_number.instance_of? String and call_number.length == 8
     else                  # initialize with a url
       @overwrite = true
       o = @S3Object.find(message, 'listlibrary_archive')
       @message = o.value
-      @call_number = (call_number or o.metadata['call_number'])
+      @call_number ||= o.metadata['call_number']
+      @source ||= o.metadata['source']
     end
+    raise "call_number #{call_number} invalid string" unless call_number.instance_of? String and call_number.length == 8
     populate_headers
   end
 
@@ -120,6 +122,7 @@ class Message
       :'x-amz-meta-subject'     => subject,
       :'x-amz-meta-in_reply_to' => in_reply_to,
       :'x-amz-meta-date'        => date,
+      :'x-amz-meta-source'      => @source,
       :'x-amz-meta-call_number' => call_number
     })
     self

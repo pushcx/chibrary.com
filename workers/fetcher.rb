@@ -12,6 +12,10 @@ class Fetcher < Filer
     super *args
   end
 
+  def source
+    'subscription'
+  end
+
   def setup
     # create POP3 connection
     @pop = @POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
