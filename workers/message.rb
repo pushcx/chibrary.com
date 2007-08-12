@@ -25,7 +25,7 @@ class Message
       @call_number ||= o.metadata['call_number']
       @source ||= o.metadata['source']
     end
-    raise "call_number #{call_number} invalid string" unless call_number.instance_of? String and call_number.length == 8
+    raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
     populate_headers
   end
 
