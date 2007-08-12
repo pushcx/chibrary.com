@@ -62,9 +62,9 @@ class Filer
   def store mail
     return false if mail.length >= (256 * 1024)
 
-    message = new_message mail
     @message_count += 1
     begin
+      message = new_message mail
       message.store
       unless message.mailing_list.match /^_/
         @mailing_lists[message.mailing_list] ||= []
