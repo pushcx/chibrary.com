@@ -5,49 +5,57 @@ require 'threading'
 require 'yaml'
 
 class Threader
-  attr_accessor :bucket, :render_queue, :S3Object
+  attr_accessor :render_queue
 
   def initialize
-    @bucket   = AWS::S3::Bucket
-    @S3Object = AWS::S3::S3Object
     @render_queue = CachedHash.new("render_queue")
   end
 
   def get_job
-    @bucket.find('listlibrary_cachedhash').objects(:reload, :prefix => 'threader_queue/', :max_keys => 1).first
+    AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'threader_queue/', :max_keys => 1).first
   end
 
   def load_cache key
     begin
-      YAML::load(@S3Object.find(key).value)
+      YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
     rescue AWS::S3::NoSuchKey
-      []
+      nil
     end
   end
 
   def run
     while job = get_job
+      puts job.key + " " + "*" * 50
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      message_cache = load_cache "list/#{slug}/threading/#{year}/#{month}/message_cache"
-      threads       = load_cache "list/#{slug}/threading/#{year}/#{month}/threadset"
+      puts "loading caches"
+      message_cache = (load_cache("list/#{slug}/threading/#{year}/#{month}/message_cache") or [])
+      threads       = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
 
-      messages      = @bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
+      puts "loading message list"
+      messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
-      added = messages - message_cache
-      unless (message_cache - messages).empty?
+      if (message_cache - messages).empty?
+        added = messages - message_cache
+      else
+        puts "rebuilding!"
         threads = ThreadSet.new
-        added = []
+        added = messages
       end
-      added.each { |mail| threads.add_message Message.new(mail) }
-      @S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", messages.to_yaml)
-      @S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threads.to_yaml)
+      puts "adding #{added.size}"
+      i = 0
+      added.each { |mail| threads.add_message Message.new(mail) ; i += 1 ; puts "#{i} " if i % 100 == 0 }
+      puts "caching"
+      unless added.empty?
+        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", messages.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
+        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threads.to_yaml,  'listlibrary_archive', :content_type => 'text/plain')
+      end
       # track and rerender messages, threads, monthly archive, home page
     end
   end
 end
 
 
-#Threader.new.run if __FILE__ == $0
+Threader.new.run if __FILE__ == $0

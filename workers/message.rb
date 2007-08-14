@@ -7,19 +7,16 @@ require 'aws'
 class Message
   attr_reader   :headers, :message, :call_number, :source
   attr_reader   :from, :date, :subject, :references, :reply_to
-  attr_accessor :addresses, :overwrite, :S3Object
+  attr_accessor :addresses, :overwrite
 
   def id ; message_id ; end
 
   RE_PATTERN = /\s*\[?Re([\[\(]?\d+[\]\)]?)?:\s*/i
-  class << self
-    def subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end
-    def normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
-  end
+  def self.subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end
+  def self.normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
 
   def initialize message, source=nil, call_number=nil
     # call_number is loaded from message when possible
-    @S3Object = AWS::S3::S3Object
     @addresses = CachedHash.new "list_address"
 
     @source = source
@@ -28,8 +25,8 @@ class Message
       @message = message
     else                  # initialize with a url
       @overwrite = true
-      o = @S3Object.find(message, 'listlibrary_archive')
-      @message = o.value
+      o = AWS::S3::S3Object.find(message, 'listlibrary_archive')
+      @message = o.value.to_s
       @call_number ||= o.metadata['call_number']
       @source ||= o.metadata['source']
     end
@@ -124,9 +121,9 @@ class Message
 
   def store
     unless @overwrite
-      raise "overwrite attempted for listlibrary_archive #{filename}" if @S3Object.exists?(filename, "listlibrary_archive")
+      raise "overwrite attempted for listlibrary_archive #{filename}" if AWS::S3::S3Object.exists?(filename, "listlibrary_archive")
     end
-    @S3Object.store(filename, message, "listlibrary_archive", {
+    AWS::S3::S3Object.store(filename, message, "listlibrary_archive", {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,
