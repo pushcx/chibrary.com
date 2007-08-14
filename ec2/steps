@@ -1,0 +1,54 @@
+dd if=/dev/zero of=ubuntu.fs count=512 bs=1M
+mke2fs -F ubuntu.fs
+sudo mount -o loop ubuntu.fs /mnt
+sudo debootstrap dapper /mnt
+# add universe, etc to /mnt/etc/apt/sources.list
+sudo chroot /mnt
+passwd
+aptitude update ; aptitude upgrade
+aptitude purge ubuntu-minimal wpasupplicant console-terminus console-tools console-setup python-common python2.5 python # alsa, sound, perl, others
+aptitude install openssh-server subversion ruby irb rubygems
+gem install -y aws-s3 haml hoe rake redgreen tidy
+# run 'date', sanity check it's UTC
+
+vi /etc/ssh/sshd_config:
+  PermitRootLogin without-password
+  UseDNS no
+
+vi /etc/rc.local:
+  ntpdate tick.ucla.edu
+  hostname ec2-01 # or use some net service
+  /etc/rc.root_cert
+
+vi /etc/rc.root_cert:
+  if [ ! -d /root/.ssh ] ; then
+          mkdir -p /root/.ssh
+          chmod 700 /root/.ssh
+  fi
+  # Fetch public key using HTTP
+  curl http://169.254.169.254/2007-03-01//meta-data/public-keys/0/openssh-key > /tmp/my-key
+  if [ $? -eq 0 ] ; then
+          cat /tmp/my-key >> /root/.ssh/authorized_keys
+          chmod 600 /root/.ssh/authorized_keys
+          rm /tmp/my-key
+  fi
+chmod +x /etc/rc.root_cert
+
+exit
+umount /mnt
+
+ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
+ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
+ec2-register listlibrary_ec2/ubuntu.fs.manifest.xml
+
+# Notes on installing tools on Ubuntu from
+# http://developer.amazonwebservices.com/connect/entry.jspa?externalID=368&categoryID=88
+apt-get install wget alien ruby libopenssl-ruby1.8 rsync curl
+wget <download link for ec2-ami-tools.noarch.rpm>
+alien -i ec2-ami-tools.noarch.rpm
+ln -sf /bin/bash /bin/sh # Ubuntu changed to dash, which is more posixy
+ln -s /usr/lib/site_ruby/aes /usr/local/lib/site_ruby/1.8/i486-linux/aes
+
+Edit: /usr/lib/site_ruby/aes/amiutil/image.rb line ~150
+Change: exec( 'for i in console null zero ; do /sbin/MAKEDEV -d ' + dev_dir + ' -x $i ; done' )
+To: exec("cd #{dev_dir} && /sbin/MAKEDEV console && /sbin/MAKEDEV std && /sbin/MAKEDEV generic")
