@@ -31,19 +31,19 @@ class Threader
       job.delete
 
       message_cache = load_cache "list/#{slug}/threading/#{year}/#{month}/message_cache"
-      threads       = load_cache "list/#{slug}/threading/#{year}/#{month}/threads"
+      threads       = load_cache "list/#{slug}/threading/#{year}/#{month}/threadset"
 
       messages      = @bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
 
-      # if any messages were removed, rebuild for saftey over find and remove
-      added = message_cache - messages
-      unless (messages - message_cache).empty?
+      # if any messages were removed, rebuild for saftey over the speed of find and remove
+      added = messages - message_cache
+      unless (message_cache - messages).empty?
         threads = ThreadSet.new
         added = []
       end
       added.each { |mail| threads.add_message Message.new(mail) }
       @S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", messages.to_yaml)
-      @S3Object.store("list/#{slug}/threading/#{year}/#{month}/threads",       threads.to_yaml)
+      @S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threads.to_yaml)
       # track and rerender messages, threads, monthly archive, home page
     end
   end

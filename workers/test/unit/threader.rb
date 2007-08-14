@@ -34,7 +34,15 @@ class ThreaderTest < Test::Unit::TestCase
         @loaded = true
         OpenStruct.new :key => 'threader_queue/example/2008/08' ; end
       end
-    def load_cache key ; [] ; end
+    def load_cache key
+      if key =~ /message_cache$/
+        []
+      elsif key =~ /threadset$/
+        []
+      else
+        raise "fail"
+      end
+    end
   end
   def test_run_uncached
     t = TestRunUncachedThreader.new
@@ -43,7 +51,7 @@ class ThreaderTest < Test::Unit::TestCase
 
     t.bucket.expect(:keylist, ['listlibrary_archive', 'list/example/message/2008/08/']){ [] }
     t.S3Object.expect(:store, ['list/example/threading/2008/08/message_cache', [].to_yaml])
-    t.S3Object.expect(:store, ['list/example/threading/2008/08/threads',       [].to_yaml])
+    t.S3Object.expect(:store, ['list/example/threading/2008/08/threadset',     [].to_yaml])
     t.run
   end
 end
