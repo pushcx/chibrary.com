@@ -189,14 +189,14 @@ class ThreadSetTest < ThreadingTest
     # create a vaguely real-shaped message tree
     ts = ThreadSet.new
     subjects = %w{foo bar baz quux lamb all makes human continued world}
-    500.downto(0) do |i|
-      ts.add_message FakeMessage.new(i.to_s, subjects[rand(subjects.size)], [(rand(1000) / 4).to_s])
+    100.downto(0) do |i|
+      ts.add_message FakeMessage.new(i.to_s, subjects[rand(subjects.size)], [(rand(400) / 4).to_s])
     end
     # dump it to YAML and reload it
     ts = YAML::load(ts.to_yaml)
     # add a few more messages for luck
-    520.downto(501) do |i|
-      ts.add_message FakeMessage.new(i.to_s, subjects[rand(subjects.size)], [(rand(1000) / 4).to_s])
+    120.downto(101) do |i|
+      ts.add_message FakeMessage.new(i.to_s, subjects[rand(subjects.size)], [(rand(100) / 4).to_s])
     end
     #ts.dump $stdout
   end
