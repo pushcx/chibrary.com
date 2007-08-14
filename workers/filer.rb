@@ -106,7 +106,7 @@ class Filer
   def queue_threader
     @mailing_lists.each do |list, dates|
       dates.each do |year, month|
-        @threader_queue[ [list, year, month].join('/') ] = ''
+        @threader_queue[ "#{list}/#{year}/%02d" % month ] = ''
       end
     end
   end

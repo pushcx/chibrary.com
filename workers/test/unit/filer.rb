@@ -129,8 +129,8 @@ class FilerTest < Test::Unit::TestCase
     f = Filer.new(0, 0)
     f.mailing_lists = { 'example_list' => [[2007, 8], [2007, 9]] }
     f.threader_queue = Mock.new
-    f.threader_queue.expect(:'[]=', ['example_list/2007/8', ''])
-    f.threader_queue.expect(:'[]=', ['example_list/2007/9', ''])
+    f.threader_queue.expect(:'[]=', ['example_list/2007/08', ''])
+    f.threader_queue.expect(:'[]=', ['example_list/2007/09', ''])
     f.queue_threader
   end
 
