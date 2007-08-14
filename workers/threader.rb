@@ -1,19 +1,20 @@
 #!/usr/bin/ruby
 
 require 'aws'
+require 'threading'
 require 'yaml'
 
 class Threader
-  attr_accessor :S3Object
+  attr_accessor :bucket, :render_queue, :S3Object
 
   def initialize
-    @bucket   = AWS::S3::Bucket.find('listlibrary_cachedhash')
+    @bucket   = AWS::S3::Bucket
     @S3Object = AWS::S3::S3Object
     @render_queue = CachedHash.new("render_queue")
   end
 
   def get_job
-    @bucket.objects(:reload, :prefix => 'threader_queue/', :max_keys => 1).first
+    @bucket.find('listlibrary_cachedhash').objects(:reload, :prefix => 'threader_queue/', :max_keys => 1).first
   end
 
   def load_cache key
@@ -32,7 +33,7 @@ class Threader
       message_cache = load_cache "list/#{slug}/threading/#{year}/#{month}/message_cache"
       threads       = load_cache "list/#{slug}/threading/#{year}/#{month}/threads"
 
-      messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
+      messages      = @bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
 
       # if any messages were removed, rebuild for saftey over find and remove
       added = message_cache - messages
