@@ -4,6 +4,24 @@ require 'message'
 class MessageTest < Test::Unit::TestCase
   fixtures :message 
 
+  REPLY_SUBJECTS = ["Re: foo", "RE: foo", "RE[9]: foo", "re(9): foo", "re:foo", "re: Re: foo"]
+
+  def test_subject_is_reply?
+    REPLY_SUBJECTS.each do |subject|
+      assert_equal true, Message.subject_is_reply?(subject)
+    end
+    assert_equal false, Message.subject_is_reply?("foo")
+    assert_equal false, Message.subject_is_reply?("re-foo")
+  end
+
+  def test_normalize_subject
+    REPLY_SUBJECTS.each do |subject|
+      assert_equal 'foo', Message.normalize_subject(subject)
+    end
+    assert_equal 'foo', Message.normalize_subject("foo")
+    assert_equal 're-foo', Message.normalize_subject("re-foo")
+  end
+
   def test_good_message
     m = Message.new message(:good), 'test', '00000000'
     assert_equal m.class, Message
@@ -12,7 +30,7 @@ class MessageTest < Test::Unit::TestCase
     assert_equal 'Good message', m.subject
     assert_equal Time.gm(2006, 10, 24, 19, 47, 48), m.date
     assert m.date.utc?
-    assert_equal nil, m.in_reply_to
+    assert_equal ['grandparent@example.com', 'parent@example.com'], m.references
     assert_equal "goodid@example.com", m.message_id
   end
 
@@ -58,7 +76,7 @@ class MessageTest < Test::Unit::TestCase
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => m.from,
       :'x-amz-meta-subject'     => m.subject,
-      :'x-amz-meta-in_reply_to' => m.in_reply_to,
+      :'x-amz-meta-references'  => m.references.join(' '),
       :'x-amz-meta-date'        => m.date,
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
@@ -96,7 +114,7 @@ class MessageTest < Test::Unit::TestCase
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => 'alice@example.com',
       :'x-amz-meta-subject'     => 'Good message',
-      :'x-amz-meta-in_reply_to' => nil,
+      :'x-amz-meta-references'  => 'grandparent@example.com parent@example.com',
       :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
@@ -129,7 +147,7 @@ class MessageTest < Test::Unit::TestCase
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => 'alice@example.com',
       :'x-amz-meta-subject'     => 'Good message',
-      :'x-amz-meta-in_reply_to' => nil,
+      :'x-amz-meta-references'  => 'grandparent@example.com parent@example.com',
       :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'

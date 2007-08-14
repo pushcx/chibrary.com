@@ -6,8 +6,16 @@ require 'aws'
 
 class Message
   attr_reader   :headers, :message, :call_number, :source
-  attr_reader   :from, :date, :subject, :in_reply_to, :reply_to
+  attr_reader   :from, :date, :subject, :references, :reply_to
   attr_accessor :addresses, :overwrite, :S3Object
+
+  def id ; message_id ; end
+
+  RE_PATTERN = /\s*\[?Re([\[\(]?\d+[\]\)]?)?:\s*/i
+  class << self
+    def subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end
+    def normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
+  end
 
   def initialize message, source=nil, call_number=nil
     # call_number is loaded from message when possible
@@ -53,14 +61,16 @@ class Message
     @reply_to    = /^Reply-[Tt]o:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift if headers.match(/^Reply-[Tt]o/)
 
     begin
-      @in_reply_to = /^In-[Rr]eply-[Tt]o:\s*<?(.*)>?/.match(headers).captures.shift
+      in_reply_to = [/^In-[Rr]eply-[Tt]o:\s*<?(.*)>?/.match(headers).captures.shift]
     rescue
-      @in_reply_to = nil
-      # assume last reference is the parent and use it
-      if references = /^References:\s*(.*)/.match(headers)
-        @in_reply_to = references.captures.shift.split(/\s+/).last.match(/<?([^>]+)>?/).captures.shift
-      end
+      in_reply_to = []
     end
+    begin
+      @references  = /^References:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
+    rescue
+      @references  = []
+    end
+    @references += in_reply_to
   end
 
   def mailing_list
@@ -120,7 +130,7 @@ class Message
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => from,
       :'x-amz-meta-subject'     => subject,
-      :'x-amz-meta-in_reply_to' => in_reply_to,
+      :'x-amz-meta-references'  => references.join(' '),
       :'x-amz-meta-date'        => date,
       :'x-amz-meta-source'      => @source,
       :'x-amz-meta-call_number' => call_number

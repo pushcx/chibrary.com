@@ -36,4 +36,5 @@ Filer:
   * Protect against painful message_ids
   * sequence exhaustion
   * failure storage failure
+  * Protect against reusing sequence numbers
 bots to ask majordomo and other services about lists and subscribe
