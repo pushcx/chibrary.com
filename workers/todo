@@ -1,6 +1,5 @@
 honor X-No-Archive: yes headers
 threader:
-  * write it
   * test it
   * logging
 renderer:
