@@ -44,7 +44,7 @@ class Threader
         threads = ThreadSet.new
         added = messages
       end
-      puts "adding #{added.size}"
+      puts "#{messages.size} messages, #{message_cache.size} in cache, adding #{added.size}"
       i = 0
       added.each { |mail| threads.add_message Message.new(mail) ; i += 1 ; puts "#{i} " if i % 100 == 0 }
       puts "caching"
