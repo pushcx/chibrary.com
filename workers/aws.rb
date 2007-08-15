@@ -14,7 +14,7 @@ class AWS::S3::Bucket
     keys = []
     loop do
       list = begin
-        get(path(bucket, { :prefix => prefix, :marker => last})).parsed['contents'].collect { |o| o['key'] }
+        get(path(bucket, { :prefix => prefix, :marker => last})).parsed['contents'].collect { |o| o['key'].to_s }
       rescue NoMethodError
         []
       end
