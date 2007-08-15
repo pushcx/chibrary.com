@@ -1,6 +1,8 @@
 RewriteEngine On
 RewriteBase /
+
+RewriteRule \.svn / [F,L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule (.*) http://s.listlibrary.net/$1 [L,R=301]
 
-RewriteRule \.svn / [F]
