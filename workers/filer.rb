@@ -24,6 +24,7 @@ class Filer
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
+    raise "panic if server id can't be found"
     @server = (server or CachedHash.new("server")[`hostname`].to_i)
     @sequences = CachedHash.new("sequence")
     @sequence = (sequence or @sequences["#{@server}/#{Process.pid}"].to_i)
