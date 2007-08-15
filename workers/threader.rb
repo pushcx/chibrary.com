@@ -29,18 +29,24 @@ class Threader
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      puts "loading caches"
+      puts "loading message cache"
       message_cache = (load_cache("list/#{slug}/threading/#{year}/#{month}/message_cache") or [])
-      threads       = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
-
       puts "loading message list"
-      messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/")
+      messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
+
+      if message_cache == messages
+        puts "cache is up-to-date, done"
+        next
+      end
+
+      puts "loading thread cache"
+      threads       = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
       if (message_cache - messages).empty?
         added = messages - message_cache
       else
-        puts "rebuilding!"
+        puts "messages removed, rebuilding"
         threads = ThreadSet.new
         added = messages
       end
