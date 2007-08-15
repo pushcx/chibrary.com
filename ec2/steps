@@ -18,21 +18,9 @@ vi /etc/ssh/sshd_config:
 vi /etc/rc.local:
   ntpdate tick.ucla.edu
   hostname ec2-01 # or use some net service
-  /etc/rc.root_cert
-
-vi /etc/rc.root_cert:
-  if [ ! -d /root/.ssh ] ; then
-          mkdir -p /root/.ssh
-          chmod 700 /root/.ssh
-  fi
-  # Fetch public key using HTTP
-  curl http://169.254.169.254/2007-03-01//meta-data/public-keys/0/openssh-key > /tmp/my-key
-  if [ $? -eq 0 ] ; then
-          cat /tmp/my-key >> /root/.ssh/authorized_keys
-          chmod 600 /root/.ssh/authorized_keys
-          rm /tmp/my-key
-  fi
-chmod +x /etc/rc.root_cert
+  /usr/local/sbin/get-credentials.sh
+  # log somewhere that the instance is up?
+  # checkout worker code?
 
 exit
 umount /mnt
