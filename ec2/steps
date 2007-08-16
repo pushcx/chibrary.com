@@ -8,7 +8,7 @@ passwd
 aptitude update ; aptitude upgrade
 aptitude purge ubuntu-minimal wpasupplicant console-terminus console-tools console-setup python-common python2.5 python # alsa, sound, perl, others
 aptitude install openssh-server subversion ruby irb rubygems libopenssl-ruby libc6-xen
-gem install -y aws-s3 haml hoe rake redgreen tidy
+gem install -y aws-s3 haml hoe rake redgreen sqs tidy
 # run 'date', sanity check it's UTC
 vi /etc/ssh/sshd_config:
   PermitRootLogin without-password
