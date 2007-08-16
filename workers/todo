@@ -1,27 +1,30 @@
-honor X-No-Archive: yes headers
-threader:
-  * test it
-  * logging
 renderer:
   * render messages
   * render threads
+  * per-user archives
+  * google analytics
+  * honor X-No-Archive: yes headers
   * protect mail addresses
   * linkify urls
   * monthly archives listing threads
   * mailing list home pages
   * logging
-  * per-user archives?
   * js links to flag spam
 about page:
   * subscription instructions
   * 'this is a barking stapler project'
   * dmca agent information
+threader:
+  * test it
+  * add on-disk caching for longer-lived s3 workers
+  * logging
 Fetcher:
   * logging
-  * flag messages >72h old
-scraper:
+  * fail messages >72h old
+scrapers:
   * mbox
   * maildir
+  * ask majordomo &c. about lists and subscribe
   * other sites
 subscriber:
   * get it under test
@@ -35,5 +38,4 @@ Filer:
   * Protect against painful message_ids
   * sequence exhaustion
   * failure storage failure
-  * Protect against reusing sequence numbers
-bots to ask majordomo and other services about lists and subscribe
+  * test for reuse of sequence numbers
