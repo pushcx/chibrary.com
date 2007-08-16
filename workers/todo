@@ -1,23 +1,25 @@
 renderer:
-  * render messages
   * render threads
-  * per-user archives
-  * google analytics
-  * honor X-No-Archive: yes headers
   * protect mail addresses
-  * linkify urls
+  * honor X-No-Archive: yes headers
+  * per-user archives
   * monthly archives listing threads
   * mailing list home pages
+  * google analytics
+  * linkify urls
   * logging
+  * in-page links to parent scroll and add in-page links back down to child above and below message
   * js links to flag spam
+  * toggleable floating thread overview that scrolls with page, similar to mutt view
 about page:
   * subscription instructions
   * 'this is a barking stapler project'
   * dmca agent information
 threader:
+  * logging
   * test it
   * add on-disk caching for longer-lived s3 workers
-  * logging
+  * thread headerless messages by quoting as well as subject
 Fetcher:
   * logging
   * fail messages >72h old
