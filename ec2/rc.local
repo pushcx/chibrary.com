@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+dhclient
+
+ntpdate tick.ucla.edu
+/usr/local/sbin/get-credentials.sh
+
+LAUNCH_INDEX=`curl --retry 3 --retry-delay 0 --silent --fail http://169.254.169.254/2007-03-01/meta-data/ami-launch-index`
+curl --retry 3 --retry-delay 0 --silent --fail http://169.254.169.254/2007-03-01/user-data -o /tmp/user-data
+if [ -e /tmp/user-data ] ; then
+  HOSTNAME=`cut -d ';' -f 2 /tmp/user-data | cut -d '|' -f $LAUNCH_INDEX`
+  echo $HOSTNAME > /etc/hostname
+  hostname $HOSTNAME
+  curl --retry 3 --retry-delay 0 --silent --fail `cut -d ';' -f 1 /tmp/user-data`?hostname=$HOSTNAME -o /tmp/startup
+  chmod +x /tmp/startup
+  /tmp/startup & # amp it off to let the boot process finish
+fi

@@ -7,26 +7,19 @@ sudo chroot /mnt
 passwd
 aptitude update ; aptitude upgrade
 aptitude purge ubuntu-minimal wpasupplicant console-terminus console-tools console-setup python-common python2.5 python # alsa, sound, perl, others
-aptitude install openssh-server subversion ruby irb rubygems
+aptitude install openssh-server subversion ruby irb rubygems libopenssl-ruby libc6-xen
 gem install -y aws-s3 haml hoe rake redgreen tidy
 # run 'date', sanity check it's UTC
-
 vi /etc/ssh/sshd_config:
   PermitRootLogin without-password
   UseDNS no
-
-vi /etc/rc.local:
-  ntpdate tick.ucla.edu
-  hostname ec2-01 # or use some net service
-  /usr/local/sbin/get-credentials.sh
-  # log somewhere that the instance is up?
-  # checkout worker code?
-
+# add rc.local
 exit
 umount /mnt
 
-ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
-ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
+# bundle and upload the AMI
+time ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
+time ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
 ec2-register listlibrary_ec2/ubuntu.fs.manifest.xml
 
 # Notes on installing tools on Ubuntu from
