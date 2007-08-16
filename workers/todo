@@ -20,6 +20,7 @@ threader:
   * test it
   * add on-disk caching for longer-lived s3 workers
   * thread headerless messages by quoting as well as subject
+  * detect bad thread creation in replies with no quoting & new subject
 Fetcher:
   * logging
   * fail messages >72h old

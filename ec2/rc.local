@@ -1,17 +1,22 @@
 #!/bin/sh -e
 
+# To keep the fs small it has very little free space, so move into the
+# ephemeral storage immediately.
+cd /m
+mkdir -p /m/tmp
+
 dhclient
 
 ntpdate tick.ucla.edu
 /usr/local/sbin/get-credentials.sh
 
 LAUNCH_INDEX=`curl --retry 3 --retry-delay 0 --silent --fail http://169.254.169.254/2007-03-01/meta-data/ami-launch-index`
-curl --retry 3 --retry-delay 0 --silent --fail http://169.254.169.254/2007-03-01/user-data -o /tmp/user-data
-if [ -e /tmp/user-data ] ; then
-  HOSTNAME=`cut -d ';' -f 2 /tmp/user-data | cut -d '|' -f $LAUNCH_INDEX`
+curl --retry 3 --retry-delay 0 --silent --fail http://169.254.169.254/2007-03-01/user-data -o /m/tmp/user-data
+if [ -e /m/tmp/user-data ] ; then
+  HOSTNAME=`cut -d ';' -f 2 /m/tmp/user-data | cut -d '|' -f $LAUNCH_INDEX`
   echo $HOSTNAME > /etc/hostname
   hostname $HOSTNAME
-  curl --retry 3 --retry-delay 0 --silent --fail `cut -d ';' -f 1 /tmp/user-data`?hostname=$HOSTNAME -o /tmp/startup
-  chmod +x /tmp/startup
-  /tmp/startup & # amp it off to let the boot process finish
+  curl --retry 3 --retry-delay 0 --silent --fail `cut -d ';' -f 1 /m/tmp/user-data`?hostname=$HOSTNAME -o /m/tmp/startup
+  chmod +x /m/tmp/startup
+  /m/tmp/startup & # amp it off to let the boot process finish
 fi

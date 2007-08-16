@@ -14,10 +14,16 @@ vi /etc/ssh/sshd_config:
   PermitRootLogin without-password
   UseDNS no
 # add rc.local
+rm -r /opt /srv /home
+mkdir /m
+# add fstab
 exit
+df -h # note size
 umount /mnt
 
 # bundle and upload the AMI
+e2fsck -f ubuntu.fs
+resize2fs -p ubuntu.fs 1234M # from df -h
 time ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
 time ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
 ec2-register listlibrary_ec2/ubuntu.fs.manifest.xml

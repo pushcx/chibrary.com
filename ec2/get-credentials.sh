@@ -4,7 +4,7 @@
 # root's public keys
 
 PUB_KEY_URI=http://169.254.169.254/1.0/meta-data/public-keys/0/openssh-key
-PUB_KEY_FROM_HTTP=/tmp/openssh_id.pub
+PUB_KEY_FROM_HTTP=/m/tmp/openssh_id.pub
 ROOT_AUTHORIZED_KEYS=/root/.ssh/authorized_keys
 
 # We need somewhere to put the keys.
