@@ -1,8 +1,8 @@
 require 'rubygems'
+require 'mocha'
+require 'pp'
 require 'redgreen'
 require 'yaml'
-require 'pp'
-require 'ostruct'
 
 # path magic from p152 of Programming Ruby
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
@@ -10,27 +10,6 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 # Don't make a real AWS S3 connection
 AWS_connection = true
 require 'aws'
-
-# Mock the S3Object so tests run offline
-require 'message'
-require 'test/mock'
-
-class CachedHash
-  alias old_initialize initialize
-  def initialize *args
-    old_initialize *args
-    @S3Object = Mock.new
-  end
-end
-
-class Message 
-  alias old_initialize initialize
-  def initialize *args
-    old_initialize *args
-    @S3Object = Mock.new
-    @addresses = Mock.new
-  end
-end
 
 class Test::Unit::TestCase
   @@fixtures = {}

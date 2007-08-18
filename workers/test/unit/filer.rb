@@ -29,6 +29,12 @@ end
 class FilerTest < Test::Unit::TestCase
   fixtures :message
 
+  def setup
+    # Many tests would otherwise cause the Filer to print its normal output
+    $stdout.expects(:puts).at_least(0)
+  end
+
+
   def test_acquire_unsubclassed
     f = Filer.new(0, 0)
     assert_raises(RuntimeError, /subclass/) do
@@ -36,101 +42,59 @@ class FilerTest < Test::Unit::TestCase
     end
   end
 
-  def test_new_message
-    f = Filer.new(0, 0)
-    # move the initialize out of the way
-    Message.class_eval do
-      alias filer_initialize initialize
-      def initialize *args ; end
-    end
-    begin
-      m = f.new_message "foo"
-      assert m.instance_of?(Message)
-    ensure
-      # don't break every later test using Message
-      Message.class_eval do
-        def initialize *args
-          filer_initialize *args
-        end
-      end
-    end
-  end
-
-  class TestStoreFiler < Filer
-    def new_message mail
-      # This is a bit hackish and brittle, but the test runs
-      m = Mock.new
-      m.expect(:store,        []){ true }
-      m.expect(:mailing_list, []){ 'example_list' }
-      m.expect(:mailing_list, []){ 'example_list' }
-      m.expect(:mailing_list, []){ 'example_list' }
-      m.expect(:date,         []){ OpenStruct.new 'year'  => 2006 }
-      m.expect(:date,         []){ OpenStruct.new 'month' => 10 }
-      m
-    end
-  end
   def test_store
-    f = TestStoreFiler.new(0, 0)
-    f.print_status = false
+    message = mock :store => true, :filename => "list/example_list/message/2006/10/goodid@example.com"
+    message.expects(:mailing_list).at_least_once.returns("example_list")
+    message.expects(:date).times(2).returns( mock(:year => 2006, :month => 10) )
+    Message.expects(:new).returns(message)
+
+    f = Filer.new(0, 0)
     f.store message(:good)
     assert_equal 1, f.message_count
     assert_equal({ 'example_list' => [[2006, 10]] }, f.mailing_lists)
   end
 
-  class TestStoreFailsFiler < Filer
-    def new_message mail
-      # This is a bit hackish and brittle, but the test runs
-      m = Mock.new
-      m.expect(:store,        []){ raise "Something bad happens" }
-      m.expect(:message,      []){ 'message' }
-      m
-    end
-  end
   def test_store_fails
-    f = TestStoreFailsFiler.new(0, 0)
-    f.print_status = false
-    f.S3Object = Mock.new
-    f.S3Object.expect(:store)
+    message = mock
+    message.expects(:store).raises(RuntimeError, "something bad happened")
+    message.expects(:message).returns(message(:good))
+    Message.expects(:new).returns(message)
+    AWS::S3::S3Object.expects(:store)
+
+    f = Filer.new(0, 0)
     f.store message(:good)
     assert_equal 1, f.message_count
     assert_equal({}, f.mailing_lists)
   end
 
   class TestRunFiler < Filer
-    attr_reader :test_run_called
-
-    alias test_run_initialize initialize
-    def initialize *args
-      @test_run_called = []
-      test_run_initialize *args
-    end
-
-    def acquire
-      @test_run_called << :acquire
-      yield "Test message body"
-    end
-
-    # override store/queue_threader to skip mocking it out
-    def store     mail ; @test_run_called << :store          ; true ; end
-    def queue_threader ; @test_run_called << :queue_threader ; true ; end
-
-    def setup    ; @test_run_called << :setup    ; end
-    def teardown ; @test_run_called << :teardown ; end
+    def store message ; @sequence += 1 ; end
   end
   def test_run
-    f = TestRunFiler.new(0, 0)
-    f.print_status = false
-    f.sequences.S3Object.expect(:store){ 0 }
+    # no messages
+    f = Filer.new(0, 0)
+    f.expects(:setup)
+    f.expects(:acquire)
+    f.expects(:queue_threader)
+    f.expects(:teardown)
+    f.sequences.expects(:[]=).with("0/#{Process.pid}", 0)
     f.run
-    assert_equal [:setup, :acquire, :store, :queue_threader, :teardown], f.test_run_called
+
+    f = TestRunFiler.new(0, 0)
+    f.expects(:setup)
+    f.expects(:acquire).yields("message")
+    #f.expects(:store).with("message")
+    f.expects(:queue_threader)
+    f.expects(:teardown)
+    f.sequences.expects(:[]=).with("0/#{Process.pid}", 1)
+    f.run
   end
 
   def test_queue_threader
     f = Filer.new(0, 0)
     f.mailing_lists = { 'example_list' => [[2007, 8], [2007, 9]] }
-    f.threader_queue = Mock.new
-    f.threader_queue.expect(:'[]=', ['example_list/2007/08', ''])
-    f.threader_queue.expect(:'[]=', ['example_list/2007/09', ''])
+    f.threader_queue.expects(:'[]=').with('example_list/2007/08', '')
+    f.threader_queue.expects(:'[]=').with('example_list/2007/09', '')
     f.queue_threader
   end
 

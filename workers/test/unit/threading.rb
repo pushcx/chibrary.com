@@ -132,10 +132,14 @@ class ContainerTest < ThreadingTest
     c = Container.new '1'
     assert_equal nil, c.is_reply?
 
-    c.message = OpenStruct.new 'subject' => 'foo'
+    message = mock()
+    message.expects(:subject).returns('foo').at_least_once
+    c.message = message
     assert_equal false, c.is_reply?
 
-    c.message = OpenStruct.new 'subject' => 're: foo'
+    message = mock()
+    message.expects(:subject).returns('re: foo').at_least_once
+    c.message = message
     assert_equal true, c.is_reply?
   end
 

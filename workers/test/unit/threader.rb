@@ -7,51 +7,36 @@ class ThreaderTest < Test::Unit::TestCase
 
   def test_get_job
     t = Threader.new
-    t.bucket = Mock.new
 
-    t.bucket.expect(:find, ['listlibrary_cachedhash']) { OpenStruct.new :objects => ['threader_queue/example_list/2008/08'] }
+    AWS::S3::Bucket.expects(:objects).returns(['threader_queue/example_list/2008/08'])
     assert_equal 'threader_queue/example_list/2008/08', t.get_job
-    t.bucket.expect(:find, ['listlibrary_cachedhash']) { OpenStruct.new :objects => [] }
+
+    AWS::S3::Bucket.expects(:objects).returns([])
     assert_equal nil, t.get_job
   end
 
   def test_load_cache
     t = Threader.new
-    t.S3Object = Mock.new
 
-    t.S3Object.expect(:find, ['key']){ OpenStruct.new :value => '[1, 2]' }
+    AWS::S3::S3Object.expects(:value).with('key', 'listlibrary_archive').returns('[1, 2]')
     assert_equal [1, 2], t.load_cache('key')
 
-    t.S3Object.expect(:find, ['key']){ raise AWS::S3::NoSuchKey.new(nil, nil) }
-    assert_equal [], t.load_cache('key')
+    AWS::S3::S3Object.expects(:value).with('key', 'listlibrary_archive').raises(RuntimeError)
+    assert_equal nil, t.load_cache('key')
   end
 
-  class TestRunUncachedThreader < Threader
-    def get_job ;
-      if @loaded
-        nil
-      else
-        @loaded = true
-        OpenStruct.new :key => 'threader_queue/example/2008/08' ; end
-      end
-    def load_cache key
-      if key =~ /message_cache$/
-        []
-      elsif key =~ /threadset$/
-        []
-      else
-        raise "fail"
-      end
-    end
-  end
   def test_run_uncached
-    t = TestRunUncachedThreader.new
-    t.bucket   = Mock.new
-    t.S3Object = Mock.new
+    $stdout.expects(:puts).at_least_once
+    t = Threader.new
+    job = mock(:delete => nil)
+    job.expects(:key).returns('threader_queue/example/2008/08').at_least_once
+    t.expects(:get_job).returns(job, nil).at_least_once
+    t.expects(:load_cache).returns([])
 
-    t.bucket.expect(:keylist, ['listlibrary_archive', 'list/example/message/2008/08/']){ [] }
-    t.S3Object.expect(:store, ['list/example/threading/2008/08/message_cache', [].to_yaml])
-    t.S3Object.expect(:store, ['list/example/threading/2008/08/threadset',     [].to_yaml])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+    # no caching as it won't think anything changed
+    #AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/message_cache', [].to_yaml)
+    #AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/threadset',     [].to_yaml)
     t.run
   end
 end

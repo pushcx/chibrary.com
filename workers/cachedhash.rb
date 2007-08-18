@@ -1,7 +1,7 @@
 require 'aws'
 
 class CachedHash
-  attr_reader   :prefix
+  attr_reader :prefix
 
   @@cache = {}
 
@@ -15,7 +15,7 @@ class CachedHash
 
     @@cache[@prefix][key] = begin
         AWS::S3::S3Object.find("#{@prefix}/#{key}", "listlibrary_cachedhash").value.chomp
-      rescue AWS::S3::NoSuchKey
+      rescue
         nil
     end
   end

@@ -59,20 +59,18 @@ class MessageTest < Test::Unit::TestCase
 
   def test_no_list
     m = Message.new message(:no_list), 'test', '00000000'
-    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
+    m.addresses.expects(:[]).with('bob@example.com').returns(nil)
     assert_equal '_listlibrary_no_list', m.mailing_list
   end
 
   def test_no_list_and_no_id
     m = Message.new message(:no_list_and_no_id), 'test', '00000000'
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
-    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
+    m.addresses.expects(:[]).with('bob@example.com').at_least_once.returns(nil)
     assert_equal '_listlibrary_no_list', m.mailing_list
     key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
-    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
-    m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ false }
-    m.addresses.expect(:'[]', ['bob@example.com']){ nil }
-    m.S3Object.expect(:store, [key, m.message, 'listlibrary_archive', {
+    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
+    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => m.from,
       :'x-amz-meta-subject'     => m.subject,
@@ -80,7 +78,7 @@ class MessageTest < Test::Unit::TestCase
       :'x-amz-meta-date'        => m.date,
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
-    }]) {}
+    })
     m.store
   end
 
@@ -108,9 +106,9 @@ class MessageTest < Test::Unit::TestCase
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
     expect_example_list m
-    m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ false }
+    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
     expect_example_list m
-    m.S3Object.expect(:store, [key, m.message, 'listlibrary_archive', {
+    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => 'alice@example.com',
       :'x-amz-meta-subject'     => 'Good message',
@@ -118,7 +116,7 @@ class MessageTest < Test::Unit::TestCase
       :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
-    }]) {}
+    })
     m.store
   end
 
@@ -136,14 +134,14 @@ class MessageTest < Test::Unit::TestCase
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
     expect_example_list m
-    m.S3Object.expect(:exists?, [key, 'listlibrary_archive']){ true }
+    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(true)
     expect_example_list m
-    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive list/example/message/2006/10/goodid@example.com") do
+    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{key}") do
       m.store
     end
     m.overwrite = true
     expect_example_list m
-    m.S3Object.expect(:store, [key, m.message, 'listlibrary_archive', {
+    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-from'        => 'alice@example.com',
       :'x-amz-meta-subject'     => 'Good message',
@@ -151,13 +149,13 @@ class MessageTest < Test::Unit::TestCase
       :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
-    }]) {}
+    })
     m.store
   end
 
   private
 
   def expect_example_list m
-    m.addresses.expect(:'[]', ['example@list.example.com']){ 'example' }
+    m.addresses.expects(:[]).with('example@list.example.com').returns('example')
   end
 end

@@ -4,19 +4,19 @@ require 'fetcher'
 class FetcherTest < Test::Unit::TestCase
 
   def test_setup
+    Net::POP3.expects(:new).returns(mock(
+      :open_timeout= => nil,
+      :start => nil,
+      :n_mails => 0
+    ))
+    $stdout.expects(:puts)
     f = Fetcher.new(0, 0)
-    f.print_status = false
-    f.POP3 = Mock.new
-    f.POP3.expect(:new){ Mock.new true }
     f.setup
-    assert !f.pop.called.select {|call| call if call[:method] == :start }.empty?
   end
 
   def test_setup_server_down
+    Net::POP3.expects(:new).raises(Timeout::Error, "execution expired")
     f = Fetcher.new(0, 0)
-    f.print_status = false
-    f.POP3 = Mock.new
-    f.POP3.expect(:new){ raise Timeout::Error.new("execution expired") }
     assert_raises(Timeout::Error, "execution expired") do
       f.setup
     end
@@ -24,17 +24,13 @@ class FetcherTest < Test::Unit::TestCase
 
   def test_teardown
     f = Fetcher.new(0, 0)
-    f.print_status = false
-    f.pop = Mock.new
-    f.pop.expect(:finish, [])
+    nil.expects(:finish)
     f.teardown
   end
 
   def test_acquire
     f = Fetcher.new(0, 0)
-    f.print_status = false
-    f.pop = Mock.new
-    f.pop.expect(:delete_all, []) { [OpenStruct.new('mail' => 'Test message')] }
+    nil.expects(:delete_all).yields(mock(:mail => "Test message"))
     f.acquire { |mail| assert_equal 'Test message', mail }
   end
 

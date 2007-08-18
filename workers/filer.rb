@@ -20,7 +20,7 @@ end
 
 class Filer
   attr_reader :server, :sequence, :message_count
-  attr_accessor :mailing_lists, :print_status, :S3Object, :sequences, :threader_queue
+  attr_accessor :mailing_lists, :sequences, :threader_queue
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
@@ -35,9 +35,6 @@ class Filer
     @mailing_lists = {}
     # count the number of messages stored
     @message_count = 0
-    @print_status = true
-
-    @S3Object = AWS::S3::S3Object
   end
 
   def call_number
@@ -57,26 +54,21 @@ class Filer
   def release  ; end
   def source   ; 'filer' ; end
 
-  # This line is in a separate method so tests can subclass and override
-  def new_message mail
-    Message.new(mail, source, call_number)
-  end
-
   def store mail
     return false if mail.length >= (256 * 1024)
 
     @message_count += 1
     begin
-      message = new_message mail
+      message = Message.new mail, source, call_number
       message.store
       unless message.mailing_list.match /^_/
         @mailing_lists[message.mailing_list] ||= []
         @mailing_lists[message.mailing_list] << [message.date.year, message.date.month]
       end
-      puts "#{@message_count} #{call_number} stored: #{message.filename}" if @print_status
+      $stdout.puts "#{@message_count} #{call_number} stored: #{message.filename}"
     rescue Exception => e
-      puts "#{@message_count} #{call_number} FAILED: #{e.message}" if @print_status
-      @S3Object.store(
+      $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
+      AWS::S3::S3Object.store(
         "filer_failure/#{call_number}",
         {
           :exception => e.class.to_s,

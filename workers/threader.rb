@@ -18,42 +18,42 @@ class Threader
   def load_cache key
     begin
       YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
-    rescue AWS::S3::NoSuchKey
+    rescue
       nil
     end
   end
 
   def run
     while job = get_job
-      puts job.key + " " + "*" * 50
+      $stdout.puts job.key + " " + "*" * 50
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      puts "loading message cache"
+      $stdout.puts "loading message cache"
       message_cache = (load_cache("list/#{slug}/threading/#{year}/#{month}/message_cache") or [])
-      puts "loading message list"
+      $stdout.puts "loading message list"
       messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       if message_cache == messages
-        puts "cache is up-to-date, done"
+        $stdout.puts "cache is up-to-date, done"
         next
       end
 
-      puts "loading thread cache"
+      $stdout.puts "loading thread cache"
       threads       = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
       if (message_cache - messages).empty?
         added = messages - message_cache
       else
-        puts "messages removed, rebuilding"
+        $stdout.puts "messages removed, rebuilding"
         threads = ThreadSet.new
         added = messages
       end
-      puts "#{messages.size} messages, #{message_cache.size} in cache, adding #{added.size}"
+      $stdout.puts "#{messages.size} messages, #{message_cache.size} in cache, adding #{added.size}"
       i = 0
-      added.each { |mail| threads.add_message Message.new(mail) ; i += 1 ; puts "#{i} " if i % 100 == 0 }
-      puts "caching"
+      added.each { |mail| threads.add_message Message.new(mail) ; i += 1 ; $stdout.puts "#{i} " if i % 100 == 0 }
+      $stdout.puts "caching"
       unless added.empty?
         AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", messages.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
         AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threads.to_yaml,  'listlibrary_archive', :content_type => 'text/plain')

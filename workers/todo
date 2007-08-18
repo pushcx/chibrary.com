@@ -1,10 +1,12 @@
-fix test suite!
 renderer:
   * render threads
   * protect mail addresses
   * honor X-No-Archive: yes headers
   * per-user archives
   * monthly archives listing threads
+  * check ETag header
+  * check Expires header
+  * 1h: research other caching mechanisms
   * mailing list home pages
   * google analytics
   * linkify urls
@@ -44,3 +46,4 @@ Filer:
   * failure storage failure
   * test for reuse of sequence numbers
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
+  * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
