@@ -5,6 +5,10 @@ require 'message'
 class ThreaderTest < Test::Unit::TestCase
   fixtures :message
 
+  def setup
+    $stdout.expects(:puts).at_least(0)
+  end
+
   def test_get_job
     t = Threader.new
 
@@ -25,18 +29,74 @@ class ThreaderTest < Test::Unit::TestCase
     assert_equal nil, t.load_cache('key')
   end
 
-  def test_run_uncached
-    $stdout.expects(:puts).at_least_once
+  def test_run_empty
+    t = new_threader
+
+    # no messages in cache or bucket
+    t.expects(:load_cache).returns([])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+
+    # threader should exit cleanly
+    t.run
+  end
+
+  def test_run_removed
+    t = new_threader
+
+    # one message in cache, none in list
+    t.expects(:load_cache).times(2).returns(["goodid@example.com"], ThreadSet.new)
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+
+    # should tell renderer to rebuild the entire month
+    t.render_queue.expects(:[]=).with("example/threads/2008/08", "") 
+    t.run
+  end
+
+  def test_run_add_message
+    # mock message 2, the added message
+    message = mock()
+    Message.expects(:new).with("2@example.com").returns(message)
+
+    # message 1 in cache, 1 and 2 in list
+    threadset = mock
+    threadset.expects(:add_message).with(message)
+    threadset.expects(:thread_for).with(message).returns(mock(:first => mock(:call_number => '00000000')))
+
+    t = new_threader
+    t.expects(:load_cache).times(2).returns(["1@example.com"], threadset)
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
+
+    # threader should queue a render for the thread, then cache
+    t.render_queue.expects(:[]=).with('example/thread/00000000', '')
+    AWS::S3::S3Object.expects(:store)
+    AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/message_cache', ["1@example.com", "2@example.com"].to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    t.run
+  end
+
+  def test_run_multiple_jobs
+    t = Threader.new
+
+    # two empty jobs
+    job1 = mock(:delete => nil)
+    job1.expects(:key).returns('threader_queue/example/2008/07').at_least_once
+    t.expects(:load_cache).returns([])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/07/').returns([])
+
+    job2 = mock(:delete => nil)
+    job2.expects(:key).returns('threader_queue/example/2008/08').at_least_once
+    t.expects(:load_cache).returns([])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+
+    t.expects(:get_job).returns(job1, job2, nil).times(3)
+    t.run
+  end
+
+  private
+  def new_threader
     t = Threader.new
     job = mock(:delete => nil)
     job.expects(:key).returns('threader_queue/example/2008/08').at_least_once
     t.expects(:get_job).returns(job, nil).at_least_once
-    t.expects(:load_cache).returns([])
-
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
-    # no caching as it won't think anything changed
-    #AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/message_cache', [].to_yaml)
-    #AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/threadset',     [].to_yaml)
-    t.run
+    t
   end
 end

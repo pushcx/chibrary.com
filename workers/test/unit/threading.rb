@@ -184,8 +184,8 @@ end
 
 class ThreadSetTest < ThreadingTest
   class FakeMessage
-    attr_accessor :id, :subject, :references
-    def initialize id, subject, references ; @id = id ; @subject = subject ; @references = references ; end
+    attr_accessor :message_id, :subject, :references
+    def initialize message_id, subject, references ; @message_id = message_id ; @subject = subject ; @references = references ; end
     def date ; Time.now ; end
   end
 

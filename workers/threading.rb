@@ -14,6 +14,8 @@
 ## means we've seen a reference to the message but haven't seen the
 ## message itself (yet).
 
+require 'message'
+
 class Module
   def bool_reader *args
     args.each { |sym| class_eval %{ def #{sym}?; @#{sym}; end } }
@@ -250,7 +252,7 @@ class ThreadSet
 
   def contains_id? id; @messages.member?(id) && !@messages[id].empty?; end
   def thread_for m
-    (c = @messages[m.id]) && c.root.thread
+    (c = @messages[m.message_id]) && c.root.thread
   end
 
   def delete_cruft
@@ -267,13 +269,11 @@ class ThreadSet
       f.puts "** subject: #{s}"
       t.dump f
     end
+    nil
   end
 
   def link p, c, overwrite=false
-    if p == c || p.descendant_of?(c) || c.descendant_of?(p) # would create a loop
-#      puts "*** linking parent #{p} and child #{c} would create a loop"
-      return
-    end
+    return if p == c || p.descendant_of?(c) || c.descendant_of?(p) # would create a loop
 
     if c.parent.nil? || overwrite
       c.parent.children.delete c if overwrite && c.parent
@@ -309,7 +309,7 @@ class ThreadSet
 
   ## the heart of the threading code
   def add_message message
-    el = @messages[message.id]
+    el = @messages[message.message_id]
     return if el.message # we've seen it before
 
     el.message = message

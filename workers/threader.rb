@@ -25,40 +25,50 @@ class Threader
 
   def run
     while job = get_job
-      $stdout.puts job.key + " " + "*" * 50
+      $stdout.puts job.key
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      $stdout.puts "loading message cache"
       message_cache = (load_cache("list/#{slug}/threading/#{year}/#{month}/message_cache") or [])
-      $stdout.puts "loading message list"
-      messages      = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
+      message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
-      if message_cache == messages
-        $stdout.puts "cache is up-to-date, done"
-        next
-      end
+      next if message_cache == message_list
 
-      $stdout.puts "loading thread cache"
-      threads       = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
+      threadset     = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
-      if (message_cache - messages).empty?
-        added = messages - message_cache
+      removed = (message_cache - message_list)
+      if !removed.empty?
+        threadset = ThreadSet.new
+        added = message_list
       else
-        $stdout.puts "messages removed, rebuilding"
-        threads = ThreadSet.new
-        added = messages
+        added = message_list - message_cache
+        $stdout.puts "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
+        next if added.empty?
       end
-      $stdout.puts "#{messages.size} messages, #{message_cache.size} in cache, adding #{added.size}"
-      i = 0
-      added.each { |mail| threads.add_message Message.new(mail) ; i += 1 ; $stdout.puts "#{i} " if i % 100 == 0 }
-      $stdout.puts "caching"
+
+      # add messages
+      messages = []
+      added.each do |mail|
+        messages << Message.new(mail)
+        threadset.add_message messages.last
+      end
+
+      # queue renderer
+      if !removed.empty?
+        # possibly remove threads
+        @render_queue["#{slug}/threads/#{year}/#{month}"] = ''
+      else
+        # or just render all the threads added to
+        messages.collect { |m| threadset.thread_for m }.uniq.each do |thread|
+          @render_queue["#{slug}/thread/#{thread.first.call_number}"] = ''
+        end
+      end
+
       unless added.empty?
-        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", messages.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
-        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threads.to_yaml,  'listlibrary_archive', :content_type => 'text/plain')
+        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", message_list.sort.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
+        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threadset.to_yaml,  'listlibrary_archive', :content_type => 'text/plain')
       end
-      # track and rerender messages, threads, monthly archive, home page
     end
   end
 end

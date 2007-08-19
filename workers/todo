@@ -20,7 +20,6 @@ about page:
   * dmca agent information
 threader:
   * logging
-  * test it
   * add on-disk caching for longer-lived s3 workers
   * thread headerless messages by quoting as well as subject
   * detect bad thread creation in replies with no quoting & new subject
@@ -47,3 +46,4 @@ Filer:
   * test for reuse of sequence numbers
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
+  * spamcheck
