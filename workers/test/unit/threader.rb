@@ -48,7 +48,7 @@ class ThreaderTest < Test::Unit::TestCase
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
 
     # should tell renderer to rebuild the entire month
-    t.render_queue.expects(:[]=).with("example/threads/2008/08", "") 
+    t.render_queue.expects(:[]=).with("example/2008/08", "") 
     t.run
   end
 
@@ -67,7 +67,7 @@ class ThreaderTest < Test::Unit::TestCase
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
 
     # threader should queue a render for the thread, then cache
-    t.render_queue.expects(:[]=).with('example/thread/00000000', '')
+    t.render_queue.expects(:[]=).with('example/2008/08/00000000', '')
     AWS::S3::S3Object.expects(:store)
     AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/message_cache', ["1@example.com", "2@example.com"].to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
     t.run

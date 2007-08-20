@@ -57,11 +57,11 @@ class Threader
       # queue renderer
       if !removed.empty?
         # possibly remove threads
-        @render_queue["#{slug}/threads/#{year}/#{month}"] = ''
+        @render_queue["#{slug}/#{year}/#{month}"] = ''
       else
         # or just render all the threads added to
         messages.collect { |m| threadset.thread_for m }.uniq.each do |thread|
-          @render_queue["#{slug}/thread/#{thread.first.call_number}"] = ''
+          @render_queue["#{slug}/#{year}/#{month}/#{thread.first.call_number}"] = ''
         end
       end
 
