@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'haml'
 require 'mocha'
 require 'pp'
 require 'redgreen'
