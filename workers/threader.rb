@@ -74,7 +74,7 @@ class Threader
       begin
         o = AWS::S3::S3Object.find("list/#{slug}/thread/#{name}", 'listlibrary_archive')
         cached = o.about["content-length"] == yaml.size
-      rescue AWS::S3::NoSuchKey
+      rescue
         cached = false
       end
 
@@ -83,7 +83,7 @@ class Threader
       @render_queue["#{slug}/#{name}"] = ''
       AWS::S3::S3Object.store(
         "list/#{slug}/threads/#{name}",
-        thread.to_yaml,
+        yaml,
         'listlibrary_archive',
         :content_type => 'text/plain'
       )

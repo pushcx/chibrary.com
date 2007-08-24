@@ -89,6 +89,56 @@ class ThreaderTest < Test::Unit::TestCase
     t.run
   end
 
+  def test_cache_work_empty
+    t = Threader.new
+    slug, year, month = 'example', '2007', '08'
+
+    message_list = ['1@example.com']
+    threadset = mock
+    threadset.expects(:threads).returns([])
+    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+
+    t.cache_work slug, year, month, message_list, threadset
+  end
+
+  def test_cache_work_cached
+    t = Threader.new
+    slug, year, month = 'example', '2007', '08'
+
+    message_list = ['1@example.com']
+    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+
+    thread = mock
+    thread.expects(:to_yaml).returns("yaml")
+    thread.expects(:first).returns(mock(:call_number => '00000000'))
+    threadset = mock
+    threadset.expects(:threads).returns([thread])
+    o = mock
+    o.expects(:about).returns({ 'content-length' => "yaml".length })
+    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
+
+    t.cache_work slug, year, month, message_list, threadset
+  end
+
+  def test_cache_work_uncached
+    t = Threader.new
+    slug, year, month = 'example', '2007', '08'
+
+    message_list = ['1@example.com']
+    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+
+    thread = mock
+    thread.expects(:to_yaml).returns("yaml")
+    thread.expects(:first).returns(mock(:call_number => '00000000'))
+    threadset = mock
+    threadset.expects(:threads).returns([thread])
+    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
+    AWS::S3::S3Object.expects(:store).with("render_queue/example/2007/08/00000000", '', "listlibrary_cachedhash", { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with('list/example/threads/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
+
+    t.cache_work slug, year, month, message_list, threadset
+  end
+
   private
   def new_threader
     t = Threader.new
