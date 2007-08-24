@@ -29,12 +29,15 @@ class Threader
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      message_cache = (load_cache("list/#{slug}/threading/#{year}/#{month}/message_cache") or [])
+      message_cache = (load_cache("list/#{slug}/message_cache/#{year}/#{month}") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       next if message_cache == message_list
 
-      threadset     = (load_cache("list/#{slug}/threading/#{year}/#{month}/threadset") or ThreadSet.new)
+      threadset = ThreadSet.new
+      AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/threads/#{year}/#{month}/").each do |key|
+        threadset.add_thread load_cache(key)
+      end
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
       removed = (message_cache - message_list)
@@ -44,7 +47,6 @@ class Threader
       else
         added = message_list - message_cache
         $stdout.puts "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
-        next if added.empty?
       end
 
       # add messages
@@ -54,21 +56,37 @@ class Threader
         threadset.add_message messages.last
       end
 
-      # queue renderer
-      if !removed.empty?
-        # possibly remove threads
-        @render_queue["#{slug}/#{year}/#{month}"] = ''
-      else
-        # or just render all the threads added to
-        messages.collect { |m| threadset.thread_for m }.uniq.each do |thread|
-          @render_queue["#{slug}/#{year}/#{month}/#{thread.first.call_number}"] = ''
-        end
+      cache_work(slug, year, month, message_list, threadset) unless removed.empty? and added.empty?
+    end
+  end
+
+  def cache_work(slug, year, month, message_list, threadset)
+    AWS::S3::S3Object.store(
+      "list/#{slug}/message_cache/#{year}/#{month}",
+      message_list.sort.to_yaml,
+      'listlibrary_archive',
+      :content_type => 'text/plain'
+    )
+
+    threadset.threads.each do |thread|
+      name = "#{year}/#{month}/#{thread.first.call_number}"
+      yaml = thread.to_yaml
+      begin
+        o = AWS::S3::S3Object.find("list/#{slug}/threads/#{name}", 'listlibrary_archive')
+        cached = o.about["content-length"] == yaml.size
+      rescue AWS::S3::NoSuchKey
+        cached = false
       end
 
-      unless added.empty?
-        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/message_cache", message_list.sort.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
-        AWS::S3::S3Object.store("list/#{slug}/threading/#{year}/#{month}/threadset",     threadset.to_yaml,  'listlibrary_archive', :content_type => 'text/plain')
-      end
+      next if cached
+
+      @render_queue["#{slug}/#{name}"] = ''
+      AWS::S3::S3Object.store(
+        "list/#{slug}/threads/#{name}",
+        thread.to_yaml,
+        'listlibrary_archive',
+        :content_type => 'text/plain'
+      )
     end
   end
 end

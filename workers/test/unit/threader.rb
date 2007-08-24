@@ -44,32 +44,30 @@ class ThreaderTest < Test::Unit::TestCase
     t = new_threader
 
     # one message in cache, none in list
-    t.expects(:load_cache).times(2).returns(["goodid@example.com"], ThreadSet.new)
+    t.expects(:load_cache).returns(["goodid@example.com"], mock)
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/threads/2008/08/').returns([])
+    ts = mock
+    ThreadSet.expects(:new).times(2).returns(mock, ts)
 
-    # should tell renderer to rebuild the entire month
-    t.render_queue.expects(:[]=).with("example/2008/08", "") 
+    t.expects(:cache_work).with('example', '2008', '08', [], ts)
     t.run
   end
 
   def test_run_add_message
-    # mock message 2, the added message
-    message = mock()
-    Message.expects(:new).with("2@example.com").returns(message)
-
-    # message 1 in cache, 1 and 2 in list
-    threadset = mock
-    threadset.expects(:add_message).with(message)
-    threadset.expects(:thread_for).with(message).returns(mock(:first => mock(:call_number => '00000000')))
-
     t = new_threader
-    t.expects(:load_cache).times(2).returns(["1@example.com"], threadset)
+    thread = mock
+    t.expects(:load_cache).times(2).returns(["1@example.com"], thread)
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/threads/2008/08/').returns("key")
+    ts = mock
+    ts.expects(:add_thread).with(thread)
+    message = mock
+    Message.expects(:new).with("2@example.com").returns(message)
+    ts.expects(:add_message).with(message)
+    ThreadSet.expects(:new).returns(ts)
 
-    # threader should queue a render for the thread, then cache
-    t.render_queue.expects(:[]=).with('example/2008/08/00000000', '')
-    AWS::S3::S3Object.expects(:store)
-    AWS::S3::S3Object.expects(:store).with('list/example/threading/2008/08/message_cache', ["1@example.com", "2@example.com"].to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    t.expects(:cache_work)
     t.run
   end
 
