@@ -1,5 +1,10 @@
 #!/usr/bin/ruby
 
+# There are three kinds of jobs in the render queue:
+# render_queue/slug                        - render the list description
+# render_queue/slug/year/month             - render monthly thread list
+# render_queue/slug/year/month/call_number - render/delete a thread
+
 require 'rubygems'
 require 'aws'
 require 'haml'
@@ -18,30 +23,30 @@ class Renderer
   def render_thread slug, year, month, calL_number
   end
 
+  def delete_thread slug, year, month, calL_number
+  end
+
   def run
+    render_queue = CachedHash.new("render_queue")
+
     while job = get_job
-      $stdout.puts job.key + " " + "*" * 50
       slug, year, month, call_number = job.key.split('/')[1..-1]
+      $stdout.puts "#{slug} #{year} #{month} #{call_number}"
       job.delete
 
-      # Jobs come in two ways: whole month or single thread
-      # http://listlibrary.net/linux-kernel/2007/08
-      # http://listlibrary.net/linux-kernel/2007/08/0asdf3f-
-      threads = if call_number
-        [call_number]
-      else
-        # list of all threads
+      if call_number # render/delete a thread
+        if AWS::S3::S3Object.exists? "list/#{slug}/thread/#{year}/#{month}/#{call_number}", "listlibrary_archive"
+          render_thread slug, year, month, call_number
+        else
+          delete_thread slug, year, month, call_number
+        end
+        render_queue["#{slug}/#{year}/#{month}"] = ''
+      elsif year and month # render monthly thread list
+        render_month slug, year, month
+        render_queue["#{slug}"] = ''
+      else # render list info page
+        render_list  slug
       end
-
-      threads.each do |thread|
-        # if thread in s3
-          render_thread slug, year, month, thread
-        # else
-          # delete it from site
-      end
-
-      render_month slug, year, month
-      render_list  slug
     end
   end
 end
