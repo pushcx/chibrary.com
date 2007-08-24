@@ -46,7 +46,7 @@ class ThreaderTest < Test::Unit::TestCase
     # one message in cache, none in list
     t.expects(:load_cache).returns(["goodid@example.com"], mock)
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/threads/2008/08/').returns([])
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/thread/2008/08/').returns([])
     ts = mock
     ThreadSet.expects(:new).times(2).returns(mock, ts)
 
@@ -59,7 +59,7 @@ class ThreaderTest < Test::Unit::TestCase
     thread = mock
     t.expects(:load_cache).times(2).returns(["1@example.com"], thread)
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/threads/2008/08/').returns("key")
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/thread/2008/08/').returns("key")
     ts = mock
     ts.expects(:add_thread).with(thread)
     message = mock
