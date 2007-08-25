@@ -27,6 +27,11 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_render_thread
+    r = Renderer.new
+    r.expects(:load_cache).with("example/thread/2007/08/00000000").returns("thread")
+    r.expects(:render).with("thread", { :thread => "thread" }).returns("html")
+    r.expects(:upload_page).with("example/2007/08/00000000", "html")
+    r.render_thread "example", "2007", "08", "00000000"
   end
 
   def test_delete_thread
@@ -86,5 +91,30 @@ class RendererTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:exists?).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(false)
     r.expects(:delete_thread).with("example", "2007", "08", "00000000")
     r.run
+  end
+
+  def test_render
+    File::expects(:read).with("template/layout.haml").returns("layout")
+    File::expects(:read).with("template/filename.haml").returns("filename")
+    engine = mock
+    engine.expects(:render).yields(mock)
+    Haml::Engine.expects(:new).with("layout", :locals => { :a => "a", :title => "ListLibrary" }, :filename => "layout").returns(engine)
+    Haml::Engine.expects(:new).with("filename", :locals => { :a => "a", :title => "ListLibrary" }, :filename => "filename").returns(mock(:render => nil))
+    Renderer.new.render "filename", { :a => "a" }
+  end
+
+  def test_upload_page
+    sftp = mock
+    sftp.expects(:mkdir).with("listlibrary.net/path")
+    sftp.expects(:mkdir).with("listlibrary.net/path/to")
+    handle = mock
+    sftp.expects(:open_handle).with("listlibrary.net/path/to/filename", "w").yields(handle)
+    sftp.expects(:write).with(handle, "str").returns(mock(:code => 0))
+    r = Renderer.new
+    r.expects(:sftp_connection).yields(sftp)
+    r.upload_page "path/to/filename", "str"
+  end
+
+  def test_sftp_connection
   end
 end
