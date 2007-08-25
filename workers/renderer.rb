@@ -6,8 +6,10 @@
 # render_queue/slug/year/month/call_number - render/delete a thread
 
 require 'rubygems'
-require 'aws'
 require 'haml'
+require 'aws'
+#require 'net/ssh'
+require 'net/sftp'
 
 class Renderer
   def get_job
@@ -20,10 +22,21 @@ class Renderer
   def render_month slug, year, month
   end
 
-  def render_thread slug, year, month, calL_number
+  def render_thread slug, year, month, call_number
+    #sftp.mkdir "listlibrary.net/#{slug}"
+    #sftp.mkdir "listlibrary.net/#{slug}/#{year}"
+    #sftp.mkdir "listlibrary.net/#{slug}/#{year}/#{month}"
+    #sftp.open_handle("/path/to/remote.file", "w") do |handle|
+    #  result = sftp.write(handle, data)
+    #  puts result.code # the result of the operation
+    #end
   end
 
-  def delete_thread slug, year, month, calL_number
+  def delete_thread slug, year, month, call_number
+    Net::SFTP.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9) do |sftp|
+      sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
+    end
+    nil
   end
 
   def run

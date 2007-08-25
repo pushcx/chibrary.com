@@ -14,15 +14,18 @@ renderer:
   * in-page links to parent scroll and add in-page links back down to child above and below message
   * js links to flag spam
   * toggleable floating thread overview that scrolls with page, similar to mutt view
+  * connect using keys
+  * be paranoid about server key changing
+  * add on-disk caching for longer-lived s3 workers
 about page:
   * subscription instructions
   * 'this is a barking stapler project'
   * dmca agent information
 threader:
   * logging
-  * add on-disk caching for longer-lived s3 workers
   * thread headerless messages by quoting as well as subject
   * detect bad thread creation in replies with no quoting & new subject
+  * add on-disk caching for longer-lived s3 workers
 Fetcher:
   * logging
   * fail messages >72h old

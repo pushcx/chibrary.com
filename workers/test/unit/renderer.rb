@@ -30,6 +30,11 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_delete_thread
+    r = Renderer.new
+    sftp = mock
+    sftp.expects(:remove).with("listlibrary.net/example/2007/08/00000000")
+    Net::SFTP.expects(:start).yields(sftp)
+    r.delete_thread "example", "2007", "08", "00000000"
   end
 
   def test_run_empty
