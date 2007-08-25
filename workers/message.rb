@@ -5,18 +5,14 @@ require 'md5'
 require 'aws'
 
 class Message
-  attr_reader   :body, :headers, :message, :call_number, :source
-  attr_reader   :from, :date, :subject, :references, :reply_to
+  attr_reader   :message, :call_number, :source
   attr_accessor :addresses, :overwrite
-
-  def id ; message_id ; end
 
   RE_PATTERN = /\s*\[?Re([\[\(]?\d+[\]\)]?)?:\s*/i
   def self.subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end
   def self.normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
 
   def initialize message, source=nil, call_number=nil
-    # call_number is loaded from message when possible
     @addresses = CachedHash.new "list_address"
 
     @source = source
@@ -31,45 +27,56 @@ class Message
       @source ||= o.metadata['source']
     end
     raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
-    populate_headers
   end
 
-  def populate_headers
-    parts = message.split /\n\r?\n/
-    @headers     = parts.shift
-    @body        = parts.join("\n\n")
+  def id ; message_id ; end
 
-    @date        = /^Date:\s(.*)$/.match(headers)
+  def body
+    message.split(/\n\r?\n/)[1..-1].join("\n\n")
+  end
+
+  def headers
+    message.split(/\n\r?\n/)[0]
+  end
+
+  def get_header header
+    match = /^#{header}:\s*(.*?)^\S/mi.match(headers + "\n.")
+    return nil if match.nil?
+    # take first match so that lines we add_header'd take precedence
+    match.captures.shift.sub(/(\s)+/, ' ').strip
+  end
+
+  def from
+    get_header('From')
+  end
+
+  def date
+    date   = get_header('Date')
     begin
-      @date      = date[1].chomp
-      @date      = Time.rfc2822(@date).utc
+      date = Time.rfc2822(date).utc
     rescue
       # It's ugly to assume odd-formated dates are local time, but
       # servers will generally be running in UTC. If you can't properly
       # format an rfc2822 date, you're lucky to get anything I give you.
-      @date      = Time.parse(@date).utc rescue Time.now.utc
+      begin
+        date = Time.parse(date).utc
+      rescue
+        date = Time.now.utc
+        add_header "Date: #{date.rfc2822}"
+      end
     end
+    date
+  end
 
-    begin
-      @subject   = /^Subject:\s*(.*)/.match(headers).captures.shift
-    rescue 
-      add_header "Subject: "
-      @subject   = ''
-    end
-    @from        = /^From:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift
-    @reply_to    = /^Reply-[Tt]o:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.shift if headers.match(/^Reply-[Tt]o/)
+  def subject
+    get_header('Subject') or ''
+  end
 
-    begin
-      in_reply_to = [/^In-[Rr]eply-[Tt]o:\s*<?(.*)>?/.match(headers).captures.shift]
-    rescue
-      in_reply_to = []
-    end
-    begin
-      @references  = /^References:\s*(.*)/.match(headers).captures.shift.split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
-    rescue
-      @references  = []
-    end
-    @references += in_reply_to
+  def references
+    in_reply_to = (get_header('In-Reply-To') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.first
+    references = (get_header('References') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
+    references << in_reply_to unless in_reply_to.nil? or references.include? in_reply_to
+    references
   end
 
   def mailing_list
@@ -104,7 +111,6 @@ class Message
     name = header.match(/^(.+?):\s/).captures.shift
     new_headers = "#{header.chomp}\n"
     new_headers += "X-ListLibrary-Added-Header: #{name}\n" unless name.match(/^X-ListLibrary-/)
-    @headers = new_headers + headers
     @message = new_headers + message
   end
 
@@ -127,10 +133,6 @@ class Message
     end
     AWS::S3::S3Object.store(filename, message, "listlibrary_archive", {
       :content_type             => "text/plain",
-      :'x-amz-meta-from'        => from,
-      :'x-amz-meta-subject'     => subject,
-      :'x-amz-meta-references'  => references.join(' '),
-      :'x-amz-meta-date'        => date,
       :'x-amz-meta-source'      => @source,
       :'x-amz-meta-call_number' => call_number
     })

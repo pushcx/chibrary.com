@@ -26,7 +26,7 @@ class MessageTest < Test::Unit::TestCase
     m = Message.new message(:good), 'test', '00000000'
     assert_equal m.class, Message
 
-    assert_equal 'alice@example.com', m.from
+    assert_equal 'Alice <alice@example.com>', m.from
     assert_equal 'Good message', m.subject
     assert_equal Time.gm(2006, 10, 24, 19, 47, 48), m.date
     assert m.date.utc?
@@ -73,10 +73,6 @@ class MessageTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
-      :'x-amz-meta-from'        => m.from,
-      :'x-amz-meta-subject'     => m.subject,
-      :'x-amz-meta-references'  => m.references.join(' '),
-      :'x-amz-meta-date'        => m.date,
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
     })
@@ -111,10 +107,6 @@ class MessageTest < Test::Unit::TestCase
     expect_example_list m
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
-      :'x-amz-meta-from'        => 'alice@example.com',
-      :'x-amz-meta-subject'     => 'Good message',
-      :'x-amz-meta-references'  => 'grandparent@example.com parent@example.com',
-      :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
     })
@@ -144,10 +136,6 @@ class MessageTest < Test::Unit::TestCase
     expect_example_list m
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
-      :'x-amz-meta-from'        => 'alice@example.com',
-      :'x-amz-meta-subject'     => 'Good message',
-      :'x-amz-meta-references'  => 'grandparent@example.com parent@example.com',
-      :'x-amz-meta-date'        => Time.parse('Tue Oct 24 19:47:48 UTC 2006'),
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
     })

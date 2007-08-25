@@ -1,5 +1,4 @@
 renderer:
-  * change message to cache less
   * use blueprint
   * protect mail addresses
   * honor X-No-Archive: yes headers
