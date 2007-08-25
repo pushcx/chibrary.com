@@ -3,6 +3,7 @@ require 'aws/s3'
 
 require 'cachedhash'
 require 'message'
+require 'threading'
 require 'filer'
 
 ACCESS_KEY_ID = '0B8FSQ35925T27X8Q4R2'

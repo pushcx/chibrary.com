@@ -1,8 +1,8 @@
 renderer:
-  * render threads
+  * change message to cache less
+  * use blueprint
   * protect mail addresses
   * honor X-No-Archive: yes headers
-  * per-user archives
   * monthly archives listing threads
   * check ETag header
   * check Expires header
@@ -16,6 +16,7 @@ renderer:
   * toggleable floating thread overview that scrolls with page, similar to mutt view
   * connect using keys
   * be paranoid about server key changing
+  * per-user archives
   * add on-disk caching for longer-lived s3 workers
 about page:
   * subscription instructions

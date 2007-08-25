@@ -29,7 +29,7 @@ class RendererTest < Test::Unit::TestCase
   def test_render_thread
     r = Renderer.new
     r.expects(:load_cache).with("example/thread/2007/08/00000000").returns("thread")
-    r.expects(:render).with("thread", { :thread => "thread" }).returns("html")
+    View.expects(:render).with(:page => "thread", :locals => { :thread => "thread" }).returns("html")
     r.expects(:upload_page).with("example/2007/08/00000000", "html")
     r.render_thread "example", "2007", "08", "00000000"
   end
@@ -50,7 +50,6 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_run_list
-    $stdout.expects(:puts).at_least_once
     CachedHash.expects(:new).returns(mock)
     r = Renderer.new
     r.expects(:get_job).times(2).returns(mock(:key => "render_queue/example", :delete => nil), nil)
@@ -59,7 +58,6 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_run_month
-    $stdout.expects(:puts).at_least_once
     render_queue = mock
     render_queue.expects(:[]=).with("example", '')
     CachedHash.expects(:new).returns(render_queue)
@@ -70,7 +68,6 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_run_thread_render
-    $stdout.expects(:puts).at_least_once
     render_queue = mock
     render_queue.expects(:[]=).with("example/2007/08", '')
     CachedHash.expects(:new).returns(render_queue)
@@ -82,7 +79,6 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_run_thread_delete
-    $stdout.expects(:puts).at_least_once
     render_queue = mock
     render_queue.expects(:[]=).with("example/2007/08", '')
     CachedHash.expects(:new).returns(render_queue)
@@ -91,16 +87,6 @@ class RendererTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:exists?).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(false)
     r.expects(:delete_thread).with("example", "2007", "08", "00000000")
     r.run
-  end
-
-  def test_render
-    File::expects(:read).with("template/layout.haml").returns("layout")
-    File::expects(:read).with("template/filename.haml").returns("filename")
-    engine = mock
-    engine.expects(:render).yields(mock)
-    Haml::Engine.expects(:new).with("layout", :locals => { :a => "a", :title => "ListLibrary" }, :filename => "layout").returns(engine)
-    Haml::Engine.expects(:new).with("filename", :locals => { :a => "a", :title => "ListLibrary" }, :filename => "filename").returns(mock(:render => nil))
-    Renderer.new.render "filename", { :a => "a" }
   end
 
   def test_upload_page

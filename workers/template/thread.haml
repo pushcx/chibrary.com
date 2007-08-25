@@ -1,0 +1,14 @@
+.thread
+  %h1.subject= Message.normalize_subject thread.first.subject
+
+  = thread.collect { |message, depth, parent| render :partial => (message.nil? ? 'message_missing' : 'message'), :locals => { :message => message } }
+
+.thread_list
+  - thread.each do |message, depth, parent|
+    = '&nbsp;' * depth * 2
+    - if message.nil?
+      missing
+    - else
+      %a{ :href => "##{message.call_number}" }= message.date
+      = message.from
+    %br

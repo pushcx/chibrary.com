@@ -11,6 +11,29 @@ require 'aws'
 #require 'net/ssh'
 require 'net/sftp'
 
+class View
+  def self.render options={}
+    locals = (options[:locals] or {})
+    if locals[:collection]
+      return locals[:collection].collect do |item|
+        locals[options[:partial]] = item
+        View.render options.merge({ :collection => nil, :locals => locals })
+      end.join("\n")
+    end
+
+    locals[:title] = (locals[:title].to_s + " - ListLibrary").strip.sub(/^- /, '')
+
+    filename = (options[:page] or options[:partial])
+    if options[:page]
+      Haml::Engine.new(File.read("template/layout.haml"), :locals => locals, :filename => "layout").render(View) do
+        Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
+      end
+    elsif options[:partial]
+      Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
+    end
+  end
+end
+
 class Renderer
   def get_job
     AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'renderer_queue/', :max_keys => 1).first
@@ -23,7 +46,7 @@ class Renderer
   end
 
   def render_thread slug, year, month, call_number
-    html = render "thread", { :thread => load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}") }
+    html = View::render :page => "thread", :locals => { :thread => load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}") }
     upload_page "#{slug}/#{year}/#{month}/#{call_number}", html
   end
 
@@ -59,17 +82,11 @@ class Renderer
   end
 
   def load_cache key
+    return YAML::load_file("threadset").threads[0]
     begin
       YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
     rescue
       nil
-    end
-  end
-
-  def render filename, locals={}
-    locals[:title] = (locals[:title].to_s + " - ListLibrary").strip.sub(/^- /, '')
-    Haml::Engine.new(File.read("template/layout.haml"), :locals => locals, :filename => "layout").render do
-      Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render
     end
   end
 
@@ -96,3 +113,5 @@ class Renderer
     end
   end
 end
+
+Renderer.new.run if __FILE__ == $0

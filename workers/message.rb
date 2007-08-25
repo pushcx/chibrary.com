@@ -5,7 +5,7 @@ require 'md5'
 require 'aws'
 
 class Message
-  attr_reader   :headers, :message, :call_number, :source
+  attr_reader   :body, :headers, :message, :call_number, :source
   attr_reader   :from, :date, :subject, :references, :reply_to
   attr_accessor :addresses, :overwrite
 
@@ -35,7 +35,9 @@ class Message
   end
 
   def populate_headers
-    @headers     = /(.*?)\n\r?\n/m.match(message)[1]
+    parts = message.split /\n\r?\n/
+    @headers     = parts.shift
+    @body        = parts.join("\n\n")
 
     @date        = /^Date:\s(.*)$/.match(headers)
     begin
