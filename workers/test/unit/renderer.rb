@@ -38,7 +38,7 @@ class RendererTest < Test::Unit::TestCase
     r = Renderer.new
     sftp = mock
     sftp.expects(:remove).with("listlibrary.net/example/2007/08/00000000")
-    Net::SFTP.expects(:start).yields(sftp)
+    r.expects(:sftp_connection).yields(sftp)
     r.delete_thread "example", "2007", "08", "00000000"
   end
 
@@ -116,5 +116,9 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_sftp_connection
+    r = Renderer.new
+    m = mock
+    Net::SFTP.expects(:start).yields(m)
+    r.sftp_connection { |sftp| assert_equal m, sftp }
   end
 end
