@@ -1,7 +1,7 @@
 .thread
   %h1.subject= Message.normalize_subject thread.first.subject
 
-  = thread.collect { |message, depth, parent| render :partial => (message.is_a? Message ? 'message' : 'message_missing'), :locals => { :message => message } }
+  = thread.collect { |message, depth, parent| render :partial => (message.is_a?(Message) ? 'message' : 'message_missing'), :locals => { :message => message } }
 
 .thread_list
   - thread.each do |message, depth, parent|
