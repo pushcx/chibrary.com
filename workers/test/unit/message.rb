@@ -36,6 +36,17 @@ class MessageTest < Test::Unit::TestCase
     assert_equal false, m.no_archive?
   end
 
+  def test_from
+    m = Message.new message(:good), 'test', '00000000'
+    [
+      ['Bob Barker <bob@example.com>', 'Bob Barker <bob@example.com>'],
+      ['"Bob Barker" <bob@example.com>', 'Bob Barker <bob@example.com>'],
+    ].each do |original, cleaned|
+      m.expects(:get_header).returns(original)
+      assert_equal cleaned, m.from
+    end
+  end
+
   def test_no_archive
     m = Message.new message(:no_archive), 'test', '00000000'
     assert m.no_archive?

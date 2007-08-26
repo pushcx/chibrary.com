@@ -47,7 +47,7 @@ class Message
   end
 
   def from
-    get_header('From')
+    (get_header('From') or '').sub(/"(.*?)"/, '\1')
   end
 
   def date

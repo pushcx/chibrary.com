@@ -1,6 +1,5 @@
 renderer:
   * protect mail addresses
-  * better From in headers/thread_list
   * compress quotes
   * deal with html mail
   * monthly archives listing threads
