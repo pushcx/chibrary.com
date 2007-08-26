@@ -1,11 +1,5 @@
 %h1.subject= Message.normalize_subject thread.first.subject
 
-.thread
-  - @missing_count = 0
-  = thread.collect { |message, depth, parent| render :partial => message_partial(message), :locals => { :message => message } }
-
-%hr/
-
 %ul.thread_list
   - @missing_count = 0
   - thread.each do |message, depth, parent|
@@ -23,3 +17,7 @@
           = '&nbsp;' * depth * 4
           %span.date= message.date.strftime("%m-%d %H:%M")
           = h message.from
+
+.thread
+  - @missing_count = 0
+  = thread.collect { |message, depth, parent| render :partial => message_partial(message), :locals => { :message => message } }

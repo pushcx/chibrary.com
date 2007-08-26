@@ -5,6 +5,7 @@ renderer:
   * check ETag header
   * check Expires header
   * 1h: research other caching mechanisms
+  * thread: keyboard navigation for next/prev msg/thread, quote visibility
   * in-page links to parent scroll and add in-page links back down to child above and below message
   * js links to flag spam
   * toggleable floating thread overview that scrolls with page, similar to mutt view
