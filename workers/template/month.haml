@@ -1,0 +1,19 @@
+.list
+  %h1= (list['name'] or slug) + " #{year}-#{month}"
+
+  - if list['description']
+    %p.description= list['description']
+
+  - if list['homepage']
+    %p
+      Homepage: 
+      %a{ :href => list['homepage'] }= list['homepage']
+
+%ol.threads
+  - threadset.threads.each do |thread|
+    %li.thread
+      %a{ :id => "t#{thread.first.call_number}", :name => "t#{thread.first.call_number}" }/
+      .header
+        %span.count= thread.count
+        %a.subject{ :href => thread.first.call_number }= Message.normalize_subject thread.first.subject
+      = render :partial => 'thread_list', :locals => { :thread => thread }

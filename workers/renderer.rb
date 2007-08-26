@@ -7,9 +7,11 @@
 
 require 'rubygems'
 require 'haml'
-require 'aws'
 require 'net/sftp'
 require 'cgi'
+
+require 'aws'
+require 'list'
 
 class View
   def self.render options={}
@@ -67,12 +69,24 @@ class Renderer
   end
 
   def render_month slug, year, month
-    html = View::render :page => "month", :locals => { :threadset => ThreadSet.month(slug, year, month) }
-    upload_page "#{slug}/#{year}/#{month}", html
+    html = View::render(:page => "month", :locals => {
+      :threadset => ThreadSet.month(slug, year, month),
+      :list      => List.new(slug),
+      :slug      => slug,
+      :year      => year,
+      :month     => month,
+    })
+    upload_page "#{slug}/#{year}/#{month}/", html
   end
 
   def render_thread slug, year, month, call_number
-    html = View::render :page => "thread", :locals => { :thread => AWS::S3::S3Object.load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}") }
+    html = View::render :page => "thread", :locals => {
+      :thread => AWS::S3::S3Object.load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}"),
+      :list      => List.new(slug),
+      :slug      => slug,
+      :year      => year,
+      :month     => month,
+    }
     upload_page "#{slug}/#{year}/#{month}/#{call_number}", html
   end
 

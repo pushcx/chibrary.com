@@ -1,6 +1,8 @@
 renderer:
-  * monthly archives listing threads
+  * thread_list display subject changes
+  * get scary quoting regexp under test
   * mailing list home pages
+  * adsense
   * deal with html mail
   * check ETag header
   * check Expires header
@@ -47,3 +49,7 @@ Filer:
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
   * spamcheck
+Adverising:
+  * ask for links from:
+    * http://www.ruby-lang.org/en/community/mailing-lists
+    * http://linux-kernel.org

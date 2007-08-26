@@ -2,6 +2,7 @@
 
 require 'aws'
 require 'threading'
+require 'list'
 
 class Threader
   attr_accessor :render_queue
@@ -69,7 +70,7 @@ class Threader
 
       @render_queue["#{slug}/#{name}"] = ''
       AWS::S3::S3Object.store(
-        "list/#{slug}/threads/#{name}",
+        "list/#{slug}/thread/#{name}",
         yaml,
         'listlibrary_archive',
         :content_type => 'text/plain'

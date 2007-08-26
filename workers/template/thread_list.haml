@@ -1,0 +1,17 @@
+%ol.thread_list
+  - @missing_count = 0
+  - thread.each do |message, depth, parent|
+    %li
+      - if message.nil?
+        - @missing_count += 1
+        = '&nbsp;' * depth * 4
+        %a{ :href => "#missing-#{@missing_count}", :class => "missing" } missing
+      - elsif message.no_archive?
+        - @missing_count += 1
+        = '&nbsp;' * depth * 4
+        %a{ :href => "#missing-#{@missing_count}", :class => "missing" } not archived
+      - else
+        %a{ :href => "#m#{message.call_number}", :class => "message" }
+          = '&nbsp;' * depth * 4
+          = h message.from
+          %span.date= message.date.strftime("%m-%d %H:%M")

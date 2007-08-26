@@ -120,7 +120,7 @@ class ThreaderTest < Test::Unit::TestCase
     threadset.expects(:threads).returns([thread])
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
     AWS::S3::S3Object.expects(:store).with("render_queue/example/2007/08/00000000", '', "listlibrary_cachedhash", { :content_type => 'text/plain' })
-    AWS::S3::S3Object.expects(:store).with('list/example/threads/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
+    AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
 
     t.cache_work slug, year, month, message_list, threadset
   end

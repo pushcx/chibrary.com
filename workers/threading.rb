@@ -92,6 +92,8 @@ class LLThread
     f.puts "=== end thread ==="
   end
 
+  def count ; collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
+
   ## yields each message, its depth, and its parent. the message yield
   ## parameter can be a Message object, or :fake_root, or nil (no
   ## message found but the presence of one induced from other

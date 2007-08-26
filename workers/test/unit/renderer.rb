@@ -61,12 +61,34 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_render_month
+    r = Renderer.new
+    list = mock
+    List.expects(:new).with('example').returns(list)
+    ts = mock
+    ThreadSet.expects(:month).with('example', '2007', '08').returns(ts)
+    View.expects(:render).with(:page => "month", :locals => {
+      :threadset => ts,
+      :list => list,
+      :slug => 'example',
+      :year => '2007',
+      :month => '08'
+    }).returns("html")
+    r.expects(:upload_page).with("example/2007/08/", "html")
+    r.render_month "example", "2007", "08"
   end
 
   def test_render_thread
     r = Renderer.new
+    list = mock
+    List.expects(:new).with('example').returns(list)
     AWS::S3::S3Object.expects(:load_cache).with("example/thread/2007/08/00000000").returns("thread")
-    View.expects(:render).with(:page => "thread", :locals => { :thread => "thread" }).returns("html")
+    View.expects(:render).with(:page => "thread", :locals => {
+      :thread => "thread",
+      :list => list,
+      :slug => 'example',
+      :year => '2007',
+      :month => '08'
+    }).returns("html")
     r.expects(:upload_page).with("example/2007/08/00000000", "html")
     r.render_thread "example", "2007", "08", "00000000"
   end
