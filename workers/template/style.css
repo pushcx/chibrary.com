@@ -51,7 +51,14 @@ ul.thread_list li {
     }
 
 blockquote {
-  background-color: #eeffff;
   background-color: #ccdddd;
+  font-style: normal;
   margin: 0;
+}
+blockquote.closed {
+  background-color: #dddddd;
+  display: inline;
+  font-style: italic;
+  margin: 0 0 1.5em 0;
+  padding: 0 0.1em;
 }

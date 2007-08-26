@@ -1,5 +1,5 @@
 .message
-  %a{ :name => message.call_number }
+  %a{ :id => message.call_number, :name => message.call_number }
   .header
     %h4.from= h message.from
     %a{ :href => "##{message.call_number}" }

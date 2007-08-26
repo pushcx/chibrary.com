@@ -36,7 +36,7 @@ class View
   # helpers
 
   def self.compress_quotes str
-    str.gsub(/(^-{4,}[^-]{8,}-{4,}\n.*|(^[^\n]{30,}:\n|)(^&gt;.*?=(20|)\n.*?\n|^&gt;.*?\n)+\n*)/m) do
+    str.gsub(/(^-{4,}[^-]{8,}-{4,}\n.*|(^[^\n]{10,}:\n\n?|)(^&gt;.*?=(20|)\n.*?\n|^&gt;.*?\n)+\n*)/m) do
       '<blockquote>' + $1.sub(/(.*)\n+/m, '\1') + "</blockquote>\n"
     end
   end

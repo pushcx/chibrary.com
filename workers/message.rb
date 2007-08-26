@@ -32,7 +32,7 @@ class Message
   def id ; message_id ; end
 
   def body
-    message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '')
+    message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
   end
 
   def headers
