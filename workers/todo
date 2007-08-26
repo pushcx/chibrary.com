@@ -4,7 +4,6 @@ renderer:
   * monthly archives listing threads
   * mailing list home pages
   * google analytics
-  * linkify urls
   * honor X-No-Archive: yes headers
   * check ETag header
   * check Expires header

@@ -36,8 +36,9 @@ class View
   # helpers
 
   def self.h str
-    str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2... .\3') # hide mail addresses
-    CGI::escapeHTML str
+    str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2...\3') # hide mail addresses
+    str = CGI::escapeHTML(str)
+    str.gsub(/(\w+:\/\/[^\s]+)/m, '<a href="\1' + '">\1</a>') # link urls
   end
 
   def self.message_partial message

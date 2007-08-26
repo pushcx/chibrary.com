@@ -8,15 +8,22 @@ class ViewTest < Test::Unit::TestCase
 
   def test_h
     [
-      ['a user@a.com a',                   'a user@a.com a'],
-      ['a user@hp.com a',                  'a user@hp... .com a'],
-      ['a user@ibm.com a',                 'a user@ib... .com a'],
-      ['a user@example.com a',             'a user@ex... .com a'],
-      ['a user@example.co.uk a',           'a user@ex... .uk a'],
-      ['mailto:user@example.co.uk',        'mailto:user@ex... .uk'],
-      ["To: ruby-doc@ruby-lang.org\n",     "To: ruby-doc@ru... .org\n"],
-      ["a@ibm.com b@ibm.com",              "a@ib... .com b@ib... .com"],
-      ['http://user:pass@example.com/foo', 'http://user:pass@ex... .com/foo'],
+      ['a user@a.com a',               'a user@a.com a'],
+      ['a user@hp.com a',              'a user@hp...com a'],
+      ['a user@ibm.com a',             'a user@ib...com a'],
+      ['a user@example.com a',         'a user@ex...com a'],
+      ['a user@example.co.uk a',       'a user@ex...uk a'],
+      ['mailto:user@example.co.uk',    'mailto:user@ex...uk'],
+      ["To: ruby-doc@ruby-lang.org\n", "To: ruby-doc@ru...org\n"],
+      ["a@ibm.com b@ibm.com",          "a@ib...com b@ib...com"],
+
+      ['http://aa.com',                '<a href="http://aa.com">http://aa.com</a>'],
+      ["http://bb\a.com",              "<a href=\"http://bb\a.com\">http://bb\a.com</a>"],
+      ['http://cc.com?a=a',            '<a href="http://cc.com?a=a">http://cc.com?a=a</a>'],
+      ['http://dd.com/"',              '<a href="http://dd.com/&quot;">http://dd.com/&quot;</a>'],
+      ['telnet://ee.com',              '<a href="telnet://ee.com">telnet://ee.com</a>'],
+
+      ['http://user:pass@ff.com/foo',  '<a href="http://user:pass@ff...com/foo">http://user:pass@ff...com/foo</a>'],
     ].each do |original, cleaned|
       assert_equal cleaned, View::h(original)
     end
