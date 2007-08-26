@@ -3,7 +3,6 @@ renderer:
   * deal with html mail
   * monthly archives listing threads
   * mailing list home pages
-  * google analytics
   * honor X-No-Archive: yes headers
   * check ETag header
   * check Expires header
