@@ -32,7 +32,7 @@ class MessageTest < Test::Unit::TestCase
     assert m.date.utc?
     assert_equal ['grandparent@example.com', 'parent@example.com'], m.references
     assert_equal "goodid@example.com", m.message_id
-    assert_equal "Message body.\n", m.body
+    assert_equal "Message body.", m.body
     assert_equal false, m.no_archive?
   end
 
