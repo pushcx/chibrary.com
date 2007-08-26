@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'time'
 require 'md5'
 require 'aws'
@@ -27,6 +25,7 @@ class Message
       @source ||= o.metadata['source']
     end
     raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
+    date # If date is missing/broken, set it to Time.now
   end
 
   def id ; message_id ; end
