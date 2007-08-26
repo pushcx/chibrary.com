@@ -12,8 +12,6 @@ require 'net/sftp'
 require 'cgi'
 
 class View
-  def self.h str ; CGI::escapeHTML str ; end
-
   def self.render options={}
     locals = (options[:locals] or {})
     if locals[:collection]
@@ -33,6 +31,13 @@ class View
     elsif options[:partial]
       Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
     end
+  end
+
+  # helpers
+
+  def self.h str
+    str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2... .\3') # hide mail addresses
+    CGI::escapeHTML str
   end
 
   def self.message_partial message

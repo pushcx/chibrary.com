@@ -6,6 +6,22 @@ require 'message'
 class ViewTest < Test::Unit::TestCase
   fixtures :message
 
+  def test_h
+    [
+      ['a user@a.com a',                   'a user@a.com a'],
+      ['a user@hp.com a',                  'a user@hp... .com a'],
+      ['a user@ibm.com a',                 'a user@ib... .com a'],
+      ['a user@example.com a',             'a user@ex... .com a'],
+      ['a user@example.co.uk a',           'a user@ex... .uk a'],
+      ['mailto:user@example.co.uk',        'mailto:user@ex... .uk'],
+      ["To: ruby-doc@ruby-lang.org\n",     "To: ruby-doc@ru... .org\n"],
+      ["a@ibm.com b@ibm.com",              "a@ib... .com b@ib... .com"],
+      ['http://user:pass@example.com/foo', 'http://user:pass@ex... .com/foo'],
+    ].each do |original, cleaned|
+      assert_equal cleaned, View::h(original)
+    end
+  end
+
   def test_message_partial
     assert_equal 'message', View::message_partial(Message.new(message(:good), 'test', '00000000'))
     assert_equal 'message_no_archive', View::message_partial(Message.new(message(:no_archive), 'test', '00000000'))

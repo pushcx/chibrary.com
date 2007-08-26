@@ -1,5 +1,4 @@
 renderer:
-  * protect mail addresses
   * compress quotes
   * deal with html mail
   * monthly archives listing threads
