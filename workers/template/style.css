@@ -1,0 +1,51 @@
+/* thread view */
+div.message div.header {
+  background: #ddeeee;
+  border-top: 0.1em solid #ccdddd;
+  padding: 0 0.1em;
+}
+div.message div.header h4.from {
+  clear: none;
+}
+div.message div.header h6.date {
+  float: right;
+  margin-top: -1.5em;
+}
+div.message.missing p {
+  background: #eeeedd;
+  border-top: 0.1em solid #ddddcc;
+}
+div.message pre.body {
+  background-color: transparent;
+  border: none;
+  padding: 1.5em 0 1.5em 0;
+}
+
+/* thread list */
+ul.thread_list {
+  list-style-type: none;
+  margin-left: 0;
+}
+ul.thread_list li {
+  width: 100%;
+}
+  ul.thread_list li span.date {
+    color: #777777;
+  }
+  ul.thread_list li a.message {
+    color: #000000;
+    display: block;
+    text-decoration: none;
+    width: 100%;
+  }
+    ul.thread_list li:hover {
+      background-color: #ddeeee;
+    }
+  ul.thread_list li a.missing {
+    color: #888888;
+    font-style: italic;
+    text-decoration: none;
+  }
+    ul.thread_list li a.missing:hover {
+      text-decoration: underline;
+    }

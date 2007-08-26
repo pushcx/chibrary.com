@@ -1,14 +1,25 @@
+%h1.subject= Message.normalize_subject thread.first.subject
+
 .thread
-  %h1.subject= Message.normalize_subject thread.first.subject
+  - @missing_count = 0
+  = thread.collect { |message, depth, parent| render :partial => message_partial(message), :locals => { :message => message } }
 
-  = thread.collect { |message, depth, parent| render :partial => (message.is_a?(Message) ? 'message' : 'message_missing'), :locals => { :message => message } }
+%hr/
 
-.thread_list
+%ul.thread_list
+  - @missing_count = 0
   - thread.each do |message, depth, parent|
-    = '&nbsp;' * depth * 2
-    - if message.nil?
-      missing
-    - else
-      %a{ :href => "##{message.call_number}" }= message.date
-      = message.from
-    %br
+    %li
+      - if message.nil?
+        - @missing_count += 1
+        = '&nbsp;' * depth * 4
+        %a{ :href => "#missing-#{@missing_count}", :class => "missing" } missing
+      - elsif message.no_archive?
+        - @missing_count += 1
+        = '&nbsp;' * depth * 4
+        %a{ :href => "#missing-#{@missing_count}", :class => "missing" } not archived
+      - else
+        %a{ :href => "##{message.call_number}", :class => "message" }
+          = '&nbsp;' * depth * 4
+          %span.date= message.date.strftime("%m-%d %H:%M")
+          = h message.from

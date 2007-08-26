@@ -1,4 +1,7 @@
 .message
-  %h3= message.from
-  %h4= message.date
-  %pre= message.body
+  %a{ :name => message.call_number }
+  .header
+    %h4.from= h message.from
+    %a{ :href => "##{message.call_number}" }
+      %h6.date= message.date.strftime("%Y-%m-%d %H:%M:%S")
+  ~ '<pre class="body">' + h(message.body) + '</pre>'

@@ -8,6 +8,17 @@ good: |
 
   Message body.
 
+no_archive: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <goodid@example.com>
+  References: <grandparent@example.com> <parent@example.com>
+  X-No-Archive: yes
+
+  Message body.
+
 list_in_to: |
   From: Alice <alice@example.com>
   Subject: Good message

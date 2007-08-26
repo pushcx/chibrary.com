@@ -3,6 +3,17 @@ require 'renderer'
 require 'threading'
 require 'message'
 
+class ViewTest < Test::Unit::TestCase
+  fixtures :message
+
+  def test_message_partial
+    assert_equal 'message', View::message_partial(Message.new(message(:good), 'test', '00000000'))
+    assert_equal 'message_no_archive', View::message_partial(Message.new(message(:no_archive), 'test', '00000000'))
+    assert_equal 'message_missing', View::message_partial(nil)
+    assert_equal 'message_missing', View::message_partial(:fake_root)
+  end
+end
+
 class RendererTest < Test::Unit::TestCase
   fixtures :message
 

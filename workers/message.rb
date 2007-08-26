@@ -79,6 +79,10 @@ class Message
     references
   end
 
+  def no_archive?
+    !!(/yes/i =~ get_header('X-No-Archive'))
+  end
+
   def mailing_list
     matches = nil
     [ /^X-Mailing-List:\s.*/,

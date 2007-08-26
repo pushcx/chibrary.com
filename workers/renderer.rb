@@ -8,10 +8,12 @@
 require 'rubygems'
 require 'haml'
 require 'aws'
-#require 'net/ssh'
 require 'net/sftp'
+require 'cgi'
 
 class View
+  def self.h str ; CGI::escapeHTML str ; end
+
   def self.render options={}
     locals = (options[:locals] or {})
     if locals[:collection]
@@ -30,6 +32,16 @@ class View
       end
     elsif options[:partial]
       Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
+    end
+  end
+
+  def self.message_partial message
+    if message.nil? or message.is_a? Symbol
+      'message_missing'
+    elsif message.no_archive?
+      'message_no_archive'
+    else
+      'message'
     end
   end
 end

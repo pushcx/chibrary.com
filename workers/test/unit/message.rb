@@ -33,6 +33,12 @@ class MessageTest < Test::Unit::TestCase
     assert_equal ['grandparent@example.com', 'parent@example.com'], m.references
     assert_equal "goodid@example.com", m.message_id
     assert_equal "Message body.\n", m.body
+    assert_equal false, m.no_archive?
+  end
+
+  def test_no_archive
+    m = Message.new message(:no_archive), 'test', '00000000'
+    assert m.no_archive?
   end
 
   def test_add_header
