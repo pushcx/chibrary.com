@@ -4,4 +4,4 @@
     %h4.from= h message.from
     %a{ :href => "##{message.call_number}" }
       %h6.date= message.date.strftime("%Y-%m-%d %H:%M:%S")
-  ~ '<pre class="body">' + h(message.body) + '</pre>'
+  ~ '<pre class="body">' + compress_quotes(h(message.body)) + '</pre>'

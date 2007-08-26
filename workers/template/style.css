@@ -49,3 +49,9 @@ ul.thread_list li {
     ul.thread_list li a.missing:hover {
       text-decoration: underline;
     }
+
+blockquote {
+  background-color: #eeffff;
+  background-color: #ccdddd;
+  margin: 0;
+}

@@ -6,6 +6,9 @@ require 'message'
 class ViewTest < Test::Unit::TestCase
   fixtures :message
 
+  def test_compress_quotes
+  end
+
   def test_h
     [
       ['a user@a.com a',               'a user@a.com a'],

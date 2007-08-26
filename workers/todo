@@ -1,9 +1,7 @@
 renderer:
-  * compress quotes
-  * deal with html mail
   * monthly archives listing threads
   * mailing list home pages
-  * honor X-No-Archive: yes headers
+  * deal with html mail
   * check ETag header
   * check Expires header
   * 1h: research other caching mechanisms

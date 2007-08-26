@@ -35,6 +35,13 @@ class View
 
   # helpers
 
+  def self.compress_quotes str
+    str.gsub!(/((^[^\n]{30,}:\n|^-----.*?\n(^[A-Z].*?:\s.*?\n)\n{0,2}|)(^&gt;.*?=(20|)\n.*?\n|^&gt;.*?\n)+\n*)/m) do
+      '<blockquote>' + $1.gsub(/\n$/, '') + "</blockquote>\n"
+    end
+    str
+  end
+
   def self.h str
     str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2...\3') # hide mail addresses
     str = CGI::escapeHTML(str)
