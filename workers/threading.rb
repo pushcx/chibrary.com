@@ -241,6 +241,14 @@ class ThreadSet
   attr_reader :num_messages, :threads
   bool_reader :thread_by_subject
 
+  def self.month slug, year, month
+    threadset = ThreadSet.new
+    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
+      threadset.add_thread AWS::S3::S3Object.load_cache(key)
+    end
+    threadset
+  end
+
   def initialize thread_by_subject=true
     @num_messages = 0
     ## map from message ids to container objects

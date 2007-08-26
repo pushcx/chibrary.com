@@ -65,7 +65,7 @@ class RendererTest < Test::Unit::TestCase
 
   def test_render_thread
     r = Renderer.new
-    r.expects(:load_cache).with("example/thread/2007/08/00000000").returns("thread")
+    AWS::S3::S3Object.expects(:load_cache).with("example/thread/2007/08/00000000").returns("thread")
     View.expects(:render).with(:page => "thread", :locals => { :thread => "thread" }).returns("html")
     r.expects(:upload_page).with("example/2007/08/00000000", "html")
     r.render_thread "example", "2007", "08", "00000000"

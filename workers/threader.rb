@@ -2,7 +2,6 @@
 
 require 'aws'
 require 'threading'
-require 'yaml'
 
 class Threader
   attr_accessor :render_queue
@@ -15,29 +14,16 @@ class Threader
     AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'threader_queue/', :max_keys => 1).first
   end
 
-  def load_cache key
-    begin
-      YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
-    rescue
-      nil
-    end
-  end
-
   def run
     while job = get_job
       $stdout.puts job.key
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      message_cache = (load_cache("list/#{slug}/message_cache/#{year}/#{month}") or [])
+      message_cache = (AWS::S3::S3Object.load_cache("list/#{slug}/message_cache/#{year}/#{month}") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       next if message_cache == message_list
-
-      threadset = ThreadSet.new
-      AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
-        threadset.add_thread load_cache(key)
-      end
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
       removed = (message_cache - message_list)
@@ -45,6 +31,7 @@ class Threader
         threadset = ThreadSet.new
         added = message_list
       else
+        threadset = ThreadSet.month(slug, year, month)
         added = message_list - message_cache
         $stdout.puts "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
       end

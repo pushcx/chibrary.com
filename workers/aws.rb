@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'aws/s3'
+require 'yaml'
 
 require 'cachedhash'
 require 'message'
@@ -24,6 +25,16 @@ class AWS::S3::Bucket
       last = keys.last
     end
     keys
+  end
+end
+
+class AWS::S3::S3Object
+  def self.load_cache key
+    begin
+      YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
+    rescue
+      nil
+    end
   end
 end
 

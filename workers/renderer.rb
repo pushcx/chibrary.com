@@ -67,10 +67,12 @@ class Renderer
   end
 
   def render_month slug, year, month
+    html = View::render :page => "month", :locals => { :threadset => ThreadSet.month(slug, year, month) }
+    upload_page "#{slug}/#{year}/#{month}", html
   end
 
   def render_thread slug, year, month, call_number
-    html = View::render :page => "thread", :locals => { :thread => load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}") }
+    html = View::render :page => "thread", :locals => { :thread => AWS::S3::S3Object.load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}") }
     upload_page "#{slug}/#{year}/#{month}/#{call_number}", html
   end
 
@@ -102,15 +104,6 @@ class Renderer
       else # render list info page
         render_list  slug
       end
-    end
-  end
-
-  def load_cache key
-    return YAML::load_file("threadset").threads[0]
-    begin
-      YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
-    rescue
-      nil
     end
   end
 

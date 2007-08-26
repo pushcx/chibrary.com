@@ -189,6 +189,15 @@ class ThreadSetTest < ThreadingTest
     def date ; Time.now ; end
   end
 
+  def test_month
+    ts = mock
+    ts.expects(:add_thread).times(4)
+    ThreadSet.expects(:new).returns(ts)
+    AWS::S3::Bucket.expects(:keylist).returns(%w{a b c d})
+    AWS::S3::S3Object.expects(:load_cache).times(4)
+    assert_equal ts, ThreadSet.month('example', '2007', '08')
+  end
+
   def test_caching
     # create a vaguely real-shaped message tree
     ts = ThreadSet.new
