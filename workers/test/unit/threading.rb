@@ -157,6 +157,7 @@ class LLThreadTest < ThreadingTest
   def test_drop
     t = LLThread.new
     t << c = Container.new('1')
+    assert_equal 0, t.count
     t.drop c
     assert_equal [], t.containers
     # removed the raise; malicious input can raise things

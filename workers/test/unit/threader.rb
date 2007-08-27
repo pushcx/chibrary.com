@@ -83,6 +83,7 @@ class ThreaderTest < Test::Unit::TestCase
     threadset = mock
     threadset.expects(:threads).returns([])
     AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    t.inventory.expects(:[]=).with('example/2007/08', { :threads => 0, :messages => 0 }.to_yaml)
 
     t.cache_work slug, year, month, message_list, threadset
   end
@@ -95,6 +96,7 @@ class ThreaderTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock
+    thread.expects(:count).returns(1)
     thread.expects(:to_yaml).returns("yaml")
     thread.expects(:first).returns(mock(:call_number => '00000000'))
     threadset = mock
@@ -102,6 +104,7 @@ class ThreaderTest < Test::Unit::TestCase
     o = mock
     o.expects(:about).returns({ 'content-length' => "yaml".length })
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
+    t.inventory.expects(:[]=).with('example/2007/08', { :threads => 1, :messages => 1 }.to_yaml)
 
     t.cache_work slug, year, month, message_list, threadset
   end
@@ -114,12 +117,14 @@ class ThreaderTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock
+    thread.expects(:count).returns(1)
     thread.expects(:to_yaml).returns("yaml")
     thread.expects(:first).returns(mock(:call_number => '00000000'))
     threadset = mock
     threadset.expects(:threads).returns([thread])
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
-    AWS::S3::S3Object.expects(:store).with("render_queue/example/2007/08/00000000", '', "listlibrary_cachedhash", { :content_type => 'text/plain' })
+    t.render_queue.expects(:[]=).with('example/2007/08/00000000', '')
+    t.inventory.expects(:[]=).with('example/2007/08', { :threads => 1, :messages => 1 }.to_yaml)
     AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
 
     t.cache_work slug, year, month, message_list, threadset

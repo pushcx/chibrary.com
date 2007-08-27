@@ -1,6 +1,6 @@
 renderer:
-  * get scary quoting regexp under test
   * mailing list home pages
+  * get scary quoting regexp under test
   * adsense
   * deal with html mail
   * check ETag header

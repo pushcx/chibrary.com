@@ -78,12 +78,13 @@ class LLThread
   end
 
   def << c
+    @count = nil
     @containers << c
   end
 
-  def empty?; @containers.empty?; end
-  def empty!; @containers.clear; end
-  def drop c; @containers.delete(c) ; end #or raise "#{self}: bad drop #{c}"; end
+  def empty?; @containers.empty? ; end
+  def empty!; @containers.clear ; @count = nil ; end
+  def drop c; @containers.delete(c) ; @count = nil ; end #or raise "#{self}: bad drop #{c}"; end
 
   ## unused
   def dump f=$stdout
@@ -92,7 +93,7 @@ class LLThread
     f.puts "=== end thread ==="
   end
 
-  def count ; collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
+  def count ; @count ||= collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
 
   ## yields each message, its depth, and its parent. the message yield
   ## parameter can be a Message object, or :fake_root, or nil (no

@@ -5,10 +5,11 @@ require 'threading'
 require 'list'
 
 class Threader
-  attr_accessor :render_queue
+  attr_accessor :inventory, :render_queue
 
   def initialize
     @render_queue = CachedHash.new("render_queue")
+    @inventory    = CachedHash.new("inventory")
   end
 
   def get_job
@@ -56,7 +57,12 @@ class Threader
       :content_type => 'text/plain'
     )
 
+    n_threads  = 0
+    n_messages = 0
     threadset.threads.each do |thread|
+      n_threads  += 1
+      n_messages += thread.count
+
       name = "#{year}/#{month}/#{thread.first.call_number}"
       yaml = thread.to_yaml
       begin
@@ -76,6 +82,8 @@ class Threader
         :content_type => 'text/plain'
       )
     end
+
+    @inventory["#{slug}/#{year}/#{month}"] = { :threads => n_threads, :messages => n_messages }.to_yaml
   end
 end
 
