@@ -42,7 +42,12 @@ ol.thread_list li {
   width: 100%;
 }
   ol.thread_list li span.date {
-    color: #777777;
+    color: #555555;
+  }
+  ol.thread_list li span.subject {
+    color: #464b72;
+    font-style: italic;
+    margin-left: 1em;
   }
   ol.thread_list li a.message {
     color: #000000;

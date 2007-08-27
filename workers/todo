@@ -1,5 +1,4 @@
 renderer:
-  * thread_list display subject changes
   * get scary quoting regexp under test
   * mailing list home pages
   * adsense
