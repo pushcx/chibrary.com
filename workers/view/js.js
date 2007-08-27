@@ -13,14 +13,12 @@ $(function() {
     }
   }).each(function(){ $(this).click(); });
 
-  // thread_list
+  // thread_list: show vertical line to pick out siblings
   $('ol.thread_list li a span.indent').each(function(){
     $(this).parent().parent().attr('indent', $(this).css('width'));
-  });
-  $('ol.thread_list li').mouseover(function(){
+  }).parent().parent().mouseover(function(){
     $(this).parent().css('background-position', $(this).attr('indent') + ' 0px');
-  });
-  $('ol.thread_list').mouseout(function(){
+  }).parent().mouseout(function(){
     $(this).css('background-position', '-1px 0px');
   });
 
