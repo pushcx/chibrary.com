@@ -27,11 +27,11 @@ class View
 
     filename = (options[:page] or options[:partial])
     if options[:page]
-      Haml::Engine.new(File.read("template/layout.haml"), :locals => locals, :filename => "layout").render(View) do
-        Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
+      Haml::Engine.new(File.read("view/layout.haml"), :locals => locals, :filename => "layout").render(View) do
+        Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
       end
     elsif options[:partial]
-      Haml::Engine.new(File.read("template/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
+      Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
     end
   end
 
