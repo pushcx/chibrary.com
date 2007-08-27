@@ -71,6 +71,7 @@ class Renderer
   def render_month slug, year, month
     html = View::render(:page => "month", :locals => {
       :threadset => ThreadSet.month(slug, year, month),
+      :inventory => AWS::S3::S3Object.load_cache("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
       :list      => List.new(slug),
       :slug      => slug,
       :year      => year,

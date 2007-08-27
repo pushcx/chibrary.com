@@ -29,9 +29,9 @@ class AWS::S3::Bucket
 end
 
 class AWS::S3::S3Object
-  def self.load_cache key
+  def self.load_cache key, bucket='listlibrary_archive'
     begin
-      YAML::load(AWS::S3::S3Object.value(key, 'listlibrary_archive'))
+      YAML::load(AWS::S3::S3Object.value(key, bucket))
     rescue
       nil
     end
