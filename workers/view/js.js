@@ -13,6 +13,17 @@ $(function() {
     }
   }).each(function(){ $(this).click(); });
 
+  // thread_list
+  $('ol.thread_list li a span.indent').each(function(){
+    $(this).parent().parent().attr('indent', $(this).css('width'));
+  });
+  $('ol.thread_list li').mouseover(function(){
+    $(this).parent().css('background-position', $(this).attr('indent') + ' 0px');
+  });
+  $('ol.thread_list').mouseout(function(){
+    $(this).css('background-position', '-1px 0px');
+  });
+
   // thread view: toggleable blockquotes
   $("div.message blockquote").toggle(function() {
     // close up

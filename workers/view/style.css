@@ -11,13 +11,6 @@ ol.threads {
     ol.threads li.thread.closed:hover .header {
       background-color: #ddeedd;
     }
-
-    ol.threads li.thread ol.thread_list {
-    }
-    ol.threads li.thread ol.thread_list.closed {
-      display: none;
-    }
-
     ol.threads li.thread .header .count {
       display: block;
       float: left;
@@ -31,16 +24,24 @@ ol.threads {
     ol.threads ol.thread_list {
       margin-left: 3em;
     }
+    ol.threads li.thread ol.thread_list.closed {
+      display: none;
+    }
 
 /* thread list */
 
 ol.thread_list {
+  background: transparent url(thread_list_line.png) repeat-y -1px 0;
   list-style-type: none;
   margin-left: 0;
 }
 ol.thread_list li {
   width: 100%;
 }
+  ol.thread_list li span.indent {
+    display: block;
+    float: left;
+  }
   ol.thread_list li span.date {
     color: #555555;
   }
