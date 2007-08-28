@@ -123,19 +123,21 @@ class Renderer
   end
 
   def upload_page filename, str
+    tmpname = "#{Process.pid}-#{rand(1000000)}"
     dirs = filename.split('/')
     filename = dirs.pop
     path = "listlibrary.net"
 
     sftp_connection do |sftp|
+      sftp.open_handle("/tmp/#{tmpname}", "w") do |handle|
+        result = sftp.write(handle, str)
+        result.code
+      end
       dirs.each do |dir|
         path += "/#{dir}"
         sftp.mkdir path
       end
-      sftp.open_handle("#{path}/#{filename}", "w") do |handle|
-        result = sftp.write(handle, str)
-        result.code
-      end
+      sftp.rename("/tmp/#{tmpname}", "#{path}/#{filename}")
     end
   end
 

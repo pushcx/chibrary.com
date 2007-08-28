@@ -1,8 +1,13 @@
 renderer:
   * mailing list home pages
+  * add accesskey to links
   * get scary quoting regexp under test
   * adsense
+  * thread next/previous
+  * month next/previous
+  * fix month view naming for filesystem
   * deal with html mail
+  * get basic site online
   * check ETag header
   * check Expires header
   * 1h: research other caching mechanisms
@@ -48,7 +53,12 @@ Filer:
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
   * spamcheck
-Adverising:
+advertising:
   * ask for links from:
     * http://www.ruby-lang.org/en/community/mailing-lists
     * http://linux-kernel.org
+future:
+  * private archives for pay
+  * cookie for first visit, visit count, page count
+  * a/b test page layouts and content
+  * brief satisfaction survey in lightbox

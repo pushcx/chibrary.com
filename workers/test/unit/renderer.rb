@@ -152,11 +152,12 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_upload_page
+    handle = mock
     sftp = mock
+    sftp.expects(:open_handle).yields(handle)
     sftp.expects(:mkdir).with("listlibrary.net/path")
     sftp.expects(:mkdir).with("listlibrary.net/path/to")
-    handle = mock
-    sftp.expects(:open_handle).with("listlibrary.net/path/to/filename", "w").yields(handle)
+    sftp.expects(:rename)
     sftp.expects(:write).with(handle, "str").returns(mock(:code => 0))
     r = Renderer.new
     r.expects(:sftp_connection).yields(sftp)
