@@ -1,14 +1,13 @@
-RewriteEngine On
-
 DirectoryIndex off
+Options -Indexes
 
+RewriteEngine On
 # list
-RewriteRule ^/([a-zA-Z\-])$  /$1/index.html
-RewriteRule ^/([a-zA-Z\-])/$ /$1/index.html
+RewriteRule ^([a-zA-Z\-]+)$  /$1/
+RewriteRule ^([a-zA-Z\-]+)/$ /$1/index.html
 # year
-RewriteRule ^/([a-zA-Z\-])/[0-9][0-9][0-9][0-9]$  /$1 [R=301,L]
-RewriteRule ^/([a-zA-Z\-])/[0-9][0-9][0-9][0-9]/$ /$1 [R=301,L]
+RewriteRule ^([a-zA-Z\-]+)/[0-9][0-9][0-9][0-9]$  /$1/
+RewriteRule ^([a-zA-Z\-]+)/[0-9][0-9][0-9][0-9]/$ /$1/
 # month
-RewriteRule ^/([a-zA-Z\-]/[0-9][0-9][0-9][0-9]/[0-9][0-9])$  /$1/index.html [R=301,L]
-RewriteRule ^/([a-zA-Z\-]/[0-9][0-9][0-9][0-9]/[0-9][0-9])/$ /$1/index.html [R=301,L]
-
+RewriteRule ^([a-zA-Z\-]+/[0-9][0-9][0-9][0-9]/[0-9][0-9])$  /$1/
+RewriteRule ^([a-zA-Z\-]+/[0-9][0-9][0-9][0-9]/[0-9][0-9])/$ /$1/index.html
