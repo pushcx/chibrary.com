@@ -1,3 +1,22 @@
+/* list view */
+
+div.list table {
+  border: none;
+}
+div.list table td {
+  text-align: right;
+}
+div.list table thead tr.months td.upper_left {
+  border: none;
+}
+div.list table thead tr.months td {
+  border-bottom: 0.1em solid #dddddd;
+  width: 4em;
+}
+div.list table tbody tr:last-child td.year {
+  border-bottom: none;
+}
+
 /* month view */
 
 ol.threads {

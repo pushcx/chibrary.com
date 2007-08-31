@@ -66,6 +66,18 @@ class Renderer
   end
 
   def render_list slug
+    years = {}
+    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "inventory/#{slug}/").each do |key|
+      year, month = key.split('/')[2..-1]
+      years[year] ||= {}
+      years[year][month] = AWS::S3::S3Object.load_cache(key, "listlibrary_cachedhash")
+    end
+    html = View::render(:page => "list", :locals => {
+      :years     => years,
+      :list      => List.new(slug),
+      :slug      => slug,
+    })
+    upload_page "#{slug}", html
   end
 
   def render_month slug, year, month
@@ -77,7 +89,7 @@ class Renderer
       :year      => year,
       :month     => month,
     })
-    upload_page "#{slug}/#{year}/#{month}/", html
+    upload_page "#{slug}/#{year}/#{month}", html
   end
 
   def render_thread slug, year, month, call_number

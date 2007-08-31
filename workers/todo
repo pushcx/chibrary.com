@@ -1,5 +1,6 @@
+* s/load_cache/load_yaml/g
 renderer:
-  * mailing list home pages
+  * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
   * add accesskey to links
   * get scary quoting regexp under test
   * adsense
@@ -20,6 +21,7 @@ renderer:
   * per-user archives
   * logging
   * add on-disk caching for longer-lived s3 workers
+  * get individual views under test
 about page:
   * subscription instructions
   * 'this is a barking stapler project'

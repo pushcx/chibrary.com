@@ -1,5 +1,7 @@
-.list
-  %h1= "#{year}-#{month} " + (list['name'] or slug)
+.month
+  %h1
+    %a{ :href => "/#{slug}" }= (list['name'] or slug)
+    = "#{year}-#{month}"
 
   - if inventory
     %p= "#{inventory[:messages]} messages in #{inventory[:threads]} threads"
