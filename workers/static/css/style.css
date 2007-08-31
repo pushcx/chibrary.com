@@ -1,6 +1,8 @@
 /* layout */
 #thread-side-ad {
-  margin-top: 95px;
+  left: 10px;
+  position: fixed;
+  top: 0px;
 }
 
 /* list view */
