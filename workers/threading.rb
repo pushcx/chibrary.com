@@ -247,6 +247,7 @@ class ThreadSet
   def self.month slug, year, month
     threadset = ThreadSet.new
     AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
+      puts key
       threadset.add_thread AWS::S3::S3Object.load_yaml(key)
     end
     threadset
@@ -320,6 +321,7 @@ class ThreadSet
 
   ## the heart of the threading code
   def add_message message
+    return unless message.is_a? Message
     el = @messages[message.message_id]
     return if el.message # we've seen it before
 
