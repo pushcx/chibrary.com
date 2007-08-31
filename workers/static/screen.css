@@ -12,11 +12,11 @@
 -------------------------------------------------------------- */
 
 /* Import stylesheets and hide from IE/Mac \*/
-@import "lib/reset.css";
-@import "lib/typography.css";
-@import "lib/grid.css";
-@import "lib/buttons.css";
-@import "../view/style.css";
+@import "reset.css";
+@import "typography.css";
+@import "grid.css";
+@import "buttons.css";
+@import "style.css";
 /* End import/hide */
 
 
