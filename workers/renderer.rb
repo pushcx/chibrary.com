@@ -63,7 +63,10 @@ end
 
 class Renderer
   def get_job
-    AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'renderer_queue/', :max_keys => 1).first
+    if @jobs.nil? or @jobs.empty?
+      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/ruby-doc', :max_keys => 100)
+    end
+    @jobs.pop
   end
 
   def render_list slug
@@ -95,7 +98,7 @@ class Renderer
 
   def render_thread slug, year, month, call_number
     html = View::render :page => "thread", :locals => {
-      :thread => AWS::S3::S3Object.load_yaml("#{slug}/thread/#{year}/#{month}/#{call_number}"),
+      :thread => AWS::S3::S3Object.load_yaml("list/#{slug}/thread/#{year}/#{month}/#{call_number}"),
       :list      => List.new(slug),
       :slug      => slug,
       :year      => year,
@@ -107,7 +110,7 @@ class Renderer
   def delete_thread slug, year, month, call_number
     ssh_connection do |ssh|
       ssh.sftp.connect do |sftp|
-        sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
+        sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}") rescue Net::SFTP::Operations::StatusException
       end
     end
     nil

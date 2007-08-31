@@ -50,8 +50,8 @@ class RendererTest < Test::Unit::TestCase
   def test_get_job
     r = Renderer.new
 
-    AWS::S3::Bucket.expects(:objects).returns(['renderer_queue/example_list/2008/08'])
-    assert_equal 'renderer_queue/example_list/2008/08', r.get_job
+    AWS::S3::Bucket.expects(:objects).returns(['render_queue/example_list/2008/08'])
+    assert_equal 'render_queue/example_list/2008/08', r.get_job
 
     AWS::S3::Bucket.expects(:objects).returns([])
     assert_equal nil, r.get_job
