@@ -195,7 +195,7 @@ class ThreadSetTest < ThreadingTest
     ts.expects(:add_thread).times(4)
     ThreadSet.expects(:new).returns(ts)
     AWS::S3::Bucket.expects(:keylist).returns(%w{a b c d})
-    AWS::S3::S3Object.expects(:load_cache).times(4)
+    AWS::S3::S3Object.expects(:load_yaml).times(4)
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end
 

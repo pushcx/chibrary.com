@@ -70,7 +70,7 @@ class Renderer
     AWS::S3::Bucket.keylist('listlibrary_cachedhash', "inventory/#{slug}/").each do |key|
       year, month = key.split('/')[2..-1]
       years[year] ||= {}
-      years[year][month] = AWS::S3::S3Object.load_cache(key, "listlibrary_cachedhash")
+      years[year][month] = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
     end
     html = View::render(:page => "list", :locals => {
       :years     => years,
@@ -83,7 +83,7 @@ class Renderer
   def render_month slug, year, month
     html = View::render(:page => "month", :locals => {
       :threadset => ThreadSet.month(slug, year, month),
-      :inventory => AWS::S3::S3Object.load_cache("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
+      :inventory => AWS::S3::S3Object.load_yaml("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
       :list      => List.new(slug),
       :slug      => slug,
       :year      => year,
@@ -94,7 +94,7 @@ class Renderer
 
   def render_thread slug, year, month, call_number
     html = View::render :page => "thread", :locals => {
-      :thread => AWS::S3::S3Object.load_cache("#{slug}/thread/#{year}/#{month}/#{call_number}"),
+      :thread => AWS::S3::S3Object.load_yaml("#{slug}/thread/#{year}/#{month}/#{call_number}"),
       :list      => List.new(slug),
       :slug      => slug,
       :year      => year,

@@ -23,7 +23,7 @@ class ThreaderTest < Test::Unit::TestCase
     t = new_threader
 
     # no messages in cache or bucket
-    AWS::S3::S3Object.expects(:load_cache).returns([])
+    AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
 
     # threader should exit cleanly
@@ -34,7 +34,7 @@ class ThreaderTest < Test::Unit::TestCase
     t = new_threader
 
     # one message in cache, none in list
-    AWS::S3::S3Object.expects(:load_cache).returns(["goodid@example.com"], mock)
+    AWS::S3::S3Object.expects(:load_yaml).returns(["goodid@example.com"], mock)
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
     ts = mock
     ThreadSet.expects(:new).returns(ts)
@@ -45,7 +45,7 @@ class ThreaderTest < Test::Unit::TestCase
 
   def test_run_add_message
     t = new_threader
-    AWS::S3::S3Object.expects(:load_cache).returns(["1@example.com"])
+    AWS::S3::S3Object.expects(:load_yaml).returns(["1@example.com"])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
     message = mock
     Message.expects(:new).with("2@example.com").returns(message)
@@ -63,12 +63,12 @@ class ThreaderTest < Test::Unit::TestCase
     # two empty jobs
     job1 = mock(:delete => nil)
     job1.expects(:key).returns('threader_queue/example/2008/07').at_least_once
-    AWS::S3::S3Object.expects(:load_cache).returns([])
+    AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/07/').returns([])
 
     job2 = mock(:delete => nil)
     job2.expects(:key).returns('threader_queue/example/2008/08').at_least_once
-    AWS::S3::S3Object.expects(:load_cache).returns([])
+    AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
 
     t.expects(:get_job).returns(job1, job2, nil).times(3)

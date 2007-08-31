@@ -1,4 +1,3 @@
-* s/load_cache/load_yaml/g
 renderer:
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
   * add accesskey to links

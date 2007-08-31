@@ -22,7 +22,7 @@ class Threader
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
 
-      message_cache = (AWS::S3::S3Object.load_cache("list/#{slug}/message_cache/#{year}/#{month}") or [])
+      message_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message_cache/#{year}/#{month}") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       next if message_cache == message_list
