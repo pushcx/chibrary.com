@@ -77,7 +77,7 @@ class Renderer
       :list      => List.new(slug),
       :slug      => slug,
     })
-    upload_page "#{slug}", html
+    upload_page "#{slug}/index.html", html
   end
 
   def render_month slug, year, month
@@ -89,7 +89,7 @@ class Renderer
       :year      => year,
       :month     => month,
     })
-    upload_page "#{slug}/#{year}/#{month}", html
+    upload_page "#{slug}/#{year}/#{month}/index.html", html
   end
 
   def render_thread slug, year, month, call_number
