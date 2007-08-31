@@ -1,6 +1,9 @@
-DirectoryIndex off
-Options -Indexes
+AuthName "ListLibrary private beta, ask Peter for credentials"
+AuthType Basic
+AuthUserFile /home/listlibrary/listlibrary.net/.htpasswd
+Require valid-user
 
+Options -Indexes
 RewriteEngine On
 # list
 RewriteRule ^([a-zA-Z\-]+)$  /$1/
