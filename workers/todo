@@ -1,14 +1,13 @@
 renderer:
-  * http://listlibrary.net/ruby-core/2007/07/011NY2OW PGP sig falesly thought to be quoting
-  * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
-  * add accesskey to links
-  * get scary quoting regexp under test
   * adsense
+  * add accesskey to links
+  * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
+  * get scary quoting regexp under test
+    * http://listlibrary.net/ruby-core/2007/07/011NY2OW PGP sig falesly thought to be quoting
   * thread next/previous
   * month next/previous
-  * fix month view naming for filesystem
+  * site frontpage
   * deal with html mail
-  * get basic site online
   * check ETag header
   * check Expires header
   * 1h: research other caching mechanisms
