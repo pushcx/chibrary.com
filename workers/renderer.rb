@@ -8,6 +8,7 @@
 require 'rubygems'
 require 'haml'
 require 'net/sftp'
+require 'net/ssh'
 require 'cgi'
 
 require 'aws'
@@ -104,8 +105,10 @@ class Renderer
   end
 
   def delete_thread slug, year, month, call_number
-    sftp_connection do |sftp|
-      sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
+    ssh_connection do |ssh|
+      ssh.sftp.connect do |sftp|
+        sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
+      end
     end
     nil
   end
@@ -140,22 +143,24 @@ class Renderer
     filename = dirs.pop
     path = "listlibrary.net"
 
-    sftp_connection do |sftp|
-      sftp.open_handle("/tmp/#{tmpname}", "w") do |handle|
-        result = sftp.write(handle, str)
-        result.code
+    ssh_connection do |ssh|
+      ssh.sftp.connect do |sftp|
+        sftp.open_handle("tmp/#{tmpname}", "w") do |handle|
+          sftp.write(handle, str)
+          sftp.fsetstat(handle, :permissions => 644)
+        end
+        dirs.each do |dir|
+          path += "/#{dir}"
+          sftp.mkdir path, :mode => 755 rescue Net::SFTP::Operations::StatusException
+        end
       end
-      dirs.each do |dir|
-        path += "/#{dir}"
-        sftp.mkdir path
-      end
-      sftp.rename("/tmp/#{tmpname}", "#{path}/#{filename}")
+      ssh.process.popen3("/bin/mv /home/listlibrary/tmp/#{tmpname} /home/listlibrary/#{path}/#{filename}")
     end
   end
 
-  def sftp_connection
-    Net::SFTP.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9) do |sftp|
-      yield sftp
+  def ssh_connection
+    Net::SSH.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9) do |ssh|
+      yield ssh
     end
   end
 end
