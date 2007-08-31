@@ -64,7 +64,7 @@ end
 class Renderer
   def get_job
     if @jobs.nil? or @jobs.empty?
-      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/ruby-doc', :max_keys => 100)
+      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
     end
     @jobs.pop
   end
@@ -121,7 +121,7 @@ class Renderer
 
     while job = get_job
       slug, year, month, call_number = job.key.split('/')[1..-1]
-      $stdout.puts "#{slug} #{year} #{month} #{call_number}"
+      $stdout.puts [slug, year, month, call_number].compact.join('/')
       job.delete
 
       if call_number # render/delete a thread

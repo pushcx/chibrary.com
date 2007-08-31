@@ -13,10 +13,22 @@
     .container
       .column.span-5.first
         #thread-side-ad
-          advert
+          <script type="text/javascript"><!--
+          google_ad_client = "pub-3425662504305490";
+          google_ad_width = 160;
+          google_ad_height = 600;
+          google_ad_format = "160x600_as";
+          google_ad_type = "text";
+          google_ad_channel = "";
+          google_ui_features = "rc:0";//-->
+          </script><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+        &nbsp;
+        %br/
       .column.span-19.last
         #page
+          <!-- google_ad_section_start -->
           = yield
+          <!-- google_ad_section_end -->
         %hr/
         #footer.quiet
           %p

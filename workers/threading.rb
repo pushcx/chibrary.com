@@ -247,7 +247,6 @@ class ThreadSet
   def self.month slug, year, month
     threadset = ThreadSet.new
     AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
-      puts key
       threadset.add_thread AWS::S3::S3Object.load_yaml(key)
     end
     threadset
