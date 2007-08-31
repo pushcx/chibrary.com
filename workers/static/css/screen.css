@@ -12,24 +12,19 @@
 -------------------------------------------------------------- */
 
 /* Import stylesheets and hide from IE/Mac \*/
-/*
 @import "reset.css";
 @import "typography.css";
 @import "grid.css";
 @import "buttons.css";
-*/
-@import "compressed.css";
-@import "style.css";
 /* End import/hide */
 
 
 /* Compressed version: 
    [http://teenage.cz/acidofil/tools/cssformat.php]
-   
-   Comment out @import statements above, and add this 
-   one when your site has launched (Ca 60% compressed):
-   @import "lib/compressed.css"; */
+@import "lib/compressed.css";
+*/
 
+@import "style.css";
 
 /* Uncomment the line below to see the grid and baseline. 
    (Assuming you've wrapped your columns in a container).
