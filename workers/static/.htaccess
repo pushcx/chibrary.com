@@ -4,6 +4,8 @@ AuthUserFile /home/listlibrary/listlibrary.net/.htpasswd
 Require valid-user
 
 Options -Indexes
+DefaultType text/html
+
 RewriteEngine On
 # list
 RewriteRule ^([a-zA-Z\-]+)$  /$1/
