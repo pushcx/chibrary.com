@@ -11,8 +11,9 @@
     %script{ 'type' => 'text/javascript', :src => '/js/js.js' }
   %body
     .container
-      #thread-side-ad.column.span-5.first
-        advert
+      .column.span-5.first
+        #thread-side-ad
+          advert
       .column.span-19.last
         #page
           = yield
