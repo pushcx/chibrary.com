@@ -20,7 +20,7 @@ end
 
 class Filer
   attr_reader :server, :sequence, :message_count
-  attr_accessor :mailing_lists, :sequences, :threader_queue
+  attr_accessor :mailing_lists, :sequences, :thread_queue
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
@@ -29,7 +29,7 @@ class Filer
     @server = @server.to_i
     @sequences = CachedHash.new("sequence")
     @sequence = (sequence or @sequences["#{@server}/#{Process.pid}"].to_i)
-    @threader_queue = CachedHash.new("threader_queue")
+    @thread_queue = CachedHash.new("thread_queue")
 
     # queue up threading workers for this mailing list, year, and month
     @mailing_lists = {}
@@ -100,7 +100,7 @@ class Filer
   def queue_threader
     @mailing_lists.each do |list, dates|
       dates.each do |year, month|
-        @threader_queue[ "#{list}/#{year}/%02d" % month ] = ''
+        @thread_queue[ "#{list}/#{year}/%02d" % month ] = ''
       end
     end
   end

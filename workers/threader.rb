@@ -13,7 +13,7 @@ class Threader
   end
 
   def get_job
-    AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'threader_queue/', :max_keys => 1).first
+    AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'thread_queue/', :max_keys => 1).first
   end
 
   def run

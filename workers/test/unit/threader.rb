@@ -12,8 +12,8 @@ class ThreaderTest < Test::Unit::TestCase
   def test_get_job
     t = Threader.new
 
-    AWS::S3::Bucket.expects(:objects).returns(['threader_queue/example_list/2008/08'])
-    assert_equal 'threader_queue/example_list/2008/08', t.get_job
+    AWS::S3::Bucket.expects(:objects).returns(['thread_queue/example_list/2008/08'])
+    assert_equal 'thread_queue/example_list/2008/08', t.get_job
 
     AWS::S3::Bucket.expects(:objects).returns([])
     assert_equal nil, t.get_job
@@ -62,12 +62,12 @@ class ThreaderTest < Test::Unit::TestCase
 
     # two empty jobs
     job1 = mock(:delete => nil)
-    job1.expects(:key).returns('threader_queue/example/2008/07').at_least_once
+    job1.expects(:key).returns('thread_queue/example/2008/07').at_least_once
     AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/07/').returns([])
 
     job2 = mock(:delete => nil)
-    job2.expects(:key).returns('threader_queue/example/2008/08').at_least_once
+    job2.expects(:key).returns('thread_queue/example/2008/08').at_least_once
     AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
 
@@ -134,7 +134,7 @@ class ThreaderTest < Test::Unit::TestCase
   def new_threader
     t = Threader.new
     job = mock(:delete => nil)
-    job.expects(:key).returns('threader_queue/example/2008/08').at_least_once
+    job.expects(:key).returns('thread_queue/example/2008/08').at_least_once
     t.expects(:get_job).returns(job, nil).at_least_once
     t
   end
