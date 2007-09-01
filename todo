@@ -2,15 +2,27 @@ renderer:
   * thread_list js: chunk work for big pages like ruby-talk/2007/08
   * 403 and 404 errors
   * front page of site
+  * subject broken http://listlibrary.net/ruby-talk/2007/07/011NY3pJ
+  * misquote http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY36f
+  * not outlook quoting http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY34T
+  * long line widens page: http://listlibrary.net/ruby-talk/2007/07/011NY3me#m011NY3lp
   * add accesskey to links
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
-  * quoted-printable handling
+  * mine, quoted-printable, base64 encoding:
+    * http://listlibrary.net/ruby-talk/2007/07/011NY3sG#m011NY30t
+    * http://listlibrary.net/ruby-talk/2007/07/011NY3bO#m011NY3t-
+    * http://listlibrary.net/ruby-talk/2007/07/011NY3me#m011NY3pp
+    * http://listlibrary.net/ruby-talk/2007/07/011NY34-#m011NY3tZ
+    * charset detection?
   * get scary quoting regexp under test
     * http://listlibrary.net/ruby-core/2007/07/011NY2OW PGP sig falesly thought to be quoting
+    * http://listlibrary.net/ruby-talk/2007/08/007jI01f#m007Po02d
+    * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
+    * http://listlibrary.net/ruby-talk/2007/08/011NY45j#m011NY3__
+    * don't quote < 4 lines
   * thread next/previous
   * month next/previous
   * site frontpage
-  * deal with html mail
   * check ETag header
   * check Expires header
   * 1h: research other caching mechanisms
@@ -20,7 +32,10 @@ renderer:
   * toggleable floating thread overview that scrolls with page, similar to mutt view
   * connect using keys
   * be paranoid about server key changing
-  * per-user archives
+  * per-mail-address (~aka per-uuser) archives
+    * year/month breakdown
+    * display all names given in from line for this address
+    * display other addresses using similar names
   * logging
   * add on-disk caching for longer-lived s3 workers
   * get individual views under test

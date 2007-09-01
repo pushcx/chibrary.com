@@ -165,7 +165,7 @@ class Renderer
       ssh.sftp.connect do |sftp|
         sftp.open_handle("tmp/#{tmpname}", "w") do |handle|
           sftp.write(handle, str)
-          sftp.fsetstat(handle, :permissions => 644)
+          sftp.fsetstat(handle, :permissions => 0644)
         end
         dirs.each do |dir|
           path += "/#{dir}"
