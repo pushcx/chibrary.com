@@ -187,7 +187,10 @@ end
 
 if __FILE__ == $0
   r = Renderer.new
-  ARGV.each { |job| r.jobs << OpenStruct.new(:key => "render_queue/#{job}", :delete => nil) }
+  ARGV.each do |job|
+    AWS::S3::S3Object.delete("render_queue/#{job}", 'listlibrary_cachedhash')
+    r.jobs << OpenStruct.new(:key => "render_queue/#{job}", :delete => nil)
+  end
   r.stop_on_empty = true
   r.run
 end

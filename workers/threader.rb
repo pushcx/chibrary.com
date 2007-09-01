@@ -5,15 +5,21 @@ require 'threading'
 require 'list'
 
 class Threader
-  attr_accessor :inventory, :render_queue
+  attr_accessor :jobs, :inventory, :render_queue, :stop_on_empty
 
   def initialize
+    @jobs = []
+    @stop_on_empty = false
     @render_queue = CachedHash.new("render_queue")
     @inventory    = CachedHash.new("inventory")
   end
 
   def get_job
-    AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'thread_queue/', :max_keys => 1).first
+    if @jobs.empty?
+      exit if @stop_on_empty
+      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'thread_queue/')
+    end
+    @jobs.pop
   end
 
   def run
@@ -87,5 +93,12 @@ class Threader
   end
 end
 
-
-Threader.new.run if __FILE__ == $0
+if __FILE__ == $0
+  t = Threader.new
+  ARGV.each do |job|
+    AWS::S3::S3Object.delete("thread_queue/#{job}", 'listlibrary_cachedhash')
+    t.jobs << OpenStruct.new(:key => "thread_queue/#{job}", :delete => nil)
+  end
+  t.stop_on_empty = true
+  t.run
+end
