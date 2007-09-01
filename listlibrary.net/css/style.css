@@ -115,6 +115,7 @@ div.message.missing p {
 div.message pre.body {
   background-color: transparent;
   border: none;
+  overflow: auto;
   padding: 1.5em 0 1.5em 0;
 }
 
