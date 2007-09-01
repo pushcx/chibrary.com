@@ -4,6 +4,7 @@ renderer:
   * front page of site
   * add accesskey to links
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
+  * quoted-printable handling
   * get scary quoting regexp under test
     * http://listlibrary.net/ruby-core/2007/07/011NY2OW PGP sig falesly thought to be quoting
   * thread next/previous

@@ -141,18 +141,15 @@ class Renderer
 
       if call_number # render/delete a thread
         if AWS::S3::S3Object.exists? "list/#{slug}/thread/#{year}/#{month}/#{call_number}", "listlibrary_archive"
-          $stdout.puts 'thread'
           render_thread slug, year, month, call_number
         else
           delete_thread slug, year, month, call_number
         end
         render_queue["#{slug}/#{year}/#{month}"] = ''
       elsif year and month # render monthly thread list
-        $stdout.puts 'month'
         render_month slug, year, month
         render_queue["#{slug}"] = ''
       else # render list info page
-        $stdout.puts 'list'
         render_list  slug
       end
     end
