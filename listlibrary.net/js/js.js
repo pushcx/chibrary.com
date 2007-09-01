@@ -1,25 +1,28 @@
 $(function() {
   // month view: toggleable thread_lists
-  $("ol.threads li.thread").click(function() {
+  $("li.thread").click(function() {
     $(this).toggleClass('closed');
     $(this).find('ol.thread_list').toggleClass('closed');
   }).dblclick(function() {
     if ($(this).is('.closed')) {
-      $('ol.threads li.thread').removeClass('closed');
-      $('ol.threads li.thread ol.thread_list').removeClass('closed');
+      $('li.thread').removeClass('closed');
+      $('li.thread ol.thread_list').removeClass('closed');
     } else {
-      $('ol.threads li.thread').addClass('closed');
-      $('ol.threads li.thread ol.thread_list').addClass('closed');
+      $('li.thread').addClass('closed');
+      $('li.thread ol.thread_list').addClass('closed');
     }
-  }).each(function(){ $(this).click(); });
+  }).addClass('closed');
+  $('ol.threads ol.thread_list').addClass('closed');
 
   // thread_list: show vertical line to pick out siblings
-  $('ol.thread_list li a span.indent').each(function(){
-    $(this).parent().parent().attr('indent', $(this).css('width'));
-  }).parent().parent().mouseover(function(){
-    $(this).parent().css('background-position', $(this).attr('indent') + ' 0px');
-  }).parent().mouseout(function(){
+  $('ol.thread_list').mouseout(function(){
     $(this).css('background-position', '-1px 0px');
+  });
+  $('ol.thread_list li').mouseover(function(){
+    var indent = $(this).attr('indent')
+    if (typeof indent == 'undefined')
+      $(this).attr('indent', $(this).find('span.indent').css('width'));
+    $(this).parent().css('background-position', indent + ' 0px');
   });
 
   // thread view: toggleable blockquotes
