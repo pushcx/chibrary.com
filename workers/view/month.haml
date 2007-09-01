@@ -12,5 +12,5 @@
       %a{ :id => "t#{thread.first.call_number}", :name => "t#{thread.first.call_number}" }/
       .header
         %span.count= thread.count
-        %a.subject{ :href => thread.first.call_number }= Message.normalize_subject thread.first.subject
+        %a.subject{ :href => thread.first.call_number }= subject(thread.first)
       = render :partial => 'thread_list', :locals => { :thread => thread }

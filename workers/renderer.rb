@@ -59,6 +59,11 @@ class View
       'message'
     end
   end
+
+  def self.subject message
+    s = Message.normalize_subject(message.subject)
+    (s.empty? ? '<i>no subject</i>' : s)
+  end
 end
 
 class Renderer

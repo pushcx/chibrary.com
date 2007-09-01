@@ -16,8 +16,8 @@
           %span.indent{ :style => "width: #{depth * 1.5}em" } &nbsp;
           = h message.from
           %span.date= message.date.strftime("%m-%d %H:%M")
-          - subject = Message.normalize_subject message.subject
+          - s = Message.normalize_subject(message.subject)
           - subjects.pop while depth <= subjects.last[:depth]
-          - if subject != subjects.last[:subject]
-            - subjects << { :depth => depth, :subject => subject }
-            %span.subject= subject
+          - if s != subjects.last[:subject]
+            - subjects << { :depth => depth, :subject => s }
+            %span.subject= subject(message)
