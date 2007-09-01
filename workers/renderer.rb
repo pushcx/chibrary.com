@@ -6,10 +6,11 @@
 # render_queue/slug/year/month/call_number - render/delete a thread
 
 require 'rubygems'
+require 'cgi'
 require 'haml'
 require 'net/sftp'
 require 'net/ssh'
-require 'cgi'
+require 'ostruct'
 
 require 'aws'
 require 'list'
@@ -67,8 +68,16 @@ class View
 end
 
 class Renderer
+  attr_accessor :jobs, :stop_on_empty
+
+  def initialize
+    @jobs = []
+    @stop_on_empty = false
+  end
+
   def get_job
-    if @jobs.nil? or @jobs.empty?
+    if @jobs.empty?
+      exit if @stop_on_empty
       @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
     end
     @jobs.pop
@@ -131,15 +140,18 @@ class Renderer
 
       if call_number # render/delete a thread
         if AWS::S3::S3Object.exists? "list/#{slug}/thread/#{year}/#{month}/#{call_number}", "listlibrary_archive"
+          $stdout.puts 'thread'
           render_thread slug, year, month, call_number
         else
           delete_thread slug, year, month, call_number
         end
         render_queue["#{slug}/#{year}/#{month}"] = ''
       elsif year and month # render monthly thread list
+        $stdout.puts 'month'
         render_month slug, year, month
         render_queue["#{slug}"] = ''
       else # render list info page
+        $stdout.puts 'list'
         render_list  slug
       end
     end
@@ -173,4 +185,9 @@ class Renderer
   end
 end
 
-Renderer.new.run if __FILE__ == $0
+if __FILE__ == $0
+  r = Renderer.new
+  ARGV.each { |job| r.jobs << OpenStruct.new(:key => "render_queue/#{job}", :delete => nil) }
+  r.stop_on_empty = true
+  r.run
+end

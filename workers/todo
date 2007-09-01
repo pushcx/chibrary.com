@@ -1,4 +1,5 @@
 renderer:
+  * thread_list js: chunk work for big pages like ruby-talk/2007/08
   * add accesskey to links
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
   * get scary quoting regexp under test

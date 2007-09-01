@@ -23,7 +23,7 @@
           - 1.upto(12) do |i|
             - month = "%02d" % i
             - if months.has_key?(month)
-              %td.month
+              %td.month.small
                 %a{ :href => "#{year}/#{month}" }= months[month][:threads].to_s + ':' + months[month][:messages].to_s
             - else
               %td.empty_month= ''
