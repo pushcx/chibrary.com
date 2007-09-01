@@ -92,9 +92,9 @@ th      { font-weight:bold; }
 /* Some default classes
 -------------------------------------------------------------- */
 
-p.small   { font-size: 10px; margin-bottom: 18px; }
-p.large   { font-size: 14px; line-height:36px; }
-p.quiet   { color: #666; }
+.small   { font-size: 10px; margin-bottom: 18px; }
+.large   { font-size: 14px; line-height:36px; }
+.quiet   { color: #666; }
 .hide     { display: none; }
 
 
