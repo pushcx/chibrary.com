@@ -1,8 +1,8 @@
 /* layout */
 #thread-side-ad {
-  left: 10px;
+  left: 40px;
   position: fixed;
-  top: 0px;
+  top: 65px;
 }
 
 /* list view */
@@ -57,7 +57,7 @@ ol.threads {
 /* thread list */
 
 ol.thread_list {
-  background: transparent url(thread_list_line.png) repeat-y -1px 0;
+  background: transparent url(/img/thread_list_line.png) repeat-y -1px 0;
   list-style-type: none;
   margin-left: 0;
 }
