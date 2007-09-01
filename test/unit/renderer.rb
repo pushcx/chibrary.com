@@ -33,10 +33,15 @@ class ViewTest < Test::Unit::TestCase
   end
 
   def test_message_partial
-    assert_equal 'message', View::message_partial(Message.new(message(:good), 'test', '00000000'))
+    assert_equal 'message',            View::message_partial(Message.new(message(:good), 'test', '00000000'))
     assert_equal 'message_no_archive', View::message_partial(Message.new(message(:no_archive), 'test', '00000000'))
-    assert_equal 'message_missing', View::message_partial(nil)
-    assert_equal 'message_missing', View::message_partial(:fake_root)
+    assert_equal 'message_missing',    View::message_partial(nil)
+    assert_equal 'message_missing',    View::message_partial(:fake_root)
+  end
+
+  def test_subject
+    assert_equal 'subject',           View::subject(mock(:subject => 'subject'))
+    assert_equal '<i>no subject</i>', View::subject(mock(:subject => ''))
   end
 end
 
@@ -69,6 +74,7 @@ class RendererTest < Test::Unit::TestCase
     inventory = mock
     AWS::S3::S3Object.expects(:load_yaml).returns(inventory)
     View.expects(:render).with(:page => "month", :locals => {
+      :title     => 'example 2007-08',
       :threadset => ts,
       :inventory => inventory,
       :list      => list,
@@ -84,12 +90,14 @@ class RendererTest < Test::Unit::TestCase
     r = Renderer.new
     list = mock
     List.expects(:new).with('example').returns(list)
-    AWS::S3::S3Object.expects(:load_yaml).with("list/example/thread/2007/08/00000000").returns("thread")
+    thread = mock(:subject => 'thread')
+    AWS::S3::S3Object.expects(:load_yaml).with("list/example/thread/2007/08/00000000").returns(thread)
     View.expects(:render).with(:page => "thread", :locals => {
-      :thread => "thread",
-      :list => list,
-      :slug => 'example',
-      :year => '2007',
+      :title  => 'thread (example 2007-08)',
+      :thread => thread,
+      :list   => list,
+      :slug   => 'example',
+      :year   => '2007',
       :month => '08'
     }).returns("html")
     r.expects(:upload_page).with("example/2007/08/00000000", "html")

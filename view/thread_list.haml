@@ -1,6 +1,6 @@
 %ol.thread_list
   - @missing_count = 0
-  - subjects = [{ :depth => -1, :subject => Message.normalize_subject(thread.first.subject) }]
+  - subjects = [{ :depth => -1, :subject => thread.subject }]
   - thread.each do |message, depth, parent|
     %li
       - if message.nil?

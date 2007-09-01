@@ -9,8 +9,8 @@
 %ol.threads
   - threadset.threads.each do |thread|
     %li.thread
-      %a{ :id => "t#{thread.first.call_number}", :name => "t#{thread.first.call_number}" }/
+      %a{ :id => "t#{thread.call_number}", :name => "t#{thread.call_number}" }/
       .header
         %span.count= thread.count
-        %a.subject{ :href => thread.first.call_number }= subject(thread.first)
+        %a.subject{ :href => thread.call_number }= subject(thread.first)
       = render :partial => 'thread_list', :locals => { :thread => thread }
