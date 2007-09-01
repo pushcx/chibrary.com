@@ -6,6 +6,7 @@ require 'redgreen'
 require 'yaml'
 
 # path magic from p152 of Programming Ruby
+$:.unshift File.join(File.dirname(__FILE__), "..", "bin")
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 
 # Don't make a real AWS S3 connection

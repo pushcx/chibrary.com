@@ -76,7 +76,7 @@ class RendererTest < Test::Unit::TestCase
       :year      => '2007',
       :month     => '08'
     }).returns("html")
-    r.expects(:upload_page).with("example/2007/08", "html")
+    r.expects(:upload_page).with("example/2007/08/index.html", "html")
     r.render_month "example", "2007", "08"
   end
 
@@ -84,7 +84,7 @@ class RendererTest < Test::Unit::TestCase
     r = Renderer.new
     list = mock
     List.expects(:new).with('example').returns(list)
-    AWS::S3::S3Object.expects(:load_yaml).with("example/thread/2007/08/00000000").returns("thread")
+    AWS::S3::S3Object.expects(:load_yaml).with("list/example/thread/2007/08/00000000").returns("thread")
     View.expects(:render).with(:page => "thread", :locals => {
       :thread => "thread",
       :list => list,
@@ -99,8 +99,11 @@ class RendererTest < Test::Unit::TestCase
   def test_delete_thread
     r = Renderer.new
     sftp = mock
+    sftp.expects(:connect).yields(sftp)
     sftp.expects(:remove).with("listlibrary.net/example/2007/08/00000000")
-    r.expects(:sftp_connection).yields(sftp)
+    ssh = mock
+    ssh.expects(:sftp).returns(sftp)
+    r.expects(:ssh_connection).yields(ssh)
     r.delete_thread "example", "2007", "08", "00000000"
   end
 
@@ -154,20 +157,23 @@ class RendererTest < Test::Unit::TestCase
   def test_upload_page
     handle = mock
     sftp = mock
+    sftp.expects(:connect).yields(sftp)
     sftp.expects(:open_handle).yields(handle)
-    sftp.expects(:mkdir).with("listlibrary.net/path")
-    sftp.expects(:mkdir).with("listlibrary.net/path/to")
-    sftp.expects(:rename)
-    sftp.expects(:write).with(handle, "str").returns(mock(:code => 0))
+    sftp.expects(:mkdir).at_least_once()
+    sftp.expects(:write).with(handle, "str")
+    sftp.expects(:fsetstat).with(handle, { :permissions => 0644 })
+    ssh = mock
+    ssh.expects(:sftp).returns(sftp)
+    ssh.expects(:process).returns(mock( :popen3 => nil)) # rename message
     r = Renderer.new
-    r.expects(:sftp_connection).yields(sftp)
+    r.expects(:ssh_connection).yields(ssh)
     r.upload_page "path/to/filename", "str"
   end
 
-  def test_sftp_connection
+  def test_ssh_connection
     r = Renderer.new
     m = mock
-    Net::SFTP.expects(:start).yields(m)
-    r.sftp_connection { |sftp| assert_equal m, sftp }
+    Net::SSH.expects(:start).yields(m)
+    r.ssh_connection { |ssh| assert_equal m, ssh }
   end
 end
