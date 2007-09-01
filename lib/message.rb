@@ -42,7 +42,7 @@ class Message
     match = /^#{header}:\s*(.*?)^\S/mi.match(headers + "\n.")
     return nil if match.nil?
     # take first match so that lines we add_header'd take precedence
-    match.captures.shift.sub(/(\s)+/, ' ').strip
+    match.captures.shift.sub(/(\s)+/, ' ').sub(/\n[ \t]+/m, " ").strip
   end
 
   def from

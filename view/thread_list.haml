@@ -18,6 +18,6 @@
           %span.date= message.date.strftime("%m-%d %H:%M")
           - s = Message.normalize_subject(message.subject)
           - subjects.pop while depth <= subjects.last[:depth]
-          - if s != subjects.last[:subject]
+          - if s != subjects.last[:subject] and !subjects.last[:subject].include? s
             - subjects << { :depth => depth, :subject => s }
             %span.subject= subject(message)
