@@ -1,5 +1,4 @@
 renderer:
-  * thread_list js: chunk work for big pages like ruby-talk/2007/08
   * 403 and 404 errors
   * front page of site
   * subject broken http://listlibrary.net/ruby-talk/2007/07/011NY3pJ
@@ -19,6 +18,7 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/08/007jI01f#m007Po02d
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * http://listlibrary.net/ruby-talk/2007/08/011NY45j#m011NY3__
+    * http://listlibrary.net/ruby-talk/2007/08/011NY4jX#m011NY3Bi
     * don't quote < 4 lines
   * thread next/previous
   * month next/previous
