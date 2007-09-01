@@ -1,8 +1,9 @@
 #!/usr/bin/ruby
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
-require 'threading'
 require 'list'
+require 'threading'
 
 class Threader
   attr_accessor :jobs, :inventory, :render_queue, :stop_on_empty

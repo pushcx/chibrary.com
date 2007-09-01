@@ -12,6 +12,7 @@ require 'net/sftp'
 require 'net/ssh'
 require 'ostruct'
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
 

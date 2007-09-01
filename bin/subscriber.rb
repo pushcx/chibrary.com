@@ -2,9 +2,11 @@
 
 require 'net/smtp'
 require 'time'
-require 'message'
+
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'mail'
+require 'message'
 
 def yn(str, expected)
   print str + " "

@@ -2,6 +2,7 @@
 # Fetches and refiles every stored message.
 # Useful for dicking with every message to add a header or something.
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'filer'
 
 class Refiler < Filer

@@ -2,6 +2,7 @@
 
 require 'net/pop'
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
 require 'filer'
 
