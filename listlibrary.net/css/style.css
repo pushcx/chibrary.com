@@ -8,8 +8,10 @@
   float: left;
   margin-right: 1em;
 }
-#footer p.tagline {
+#footer p {
   float: left;
+}
+#footer p.tagline {
   margin-right: 1.5em;
 }
 #footer p.links a {

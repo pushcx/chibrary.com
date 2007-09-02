@@ -96,7 +96,7 @@ class Renderer
   end
 
   def render_static
-    %w{index about error/403 error/404}.each do |page|
+    %w{about index search error/403 error/404}.each do |page|
       upload_page page, View::render(:page => page)
     end
   end
