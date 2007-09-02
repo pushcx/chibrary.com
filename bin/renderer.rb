@@ -43,7 +43,11 @@ class View
   def self.compress_quotes str
     str.sub!(/-----BEGIN [GP]+ SIGNED MESSAGE-----\n.*?\n\n(.*?)\n*-----BEGIN [GP]+ SIGNATURE-----.*/m, '\1')
     str.gsub!(/(^-{4,}[^\-\n]{8,}-{4,}\n.*|(^[^\n]{10,}:\n\n?|)(^&gt;[^\n]*=(20|)\n[^\n]*\n|^&gt;[^\n]*\n(\s*?\n&gt;[^\n]*\n)*)+\n*)/m) do
-      '<blockquote>' + $1.sub(/(.*)\n+/m, '\1').strip + "</blockquote>\n"
+      quote = $1.split(/\n/)
+      quote.shift while quote.first =~ /^&gt;\s*$/
+      quote.pop   while quote.last  =~ /^&gt;\s*$/
+      quote = quote.join("\n")
+      '<blockquote>' + quote.strip + "</blockquote>\n"
     end
     str.strip
   end

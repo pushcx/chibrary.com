@@ -85,6 +85,19 @@ multiple quotes:
     &gt; quote
     &gt; here</blockquote>
     More reply.
+trim blank leading andtrailing:
+  input: |
+    > 
+    > several lines
+    > long, isn't it.
+    >
+    >
+
+    Actual reply.
+  expect: |-
+    <blockquote>&gt; several lines
+    &gt; long, isn't it.</blockquote>
+    Actual reply.
 basic outlook quoting:
   input: |
     This is a message.
