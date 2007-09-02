@@ -24,7 +24,6 @@ renderer:
   * site frontpage
   * check ETag header
   * check Expires header
-  * can interface.js be replaced with a smaller script or appended to jquery?
   * 1h: research other caching mechanisms
   * thread: keyboard navigation for next/prev msg/thread, quote visibility
   * in-page links to parent scroll and add in-page links back down to child above and below message
