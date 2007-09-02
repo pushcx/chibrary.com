@@ -203,3 +203,40 @@ PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW
     Do you mean RubyGems can be a gem?  Looks smart.
 
     // NaHi
+rdoc is not outlook quoting http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY34T:
+  input: |
+    On Jul 24, 2007, at 5:10 AM, F. Senault wrote:
+
+    > I can find the constant in Object.constants, but there is
+    > no delete_const in there.  :|
+
+    $ ri -T remove_const
+    ---------------------------------------------------- Module#remove_const
+          remove_const(sym)   => obj
+    ------------------------------------------------------------------------
+          Removes the definition of the given constant, returning that
+          constants value. Predefined classes and singleton objects  
+    (such as
+          _true_) cannot be removed.
+
+    Hope that helps.
+
+    James Edward Gray II
+
+  expect: |-
+    <blockquote>On Jul 24, 2007, at 5:10 AM, F. Senault wrote:
+
+    &gt; I can find the constant in Object.constants, but there is
+    &gt; no delete_const in there.  :|</blockquote>
+    $ ri -T remove_const
+    ---------------------------------------------------- Module#remove_const
+          remove_const(sym)   =&gt; obj
+    ------------------------------------------------------------------------
+          Removes the definition of the given constant, returning that
+          constants value. Predefined classes and singleton objects  
+    (such as
+          _true_) cannot be removed.
+
+    Hope that helps.
+
+    James Edward Gray II
