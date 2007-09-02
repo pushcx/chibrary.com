@@ -41,9 +41,11 @@ class View
   # helpers
 
   def self.compress_quotes str
-    str.gsub(/(^-{4,}[^-]{8,}-{4,}\n.*|(^[^\n]{10,}:\n\n?|)(^&gt;[^\n]*=(20|)\n.*?\n|^&gt;[^\n]*\n)+\n*)/m) do
-      '<blockquote>' + $1.sub(/(.*)\n+/m, '\1') + "</blockquote>\n"
+    str.sub!(/-----BEGIN [GP]+ SIGNED MESSAGE-----\n.*?\n\n(.*?)\n*-----BEGIN [GP]+ SIGNATURE-----.*/m, '\1')
+    str.gsub!(/(^-{4,}[^-]{8,}-{4,}\n.*|(^[^\n]{10,}:\n\n?|)(^&gt;[^\n]*=(20|)\n.*?\n|^&gt;[^\n]*\n)+\n*)/m) do
+      '<blockquote>' + $1.sub(/(.*)\n+/m, '\1').strip + "</blockquote>\n"
     end
+    str.strip
   end
 
   def self.h str

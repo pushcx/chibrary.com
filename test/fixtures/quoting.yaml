@@ -4,7 +4,7 @@ clean passthrough:
     Basic
     multiline
     message.
-  expect: |
+  expect: |-
     Basic
     multiline
     message.
@@ -17,13 +17,12 @@ single headered quote:
     > Just keeps going.
 
     Actual reply.
-  expect: |
+  expect: |-
     <blockquote>Bob Barker wrote:
     &gt; Some quoted text.
     &gt; That's several lines.
     &gt; long, isn't it.
-    &gt; Just keeps going.
-    </blockquote>
+    &gt; Just keeps going.</blockquote>
     Actual reply.
 single unheadered quote:
   input: |
@@ -33,18 +32,17 @@ single unheadered quote:
     > Just keeps going.
 
     Actual reply.
-  expect: |
+  expect: |-
     <blockquote>&gt; Some quoted text.
     &gt; That's several lines.
     &gt; long, isn't it.
-    &gt; Just keeps going.
-    </blockquote>
+    &gt; Just keeps going.</blockquote>
     Actual reply.
 multiple quotes:
   input: |
     On 2/3/2007, Bob Barker wrote:
     > Some quoted text.
-    > That's several lines.
+    > That is several lines.
     >
     > Just keeps going.
 
@@ -56,20 +54,18 @@ multiple quotes:
     > here
 
     More reply.
-  expect: |
+  expect: |-
     <blockquote>On 2/3/2007, Bob Barker wrote:
     &gt; Some quoted text.
-    &gt; That's several lines.
+    &gt; That is several lines.
     &gt;
-    &gt; Just keeps going.
-    </blockquote>
+    &gt; Just keeps going.</blockquote>
     Some actual reply.
 
     <blockquote>&gt; yep,
     &gt; another
     &gt; quote
-    &gt; here
-    </blockquote>
+    &gt; here</blockquote>
     More reply.
 basic outlook quoting:
   input: |
@@ -93,7 +89,7 @@ basic outlook quoting:
     > that is properly quoted
 
     This is actually quoted text, not part of the reply.
-  expect: |
+  expect: |-
     This is a message.
 
     Multiline.
@@ -132,7 +128,7 @@ quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011
     I just didn't know it would be called Ruby
     -- Kent Beck
 
-  expect: |
+  expect: |-
     <blockquote>On 7/24/07, F. Senault &lt;fred@la...net&gt; wrote:
     &gt; class TestA
     &gt;   include Plugin
@@ -148,3 +144,62 @@ quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011
     I always knew that one day Smalltalk would replace Java.
     I just didn't know it would be called Ruby
     -- Kent Beck
+PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW:
+  input: |
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA1
+
+    Hi Eric,
+
+    Eric Hodel wrote:
+    >> Matz plans to import gem into Ruby 1.9.  Does anyone has any
+    > RubyGems is still missing one key feature, the ability to handle
+    > platform-specific gems.  There may be a few other minor features that
+    > are missing, but I don't think RubyGems is ready for inclusion until then.
+
+    Are you and RubyGems maintainers negative to include RubyGems in
+    ruby/1.9.1 ?
+
+    I have a plan to propose unbundling some libraries such as soap4r, tk,
+    webrick, json, etc.  Maintainer-less libraries such as yaml should be
+
+    > Also, RubyGems can make releases faster than Ruby can, so it should
+    > still be possible to upgrade RubyGems to never versions independent of
+    > Ruby.
+
+    Do you mean RubyGems can be a gem?  Looks smart.
+
+    // NaHi
+
+    -----BEGIN PGP SIGNATURE-----
+    Version: GnuPG v1.4.5 (Cygwin)
+
+    iQEVAwUBRpx86B9L2jg5EEGlAQJyTAgAtwVeH0vWdsVrwJ+6XkaTp6VUnbSMv6ks
+    xm2oCfPngVA/poNmz+xMtui6m8oiIzuixpO7/ZsezvsvtFjPRqWfijdLQxGQ/xJp
+    7RC4kaQ4xhZrOTBr0leOkG3gWGW4NzhCEs9OA+xepntFQs+uluSbGigvXMbnkvOn
+    H6niYssyCHrz3Y+s7Co8ywgPcKMGDQQzBW7g25UkUcMPmnpIaqYqAosGTF84OQwI
+    ab9+KcggVsrtDP9L0DSUqWNwBIOEGt66a4IYTI9ldQLQEsg7i8D5IwT216nmwhrU
+    lY/pE6YShGdKWvuI06RTmwUs5NDoJ/GwxF75hpvc98xALr/PiO/tgA==
+    =vqQL
+    -----END PGP SIGNATURE-----
+
+  expect: |-
+    Hi Eric,
+
+    <blockquote>Eric Hodel wrote:
+    &gt;&gt; Matz plans to import gem into Ruby 1.9.  Does anyone has any
+    &gt; RubyGems is still missing one key feature, the ability to handle
+    &gt; platform-specific gems.  There may be a few other minor features that
+    &gt; are missing, but I don't think RubyGems is ready for inclusion until then.</blockquote>
+    Are you and RubyGems maintainers negative to include RubyGems in
+    ruby/1.9.1 ?
+
+    I have a plan to propose unbundling some libraries such as soap4r, tk,
+    webrick, json, etc.  Maintainer-less libraries such as yaml should be
+
+    <blockquote>&gt; Also, RubyGems can make releases faster than Ruby can, so it should
+    &gt; still be possible to upgrade RubyGems to never versions independent of
+    &gt; Ruby.</blockquote>
+    Do you mean RubyGems can be a gem?  Looks smart.
+
+    // NaHi
