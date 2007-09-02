@@ -9,9 +9,10 @@ RewriteEngine On
 RewriteRule \.svn/ . [F,L]
 
 # front page
-RewriteRule ^$ /index
+RewriteRule ^$ /index [L]
 
 # list
+RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^([a-zA-Z\-]+)$  /$1/
 RewriteRule ^([a-zA-Z\-]+)/$ /$1/index.html
 
