@@ -1,7 +1,5 @@
 renderer:
   * contact copyright office with DMCA info
-  * front page of site
-  * add accesskey to links
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
   * mime, quoted-printable, base64 encoding:
     * http://listlibrary.net/ruby-talk/2007/07/011NY3sG#m011NY30t
@@ -21,8 +19,10 @@ renderer:
     * don't quote < 4 lines
   * thread next/previous
   * month next/previous
+  * add accesskey to links
   * site frontpage
-  * check ETag header
+  * ask DreamHost about non-gzipped month and thread pages
+  * ask DreamHost about missing Content-Type on css/js
   * check Expires header
   * 1h: research other caching mechanisms
   * thread: keyboard navigation for next/prev msg/thread, quote visibility

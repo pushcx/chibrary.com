@@ -131,6 +131,7 @@ class LLThread
   def size; map { |m, *o| m ? 1 : 0 }.sum; end
   def subject; argfind { |m, *o| Message.normalize_subject(m.subject) if m }; end
   def call_number; argfind { |m, *o| return m.call_number if m }; end
+  def find_call_number(c); argfind { |m, *o| return m if m and m.call_number == c}; end
 
   def latest_message
     inject(nil) do |a, b| 

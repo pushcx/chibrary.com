@@ -7,6 +7,9 @@ class ViewTest < Test::Unit::TestCase
   fixtures :message
 
   def test_compress_quotes
+    YAML::load_file("test/fixtures/quoting.yaml").each do |name, quote|
+      assert_equal quote['expect'], View::compress_quotes(View::h(quote['input'])), "testcase: #{name}"
+    end
   end
 
   def test_h

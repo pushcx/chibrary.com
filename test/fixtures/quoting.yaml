@@ -1,0 +1,120 @@
+---
+clean passthrough:
+  input: |
+    Basic
+    multiline
+    message.
+  expect: |
+    Basic
+    multiline
+    message.
+
+single headered quote:
+  input: |
+    Bob Barker wrote:
+    > Some quoted text.
+    > That's several lines.
+    > long, isn't it.
+    > Just keeps going.
+
+    Actual reply.
+  expect: |
+    <blockquote>Bob Barker wrote:
+    &gt; Some quoted text.
+    &gt; That's several lines.
+    &gt; long, isn't it.
+    &gt; Just keeps going.
+    </blockquote>
+    Actual reply.
+
+single unheadered quote:
+  input: |
+    > Some quoted text.
+    > That's several lines.
+    > long, isn't it.
+    > Just keeps going.
+
+    Actual reply.
+  expect: |
+    <blockquote>&gt; Some quoted text.
+    &gt; That's several lines.
+    &gt; long, isn't it.
+    &gt; Just keeps going.
+    </blockquote>
+    Actual reply.
+
+multiple quotes:
+  input: |
+    On 2/3/2007, Bob Barker wrote:
+    > Some quoted text.
+    > That's several lines.
+    > long, isn't it.
+    > Just keeps going.
+
+    Some actual reply.
+
+    > yep,
+    > another
+    > quote
+    > here
+
+    More reply.
+  expect: |
+    <blockquote>On 2/3/2007, Bob Barker wrote:
+    &gt; Some quoted text.
+    &gt; That's several lines.
+    &gt; long, isn't it.
+    &gt; Just keeps going.
+    </blockquote>
+    Some actual reply.
+
+    <blockquote>&gt; yep,
+    &gt; another
+    &gt; quote
+    &gt; here
+    </blockquote>
+    More reply.
+
+basic outlook quoting:
+  input: |
+    This is a message.
+
+    Multiline.
+
+    ----Original Message-----
+    From: dima [mailto:dejan.dimic@gm...com] 
+    Sent: Monday, August 13, 2007 5:00 AM
+    To: ruby-talk ML
+    Subject: Re: Ubuntu as a Ruby dev environment?
+
+    On Aug 12, 7:43 pm, "M. Edward (Ed) Borasky" <zn...@ce...net> wrote:
+    > joviyach wrote:
+    > > double-nested quote
+    > > 
+    > > and more double
+    >
+    > some response
+    > that is properly quoted
+
+    This is actually quoted text, not part of the reply.
+  expect: |
+    This is a message.
+
+    Multiline.
+
+    <blockquote>----Original Message-----
+    From: dima [mailto:dejan.dimic@gm...com] 
+    Sent: Monday, August 13, 2007 5:00 AM
+    To: ruby-talk ML
+    Subject: Re: Ubuntu as a Ruby dev environment?
+
+    On Aug 12, 7:43 pm, &quot;M. Edward (Ed) Borasky&quot; &lt;zn...@ce...net&gt; wrote:
+    &gt; joviyach wrote:
+    &gt; &gt; double-nested quote
+    &gt; &gt; 
+    &gt; &gt; and more double
+    &gt;
+    &gt; some response
+    &gt; that is properly quoted
+
+    This is actually quoted text, not part of the reply.</blockquote>
