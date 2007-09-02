@@ -38,6 +38,24 @@ single unheadered quote:
     &gt; long, isn't it.
     &gt; Just keeps going.</blockquote>
     Actual reply.
+two quotes with break:
+  input: |
+    > Some quoted text.
+    > That's several lines.
+    > long, isn't it.
+
+    > Just keeps going.
+    > And going.
+
+    Actual reply.
+  expect: |-
+    <blockquote>&gt; Some quoted text.
+    &gt; That's several lines.
+    &gt; long, isn't it.
+
+    &gt; Just keeps going.
+    &gt; And going.</blockquote>
+    Actual reply.
 multiple quotes:
   input: |
     On 2/3/2007, Bob Barker wrote:
