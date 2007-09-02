@@ -20,6 +20,10 @@
 
 /* common elements */
 a:visited { color: #5f12a7; }
+input {
+  border: 1px solid #999999;
+  background-color: #dcdad5;
+}
 
 /* static pages */
 dt {
