@@ -16,6 +16,9 @@
   margin-right: 1.5em;
 }
 
+/* common elements */
+a:visited { color: #5f12a7; }
+
 /* static pages */
 dt {
   float: left;
@@ -61,9 +64,6 @@ ol.threads {
       margin-right: 0.5em;
       text-align: right;
       width: 2.5em;
-    }
-    ol.threads li.thread .header .subject {
-      color: #000000;
     }
     ol.threads ol.thread_list {
       margin-left: 3em;
