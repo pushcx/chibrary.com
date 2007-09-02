@@ -9,7 +9,6 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/07/011NY3me
     * charset detection?
   * get scary quoting regexp under test
-    * misquote http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY36f
     * not outlook quoting http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY34T
     * http://listlibrary.net/ruby-core/2007/07/011NY2OW PGP sig falesly thought to be quoting
     * http://listlibrary.net/ruby-talk/2007/08/007jI01f#m007Po02d

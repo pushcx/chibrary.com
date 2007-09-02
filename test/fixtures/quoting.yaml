@@ -8,7 +8,6 @@ clean passthrough:
     Basic
     multiline
     message.
-
 single headered quote:
   input: |
     Bob Barker wrote:
@@ -26,7 +25,6 @@ single headered quote:
     &gt; Just keeps going.
     </blockquote>
     Actual reply.
-
 single unheadered quote:
   input: |
     > Some quoted text.
@@ -42,7 +40,6 @@ single unheadered quote:
     &gt; Just keeps going.
     </blockquote>
     Actual reply.
-
 multiple quotes:
   input: |
     On 2/3/2007, Bob Barker wrote:
@@ -74,7 +71,6 @@ multiple quotes:
     &gt; here
     </blockquote>
     More reply.
-
 basic outlook quoting:
   input: |
     This is a message.
@@ -118,3 +114,37 @@ basic outlook quoting:
     &gt; that is properly quoted
 
     This is actually quoted text, not part of the reply.</blockquote>
+quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY36f:
+  input: |
+    On 7/24/07, F. Senault <fred@lacave.net> wrote:
+    > class TestA
+    >   include Plugin
+    > end
+    > class TestA1 < TestA ; end
+    class TestA1
+        include Plugin
+
+    But that will not do the trick, you need meta information on class
+    level, I just have tried to adapt update.rb for usage with extend
+
+    --=20
+    I always knew that one day Smalltalk would replace Java.
+    I just didn't know it would be called Ruby
+    -- Kent Beck
+
+  expect: |
+    <blockquote>On 7/24/07, F. Senault &lt;fred@la...net&gt; wrote:
+    &gt; class TestA
+    &gt;   include Plugin
+    &gt; end
+    &gt; class TestA1 &lt; TestA ; end</blockquote>
+    class TestA1
+        include Plugin
+
+    But that will not do the trick, you need meta information on class
+    level, I just have tried to adapt update.rb for usage with extend
+
+    --=20
+    I always knew that one day Smalltalk would replace Java.
+    I just didn't know it would be called Ruby
+    -- Kent Beck
