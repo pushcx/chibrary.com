@@ -35,7 +35,7 @@ $(function() {
     // open up
     $(this).html(this.quote)
     $(this).toggleClass('closed');
-  }).each(function(){ $(this).click(); });
+  }).each(function(){ if (!$(this).is('.short')) $(this).click(); });
   // after page height changes, get back to named anchor
   if (location.hash) {
     $(location.hash).ScrollTo(0);

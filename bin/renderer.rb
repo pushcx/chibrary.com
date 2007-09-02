@@ -46,8 +46,13 @@ class View
       quote = $1.split(/\n/)
       quote.shift while quote.first =~ /^&gt;\s*$/
       quote.pop   while quote.last  =~ /^&gt;\s*$/
+      lines = quote.length
       quote = quote.join("\n")
-      '<blockquote>' + quote.strip + "</blockquote>\n"
+      if lines <= 3
+        '<blockquote class="short">' + quote + "</blockquote>\n"
+      else
+        '<blockquote>' + quote + "</blockquote>\n"
+      end
     end
     str.strip
   end

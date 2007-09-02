@@ -9,8 +9,6 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/07/011NY3me
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * charset detection?
-  * get scary quoting regexp under test
-    * don't quote < 4 lines
   * thread next/previous
   * month next/previous
   * add accesskey to links

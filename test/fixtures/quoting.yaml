@@ -8,6 +8,39 @@ clean passthrough:
     Basic
     multiline
     message.
+
+short quotes not blockquoted:
+  input: |
+    > one line quote
+    reply
+    > two line quote
+    > two line quote
+    reply
+    > three line quote
+    > three line quote
+    > three line quote
+    reply
+    > four line quote
+    > four line quote
+    > four line quote
+    > four line quote
+    reply
+  expect: |-
+    <blockquote class="short">&gt; one line quote</blockquote>
+    reply
+    <blockquote class="short">&gt; two line quote
+    &gt; two line quote</blockquote>
+    reply
+    <blockquote class="short">&gt; three line quote
+    &gt; three line quote
+    &gt; three line quote</blockquote>
+    reply
+    <blockquote>&gt; four line quote
+    &gt; four line quote
+    &gt; four line quote
+    &gt; four line quote</blockquote>
+    reply
+
 single headered quote:
   input: |
     Bob Barker wrote:
@@ -95,7 +128,7 @@ trim blank leading andtrailing:
 
     Actual reply.
   expect: |-
-    <blockquote>&gt; several lines
+    <blockquote class="short">&gt; several lines
     &gt; long, isn't it.</blockquote>
     Actual reply.
 basic outlook quoting:
@@ -228,7 +261,7 @@ PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW
     I have a plan to propose unbundling some libraries such as soap4r, tk,
     webrick, json, etc.  Maintainer-less libraries such as yaml should be
 
-    <blockquote>&gt; Also, RubyGems can make releases faster than Ruby can, so it should
+    <blockquote class="short">&gt; Also, RubyGems can make releases faster than Ruby can, so it should
     &gt; still be possible to upgrade RubyGems to never versions independent of
     &gt; Ruby.</blockquote>
     Do you mean RubyGems can be a gem?  Looks smart.
