@@ -48,7 +48,7 @@ multiple quotes:
     On 2/3/2007, Bob Barker wrote:
     > Some quoted text.
     > That's several lines.
-    > long, isn't it.
+    >
     > Just keeps going.
 
     Some actual reply.
@@ -63,7 +63,7 @@ multiple quotes:
     <blockquote>On 2/3/2007, Bob Barker wrote:
     &gt; Some quoted text.
     &gt; That's several lines.
-    &gt; long, isn't it.
+    &gt;
     &gt; Just keeps going.
     </blockquote>
     Some actual reply.
