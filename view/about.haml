@@ -15,12 +15,12 @@
   Mail <b>contact+add@</b> this domain with:
 %ul
   %li The full name of the list (eg "Linux Kernel")
-  %li A short name for the list (eg "linux-kernel")
+  %li A slug we can use in URLs (eg "<a href="/linux-kernel">linux-kernel</a>")
   %li
-    A short and informative description of the list for people who have |
+    A short and informative description of the list for people who have
     never heard of you before. HTML is OK.
+  %li The homepage URL for the project or main topic of discussion (eg. http://kernel.org)
   %li The URL for the mailing list (eg. http://vker.kernel.org)
-  %li The homepage URL for the mailing list (eg. http://kernel.org)
 %p
   Afterwards, subscribe the address <b>archive@</b> this domain to your mailing
   list. Incoming messages will be saved, but it may be a day or two before a
@@ -28,10 +28,11 @@
 
 %h2 Importing archives
 %p
-  We accept imports in a tarball/zip of one message per file or Unix mbox
-  files. Mail <b>contact+import@</b> this domain with a URL for us to
-  download the file -- <strong>do not attach the archive</strong> to your
-  mail. We cannot accept other formats, and forwarding old messages won't work.
+  We can import your old messages and provide the history of your list. Create a
+  tarball/zip of one message per file or Unix mbox files. Mail
+  <b>contact+import@</b> this domain with a URL for us to download the file --
+  <strong>do not attach the archive</strong> to your mail. We cannot accept
+  other formats, and forwarding old messages won't work.
 
 %h2 Preventing archiving
 %p
@@ -50,7 +51,7 @@
   full name and mailing address and a link to the exact mail you want removed
   (click on the date in the header of the message).
 %p
-  Additionally, messages over 100kb are discarded.
+  Additionally, messages over 100kb are discarded. They're just too often junk.
 
 %h2 Using ListLibrary
 %a{ :name => 'help' }
