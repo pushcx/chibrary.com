@@ -33,3 +33,6 @@ ErrorDocument 404 /error/404
 Options -Indexes
 # for /about and thread pages, which have no extension
 DefaultType text/html
+
+# performance: gzip everything
+AddOutputFilterByType DEFLATE text/css application/x-javascript
