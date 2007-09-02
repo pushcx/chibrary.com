@@ -1,0 +1,82 @@
+%h1 About ListLibrary
+
+%p
+  ListLibrary is a <a href="http://barkingstapler.com">Barking Stapeler</a>
+  project to provide free, public mailing list archiving supported by
+  unintrusive text advertising. If you run a list, we'd be happy to archive it
+  for you.
+%p
+  ListLibrary is only an archive, it does not produce or exercise editorial
+  control over the messages it archives.
+
+%h2 Adding a new list
+%a{ :name => 'add' }
+%p
+  Mail <b>contact+add@</b> this domain with:
+%ul
+  %li The full name of the list (eg "Linux Kernel")
+  %li A short name for the list (eg "linux-kernel")
+  %li
+    A short and informative description of the list for people who have |
+    never heard of you before. HTML is OK.
+  %li The URL for the mailing list (eg. http://vker.kernel.org)
+  %li The homepage URL for the mailing list (eg. http://kernel.org)
+%p
+  Afterwards, subscribe the address <b>archive@</b> this domain to your mailing
+  list. Incoming messages will be saved, but it may be a day or two before a
+  human here confirms the list should appear.
+
+%h2 Importing archives
+%p
+  We accept imports in a tarball/zip of one message per file or Unix mbox
+  files. Mail <b>contact+import@</b> this domain with a URL for us to
+  download the file -- <strong>do not attach the archive</strong> to your
+  mail. We cannot accept other formats, and forwarding old messages won't work.
+
+%h2 Preventing archiving
+%p
+  You can request that your mails go unarchived by setting one of the following
+  headers in your mail client:
+%dl
+  %dt Archive
+  %dd to contain 'no'
+  %dt X-Archive
+  %dd to anything
+  %dt X-No-Archive
+  %dd to contain 'yes'
+-# %p
+  If you would like to remove your already-archived messages, mail
+  <b>contact+remove@</b> this domain from the address on the message with your
+  full name and mailing address and a link to the exact mail you want removed
+  (click on the date in the header of the message).
+%p
+  Additionally, messages over 100kb are discarded.
+
+%h2 Using ListLibrary
+%a{ :name => 'help' }
+%p
+  On month pages, you can click to the right of thread subjects to see a full
+  list of messages in the thread. Double-click to toggle all of the thread
+  lists.
+%p
+  Thread lists show their subject once at the top and to the right of a message
+  only when someone changes it.
+
+%h2 Spam
+
+%p
+  Mailing list archives are spam-filtered, but we occasionally miss some. We
+  obfuscate all mail addresses to prevent spammers from harvesting them from
+  ListLibrary. If you are a spammer, please die painfully.
+
+%h2 Contact
+%p
+  Mail <b>contact@</b> this domain for all other inquiries. A human should get
+  back to you within a day or two at most.
+
+-# %p
+  DMCA agent is Peter Harkins, 953B Randolph St. NW, Washington D.C. 20011.
+  Messages should be indvidually identified with their call number, which is
+  everything after the # in your browser's status bar when you hover your mouse
+  over the date in the message's header. All DMCA notices will be submitted to
+  <a href="http://chillingeffects.org">Chilling Effects</a>.

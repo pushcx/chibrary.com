@@ -8,6 +8,9 @@ Require valid-user
 RewriteEngine On
 RewriteRule \.svn/ . [F,L]
 
+# front page
+RewriteRule ^$ /index
+
 # list
 RewriteRule ^([a-zA-Z\-]+)$  /$1/
 RewriteRule ^([a-zA-Z\-]+)/$ /$1/index.html
@@ -22,8 +25,8 @@ RewriteRule ^([a-zA-Z\-]+/[0-9][0-9][0-9][0-9]/[0-9][0-9])/$ /$1/index.html
 
 
 # errors
-ErrorDocument 403 /error/403.html
-ErrorDocument 404 /error/404.html
+ErrorDocument 403 /error/403
+ErrorDocument 404 /error/404
 
 # no browsing around
 Options -Indexes

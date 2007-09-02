@@ -55,7 +55,7 @@ class Filer
   def source   ; 'filer' ; end
 
   def store mail
-    return false if mail.length >= (256 * 1024)
+    return false if mail.length >= (100 * 1024)
 
     @message_count += 1
     begin

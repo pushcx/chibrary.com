@@ -1,4 +1,5 @@
 renderer:
+  * contact copyright office with DMCA info
   * front page of site
   * add accesskey to links
   * add search: http://www.subtraction.com/archives/2007/0828_now_fully_co.php
@@ -22,7 +23,9 @@ renderer:
   * month next/previous
   * site frontpage
   * check ETag header
+  * check gzip for css/js
   * check Expires header
+  * can interface.js be replaced with a smaller script?
   * 1h: research other caching mechanisms
   * thread: keyboard navigation for next/prev msg/thread, quote visibility
   * in-page links to parent scroll and add in-page links back down to child above and below message
@@ -37,10 +40,7 @@ renderer:
   * logging
   * add on-disk caching for longer-lived s3 workers
   * get individual views under test
-about page:
-  * subscription instructions
-  * 'this is a barking stapler project'
-  * dmca agent information
+  * confirm valid html is output with tidy
 threader:
   * logging
   * thread headerless messages by quoting as well as subject

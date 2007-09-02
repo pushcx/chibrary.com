@@ -84,6 +84,12 @@ class Renderer
     @jobs.pop
   end
 
+  def render_static
+    %w{index about error/403 error/404}.each do |page|
+      upload_page page, View::render(:page => page)
+    end
+  end
+
   def render_list slug
     years = {}
     AWS::S3::Bucket.keylist('listlibrary_cachedhash', "inventory/#{slug}/").each do |key|
@@ -142,6 +148,7 @@ class Renderer
       slug, year, month, call_number = job.key.split('/')[1..-1]
       $stdout.puts [slug, year, month, call_number].compact.join('/')
       job.delete
+      render_static && next if slug == '_static'
 
       if call_number # render/delete a thread
         if AWS::S3::S3Object.exists? "list/#{slug}/thread/#{year}/#{month}/#{call_number}", "listlibrary_archive"

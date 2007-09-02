@@ -8,9 +8,8 @@
         %span.indent{ :style => "width: #{depth * 1.5}em" } &nbsp;
         %a{ :href => "#missing-#{@missing_count}", :class => "missing" } missing
       - elsif message.no_archive?
-        - @missing_count += 1
         %span.indent{ :style => "width: #{depth * 1.5}em" } &nbsp;
-        %a{ :href => "#missing-#{@missing_count}", :class => "missing" } not archived
+        %a{ :href => "#m#{message.call_number}", :class => "missing" } not archived
       - else
         %a{ :href => "#m#{message.call_number}", :class => "message" }
           %span.indent{ :style => "width: #{depth * 1.5}em" } &nbsp;

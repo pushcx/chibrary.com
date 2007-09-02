@@ -79,7 +79,11 @@ class Message
   end
 
   def no_archive?
-    !!(/yes/i =~ get_header('X-No-Archive'))
+    !!(
+      get_header('X-No-Archive') =~ /yes/i or
+      !get_header('X-Archive').nil? or
+      get_header('Archive') =~ /no/i
+    )
   end
 
   def mailing_list
