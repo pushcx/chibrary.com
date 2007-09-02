@@ -10,7 +10,6 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * charset detection?
   * get scary quoting regexp under test
-    * http://listlibrary.net/ruby-talk/2007/08/011NY45j#m011NY3__
     * http://listlibrary.net/ruby-talk/2007/08/011NY4jX#m011NY3Bi
     * don't quote < 4 lines
   * thread next/previous
