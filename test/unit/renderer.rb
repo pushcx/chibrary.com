@@ -23,13 +23,13 @@ class ViewTest < Test::Unit::TestCase
       ["To: ruby-doc@ruby-lang.org\n", "To: ruby-doc@ru...org\n"],
       ["a@ibm.com b@ibm.com",          "a@ib...com b@ib...com"],
 
-      ['http://aa.com',                '<a href="http://aa.com">http://aa.com</a>'],
-      ["http://bb\a.com",              "<a href=\"http://bb\a.com\">http://bb\a.com</a>"],
-      ['http://cc.com?a=a',            '<a href="http://cc.com?a=a">http://cc.com?a=a</a>'],
-      ['http://dd.com/"',              '<a href="http://dd.com/&quot;">http://dd.com/&quot;</a>'],
-      ['telnet://ee.com',              '<a href="telnet://ee.com">telnet://ee.com</a>'],
+      ['http://aa.com',                '<a rel="nofollow" href="http://aa.com">http://aa.com</a>'],
+      ["http://bb\a.com",              "<a rel=\"nofollow\" href=\"http://bb\a.com\">http://bb\a.com</a>"],
+      ['http://cc.com?a=a',            '<a rel="nofollow" href="http://cc.com?a=a">http://cc.com?a=a</a>'],
+      ['http://dd.com/"',              '<a rel="nofollow" href="http://dd.com/&quot;">http://dd.com/&quot;</a>'],
+      ['telnet://ee.com',              '<a rel="nofollow" href="telnet://ee.com">telnet://ee.com</a>'],
 
-      ['http://user:pass@ff.com/foo',  '<a href="http://user:pass@ff...com/foo">http://user:pass@ff...com/foo</a>'],
+      ['http://user:pass@ff.com/foo',  '<a rel="nofollow" href="http://user:pass@ff...com/foo">http://user:pass@ff...com/foo</a>'],
     ].each do |original, cleaned|
       assert_equal cleaned, View::h(original)
     end
