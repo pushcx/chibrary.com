@@ -4,6 +4,17 @@
   position: fixed;
   top: 65px;
 }
+#footer h4 {
+  float: left;
+  margin-right: 1em;
+}
+#footer p.tagline {
+  float: left;
+  margin-right: 1.5em;
+}
+#footer p.links a {
+  margin-right: 1.5em;
+}
 
 /* list view */
 
