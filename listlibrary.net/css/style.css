@@ -1,9 +1,20 @@
 /* layout */
+
 #thread-side-ad {
   left: 40px;
   position: fixed;
   top: 65px;
 }
+div.previous_next {
+  height: 18px;
+  margin-bottom: 18px;
+}
+  div.previous_next a.previous {
+    float: left;
+  }
+  div.previous_next a.next {
+    float: right;
+  }
 #footer h4 {
   float: left;
   margin-right: 1em;
@@ -19,6 +30,7 @@
 }
 
 /* common elements */
+
 a:visited { color: #5f12a7; }
 input {
   border: 1px solid #999999;
@@ -28,6 +40,7 @@ input {
 }
 
 /* static pages */
+
 dt {
   float: left;
   margin-left: 2em;

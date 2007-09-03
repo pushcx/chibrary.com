@@ -117,15 +117,44 @@ class Renderer
     upload_page "#{slug}/index.html", html
   end
 
+  def previous_next_links(slug, year, month)
+    inventory = CachedHash.new 'inventory'
+
+    p_year = year.to_i
+    p_month = month.to_i - 1
+    p_month, p_year = 12, year.to_i - 1 if p_month == 0
+    p_month = "%02d" % p_month
+    if inventory["#{slug}/#{p_year}/#{p_month}"]
+      p_link = "<a class=\"previous\" href=\"/#{slug}/#{p_year}/#{p_month}\">#{p_year}-#{p_month}</a>"
+    else
+      p_link = "<a class=\"previous\" href=\"/#{slug}\">archive</a>"
+    end
+
+    n_year = year.to_i
+    n_month = month.to_i + 1
+    n_month, n_year = 1, year.to_i + 1 if n_month == 13
+    n_month = "%02d" % n_month
+    if inventory["#{slug}/#{n_year}/#{n_month}"]
+      n_link = "<a class=\"next\" href=\"/#{slug}/#{n_year}/#{n_month}\">#{n_year}-#{n_month}</a>"
+    else
+      n_link = "<a class=\"n\" href=\"/#{slug}\">archive</a>"
+    end
+
+    return [p_link, n_link]
+  end
+
   def render_month slug, year, month
+    previous_link, next_link = previous_next_links(slug, year, month)
     html = View::render(:page => "month", :locals => {
-      :title     => "#{slug} #{year}-#{month}",
-      :threadset => ThreadSet.month(slug, year, month),
-      :inventory => AWS::S3::S3Object.load_yaml("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
-      :list      => List.new(slug),
-      :slug      => slug,
-      :year      => year,
-      :month     => month,
+      :title         => "#{slug} #{year}-#{month}",
+      :threadset     => ThreadSet.month(slug, year, month),
+      :inventory     => AWS::S3::S3Object.load_yaml("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
+      :previous_link => previous_link,
+      :next_link     => next_link,
+      :list          => List.new(slug),
+      :slug          => slug,
+      :year          => year,
+      :month         => month,
     })
     upload_page "#{slug}/#{year}/#{month}/index.html", html
   end

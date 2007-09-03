@@ -9,7 +9,6 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * charset detection?
   * thread next/previous
-  * month next/previous
   * add accesskey to links
   * site frontpage
   * ask DreamHost about non-gzipped month and thread pages
@@ -19,15 +18,15 @@ renderer:
   * thread: keyboard navigation for next/prev msg/thread, quote visibility
   * in-page links to parent scroll and add in-page links back down to child above and below message
   * js links to flag spam
-  * toggleable floating thread overview that scrolls with page, similar to mutt view
-  * connect using keys
+
+  * connect using ssh keys
   * be paranoid about server key changing
-  * per-mail-address (~aka per-uuser) archives
+  * logging
+  * add on-disk caching for longer-lived s3 workers
+  * per-mail-address (~aka per-user) archives
     * year/month breakdown
     * display all names given in from line for this address
     * display other addresses using similar names
-  * logging
-  * add on-disk caching for longer-lived s3 workers
   * get individual views under test
   * confirm valid html is output with tidy
 threader:
