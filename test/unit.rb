@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 require 'test/unit'
 
 Dir.new(File.dirname(__FILE__) + "/unit").each do |file|

@@ -68,8 +68,53 @@ class RendererTest < Test::Unit::TestCase
   def test_render_list
   end
 
+  def test_previous_next_links_exist
+    r = Renderer.new
+    inventory = mock
+    inventory.expects(:[]).with('example/2007/06').returns(true)
+    inventory.expects(:[]).with('example/2007/08').returns(true)
+    CachedHash.expects(:new).with('inventory').returns(inventory)
+    previous_link, next_link = r.previous_next_links "example", "2007", "07"
+    assert_match /"\/example\/2007\/06"/, previous_link
+    assert_match /"\/example\/2007\/08"/, next_link
+  end
+
+  def test_previous_next_links_none
+    r = Renderer.new
+    inventory = mock
+    inventory.expects(:[]).with('example/2007/06').returns(nil)
+    inventory.expects(:[]).with('example/2007/08').returns(nil)
+    CachedHash.expects(:new).with('inventory').returns(inventory)
+    previous_link, next_link = r.previous_next_links "example", "2007", "07"
+    assert_match /"\/example"/, previous_link
+    assert_match /"\/example"/, next_link
+  end
+
+  def test_previous_next_links_previous_wraps
+    r = Renderer.new
+    inventory = mock
+    inventory.expects(:[]).with('example/2006/12').returns(true)
+    inventory.expects(:[]).with('example/2007/02').returns(nil)
+    CachedHash.expects(:new).with('inventory').returns(inventory)
+    previous_link, next_link = r.previous_next_links "example", "2007", "01"
+    assert_match /"\/example\/2006\/12"/, previous_link
+    assert_match /"\/example"/, next_link
+  end
+
+  def test_previous_next_links_next_wraps
+    r = Renderer.new
+    inventory = mock
+    inventory.expects(:[]).with('example/2007/11').returns(nil)
+    inventory.expects(:[]).with('example/2008/01').returns(true)
+    CachedHash.expects(:new).with('inventory').returns(inventory)
+    previous_link, next_link = r.previous_next_links "example", "2007", "12"
+    assert_match /"\/example"/, previous_link
+    assert_match /"\/example\/2008\/01"/, next_link
+  end
+
   def test_render_month
     r = Renderer.new
+    r.expects(:previous_next_links).with('example', '2007', '08').returns(['previous', 'next'])
     list = mock
     List.expects(:new).with('example').returns(list)
     ts = mock
@@ -77,13 +122,15 @@ class RendererTest < Test::Unit::TestCase
     inventory = mock
     AWS::S3::S3Object.expects(:load_yaml).returns(inventory)
     View.expects(:render).with(:page => "month", :locals => {
-      :title     => 'example 2007-08',
-      :threadset => ts,
-      :inventory => inventory,
-      :list      => list,
-      :slug      => 'example',
-      :year      => '2007',
-      :month     => '08'
+      :title         => 'example 2007-08',
+      :threadset     => ts,
+      :inventory     => inventory,
+      :previous_link => 'previous',
+      :next_link     => 'next',
+      :list          => list,
+      :slug          => 'example',
+      :year          => '2007',
+      :month         => '08'
     }).returns("html")
     r.expects(:upload_page).with("example/2007/08/index.html", "html")
     r.render_month "example", "2007", "08"
