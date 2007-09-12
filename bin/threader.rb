@@ -1,18 +1,18 @@
 #!/usr/bin/ruby
 
+require 'ostruct'
+
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
 require 'threading'
 
 class Threader
-  attr_accessor :jobs, :inventory, :render_queue, :stop_on_empty
+  attr_accessor :jobs, :stop_on_empty
 
   def initialize
     @jobs = []
     @stop_on_empty = false
-    @render_queue = CachedHash.new("render_queue")
-    @inventory    = CachedHash.new("inventory")
   end
 
   def get_job
@@ -57,6 +57,9 @@ class Threader
   end
 
   def cache_work(slug, year, month, message_list, threadset)
+    render_queue = CachedHash.new("render_queue")
+    inventory    = CachedHash.new("inventory")
+    thread_list  = CachedHash.new("thread_list")
     AWS::S3::S3Object.store(
       "list/#{slug}/message_cache/#{year}/#{month}",
       message_list.sort.to_yaml,
@@ -66,11 +69,13 @@ class Threader
 
     n_threads  = 0
     n_messages = 0
+    threads = []
     threadset.threads.each do |thread|
       n_threads  += 1
       n_messages += thread.count
+      threads << { :call_number => thread.call_number, :subject => thread.subject }
 
-      name = "#{year}/#{month}/#{thread.first.call_number}"
+      name = "#{year}/#{month}/#{thread.call_number}"
       yaml = thread.to_yaml
       begin
         o = AWS::S3::S3Object.find("list/#{slug}/thread/#{name}", 'listlibrary_archive')
@@ -81,7 +86,7 @@ class Threader
 
       next if cached
 
-      @render_queue["#{slug}/#{name}"] = ''
+      render_queue["#{slug}/#{name}"] = ''
       AWS::S3::S3Object.store(
         "list/#{slug}/thread/#{name}",
         yaml,
@@ -90,7 +95,8 @@ class Threader
       )
     end
 
-    @inventory["#{slug}/#{year}/#{month}"] = { :threads => n_threads, :messages => n_messages }.to_yaml
+    inventory["#{slug}/#{year}/#{month}"]   = { :threads => n_threads, :messages => n_messages }.to_yaml
+    thread_list["#{slug}/#{year}/#{month}"] = threads.to_yaml
   end
 end
 
