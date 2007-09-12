@@ -9,11 +9,15 @@ div.previous_next {
   height: 18px;
   margin-bottom: 18px;
 }
-  div.previous_next a.previous {
+  div.previous_next a.none {
+    font-style: italic;
+  }
+  div.previous_next div.previous {
     float: left;
   }
-  div.previous_next a.next {
+  div.previous_next div.next {
     float: right;
+    text-align: right;
   }
 #footer h4 {
   float: left;

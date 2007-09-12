@@ -1,6 +1,7 @@
 %h1.subject= subject(thread.first)
 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
+= render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
 = render :partial => 'thread_list', :locals => { :thread => thread }
 
 .thread
@@ -9,3 +10,4 @@
 
 %hr 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
+= render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }

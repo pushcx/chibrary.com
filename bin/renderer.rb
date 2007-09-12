@@ -15,6 +15,7 @@ require 'ostruct'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
+require 'time_'
 
 class View
   def self.render options={}
@@ -117,34 +118,30 @@ class Renderer
     upload_page "#{slug}/index.html", html
   end
 
-  def previous_next_links(slug, year, month)
+  def month_previous_next(slug, year, month)
     inventory = CachedHash.new 'inventory'
 
-    p_year = year.to_i
-    p_month = month.to_i - 1
-    p_month, p_year = 12, year.to_i - 1 if p_month == 0
-    p_month = "%02d" % p_month
-    if inventory["#{slug}/#{p_year}/#{p_month}"]
-      p_link = "<a class=\"previous\" href=\"/#{slug}/#{p_year}/#{p_month}\">#{p_year}-#{p_month}</a>"
+    p = Time.utc(year, month).plus_month(-1)
+    p_month = "%02d" % p.month
+    if inventory["#{slug}/#{p.year}/#{p_month}"]
+      p_link = "<a href=\"/#{slug}/#{p.year}/#{p_month}\">#{p.year}-#{p_month}</a>"
     else
-      p_link = "<a class=\"previous\" href=\"/#{slug}\">archive</a>"
+      p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
     end
 
-    n_year = year.to_i
-    n_month = month.to_i + 1
-    n_month, n_year = 1, year.to_i + 1 if n_month == 13
-    n_month = "%02d" % n_month
-    if inventory["#{slug}/#{n_year}/#{n_month}"]
-      n_link = "<a class=\"next\" href=\"/#{slug}/#{n_year}/#{n_month}\">#{n_year}-#{n_month}</a>"
+    n = Time.utc(year, month).plus_month(1)
+    n_month = "%02d" % n.month
+    if inventory["#{slug}/#{n.year}/#{n_month}"]
+      n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}\">#{n.year}-#{n_month}</a>"
     else
-      n_link = "<a class=\"n\" href=\"/#{slug}\">archive</a>"
+      n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
     end
 
     return [p_link, n_link]
   end
 
   def render_month slug, year, month
-    previous_link, next_link = previous_next_links(slug, year, month)
+    previous_link, next_link = month_previous_next(slug, year, month)
     html = View::render(:page => "month", :locals => {
       :title         => "#{slug} #{year}-#{month}",
       :threadset     => ThreadSet.month(slug, year, month),
@@ -159,15 +156,59 @@ class Renderer
     upload_page "#{slug}/#{year}/#{month}/index.html", html
   end
 
+  def thread_previous_next(slug, year, month, call_number)
+    thread_lists = CachedHash.new("thread_list")
+    thread_list = YAML::load(thread_lists["#{slug}/#{year}/#{month}"])
+    index = nil
+    thread_list.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }
+
+    if index == 0
+      p = Time.utc(year, month).plus_month(-1)
+      p_month = "%02d" % p.month
+      if tl = thread_lists["#{slug}/#{p.year}/#{p_month}"]
+        tl = YAML::load(tl)
+        call_number, subject = tl.last[:call_number], tl.last[:subject]
+        p_link = "&lt; <a href=\"/#{slug}/#{p.year}/#{p_month}/#{call_number}\">#{View::h(subject)}</a><br />#{p.year}-#{p_month}"
+      else
+        p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
+      end
+    else
+      p_index = index - 1
+      call_number, subject = thread_list[p_index][:call_number], thread_list[p_index][:subject]
+      p_link = "&lt; <a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{View::h(subject)}</a>"
+    end
+
+    n_index = index + 1
+    if thread_list[n_index]
+      call_number, subject = thread_list[n_index][:call_number], thread_list[n_index][:subject]
+      n_link = "<a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{View::h(subject)}</a> &gt;"
+    else
+      n = Time.utc(year, month).plus_month(1)
+      n_month = "%02d" % n.month
+      if tl = thread_lists["#{slug}/#{n.year}/#{n_month}"]
+        tl = YAML::load(tl)
+        call_number, subject = tl.first[:call_number], tl.first[:subject]
+        n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}/#{call_number}\">#{View::h(subject)}</a> &gt;<br />#{n.year}-#{n_month}"
+      else
+        n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
+      end
+    end
+
+    return [p_link, n_link]
+  end
+
   def render_thread slug, year, month, call_number
+    previous_link, next_link = thread_previous_next(slug, year, month, call_number)
     thread = AWS::S3::S3Object.load_yaml("list/#{slug}/thread/#{year}/#{month}/#{call_number}")
     html = View::render :page => "thread", :locals => {
-      :title     => "#{thread.subject} (#{slug} #{year}-#{month})",
-      :thread    => thread,
-      :list      => List.new(slug),
-      :slug      => slug,
-      :year      => year,
-      :month     => month,
+      :title         => "#{thread.subject} (#{slug} #{year}-#{month})",
+      :thread        => thread,
+      :previous_link => previous_link,
+      :next_link     => next_link,
+      :list          => List.new(slug),
+      :slug          => slug,
+      :year          => year,
+      :month         => month,
     }
     upload_page "#{slug}/#{year}/#{month}/#{call_number}", html
   end

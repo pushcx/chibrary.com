@@ -8,14 +8,12 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/07/011NY3me
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * charset detection?
-  * thread next/previous
-  * add accesskey to links
   * site frontpage
   * ask DreamHost about non-gzipped month and thread pages
   * ask DreamHost about missing Content-Type on css/js
   * check Expires header
   * 1h: research other caching mechanisms
-  * thread: keyboard navigation for next/prev msg/thread, quote visibility
+  * thread: kb for next/prev msg/thread, quote visibility http://code.google.com/p/snippets-4-all/wiki/About
   * in-page links to parent scroll and add in-page links back down to child above and below message
   * js links to flag spam
 
@@ -59,9 +57,14 @@ Filer:
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
   * spamcheck
 advertising:
+  * import mud-dev
   * ask for links from:
     * http://www.ruby-lang.org/en/community/mailing-lists
     * http://linux-kernel.org
+  * announce on push.cx
+  * ask to archive:
+    * Chicago user groups
+    * pgbouncer
 future:
   * private archives for pay
   * cookie for first visit, visit count, page count

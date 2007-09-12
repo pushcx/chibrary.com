@@ -15,6 +15,4 @@
         %a.subject{ :href => thread.call_number }= subject(thread.first)
       = render :partial => 'thread_list', :locals => { :thread => thread }
 
-.previous_next
-  = previous_link
-  = next_link
+= render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
