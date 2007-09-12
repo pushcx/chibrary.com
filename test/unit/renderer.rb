@@ -143,7 +143,7 @@ class RendererTest < Test::Unit::TestCase
       { :call_number => '00000001', :subject => "foo"},
       { :call_number => '00000002', :subject => "bar"},
       { :call_number => '00000003', :subject => "baz" },
-    ])
+    ].to_yaml)
     CachedHash.expects(:new).with('thread_list').returns(thread_list)
     previous_link, next_link = r.thread_previous_next "example", "2007", "07", "00000002"
     assert_match /"\/example\/2007\/07\/00000001"/, previous_link
@@ -155,7 +155,7 @@ class RendererTest < Test::Unit::TestCase
     thread_list = mock
     thread_list.expects(:[]).with('example/2007/07').returns([
       { :call_number => '00000002', :subject => "bar"},
-    ])
+    ].to_yaml)
     thread_list.expects(:[]).with('example/2007/06').returns(nil)
     thread_list.expects(:[]).with('example/2007/08').returns(nil)
     CachedHash.expects(:new).with('thread_list').returns(thread_list)
@@ -169,9 +169,9 @@ class RendererTest < Test::Unit::TestCase
   def test_thread_previous_next_wraps
     r = Renderer.new
     thread_list = mock
-    thread_list.expects(:[]).with('example/2007/07').returns([ { :call_number => '00000002', :subject => "bar"} ])
-    thread_list.expects(:[]).with('example/2007/06').returns([ { :call_number => '00000001', :subject => "foo"} ])
-    thread_list.expects(:[]).with('example/2007/08').returns([ { :call_number => '00000003', :subject => "baz"} ])
+    thread_list.expects(:[]).with('example/2007/07').returns([ { :call_number => '00000002', :subject => "bar"} ].to_yaml)
+    thread_list.expects(:[]).with('example/2007/06').returns([ { :call_number => '00000001', :subject => "foo"} ].to_yaml)
+    thread_list.expects(:[]).with('example/2007/08').returns([ { :call_number => '00000003', :subject => "baz"} ].to_yaml)
     CachedHash.expects(:new).with('thread_list').returns(thread_list)
     previous_link, next_link = r.thread_previous_next "example", "2007", "07", "00000002"
     assert_match /"\/example\/2007\/06\/00000001"/, previous_link
