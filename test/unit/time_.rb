@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'lib/time'
+require 'time_'
 
 class TimeTest < Test::Unit::TestCase
   def test_plus_year
