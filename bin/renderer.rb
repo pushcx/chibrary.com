@@ -104,9 +104,9 @@ class Renderer
 
   def render_list slug
     years = {}
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render_month/#{slug}/").each do |key|
+    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/month/#{slug}/").each do |key|
       render_month = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
-      year, month = key.split('/')[2..-1]
+      year, month = key.split('/')[3..-1]
       years[year] ||= {}
       years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     end
@@ -143,8 +143,11 @@ class Renderer
 
   def render_month slug, year, month
     previous_link, next_link = month_previous_next(slug, year, month)
-    render_month = AWS::S3::S3Object.load_yaml("render/month/#{slug}/#{year}/#{month}", "listlibrary_cachedhash")
-    inventory = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
+    if render_month = AWS::S3::S3Object.load_yaml("render/month/#{slug}/#{year}/#{month}", "listlibrary_cachedhash")
+      inventory = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
+    else
+      inventory = nil
+    end
     html = View::render(:page => "month", :locals => {
       :title         => "#{slug} #{year}-#{month}",
       :threadset     => ThreadSet.month(slug, year, month),

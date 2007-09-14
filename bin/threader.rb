@@ -25,9 +25,9 @@ class Threader
 
   def run
     while job = get_job
-      $stdout.puts job.key
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
+      $stdout.puts "#{slug}/#{year}/#{month}"
 
       message_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message_cache/#{year}/#{month}") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
