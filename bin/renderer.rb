@@ -86,13 +86,11 @@ class Renderer
   def initialize
     @jobs = []
     @stop_on_empty = false
-    @i = 0
     @ssh = Net::SSH.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9)
     @sftp = @ssh.sftp.connect
   end
 
   def get_job
-    @i += 1
     if @jobs.empty?
       if @stop_on_empty
         @ssh.close
@@ -245,7 +243,7 @@ class Renderer
 
     while job = get_job
       slug, year, month, call_number = job.key.split('/')[1..-1]
-      $stdout.puts [@i, slug, year, month, call_number].compact.join('/')
+      $stdout.puts [slug, year, month, call_number].compact.join('/')
       job.delete
       render_static && next if slug == '_static'
 
