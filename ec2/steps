@@ -16,7 +16,7 @@ vi /etc/ssh/sshd_config:
   PermitRootLogin without-password
   UseDNS no
 # add rc.local
-rm -r /opt /srv /home
+rm -rf /opt /srv /home /etc/event.d/tty* /var/log/*
 mkdir /m
 # add fstab
 exit

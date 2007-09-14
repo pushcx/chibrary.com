@@ -97,9 +97,9 @@ end
 if __FILE__ == $0
   t = Threader.new
   ARGV.each do |job|
+    t.stop_on_empty = true
     AWS::S3::S3Object.delete("thread_queue/#{job}", 'listlibrary_cachedhash')
     t.jobs << OpenStruct.new(:key => "thread_queue/#{job}", :delete => nil)
   end
-  t.stop_on_empty = true
   t.run
 end
