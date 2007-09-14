@@ -104,10 +104,11 @@ class Renderer
 
   def render_list slug
     years = {}
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "inventory/#{slug}/").each do |key|
+    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render_month/#{slug}/").each do |key|
+      render_month = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
       year, month = key.split('/')[2..-1]
       years[year] ||= {}
-      years[year][month] = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
+      years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     end
     html = View::render(:page => "list", :locals => {
       :title     => slug,
@@ -119,11 +120,11 @@ class Renderer
   end
 
   def month_previous_next(slug, year, month)
-    inventory = CachedHash.new 'inventory'
+    render_month = CachedHash.new("render/month/#{slug}")
 
     p = Time.utc(year, month).plus_month(-1)
     p_month = "%02d" % p.month
-    if inventory["#{slug}/#{p.year}/#{p_month}"]
+    if render_month["#{p.year}/#{p_month}"]
       p_link = "<a href=\"/#{slug}/#{p.year}/#{p_month}\">#{p.year}-#{p_month}</a>"
     else
       p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
@@ -131,7 +132,7 @@ class Renderer
 
     n = Time.utc(year, month).plus_month(1)
     n_month = "%02d" % n.month
-    if inventory["#{slug}/#{n.year}/#{n_month}"]
+    if render_month["#{n.year}/#{n_month}"]
       n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}\">#{n.year}-#{n_month}</a>"
     else
       n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
@@ -142,10 +143,12 @@ class Renderer
 
   def render_month slug, year, month
     previous_link, next_link = month_previous_next(slug, year, month)
+    render_month = AWS::S3::S3Object.load_yaml("render/month/#{slug}/#{year}/#{month}", "listlibrary_cachedhash")
+    inventory = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     html = View::render(:page => "month", :locals => {
       :title         => "#{slug} #{year}-#{month}",
       :threadset     => ThreadSet.month(slug, year, month),
-      :inventory     => AWS::S3::S3Object.load_yaml("inventory/#{slug}/#{year}/#{month}", "listlibrary_cachedhash"),
+      :inventory     => inventory,
       :previous_link => previous_link,
       :next_link     => next_link,
       :list          => List.new(slug),
@@ -157,15 +160,15 @@ class Renderer
   end
 
   def thread_previous_next(slug, year, month, call_number)
-    thread_lists = CachedHash.new("thread_list")
-    thread_list = YAML::load(thread_lists["#{slug}/#{year}/#{month}"])
+    render_month = CachedHash.new("render/month/#{slug}")
+    threads = YAML::load(render_month["#{year}/#{month}"])
     index = nil
-    thread_list.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }
+    threads.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }
 
     if index == 0
       p = Time.utc(year, month).plus_month(-1)
       p_month = "%02d" % p.month
-      if tl = thread_lists["#{slug}/#{p.year}/#{p_month}"]
+      if tl = render_month["#{p.year}/#{p_month}"]
         tl = YAML::load(tl)
         call_number, subject = tl.last[:call_number], tl.last[:subject]
         p_link = "&lt; <a href=\"/#{slug}/#{p.year}/#{p_month}/#{call_number}\">#{View::h(subject)}</a><br />#{p.year}-#{p_month}"
@@ -174,18 +177,18 @@ class Renderer
       end
     else
       p_index = index - 1
-      call_number, subject = thread_list[p_index][:call_number], thread_list[p_index][:subject]
+      call_number, subject = threads[p_index][:call_number], threads[p_index][:subject]
       p_link = "&lt; <a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{View::h(subject)}</a>"
     end
 
     n_index = index + 1
-    if thread_list[n_index]
-      call_number, subject = thread_list[n_index][:call_number], thread_list[n_index][:subject]
+    if threads[n_index]
+      call_number, subject = threads[n_index][:call_number], threads[n_index][:subject]
       n_link = "<a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{View::h(subject)}</a> &gt;"
     else
       n = Time.utc(year, month).plus_month(1)
       n_month = "%02d" % n.month
-      if tl = thread_lists["#{slug}/#{n.year}/#{n_month}"]
+      if tl = render_month["#{n.year}/#{n_month}"]
         tl = YAML::load(tl)
         call_number, subject = tl.first[:call_number], tl.first[:subject]
         n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}/#{call_number}\">#{View::h(subject)}</a> &gt;<br />#{n.year}-#{n_month}"

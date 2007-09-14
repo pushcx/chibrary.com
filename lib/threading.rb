@@ -34,27 +34,6 @@ class Module
   end
 end
 
-module Enumerable
-  def sum ; inject(0) { |x, y| x + y }; end
-
-  def argfind
-    ret = nil
-    find { |e| ret ||= yield(e) }
-    ret || nil # force
-  end
-
-  def argmin
-    best, bestval = nil, nil
-    each do |e|
-      val = yield e
-      if bestval.nil? || val < bestval
-        best, bestval = e, val
-      end
-    end
-    best
-  end
-end
-
 # These two hashes replace SavingHash, which can't save and load its
 # contructor proc.
 class ContainerHash

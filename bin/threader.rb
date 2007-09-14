@@ -58,8 +58,7 @@ class Threader
 
   def cache_work(slug, year, month, message_list, threadset)
     render_queue = CachedHash.new("render_queue")
-    inventory    = CachedHash.new("inventory")
-    thread_list  = CachedHash.new("thread_list")
+    render_month = CachedHash.new("render/month/#{slug}")
     AWS::S3::S3Object.store(
       "list/#{slug}/message_cache/#{year}/#{month}",
       message_list.sort.to_yaml,
@@ -67,13 +66,9 @@ class Threader
       :content_type => 'text/plain'
     )
 
-    n_threads  = 0
-    n_messages = 0
     threads = []
     threadset.threads.each do |thread|
-      n_threads  += 1
-      n_messages += thread.count
-      threads << { :call_number => thread.call_number, :subject => thread.subject }
+      threads << { :call_number => thread.call_number, :subject => thread.subject, :messages => thread.count }
 
       name = "#{year}/#{month}/#{thread.call_number}"
       yaml = thread.to_yaml
@@ -95,8 +90,7 @@ class Threader
       )
     end
 
-    inventory["#{slug}/#{year}/#{month}"]   = { :threads => n_threads, :messages => n_messages }.to_yaml
-    thread_list["#{slug}/#{year}/#{month}"] = threads.to_yaml
+    render_month["#{year}/#{month}"] = threads.to_yaml
   end
 end
 

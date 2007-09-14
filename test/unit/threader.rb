@@ -84,8 +84,7 @@ class ThreaderTest < Test::Unit::TestCase
     threadset.expects(:threads).returns([])
     AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
     CachedHash.expects(:new).with('render_queue').returns(mock)
-    CachedHash.expects(:new).with('inventory').returns(stub_everything('inventory'))
-    CachedHash.expects(:new).with('thread_list').returns(stub_everything('thread_list'))
+    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
     t.cache_work slug, year, month, message_list, threadset
   end
@@ -108,8 +107,7 @@ class ThreaderTest < Test::Unit::TestCase
     o.expects(:about).returns({ 'content-length' => "yaml".length })
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
     CachedHash.expects(:new).with('render_queue').returns(mock)
-    CachedHash.expects(:new).with('inventory').returns(stub_everything('inventory'))
-    CachedHash.expects(:new).with('thread_list').returns(stub_everything('thread_list'))
+    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
     t.cache_work slug, year, month, message_list, threadset
   end
@@ -130,8 +128,7 @@ class ThreaderTest < Test::Unit::TestCase
     threadset.expects(:threads).returns([thread])
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
     CachedHash.expects(:new).with('render_queue').returns(stub_everything('render_queue'))
-    CachedHash.expects(:new).with('inventory').returns(stub_everything('inventory'))
-    CachedHash.expects(:new).with('thread_list').returns(stub_everything('thread_list'))
+    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
     AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
 
     t.cache_work slug, year, month, message_list, threadset

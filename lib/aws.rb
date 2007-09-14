@@ -38,6 +38,27 @@ class AWS::S3::S3Object
   end
 end
 
+module Enumerable
+  def sum ; inject(0) { |x, y| x + y }; end
+
+  def argfind
+    ret = nil
+    find { |e| ret ||= yield(e) }
+    ret || nil # force
+  end
+
+  def argmin
+    best, bestval = nil, nil
+    each do |e|
+      val = yield e
+      if bestval.nil? || val < bestval
+        best, bestval = e, val
+      end
+    end
+    best
+  end
+end
+
 unless defined? AWS_connection
   AWS_connection = AWS::S3::Base.establish_connection!(
     :access_key_id     => ACCESS_KEY_ID,

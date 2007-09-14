@@ -16,7 +16,7 @@ ARGV.each do |url|
   if year and month
     jobs << { :slug => slug, :year => year, :month => month }
   else
-    prefix = "inventory/#{slug}/"
+    prefix = "render/month/#{slug}/"
     prefix += "#{year}/" if year
     AWS::S3::Bucket.keylist('listlibrary_cachedhash', prefix).each do |key|
       y, m= key.split('/')[2..-1]
@@ -46,8 +46,8 @@ jobs.each do |job|
     AWS::S3::S3Object.delete(key, 'listlibrary_archive')
   end
 
-  # delete inventory
-  AWS::S3::S3Object.delete("inventory/#{slug}/#{year}/#{month}", 'listlibrary_cachedhash')
+  # delete render/month
+  AWS::S3::S3Object.delete("render/month/#{slug}/#{year}/#{month}", 'listlibrary_cachedhash')
 
   # queue rethread
   thread_queue["#{slug}/#{year}/#{month}"] = ''

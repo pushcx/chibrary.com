@@ -8,15 +8,10 @@ renderer:
     * http://listlibrary.net/ruby-talk/2007/07/011NY3me
     * http://listlibrary.net/ruby-talk/2007/08/011NY4f_#m011NY49b
     * charset detection?
-  * site frontpage
-  * ask DreamHost about non-gzipped month and thread pages
-  * ask DreamHost about missing Content-Type on css/js
-  * check Expires header
-  * 1h: research other caching mechanisms
+
+  * js links to flag spam
   * thread: kb for next/prev msg/thread, quote visibility http://code.google.com/p/snippets-4-all/wiki/About
   * in-page links to parent scroll and add in-page links back down to child above and below message
-  * js links to flag spam
-
   * connect using ssh keys
   * be paranoid about server key changing
   * logging
@@ -27,6 +22,10 @@ renderer:
     * display other addresses using similar names
   * get individual views under test
   * confirm valid html is output with tidy
+  * ask DreamHost about non-gzipped month and thread pages
+  * ask DreamHost about missing Content-Type on css/js
+  * 'static': compile css/js into single file
+  * confirm Etag on css/js
 threader:
   * logging
   * thread headerless messages by quoting as well as subject
