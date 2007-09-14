@@ -86,11 +86,19 @@ class Renderer
   def initialize
     @jobs = []
     @stop_on_empty = false
+    @i = 0
+    @ssh = Net::SSH.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9)
+    @sftp = @ssh.sftp.connect
   end
 
   def get_job
+    @i += 1
     if @jobs.empty?
-      exit if @stop_on_empty
+      if @stop_on_empty
+        @ssh.close
+        @sftp.close
+        exit
+      end
       @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
     end
     @jobs.pop
@@ -174,6 +182,7 @@ class Renderer
     threads = YAML::load(render_month["#{year}/#{month}"])
     index = nil
     threads.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }
+    return ["<a class=\"none\" href=\"/#{slug}\">archive</a>", "<a class=\"none\" href=\"/#{slug}\">archive</a>"] if index.nil?
 
     if index == 0
       p = Time.utc(year, month).plus_month(-1)
@@ -227,11 +236,7 @@ class Renderer
   end
 
   def delete_thread slug, year, month, call_number
-    ssh_connection do |ssh|
-      ssh.sftp.connect do |sftp|
-        sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}") rescue Net::SFTP::Operations::StatusException
-      end
-    end
+    @sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}") rescue Net::SFTP::Operations::StatusException
     nil
   end
 
@@ -240,7 +245,7 @@ class Renderer
 
     while job = get_job
       slug, year, month, call_number = job.key.split('/')[1..-1]
-      $stdout.puts [slug, year, month, call_number].compact.join('/')
+      $stdout.puts [@i, slug, year, month, call_number].compact.join('/')
       job.delete
       render_static && next if slug == '_static'
 
@@ -264,27 +269,14 @@ class Renderer
     tmpname = "#{Process.pid}-#{rand(1000000)}"
     dirs = filename.split('/')
     filename = dirs.pop
-    path = "listlibrary.net"
+    path = dirs.join('/')
 
-    ssh_connection do |ssh|
-      ssh.sftp.connect do |sftp|
-        sftp.open_handle("tmp/#{tmpname}", "w") do |handle|
-          sftp.write(handle, str)
-          sftp.fsetstat(handle, :permissions => 0644)
-        end
-        dirs.each do |dir|
-          path += "/#{dir}"
-          sftp.mkdir path, :mode => 755 rescue Net::SFTP::Operations::StatusException
-        end
-      end
-      ssh.process.popen3("/bin/mv /home/listlibrary/tmp/#{tmpname} /home/listlibrary/#{path}/#{filename}")
+    @sftp.open_handle("tmp/#{tmpname}", "w") do |handle|
+      @sftp.write(handle, str)
+      @sftp.fsetstat(handle, :permissions => 0644)
     end
-  end
-
-  def ssh_connection
-    Net::SSH.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9) do |ssh|
-      yield ssh
-    end
+    @ssh.process.popen3("/bin/mkdir -p /home/listlibrary/listlibrary.net/#{path}")
+    @ssh.process.popen3("/bin/mv /home/listlibrary/tmp/#{tmpname} /home/listlibrary/listlibrary.net/#{path}/#{filename}")
   end
 end
 
