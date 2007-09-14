@@ -1,5 +1,10 @@
 %h1 ListLibrary
 
-%p intro
+%p
+  ListLibrary is a <a href="http://barkingstapler.com">Barking Stapler</a>
+  project to provide free, public mailing list archives. If you run a list,
+  we'd be happy to archive it for you. (More <a href="/about">about</a> us.)
 
-%p list of lists
+%ul.lists
+  - lists.each do |list|
+    %li= "<a href=\"/#{list.slug}\">#{(list['name'] or list.slug)}</a>"

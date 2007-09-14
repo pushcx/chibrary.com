@@ -97,9 +97,15 @@ class Renderer
   end
 
   def render_static
-    %w{about index search error/403 error/404}.each do |page|
+    %w{about search error/403 error/404}.each do |page|
       upload_page page, View::render(:page => page)
     end
+
+    lists = []
+    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/index/").each do |key|
+      lists << List.new(key.split('/')[-1])
+    end
+    upload_page 'index', View::render(:page => 'index', :locals => { :lists => lists })
   end
 
   def render_list slug
@@ -110,6 +116,7 @@ class Renderer
       years[year] ||= {}
       years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     end
+    AWS::S3::S3Object.store("render/index/#{slug}", '', 'listlibrary_cachedhash') unless AWS::S3::S3Object.exists? "render/index/#{slug}", 'listlibrary_cachedhash'
     html = View::render(:page => "list", :locals => {
       :title     => slug,
       :years     => years,
