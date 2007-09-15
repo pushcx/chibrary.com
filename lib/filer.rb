@@ -104,5 +104,4 @@ class Filer
       end
     end
   end
-
 end

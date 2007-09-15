@@ -43,7 +43,7 @@ class FilerTest < Test::Unit::TestCase
   end
 
   def test_store
-    message = mock :store => true, :filename => "list/example_list/message/2006/10/goodid@example.com"
+    message = mock('message', :store => true, :filename => "list/example_list/message/2006/10/goodid@example.com")
     message.expects(:mailing_list).at_least_once.returns("example_list")
     message.expects(:date).times(2).returns( mock(:year => 2006, :month => 10) )
     Message.expects(:new).returns(message)
@@ -55,7 +55,7 @@ class FilerTest < Test::Unit::TestCase
   end
 
   def test_store_fails
-    message = mock
+    message = mock('message')
     message.expects(:store).raises(RuntimeError, "something bad happened")
     message.expects(:message).returns(message(:good))
     Message.expects(:new).returns(message)
@@ -83,7 +83,6 @@ class FilerTest < Test::Unit::TestCase
     f = TestRunFiler.new(0, 0)
     f.expects(:setup)
     f.expects(:acquire).yields("message")
-    #f.expects(:store).with("message")
     f.expects(:queue_threader)
     f.expects(:teardown)
     f.sequences.expects(:[]=).with("0/#{Process.pid}", 1)
