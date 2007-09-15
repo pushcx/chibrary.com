@@ -90,18 +90,6 @@ class Renderer
     @sftp = @ssh.sftp.connect
   end
 
-  def get_job
-    if @jobs.empty?
-      if @stop_on_empty
-        @ssh.close
-        @sftp.close
-        exit
-      end
-      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
-    end
-    @jobs.pop
-  end
-
   def render_static
     %w{about search error/403 error/404}.each do |page|
       upload_page page, View::render(:page => page)
@@ -122,7 +110,7 @@ class Renderer
       years[year] ||= {}
       years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     end
-    AWS::S3::S3Object.store("render/index/#{slug}", '', 'listlibrary_cachedhash') unless AWS::S3::S3Object.exists? "render/index/#{slug}", 'listlibrary_cachedhash'
+    CachedHash.new('render/index')[slug] = '' unless AWS::S3::S3Object.exists?("render/index/#{slug}", 'listlibrary_cachedhash')
     html = View::render(:page => "list", :locals => {
       :title     => slug,
       :years     => years,
@@ -234,8 +222,20 @@ class Renderer
   end
 
   def delete_thread slug, year, month, call_number
-    @sftp.remove("listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}") rescue Net::SFTP::Operations::StatusException
+    @ssh.process.popen3("/bin/rm -f listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
     nil
+  end
+
+  def get_job
+    if @jobs.empty?
+      if @stop_on_empty
+        @ssh.close
+        @sftp.close
+        exit
+      end
+      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
+    end
+    @jobs.pop
   end
 
   def run

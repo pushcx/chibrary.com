@@ -53,6 +53,10 @@ class RendererTest < Test::Unit::TestCase
 
   def setup
     $stdout.expects(:puts).at_least(0)
+    @ssh = mock('ssh')
+    @sftp = mock('sftp')
+    @ssh.expects(:sftp).returns(mock(:connect => @sftp))
+    Net::SSH.expects(:start).returns(@ssh)
   end
 
   def test_get_job
@@ -66,6 +70,19 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_render_list
+    AWS::S3::Bucket.expects(:keylist).with('listlibrary_cachedhash', 'render/month/example/').returns([])
+    AWS::S3::S3Object.expects(:exists?).with('render/index/example', 'listlibrary_cachedhash').returns(false)
+    CachedHash.expects(:new).returns(stub_everything)
+    List.expects(:new).with('example').returns('list')
+    View.expects(:render).with(:page => 'list', :locals => {
+      :title => 'example',
+      :years => {},
+      :list => 'list',
+      :slug => 'example',
+    }).returns('html')
+    r = Renderer.new
+    r.expects(:upload_page).with('example/index.html', 'html')
+    r.render_list('example')
   end
 
   def test_month_previous_next_exist
@@ -196,14 +213,10 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_delete_thread
-    r = Renderer.new
-    sftp = mock
-    sftp.expects(:connect).yields(sftp)
-    sftp.expects(:remove).with("listlibrary.net/example/2007/08/00000000")
-    ssh = mock
-    ssh.expects(:sftp).returns(sftp)
-    r.expects(:ssh_connection).yields(ssh)
-    r.delete_thread "example", "2007", "08", "00000000"
+    process = mock('process')
+    process.expects(:popen3).with("/bin/rm -f listlibrary.net/example/2007/08/00000000")
+    @ssh.expects(:process).returns(process).at_least_once()
+    Renderer.new.delete_thread "example", "2007", "08", "00000000"
   end
 
   def test_run_empty
@@ -254,25 +267,14 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_upload_page
-    handle = mock
-    sftp = mock
-    sftp.expects(:connect).yields(sftp)
-    sftp.expects(:open_handle).yields(handle)
-    sftp.expects(:mkdir).at_least_once()
-    sftp.expects(:write).with(handle, "str")
-    sftp.expects(:fsetstat).with(handle, { :permissions => 0644 })
-    ssh = mock
-    ssh.expects(:sftp).returns(sftp)
-    ssh.expects(:process).returns(mock( :popen3 => nil)) # rename message
-    r = Renderer.new
-    r.expects(:ssh_connection).yields(ssh)
-    r.upload_page "path/to/filename", "str"
-  end
+    @sftp.expects(:open_handle).yields(stub_everything)
+    @sftp.expects(:write)
+    @sftp.expects(:fsetstat)
+    process = mock('process')
+    process.expects(:popen3).at_least_once()
+    @ssh.expects(:process).returns(process).at_least_once()
 
-  def test_ssh_connection
     r = Renderer.new
-    m = mock
-    Net::SSH.expects(:start).yields(m)
-    r.ssh_connection { |ssh| assert_equal m, ssh }
+    r.upload_page "path/to/filename", "str"
   end
 end
