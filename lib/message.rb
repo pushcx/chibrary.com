@@ -4,7 +4,7 @@ require 'aws'
 
 class Message
   attr_reader   :message, :call_number, :source
-  attr_accessor :addresses, :overwrite
+  attr_accessor :overwrite
 
   RE_PATTERN = /\s*\[?(Re|Fwd)([\[\(]?\d+[\]\)]?)?:\s*/i
   def self.subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end

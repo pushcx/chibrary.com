@@ -1,6 +1,5 @@
 message:
   * only cache metadata instead of messages -- huge size + time saving
-    * slug, year, month, call_number, message_id, subject, date
   * Protect against painful message_ids
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')

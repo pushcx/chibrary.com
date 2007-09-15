@@ -64,8 +64,8 @@ class MessageTest < Test::Unit::TestCase
 
   def test_mailing_list_in_various_places
     [:good, :list_in_to, :list_in_cc, :list_in_bcc, :list_in_reply_to].each do |fixture|
+      expect_list 'example@list.example.com', 'example'
       m = Message.new message(fixture), 'test', '00000000'
-      expect_example_list m
       assert_equal "example", m.mailing_list
     end
   end
@@ -76,15 +76,15 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_no_list
+    expect_list 'bob@example.com', nil
     m = Message.new message(:no_list), 'test', '00000000'
-    m.addresses.expects(:[]).with('bob@example.com').returns(nil)
     assert_equal '_listlibrary_no_list', m.mailing_list
   end
 
   def test_no_list_and_no_id
+    expect_list 'bob@example.com', nil
     m = Message.new message(:no_list_and_no_id), 'test', '00000000'
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
-    m.addresses.expects(:[]).with('bob@example.com').at_least_once.returns(nil)
     assert_equal '_listlibrary_no_list', m.mailing_list
     key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
     AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
@@ -117,11 +117,10 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_store_metadata
+    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
-    expect_example_list m
     AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
-    expect_example_list m
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-source'      => 'test',
@@ -141,16 +140,14 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_overwrite
+    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
-    expect_example_list m
     AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(true)
-    expect_example_list m
     assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{key}") do
       m.store
     end
     m.overwrite = true
-    expect_example_list m
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-source'      => 'test',
@@ -161,7 +158,9 @@ class MessageTest < Test::Unit::TestCase
 
   private
 
-  def expect_example_list m
-    m.addresses.expects(:[]).with('example@list.example.com').returns('example')
+  def expect_list address, value
+    addresses = mock('addresses')
+    addresses.expects(:[]).with(address).at_least_once.returns(value)
+    CachedHash.expects(:new).with('list_address').returns(addresses)
   end
 end
