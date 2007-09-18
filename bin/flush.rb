@@ -34,7 +34,7 @@ jobs.each do |job|
   AWS::S3::S3Object.delete("thread_queue/#{slug}/#{year}/#{month}", 'listlibrary_cachedhash')
 
   # delete render jobs
-  AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render_queue/#{slug}/#{year}/#{month}") do |key|
+  AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render_queue/#{slug}/#{year}/#{month}").each do |key|
     AWS::S3::S3Object.delete(key, 'listlibrary_cachedhash')
   end
 
@@ -42,7 +42,7 @@ jobs.each do |job|
   AWS::S3::S3Object.delete("list/#{slug}/message_cache/#{year}/#{month}", 'listlibrary_archive')
 
   # delete thread cache
-  AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}") do |key|
+  AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}").each do |key|
     AWS::S3::S3Object.delete(key, 'listlibrary_archive')
   end
 
