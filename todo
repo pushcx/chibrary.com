@@ -1,5 +1,3 @@
-list/ruby-core/message/2007/08/S384629AbXHWGlr/20070823064147Z 40700@swip002.ftl.affinity.com
-
 message:
   * Protect against painful message_ids
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html

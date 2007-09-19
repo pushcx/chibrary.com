@@ -10,6 +10,12 @@ require 'filer'
 ACCESS_KEY_ID = '0B8FSQ35925T27X8Q4R2'
 SECRET_ACCESS_KEY = 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
 
+class AWS::S3::Connection
+  def self.prepare_path(path)
+    super(path).gsub('+', '%2B')
+  end
+end
+
 class AWS::S3::Bucket
   def self.keylist bucket, prefix
     last = prefix
