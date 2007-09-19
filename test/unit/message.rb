@@ -33,27 +33,30 @@ class MessageTest < Test::Unit::TestCase
     assert_equal ['grandparent@example.com', 'parent@example.com'], m.references
     assert_equal "goodid@example.com", m.message_id
     assert_equal "Message body.", m.body
-    assert_equal false, m.no_archive?
+    assert_equal false, m.no_archive
   end
 
+  class Message_test_from < Message ; public :load_from ; end
   def test_from
-    m = Message.new message(:good), 'test', '00000000'
+    m = Message_test_from.new message(:good), 'test', '00000000'
     [
       ['Bob Barker <bob@example.com>', 'Bob Barker <bob@example.com>'],
       ['"Bob Barker" <bob@example.com>', 'Bob Barker <bob@example.com>'],
     ].each do |original, cleaned|
       m.expects(:get_header).returns(original)
+      m.load_from
       assert_equal cleaned, m.from
     end
   end
 
   def test_no_archive
     m = Message.new message(:no_archive), 'test', '00000000'
-    assert m.no_archive?
+    assert m.no_archive
   end
 
+  class Message_test_add_header < Message ; public :add_header, :headers ; end
   def test_add_header
-    m = Message.new message(:good), 'test', '00000000'
+    m = Message_test_add_header.new message(:good), 'test', '00000000'
     m.add_header "X-Foo: x-foo"
     assert_match /^X-Foo: x-foo$/, m.headers
     assert_match /^X-ListLibrary-Added-Header: X-Foo$/, m.headers
@@ -66,7 +69,7 @@ class MessageTest < Test::Unit::TestCase
     [:good, :list_in_to, :list_in_cc, :list_in_bcc, :list_in_reply_to].each do |fixture|
       expect_list 'example@list.example.com', 'example'
       m = Message.new message(fixture), 'test', '00000000'
-      assert_equal "example", m.mailing_list
+      assert_equal "example", m.slug
     end
   end
 
@@ -78,14 +81,13 @@ class MessageTest < Test::Unit::TestCase
   def test_no_list
     expect_list 'bob@example.com', nil
     m = Message.new message(:no_list), 'test', '00000000'
-    assert_equal '_listlibrary_no_list', m.mailing_list
+    assert_equal '_listlibrary_no_list', m.slug
   end
 
   def test_no_list_and_no_id
-    expect_list 'bob@example.com', nil
     m = Message.new message(:no_list_and_no_id), 'test', '00000000'
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
-    assert_equal '_listlibrary_no_list', m.mailing_list
+    assert_equal '_listlibrary_no_list', m.slug
     key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
     AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
     AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
@@ -127,11 +129,6 @@ class MessageTest < Test::Unit::TestCase
       :'x-amz-meta-call_number' => '00000000'
     })
     m.store
-  end
-
-  def test_generated_id
-    m = Message.new message(:good), 'test', '00000000' # unused, just need the object
-    assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.generated_id
   end
 
   def test_message_id

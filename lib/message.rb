@@ -3,7 +3,8 @@ require 'md5'
 require 'aws'
 
 class Message
-  attr_reader   :message, :call_number, :source
+  attr_reader   :from, :message, :source # used by code
+  attr_reader   :call_number, :message_id, :references, :subject, :date, :from, :no_archive, :key # for yaml
   attr_accessor :overwrite
 
   RE_PATTERN = /\s*\[?(Re|Fwd)([\[\(]?\d+[\]\)]?)?:\s*/i
@@ -11,8 +12,6 @@ class Message
   def self.normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
 
   def initialize message, source=nil, call_number=nil
-    @addresses = CachedHash.new "list_address"
-
     @source = source
     @call_number = call_number
     if message.match "\n" # initialized with a message
@@ -25,17 +24,49 @@ class Message
       @source ||= o.metadata['source']
     end
     raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
-    date # If date is missing/broken, set it to Time.now
+    extract_metadata
   end
 
-  def id ; message_id ; end
+  # public methods
 
   def body
     message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
   end
 
+  alias :id :message_id # threading code prefers this, haven't fixed it
+
+  def store
+    unless @overwrite
+      raise "overwrite attempted for listlibrary_archive #{@key}" if AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
+    end
+    AWS::S3::S3Object.store(@key, message, "listlibrary_archive", {
+      :content_type             => "text/plain",
+      :'x-amz-meta-source'      => @source,
+      :'x-amz-meta-call_number' => call_number
+    })
+    self
+  end
+
+  # In threading, LLThread caches YAML messages, so we limit the serialization
+  # to the fields the threader needs (@from and @no_archive for
+  # view/thread_list which shouldn't need to load the whole message).
+  # view/thread must actually load messages from their keys.
+  def to_yaml_properties ; %w{@call_number @message_id @references @subject @date @from @no_archive @key} ; end
+
+  private
+
+  # header code
+
   def headers
     message.split(/\n\r?\n/)[0]
+  end
+
+  def add_header(header)
+    name = header.match(/^(.+?):\s/).captures.shift
+    new_headers = "#{header.chomp}\n"
+    new_headers += "X-ListLibrary-Added-Header: #{name}\n" unless name.match(/^X-ListLibrary-/)
+    @message = new_headers + message
+    extract_metadata
   end
 
   def get_header header
@@ -45,11 +76,20 @@ class Message
     match.captures.shift.sub(/(\s)+/, ' ').sub(/\n[ \t]+/m, " ").strip
   end
 
-  def from
-    (get_header('From') or '').sub(/"(.*?)"/, '\1')
+  # metadata code
+
+  def extract_metadata
+    load_date
+    load_from
+    load_message_id
+    load_references
+    load_slug
+    load_subject
+
+    load_key
   end
 
-  def date
+  def load_date
     date   = get_header('Date')
     begin
       date = Time.rfc2822(date).utc
@@ -64,85 +104,67 @@ class Message
         add_header "Date: #{date.rfc2822}"
       end
     end
-    date
+    @date = date
   end
 
-  def subject
-    get_header('Subject') or ''
+  def load_key
+    @key = "list/#{@slug}/message/#{date.year}/%02d/" % @date.month + @message_id
   end
 
-  def references
-    in_reply_to = (get_header('In-Reply-To') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.first
-    references = (get_header('References') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
-    references << in_reply_to unless in_reply_to.nil? or references.include? in_reply_to
-    references
+  def load_from
+    @from = (get_header('From') or '').sub(/"(.*?)"/, '\1')
   end
 
-  def no_archive?
-    !!(
+  def load_message_id
+    @message_id = begin
+      /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
+    rescue
+      add_header "Message-Id: <#{call_number}@generated-message-id.listlibrary.net>"
+      message_id
+    end
+  end
+
+  def load_no_archive
+    @no_archive = !!(
       get_header('X-No-Archive') =~ /yes/i or
       !get_header('X-Archive').nil? or
       get_header('Archive') =~ /no/i
     )
   end
 
-  def mailing_list
-    matches = nil
-    [ /^X-Mailing-List:\s.*/,
-      /^To:\s.*/, /^C[cC]:\s.*/,
-      /^B[cC][cC]:\s.*/,
-      /^Reply-[Tt]o:\s.*/,
-      /^List-[Pp]ost:\s.*/,
-      /^Mail-[Ff]ollowup-[Tt]o:\s.*/,
-      /Mail-[Rr]eply-[Tt]o:\s.*/
-    ].each do |regexp|
-      matches = regexp.match(headers)
-      break unless matches.nil?
+  def load_references
+    in_reply_to = (get_header('In-Reply-To') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.first
+    references = (get_header('References') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
+    references << in_reply_to unless in_reply_to.nil? or references.include? in_reply_to
+    @references = references
+  end
+
+  def load_slug
+    @addresses = CachedHash.new "list_address"
+
+    header = nil
+    %w{
+      X-Mailing-List
+      List-Post
+      To Cc Reply-To Bcc 
+      Mail-Followup-To Mail-Reply-To
+    }.each do |h|
+      header = get_header(h)
+      break unless header.nil?
     end
-    return "_listlibrary_no_list" if matches.nil?
+    return "_listlibrary_no_list" if header.nil?
 
     slug = nil
-    matches[0].chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }.each do |address|
+    header.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }.each do |address|
       slug = @addresses[address]
       break unless slug.nil?
     end
 
     slug ||= "_listlibrary_no_list"
+    @slug = slug
   end
 
-  def generated_id
-    "#{call_number}@generated-message-id.listlibrary.net"
-  end
-
-  def add_header(header)
-    name = header.match(/^(.+?):\s/).captures.shift
-    new_headers = "#{header.chomp}\n"
-    new_headers += "X-ListLibrary-Added-Header: #{name}\n" unless name.match(/^X-ListLibrary-/)
-    @message = new_headers + message
-  end
-
-  def message_id
-    begin
-      /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
-    rescue
-      add_header "Message-Id: <#{generated_id}>"
-      message_id
-    end
-  end
-
-  def filename
-    "list/#{mailing_list}/message/#{date.year}/%02d/" % date.month + message_id
-  end
-
-  def store
-    unless @overwrite
-      raise "overwrite attempted for listlibrary_archive #{filename}" if AWS::S3::S3Object.exists?(filename, "listlibrary_archive")
-    end
-    AWS::S3::S3Object.store(filename, message, "listlibrary_archive", {
-      :content_type             => "text/plain",
-      :'x-amz-meta-source'      => @source,
-      :'x-amz-meta-call_number' => call_number
-    })
-    self
+  def load_subject
+    @subject = (get_header('Subject') or '')
   end
 end

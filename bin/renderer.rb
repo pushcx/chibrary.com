@@ -67,7 +67,7 @@ class View
   def self.message_partial message
     if message.nil? or message.is_a? Symbol
       'message_missing'
-    elsif message.no_archive?
+    elsif message.no_archive
       'message_no_archive'
     else
       'message'

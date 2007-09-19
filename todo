@@ -1,5 +1,6 @@
+list/ruby-core/message/2007/08/S384629AbXHWGlr/20070823064147Z 40700@swip002.ftl.affinity.com
+
 message:
-  * only cache metadata instead of messages -- huge size + time saving
   * Protect against painful message_ids
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
   * package old months into single yaml files; store metadata w metadata.to_yaml.sub(/^--- .*$/, '---')
