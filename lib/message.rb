@@ -3,7 +3,7 @@ require 'md5'
 require 'aws'
 
 class Message
-  attr_reader   :from, :message, :source # used by code
+  attr_reader   :from, :message, :source, :slug # used by code
   attr_reader   :call_number, :message_id, :references, :subject, :date, :from, :no_archive, :key # for yaml
   attr_accessor :overwrite
 
@@ -82,6 +82,7 @@ class Message
     load_date
     load_from
     load_message_id
+    load_no_archive
     load_references
     load_slug
     load_subject
