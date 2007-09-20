@@ -12,7 +12,8 @@ SECRET_ACCESS_KEY = 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
 
 class AWS::S3::Connection
   def self.prepare_path(path)
-    super(path).gsub('+', '%2B')
+    path = path.remove_extended unless path.utf8?
+    URI.escape(path).gsub('+', '%2B')
   end
 end
 
