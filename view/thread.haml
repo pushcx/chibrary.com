@@ -6,7 +6,7 @@
 
 .thread
   - @missing_count = 0
-  = thread.collect { |m, depth, parent| m = Message.new(m.key, m.source, m.call_number) if m.is_a? Message; render :partial => message_partial(m), :locals => { :message => m } }
+  = thread.collect { |m, depth, parent| $stderr.puts m.key.to_s.gsub('+',' '); m = Message.new(m.key.to_s.gsub('+',' '), m.source, m.call_number) if m.is_a? Message; render :partial => message_partial(m), :locals => { :message => m } }
 
 %hr 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
