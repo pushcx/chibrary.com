@@ -53,7 +53,7 @@ class View
     end
     str.strip
 
-    str = h(m.body)
+    str = h(str)
     str = compress_quotes(str)
     str
   end
