@@ -41,6 +41,24 @@ class View
 
   # helpers
 
+  def self.message_body m
+    list = List.new(m.slug)
+    str = m.body
+    
+    # remove footer
+    if footer = list['footer'] and     # the list has a footer
+       i = str.rindex(footer) and      # and it's here
+       i + footer.length == str.length # and it's at the end
+      $stderr.puts 'lopping'
+      str = str[0..(i - 1)]
+    end
+    str.strip
+
+    str = h(m.body)
+    str = compress_quotes(str)
+    str
+  end
+
   def self.compress_quotes str
     str.sub!(/-----BEGIN [GP]+ SIGNED MESSAGE-----\n.*?\n\n(.*?)\n*-----BEGIN [GP]+ SIGNATURE-----.*/m, '\1')
     str.gsub!(/(^-{4,}[^\-\n]{8,}-{4,}\n.*|(^[^\n]{10,}:\n\n?|)(^&gt;[^\n]*=(20|)\n[^\n]*\n|^&gt;[^\n]*\n(\s*?\n&gt;[^\n]*\n)*)+\n*)/m) do
