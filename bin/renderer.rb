@@ -49,7 +49,6 @@ class View
     if footer = list['footer'] and     # the list has a footer
        i = str.rindex(footer) and      # and it's here
        i + footer.length == str.length # and it's at the end
-      $stderr.puts 'lopping'
       str = str[0..(i - 1)]
     end
     str.strip
