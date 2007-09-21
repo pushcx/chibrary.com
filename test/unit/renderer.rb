@@ -12,6 +12,25 @@ class ViewTest < Test::Unit::TestCase
     end
   end
 
+  def test_message_body
+    View.expects(:remove_footer)
+    View.expects(:h)
+    View.expects(:compress_quotes)
+    View.message_body(stub_everything)
+  end
+
+  def test_remove_footer
+    body   = "body text\n"
+    footer = "\n---\nmailing list footer"
+    m = mock
+    m.expects(:slug).returns('slug')
+    List.expects(:new).returns(mock(:[] => footer))
+    m.expects(:body).returns(body + footer)
+
+    str = View.message_body(m)
+    assert_equal body.strip, str
+  end
+
   def test_h
     [
       ['a user@a.com a',               'a user@a.com a'],

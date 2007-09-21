@@ -42,8 +42,15 @@ class View
   # helpers
 
   def self.message_body m
-    list = List.new(m.slug)
     str = m.body
+    str = remove_footer(str, m.slug)
+    str = h(str)
+    str = compress_quotes(str)
+    str
+  end
+
+  def self.remove_footer str, slug
+    list = List.new(slug)
     
     # remove footer
     if footer = list['footer'] and     # the list has a footer
@@ -52,10 +59,6 @@ class View
       str = str[0..(i - 1)]
     end
     str.strip
-
-    str = h(str)
-    str = compress_quotes(str)
-    str
   end
 
   def self.compress_quotes str
