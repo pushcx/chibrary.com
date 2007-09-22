@@ -22,6 +22,14 @@ class MessageTest < Test::Unit::TestCase
     assert_equal 're-foo', Message.normalize_subject("re-foo")
   end
 
+  def test_new_saved
+    o = mock
+    o.expects(:value).returns(mock(:to_s => message(:good)))
+    AWS::S3::S3Object.expects(:find).with('/path/to/message', 'listlibrary_archive').returns(o)
+    m = Message.new '/path/to/message', 'test', '00000000'
+    assert_equal message(:good), m.message
+  end
+
   def test_good_message
     m = Message.new message(:good), 'test', '00000000'
     assert_equal m.class, Message

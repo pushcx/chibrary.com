@@ -34,7 +34,7 @@ class FetcherTest < Test::Unit::TestCase
     f.acquire { |mail| assert_equal 'Test message', mail }
   end
 
-  def test_release
-    # add when the fail store failure is in
+  def test_source
+    assert_equal 'subscription', Fetcher.new(0, 0).source
   end
 end
