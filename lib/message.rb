@@ -109,7 +109,7 @@ class Message
   end
 
   def load_key
-    @key = "list/#{@slug}/message/#{date.year}/%02d/" % @date.month + @message_id
+    @key = "list/#{@slug}/message/#{date.year}/%02d/#{@message_id}" % @date.month
   end
 
   def load_from
@@ -117,11 +117,11 @@ class Message
   end
 
   def load_message_id
-    @message_id = begin
-      /^Message-[Ii][dD]:\s*<?(.*)>/.match(headers)[1].chomp
-    rescue
-      add_header "Message-Id: <#{call_number}@generated-message-id.listlibrary.net>"
-      message_id
+    if message_id = get_header('Message-Id') and message_id =~ /.@./
+      @message_id = /^<?(.*?@[^\>]*)>?/.match(message_id)[1].chomp
+    else
+      @message_id = "#{call_number}@generated-message-id.listlibrary.net"
+      add_header "Message-Id: <#{@message_id}>"
     end
   end
 

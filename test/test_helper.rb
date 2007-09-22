@@ -19,7 +19,8 @@ class Test::Unit::TestCase
     [list].flatten.each do |fixture|
       self.class_eval do
         define_method(fixture) do |item|
-          @@fixtures[fixture] ||= YAML::load_file("test/fixtures/#{fixture.to_s}.yaml")
+          filename = File.join(File.dirname(__FILE__), 'fixtures', "#{fixture.to_s}.yaml")
+          @@fixtures[fixture] ||= YAML::load_file(filename)
           @@fixtures[fixture][item.to_s]
         end
       end
