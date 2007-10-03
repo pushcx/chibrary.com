@@ -1,3 +1,7 @@
+contest:
+  * find icons on http://istockphotos.com
+  * make diagrams from notes
+  * answer questions
 message:
   * Protect against painful message_ids
   * check other headers for list addresses: http://www.ninebynine.org/IETF/Messaging/HdrRegistry/MailHeaderPermanentRegistry.html
