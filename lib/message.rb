@@ -145,10 +145,11 @@ class Message
 
     header = nil
     %w{
-      X-Mailing-List
-      List-Post
+      X-Mailing-List List-ID
+      List-Post List-Owner
       To Cc Reply-To Bcc 
       Mail-Followup-To Mail-Reply-To
+      Resent-To Resent-Cc Resent-Reply-To Resent-Bcc
     }.each do |h|
       header = get_header(h)
       break unless header.nil?
