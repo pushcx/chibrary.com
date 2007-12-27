@@ -98,6 +98,21 @@ class FilerTest < Test::Unit::TestCase
   end
 
   def test_sequence_exhaustion
+    # exception should be raised on any attempt to generate an invalid call number
+    f = Filer.new(0, (2 ** 20 + 1))
+    assert_raises SequenceExhausted do
+      f.call_number
+    end
+
+    # and also immediately after the last message safely read
+    f = Filer.new(0, (2 ** 20))
+    f.expects(:setup)
+    f.expects(:acquire).yields(:message)
+    f.expects(:store).with(:message).raises(SequenceExhausted, "sequence exhausted")
+    f.sequences.expects(:[]=).with("0/#{Process.pid}", 2 ** 20)
+    assert_raises SequenceExhausted do
+      f.run
+    end
   end
 
   def test_failure_store_exception

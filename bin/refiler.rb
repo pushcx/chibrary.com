@@ -11,7 +11,7 @@ class Refiler < Filer
     'subscription'
   end
 
-  # uncomment to force messages to get new call numbers
+  # comment out to force messages to get new call numbers
   def call_number ; nil ; end
 
   def acquire

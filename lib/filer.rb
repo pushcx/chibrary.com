@@ -1,6 +1,8 @@
 require 'yaml'
 require 'aws'
 
+class SequenceExhausted < RuntimeError ; end
+
 class Integer
   def to_base_64
     raise "No negative numbers" if self < 0
@@ -41,6 +43,7 @@ class Filer
     # call numbers are 48 binary digits. First 8 are 0 for future
     # expansion. Next 4 are server id. Next 16 # are process id.
     # Last 20 are an incremeting sequence ID.
+    raise SequenceExhausted, "sequence for server #{@server}, pid #{Process.pid} exhausted" if @sequence >= 2 ** 20
     ("%04b%016b%020b" % [@server, Process.pid, @sequence]).to_i(2).to_base_64
   end
 
@@ -66,6 +69,8 @@ class Filer
         @mailing_lists[message.mailing_list] << [message.date.year, message.date.month]
       end
       $stdout.puts "#{@message_count} #{call_number} stored: #{message.filename}"
+    rescue SequenceExhausted
+      raise
     rescue Exception => e
       $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
       AWS::S3::S3Object.store(

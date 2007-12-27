@@ -22,7 +22,12 @@ class Fetcher < Filer
 
   def acquire
     @pop.delete_all do |mail|
-      yield mail.mail
+      begin
+        yield mail.mail
+      rescue SequenceExhausted
+        teardown
+        return
+      end
     end
   end
 
