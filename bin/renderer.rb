@@ -106,7 +106,7 @@ class Renderer
   def initialize
     @jobs = []
     @stop_on_empty = false
-    @ssh = Net::SSH.start("listlibrary.net", "listlibrary", "JemUQc7h", :compression => 'zlib', :compression_level => 9)
+    @ssh = Net::SSH.start("listlibrary.net", "listlibrary", :keys => [File.join(File.dirname(__FILE__), "..", "lib", "listlibrary_id_dsa")], :compression => 'zlib', :compression_level => 9)
     @sftp = @ssh.sftp.connect
   end
 
