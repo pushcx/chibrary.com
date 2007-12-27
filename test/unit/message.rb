@@ -161,6 +161,18 @@ class MessageTest < Test::Unit::TestCase
     m.store
   end
 
+  def test_long_message_id
+    # don't want long/ugly message_ids in the s3 keynames
+    m = Message.new message(:long_message_id), 'test', '00000000'
+    assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
+  end
+
+  def test_invalid_message_id
+    # RFC 2822, section 3.2.4 defines the valid characters
+    m = Message.new message(:invalid_message_id), 'test', '00000000'
+    assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
+  end
+
   private
 
   def expect_list address, value

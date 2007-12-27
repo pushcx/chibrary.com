@@ -117,8 +117,8 @@ class Message
   end
 
   def load_message_id
-    if message_id = get_header('Message-Id') and message_id =~ /.@./
-      @message_id = /^<?(.*?@[^\>]*)>?/.match(message_id)[1].chomp
+    if message_id = get_header('Message-Id') and message_id =~ /^<?[a-zA-Z0-9!#$\%&'*+\-\.\/=?^_`{|}~]+@[a-zA-Z0-9_\-\.]+>?$/ and message_id.length < 120
+      @message_id = /^<?([^@]+@[^\>]+)>?/.match(message_id)[1].chomp
     else
       @message_id = "#{call_number}@generated-message-id.listlibrary.net"
       add_header "Message-Id: <#{@message_id}>"
