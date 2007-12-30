@@ -72,18 +72,31 @@ class Filer
     rescue SequenceExhausted
       raise
     rescue Exception => e
-      $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
-      AWS::S3::S3Object.store(
-        "filer_failure/#{call_number}",
-        {
+      begin
+        $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
+        error_info = {
           :exception => e.class.to_s,
           :message   => e.message,
           :backtrace => e.backtrace,
-          :mail      => message.message
-        }.to_yaml,
-        'listlibrary_archive',
-        :content_type => "text/plain"
-      )
+          :mail      => mail
+        }.to_yaml
+        AWS::S3::S3Object.store(
+          "filer_failure/#{call_number}",
+          error_info,
+          'listlibrary_archive',
+          :content_type => "text/plain"
+        )
+      rescue
+        $stdout.puts "#{@message_count} #{call_number} DOUBLE FAILURE: #{e.message}"
+        secondary_error_info = {
+          :exception => e.class.to_s,
+          :message   => e.message,
+          :backtrace => e.backtrace
+        }.to_yaml
+        # double failure: couldn't store the failure in s3
+        @rc ||= RemoteConnection.new
+        @rc.upload_file "filer_double_failure/#{call_number}", [secondary_error_info, error_info].to_yaml
+      end
     ensure
       release
       @sequence += 1
