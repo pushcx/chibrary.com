@@ -8,13 +8,12 @@
 require 'rubygems'
 require 'cgi'
 require 'haml'
-require 'net/sftp'
-require 'net/ssh'
 require 'ostruct'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
+require 'remote_connection'
 require 'time_'
 
 class View
@@ -106,28 +105,19 @@ class Renderer
   def initialize
     @jobs = []
     @stop_on_empty = false
-    @ssh = Net::SSH.start(
-      "listlibrary.net",
-      "listlibrary", {
-        :keys => [File.join(File.dirname(__FILE__), "..", "lib", "listlibrary_id_dsa")],
-        :compression => 'zlib',
-        :compression_level => 9,
-        :paranoid => :very,
-      }
-    )
-    @sftp = @ssh.sftp.connect
+    @rc = RemoteConnection.new
   end
 
   def render_static
     %w{about search error/403 error/404}.each do |page|
-      upload_page page, View::render(:page => page)
+      @rc.upload_file page, View::render(:page => page)
     end
 
     lists = []
     AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/index/").each do |key|
       lists << List.new(key.split('/')[-1])
     end
-    upload_page 'index', View::render(:page => 'index', :locals => { :lists => lists })
+    @rc.upload_file 'index', View::render(:page => 'index', :locals => { :lists => lists })
   end
 
   def render_list slug
@@ -145,7 +135,7 @@ class Renderer
       :list      => List.new(slug),
       :slug      => slug,
     })
-    upload_page "#{slug}/index.html", html
+    @rc.upload_file "#{slug}/index.html", html
   end
 
   def month_previous_next(slug, year, month)
@@ -188,7 +178,7 @@ class Renderer
       :year          => year,
       :month         => month,
     })
-    upload_page "#{slug}/#{year}/#{month}/index.html", html
+    @rc.upload_file "#{slug}/#{year}/#{month}/index.html", html
   end
 
   def thread_previous_next(slug, year, month, call_number)
@@ -246,19 +236,18 @@ class Renderer
       :year          => year,
       :month         => month,
     }
-    upload_page "#{slug}/#{year}/#{month}/#{call_number}", html
+    @rc.upload_file "#{slug}/#{year}/#{month}/#{call_number}", html
   end
 
   def delete_thread slug, year, month, call_number
-    @ssh.process.popen3("/bin/rm -f listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
+    @rc.command("/bin/rm -f listlibrary.net/#{slug}/#{year}/#{month}/#{call_number}")
     nil
   end
 
   def get_job
     if @jobs.empty?
       if @stop_on_empty
-        @ssh.close
-        @sftp.close
+        @rc.close
         exit
       end
       @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
@@ -289,20 +278,6 @@ class Renderer
         render_list  slug
       end
     end
-  end
-
-  def upload_page filename, str
-    tmpname = "#{Process.pid}-#{rand(1000000)}"
-    dirs = filename.split('/')
-    filename = dirs.pop
-    path = dirs.join('/')
-
-    @sftp.open_handle("tmp/#{tmpname}", "w") do |handle|
-      @sftp.write(handle, str)
-      @sftp.fsetstat(handle, :permissions => 0644)
-    end
-    @ssh.process.popen3("/bin/mkdir -p /home/listlibrary/listlibrary.net/#{path}")
-    @ssh.process.popen3("/bin/mv /home/listlibrary/tmp/#{tmpname} /home/listlibrary/listlibrary.net/#{path}/#{filename}")
   end
 end
 

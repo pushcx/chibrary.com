@@ -73,10 +73,8 @@ class RendererTest < Test::Unit::TestCase
 
   def setup
     $stdout.expects(:puts).at_least(0)
-    @ssh = mock('ssh')
-    @sftp = mock('sftp')
-    @ssh.expects(:sftp).returns(mock(:connect => @sftp))
-    Net::SSH.expects(:start).returns(@ssh)
+    @rc = mock('remote connection')
+    RemoteConnection.expects(:new).returns(@rc)
   end
 
   def test_get_job
@@ -101,7 +99,7 @@ class RendererTest < Test::Unit::TestCase
       :slug => 'example',
     }).returns('html')
     r = Renderer.new
-    r.expects(:upload_page).with('example/index.html', 'html')
+    @rc.expects(:upload_file).with('example/index.html', 'html')
     r.render_list('example')
   end
 
@@ -168,7 +166,7 @@ class RendererTest < Test::Unit::TestCase
       :year          => '2007',
       :month         => '08'
     }).returns("html")
-    r.expects(:upload_page).with("example/2007/08/index.html", "html")
+    @rc.expects(:upload_file).with("example/2007/08/index.html", "html")
     r.render_month "example", "2007", "08"
   end
 
@@ -228,14 +226,12 @@ class RendererTest < Test::Unit::TestCase
       :year   => '2007',
       :month => '08'
     }).returns("html")
-    r.expects(:upload_page).with("example/2007/08/00000000", "html")
+    @rc.expects(:upload_file).with("example/2007/08/00000000", "html")
     r.render_thread "example", "2007", "08", "00000000"
   end
 
   def test_delete_thread
-    process = mock('process')
-    process.expects(:popen3).with("/bin/rm -f listlibrary.net/example/2007/08/00000000")
-    @ssh.expects(:process).returns(process).at_least_once()
+    @rc.expects(:command).with("/bin/rm -f listlibrary.net/example/2007/08/00000000")
     Renderer.new.delete_thread "example", "2007", "08", "00000000"
   end
 
@@ -284,17 +280,5 @@ class RendererTest < Test::Unit::TestCase
     AWS::S3::S3Object.expects(:exists?).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(false)
     r.expects(:delete_thread).with("example", "2007", "08", "00000000")
     r.run
-  end
-
-  def test_upload_page
-    @sftp.expects(:open_handle).yields(stub_everything)
-    @sftp.expects(:write)
-    @sftp.expects(:fsetstat)
-    process = mock('process')
-    process.expects(:popen3).at_least_once()
-    @ssh.expects(:process).returns(process).at_least_once()
-
-    r = Renderer.new
-    r.upload_page "path/to/filename", "str"
   end
 end
