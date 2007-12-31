@@ -64,11 +64,11 @@ class Filer
     begin
       message = Message.new mail, source, call_number
       message.store
-      unless message.mailing_list.match /^_/
-        @mailing_lists[message.mailing_list] ||= []
-        @mailing_lists[message.mailing_list] << [message.date.year, message.date.month]
+      unless message.slug.match /^_/
+        @mailing_lists[message.slug] ||= []
+        @mailing_lists[message.slug] << [message.date.year, message.date.month]
       end
-      $stdout.puts "#{@message_count} #{call_number} stored: #{message.filename}"
+      $stdout.puts "#{@message_count} #{call_number} stored: #{message.key}"
     rescue SequenceExhausted
       raise
     rescue Exception => e

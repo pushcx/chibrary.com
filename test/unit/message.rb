@@ -81,6 +81,12 @@ class MessageTest < Test::Unit::TestCase
     end
   end
 
+  def test_real_slug
+    expect_list 'linux-kernel@vger.kernel.org', 'linux-kernel'
+    m = Message.new message(:real), 'test', '00000000'
+    assert_equal 'linux-kernel', m.slug
+  end
+
   def test_no_id
     m = Message.new message(:no_id), 'test', '00000000'
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id

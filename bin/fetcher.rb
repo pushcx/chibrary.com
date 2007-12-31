@@ -7,6 +7,11 @@ require 'mail'
 require 'filer'
 
 class Fetcher < Filer
+  def initialize server=nil, sequence=nil, max=1000
+    @max = max.to_i
+    super server, sequence
+  end
+
   def source
     'subscription'
   end
@@ -15,15 +20,21 @@ class Fetcher < Filer
     # create POP3 connection
     @pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
     @pop.open_timeout = 300
+    @pop.read_timeout = 300
     #@pop.set_debug_output $stderr
     @pop.start(MAIL_USER, MAIL_PASSWORD)
-    $stdout.puts "#{@pop.n_mails} to process:"
+    $stdout.puts "#{@pop.n_mails} available, fetching a max of #{@max}:"
   end
 
   def acquire
-    @pop.delete_all do |mail|
+    @pop.each_mail do |mail|
       begin
         yield mail.mail
+        mail.delete
+        if (@max -= 1) <= 0
+          teardown
+          return
+        end
       rescue SequenceExhausted
         teardown
         return
@@ -37,4 +48,7 @@ class Fetcher < Filer
 end
 
 
-Fetcher.new.run if __FILE__ == $0
+if __FILE__ == $0
+  f = Fetcher.new nil, nil, ARGV.shift
+  f.run
+end

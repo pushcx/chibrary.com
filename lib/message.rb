@@ -143,22 +143,21 @@ class Message
   def load_slug
     @addresses = CachedHash.new "list_address"
 
-    header = nil
-    %w{
-      X-Mailing-List List-ID
+    headers = %w{
+      X-Mailing-List List-ID X-ML-Name
       List-Post List-Owner
       To Cc Reply-To Bcc 
       Mail-Followup-To Mail-Reply-To
       Resent-To Resent-Cc Resent-Reply-To Resent-Bcc
-    }.each do |h|
-      header = get_header(h)
-      break unless header.nil?
-    end
-    return "_listlibrary_no_list" if header.nil?
+    }.collect { |h| get_header(h) }.compact
+    return "_listlibrary_no_list" if headers.empty?
 
     slug = nil
-    header.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }.each do |address|
-      slug = @addresses[address]
+    headers.each do |header|
+      header.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }.each do |address|
+        slug = @addresses[address]
+        break unless slug.nil?
+      end
       break unless slug.nil?
     end
 

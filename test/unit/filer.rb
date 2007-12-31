@@ -43,8 +43,8 @@ class FilerTest < Test::Unit::TestCase
   end
 
   def test_store
-    message = mock('message', :store => true, :filename => "list/example_list/message/2006/10/goodid@example.com")
-    message.expects(:mailing_list).at_least_once.returns("example_list")
+    message = mock('message', :store => true, :key => "list/example_list/message/2006/10/goodid@example.com")
+    message.expects(:slug).at_least_once.returns("example_list")
     message.expects(:date).times(2).returns( mock(:year => 2006, :month => 10) )
     Message.expects(:new).returns(message)
 
