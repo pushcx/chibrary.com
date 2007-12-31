@@ -216,14 +216,8 @@ class Container
 end
 
 ## Builds thread structures, a set of threads.
-##
-## If 'thread_by_subject' is true, puts messages with the same subject in
-## one thread, even if they don't reference each other. This is
-## helpful for crappy MUAs that don't set In-reply-to: or References:
-## headers, but means that messages may be threaded unnecessarily.
 class ThreadSet
   attr_reader :num_messages, :threads
-  bool_reader :thread_by_subject
 
   def self.month slug, year, month
     threadset = ThreadSet.new
@@ -233,13 +227,12 @@ class ThreadSet
     threadset
   end
 
-  def initialize thread_by_subject=true
+  def initialize
     @num_messages = 0
     ## map from message ids to container objects
     @messages = ContainerHash.new
     ## map from subject strings or (or root message ids) to thread objects
     @threads = LLThreadHash.new
-    @thread_by_subject = thread_by_subject
   end
 
   def contains_id? id; @messages.member?(id) && !@messages[id].empty?; end
@@ -265,17 +258,18 @@ class ThreadSet
   end
 
   def link p, c, overwrite=false
-    return if p == c || p.descendant_of?(c) || c.descendant_of?(p) # would create a loop
+    # don't create loops
+    return if p == c or c.descendant_of?(p) or p.descendant_of?(c)
+    # don't overwrite c's parent unless requested
+    return unless c.parent.nil? or overwrite
 
-    if c.parent.nil? || overwrite
-      c.parent.children.delete c if overwrite && c.parent
-      if c.thread
-        c.thread.drop c 
-        c.thread = nil
-      end
-      p.children << c
-      c.parent = p
+    c.parent.children.delete c unless c.parent.nil?
+    if c.thread
+      c.thread.drop c 
+      c.thread = nil
     end
+    p.children << c
+    c.parent = p
   end
   private :link
 
@@ -295,46 +289,41 @@ class ThreadSet
     t.each { |m, *o| add_message m }
   end
 
-  def is_relevant? m
-    m.references.any? { |ref_id| @messages.member? ref_id }
-  end
-
   ## the heart of the threading code
   def add_message message
     return unless message.is_a? Message
-    el = @messages[message.message_id]
-    return if el.message # we've seen it before
 
-    el.message = message
-    oldroot = el.root
+    # Fetch/create the message's container
+    container = @messages[message.message_id]
+    # Already threaded if the container already has the message
+    return if container.message
 
-    ## link via references:
+    container.message = message
+    # save the thread root, which this message may replace
+    oldroot = container.root
+
+    # link via references:
     prev = nil
-    message.references.each do |ref_id|
-      ref = @messages[ref_id]
+    message.references.each do |id|
+      ref = @messages[id]
       link prev, ref if prev
       prev = ref
     end
-    link prev, el, true if prev
+    link prev, container, true if prev
 
-    root = el.root
+    root = container.root
 
-    ## new root. need to drop old one and put this one in its place
-    if root != oldroot && oldroot.thread
+    # this message is the new root; clean up the old
+    if container.root? && oldroot.thread
       oldroot.thread.drop oldroot
       oldroot.thread = nil
     end
 
-    key =
-      if thread_by_subject?
-        Message.normalize_subject root.subject
-      else
-        root.id
-      end
+    key = Message.normalize_subject root.subject
 
-    ## check to see if the subject is still the same (in the case
-    ## that we first added a child message with a different
-    ## subject)
+    # check to see if the subject is still the same (in the case
+    # that we first added a child message with a different
+    # subject)
     if root.thread
       unless @threads[key] == root.thread
         if @threads[key]
