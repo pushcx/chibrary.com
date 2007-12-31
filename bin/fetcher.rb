@@ -43,7 +43,7 @@ class Fetcher < Filer
   end
 
   def teardown
-    @pop.finish
+    #@pop.finish
   end
 end
 
