@@ -38,89 +38,6 @@ class LLThreadHash
   defer_all_other_method_calls_to :hash
 end
 
-
-class LLThread
-  include Enumerable
-
-  attr_reader :containers
-  def initialize
-    @containers = []
-  end
-
-  def << c
-    @count = nil
-    @containers << c
-  end
-
-  def empty?; @containers.empty? ; end
-  def empty!; @containers.clear ; @count = nil ; end
-  def drop c; @containers.delete(c) ; @count = nil ; end #or raise "#{self}: bad drop #{c}"; end
-
-  ## unused
-  def dump f=$stdout
-    f.puts "=== start thread with #{@containers.length} trees ==="
-    @containers.each { |c| c.dump_recursive f }
-    f.puts "=== end thread ==="
-  end
-
-  def count ; @count ||= collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
-
-  ## yields each message, its depth, and its parent. the message yield
-  ## parameter can be a Message object, or :fake_root, or nil (no
-  ## message found but the presence of one induced from other
-  ## messages).
-  def each fake_root=false
-    adj = 0
-    root = @containers.find_all { |c| !Message.subject_is_reply?(c) }.argmin { |c| c.date || 0 }
-
-    if root
-      adj = 1
-      root.first_useful_descendant.each_with_stuff do |c, d, par|
-        yield c.message, d, (par ? par.message : nil)
-      end
-    elsif @containers.length > 1 && fake_root
-      adj = 1
-      yield :fake_root, 0, nil
-    end
-
-    @containers.each do |cont|
-      next if cont == root
-      fud = cont.first_useful_descendant
-      fud.each_with_stuff do |c, d, par|
-        ## special case here: if we're an empty root that's already
-        ## been joined by a fake root, don't emit
-        yield c.message, d + adj, (par ? par.message : nil) unless
-          fake_root && c.message.nil? && root.nil? && c == fud 
-      end
-    end
-  end
-
-  def first; each { |m, *o| return m if m }; nil; end
-  def date; map { |m, *o| m.date if m }.compact.max; end
-
-  def size; map { |m, *o| m ? 1 : 0 }.sum; end
-  def subject; argfind { |m, *o| Message.normalize_subject(m.subject) if m }; end
-  def call_number; argfind { |m, *o| return m.call_number if m }; end
-  def find_call_number(c); argfind { |m, *o| return m if m and m.call_number == c}; end
-
-  def latest_message
-    inject(nil) do |a, b| 
-      b = b.first
-      if a.nil?
-        b
-      elsif b.nil?
-        a
-      else
-        b.date > a.date ? b : a
-      end
-    end
-  end
-
-  def to_s
-    "<thread containing: #{@containers.join ', '}>"
-  end
-end
-
 ## recursive structure used internally to represent message trees as
 ## described by reply-to: and references: headers.
 ##
@@ -203,6 +120,88 @@ class Container
     f.puts "#{id} #{line}"#[0 .. (105 - indent)]
     indent += 3
     @children.each { |c| c.dump_recursive f, indent, false, self }
+  end
+end
+
+class LLThread
+  include Enumerable
+
+  attr_reader :containers
+  def initialize
+    @containers = []
+  end
+
+  def << c
+    @count = nil
+    @containers << c
+  end
+
+  def empty?; @containers.empty? ; end
+  def empty!; @containers.clear ; @count = nil ; end
+  def drop c; @containers.delete(c) ; @count = nil ; end #or raise "#{self}: bad drop #{c}"; end
+
+  ## unused
+  def dump f=$stdout
+    f.puts "=== start thread with #{@containers.length} trees ==="
+    @containers.each { |c| c.dump_recursive f }
+    f.puts "=== end thread ==="
+  end
+
+  def count ; @count ||= collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
+
+  ## yields each message, its depth, and its parent. the message yield
+  ## parameter can be a Message object, or :fake_root, or nil (no
+  ## message found but the presence of one induced from other
+  ## messages).
+  def each fake_root=false
+    adj = 0
+    root = @containers.find_all { |c| !Message.subject_is_reply?(c) }.argmin { |c| c.date || 0 }
+
+    if root
+      adj = 1
+      root.first_useful_descendant.each_with_stuff do |c, d, par|
+        yield c.message, d, (par ? par.message : nil)
+      end
+    elsif @containers.length > 1 && fake_root
+      adj = 1
+      yield :fake_root, 0, nil
+    end
+
+    @containers.each do |cont|
+      next if cont == root
+      fud = cont.first_useful_descendant
+      fud.each_with_stuff do |c, d, par|
+        ## special case here: if we're an empty root that's already
+        ## been joined by a fake root, don't emit
+        yield c.message, d + adj, (par ? par.message : nil) unless
+          fake_root && c.message.nil? && root.nil? && c == fud 
+      end
+    end
+  end
+
+  def first; each { |m, *o| return m if m }; nil; end
+  def date; map { |m, *o| m.date if m }.compact.max; end
+
+  def size; map { |m, *o| m ? 1 : 0 }.sum; end
+  def subject; argfind { |m, *o| Message.normalize_subject(m.subject) if m }; end
+  def call_number; argfind { |m, *o| return m.call_number if m }; end
+  def find_call_number(c); argfind { |m, *o| return m if m and m.call_number == c}; end
+
+  def latest_message
+    inject(nil) do |a, b| 
+      b = b.first
+      if a.nil?
+        b
+      elsif b.nil?
+        a
+      else
+        b.date > a.date ? b : a
+      end
+    end
+  end
+
+  def to_s
+    "<thread containing: #{@containers.join ', '}>"
   end
 end
 
