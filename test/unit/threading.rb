@@ -43,34 +43,11 @@ class ContainerTest < ThreadingTest
     end
   end
 
-  def test_each_with_stuff
-    c1, c2, c4 = nil
+  def test_each
     seen = []
-    container_tree.each_with_stuff do |container, depth, parent|
+    container_tree.each do |container|
       assert_equal Container, container.class
       seen << container.id
-      case container.id
-      when '1'
-        assert_equal 0, depth
-        assert_equal nil, parent
-        c1 = container
-      when '2'
-        assert_equal 1, depth
-        assert_equal c1, parent
-        c2 = container
-      when '3'
-        assert_equal 2, depth
-        assert_equal c2, parent
-      when '4'
-        assert_equal 2, depth
-        assert_equal c2, parent
-        c4 = container
-      when '5'
-        assert_equal 3, depth
-        assert_equal c4, parent
-      else
-        fail "unknown container yielded"
-      end
     end
     assert_equal %w{1 2 3 4 5}, seen
   end
@@ -85,11 +62,11 @@ class ContainerTest < ThreadingTest
   end
 
   def test_equality
-    c1 = Container.new '1'
+    c1  = Container.new '1'
     c1_ = Container.new '1'
-    c2 = Container.new '2'
+    c2  = Container.new '2'
     assert c1 == c1_
-    assert !(c1 == c2)
+    assert c1 != c2
   end
 
   def test_empty?
@@ -100,7 +77,7 @@ class ContainerTest < ThreadingTest
   end
 
   def test_root?
-    container_tree.each_with_stuff do |container, d, p|
+    container_tree.each do |container|
       case container.id
       when '1': assert container.root?
       else      assert !container.root?
@@ -110,37 +87,22 @@ class ContainerTest < ThreadingTest
 
   def test_root
     c1 = container_tree
-    c1.each_with_stuff do |container, d, p|
+    c1.each do |container|
       assert_equal c1, container.root
     end
   end
 
   def test_first_useful_descendant
     c1 = container_tree
-    assert_equal c1, c1.first_useful_descendant # c1's is c1
-    assert_equal c1.children.first, c1.children.first.first_useful_descendant # c2's is c2
-    assert_equal c1.children.first.children.last.children.first, c1.children.first.children.last.first_useful_descendant # c4's is c5
+    assert_equal c1, c1.effective_root # c1's is c1
+    assert_equal c1.children.first, c1.children.first.effective_root # c2's is c2
+    assert_equal c1.children.first.children.last.children.first, c1.children.first.children.last.effective_root # c4's is c5
   end
 
   def test_find_attr
     c1 = container_tree
     assert_equal 'Good message', c1.find_attr(:subject)
     assert_equal 'Good message', c1.children.first.children.last.find_attr(:subject)
-  end
-
-  def test_is_reply?
-    c = Container.new '1'
-    assert_equal nil, c.is_reply?
-
-    message = mock()
-    message.expects(:subject).returns('foo').at_least_once
-    c.message = message
-    assert_equal false, c.is_reply?
-
-    message = mock()
-    message.expects(:subject).returns('re: foo').at_least_once
-    c.message = message
-    assert_equal true, c.is_reply?
   end
 
   def test_to_s
@@ -154,32 +116,86 @@ class ContainerTest < ThreadingTest
 end
 
 class LLThreadTest < ThreadingTest
+
+  def test_append
+    t = LLThread.new
+    assert t.containers.empty?
+    t << Container.new('1')
+    assert_equal 1, t.containers.size
+    t << Container.new('2')
+    assert_equal 2, t.containers.size
+  end
+
+  def test_empty?
+    t = LLThread.new
+    assert t.empty?
+    t << Container.new('1')
+    assert !t.empty?
+  end
+
+  def test_empty!
+    t = LLThread.new
+    assert t.empty?
+    t << Container.new('1')
+    assert !t.empty?
+    t.empty!
+    assert t.empty?
+  end
+
   def test_drop
     t = LLThread.new
     t << c = Container.new('1')
-    assert_equal 0, t.count
+    assert !t.empty?
     t.drop c
-    assert_equal [], t.containers
-    # removed the raise; malicious input can raise things
-    #assert_raises(RuntimeError) do
-    #  t.drop c
-    #end
+    assert t.empty?
+  end
+
+  def test_each_container
+    t = LLThread.new
+    t << container_tree
+    seen = []
+    t.each_container do |c|
+      seen << c.id
+    end
+    assert_equal %w{1 2 3 4 5}, seen
   end
 
   def test_each
     t = LLThread.new
-    t << container_tree('a')
-    t << container_tree('b')
+    t << container_tree
     seen = []
-    t.each do |message, depth, parent|
-      seen << message.message_id if message.instance_of? Message
+    t.each do |m|
+      seen << m.message_id
     end
-    assert_equal ['goodid@example.com'] * 8, seen
+    assert_equal ['goodid@example.com'] * 4, seen
   end
 
-  private
-  def test_to_base_64
-    
+  def test_count
+    t = LLThread.new
+    assert_equal 0, t.count
+    t << Container.new('1')
+    assert_equal 0, t.count
+    t << container_tree
+    assert_equal 4, t.count
+  end
+
+  def test_first
+    t = LLThread.new
+    assert t.first.nil?
+    t << Container.new('1')
+    assert t.first.nil?
+    t << container_tree
+    assert t.first
+    assert_equal 'goodid@example.com', t.first.id
+  end
+
+  def test_call_number
+    t = LLThread.new
+    assert t.call_number.nil?
+    t << Container.new('1')
+    assert t.call_number.nil?
+    t << container_tree
+    assert_equal '00000000', t.call_number
   end
 end
 

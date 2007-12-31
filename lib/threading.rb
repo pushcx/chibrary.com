@@ -29,21 +29,17 @@ end
 # contructor proc.
 class ContainerHash
   def initialize ; @hash = Hash.new ; end
-  def [] k ; @hash[k] ||= Container.new(k) ; end
+  def [] key ; @hash[key] ||= Container.new(key) ; end
   defer_all_other_method_calls_to :hash
 end
 class LLThreadHash
   def initialize ; @hash = Hash.new ; end
-  def [] k ; @hash[k] ||= LLThread.new ; end
+  def [] key ; @hash[key] ||= LLThread.new ; end
   defer_all_other_method_calls_to :hash
 end
 
-## recursive structure used internally to represent message trees as
-## described by reply-to: and references: headers.
-##
-## the 'id' field is the same as the message id. but the message might
-## be empty, in the case that we represent a message that was referenced
-## by another message (as an ancestor) but never received.
+# Each container holds 0 or 1 messages, so that we can build a thread's tree from
+# References and In-Reply-To headers even before seeing all of the messages.
 class Container
   attr_accessor :message, :parent, :children, :id, :thread
 
@@ -54,11 +50,12 @@ class Container
     @children = []
   end      
 
-  # Yield this and all child containers with depth and parent
-  def each_with_stuff parent=nil
-    yield self, 0, parent
+  def each
+    # yeild this continer
+    yield self
     @children.each do |c|
-      c.each_with_stuff(self) { |cc, d, par| yield cc, d + 1, par }
+      # and yield what all children containers yield
+      c.each { |cc| yield cc }
     end
   end
 
@@ -67,24 +64,42 @@ class Container
     if o == self
       true
     else
-      @parent && @parent.descendant_of?(o)
+      @parent and @parent.descendant_of?(o)
     end
   end
 
-  def == o; Container === o && @id == o.id; end
+  def == container
+    Container === container and @id == container.id
+  end
 
-  def empty?; @message.nil?; end
-  def root?; @parent.nil?; end
-  def root; root? ? self : @parent.root; end
+  def empty?
+    @message.nil?
+  end
 
-  def first_useful_descendant
-    if empty? && @children.size == 1
-      @children.first.first_useful_descendant
+  def root?
+    @parent.nil?
+  end
+
+  def root
+    if root?
+      self
+    else
+      @parent.root
+    end
+  end
+
+  # The effective root of the container tree is the first container with a
+  # message or with multiple children (meaning we've seen it referenced from
+  # multiple messages).
+  def effective_root
+    if empty? and @children.size == 1
+      @children.first.effective_root
     else
       self
     end
   end
 
+  # Find the attribute in the first container with a message.
   def find_attr attr
     if empty?
       @children.argfind { |c| c.find_attr attr }
@@ -95,20 +110,18 @@ class Container
   def subject; find_attr :subject; end
   def date   ; find_attr :date   ; end
 
-  def is_reply?; subject && Message.subject_is_reply?(subject); end
-
   def to_s
-    [ "<#{id}",
-      (@parent.nil? ? nil : "parent=#{@parent.id}"),
+    [ "<container #{id}",
+      (@parent.nil?     ? nil : "parent=#{@parent.id}"),
       (@children.empty? ? nil : "children=#{@children.map { |c| c.id }.inspect}"),
     ].compact.join(" ") + ">"
   end
 
-  def dump_recursive f=$stdout, indent=0, root=true, parent=nil
+  def dump indent=0, root=true, parent=nil
     raise "inconsistency" unless parent.nil? || parent.children.include?(self)
     unless root
-      f.print " " * indent
-      f.print "+->"
+      $stdout.print " " * indent
+      $stdout.print "+->"
     end
     line = #"[#{useful? ? 'U' : ' '}] " +
       if @message
@@ -117,9 +130,9 @@ class Container
         "<no message>"
       end
 
-    f.puts "#{id} #{line}"#[0 .. (105 - indent)]
+    $stdout.puts "#{id} #{line}"#[0 .. (105 - indent)]
     indent += 3
-    @children.each { |c| c.dump_recursive f, indent, false, self }
+    @children.each { |c| c.dump indent, false, self }
   end
 end
 
@@ -127,6 +140,7 @@ class LLThread
   include Enumerable
 
   attr_reader :containers
+
   def initialize
     @containers = []
   end
@@ -136,72 +150,53 @@ class LLThread
     @containers << c
   end
 
-  def empty?; @containers.empty? ; end
-  def empty!; @containers.clear ; @count = nil ; end
-  def drop c; @containers.delete(c) ; @count = nil ; end #or raise "#{self}: bad drop #{c}"; end
-
-  ## unused
-  def dump f=$stdout
-    f.puts "=== start thread with #{@containers.length} trees ==="
-    @containers.each { |c| c.dump_recursive f }
-    f.puts "=== end thread ==="
+  def empty?
+    @containers.empty?
   end
 
-  def count ; @count ||= collect { |m, d, p| (m.instance_of? Message) ? 1 : 0 }.sum ; end
+  def empty!
+    @containers.clear
+    @count = nil
+  end
 
-  ## yields each message, its depth, and its parent. the message yield
-  ## parameter can be a Message object, or :fake_root, or nil (no
-  ## message found but the presence of one induced from other
-  ## messages).
-  def each fake_root=false
-    adj = 0
-    root = @containers.find_all { |c| !Message.subject_is_reply?(c) }.argmin { |c| c.date || 0 }
+  def drop c
+    @containers.delete(c)
+    @count = nil
+  end #or raise "#{self}: bad drop #{c}"; end
 
-    if root
-      adj = 1
-      root.first_useful_descendant.each_with_stuff do |c, d, par|
-        yield c.message, d, (par ? par.message : nil)
-      end
-    elsif @containers.length > 1 && fake_root
-      adj = 1
-      yield :fake_root, 0, nil
-    end
-
-    @containers.each do |cont|
-      next if cont == root
-      fud = cont.first_useful_descendant
-      fud.each_with_stuff do |c, d, par|
-        ## special case here: if we're an empty root that's already
-        ## been joined by a fake root, don't emit
-        yield c.message, d + adj, (par ? par.message : nil) unless
-          fake_root && c.message.nil? && root.nil? && c == fud 
-      end
+  def each_container
+    @containers.each do |container|
+      container.each { |c| yield c }
     end
   end
 
-  def first; each { |m, *o| return m if m }; nil; end
-  def date; map { |m, *o| m.date if m }.compact.max; end
-
-  def size; map { |m, *o| m ? 1 : 0 }.sum; end
-  def subject; argfind { |m, *o| Message.normalize_subject(m.subject) if m }; end
-  def call_number; argfind { |m, *o| return m.call_number if m }; end
-  def find_call_number(c); argfind { |m, *o| return m if m and m.call_number == c}; end
-
-  def latest_message
-    inject(nil) do |a, b| 
-      b = b.first
-      if a.nil?
-        b
-      elsif b.nil?
-        a
-      else
-        b.date > a.date ? b : a
-      end
+  def each # Each message, that is
+    @containers.each do |container|
+      container.each { |c| yield c.message unless c.empty? }
     end
+  end
+
+  def count
+    @count ||= collect { 1 }.sum
+  end
+
+  def first
+    each { |m| return m }
+    nil
+  end
+
+  def call_number
+    first.call_number if first
   end
 
   def to_s
-    "<thread containing: #{@containers.join ', '}>"
+    "<thread with containers: #{@containers.join ', '}>"
+  end
+
+  def dump
+    $stdout.puts "=== start thread with #{@containers.length} trees ==="
+    @containers.each { |c| c.dump }
+    $stdout.puts "=== end thread ==="
   end
 end
 
@@ -273,10 +268,10 @@ class ThreadSet
     end
   end
 
-  ## merges in a pre-loaded thread
-  def add_thread t
-    raise "duplicate" if @threads.values.member? t
-    t.each { |m, *o| add_message m }
+  # extract messages from a thread and add them
+  def add_thread thread
+    raise "duplicate" if @threads.values.member? thread
+    thread.each { |m| add_message m }
   end
 
   ## the heart of the threading code

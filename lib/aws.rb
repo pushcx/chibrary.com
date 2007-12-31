@@ -48,21 +48,17 @@ end
 module Enumerable
   def sum ; inject(0) { |x, y| x + y }; end
 
+  # Like find, but return the value of the block instead of the element.
   def argfind
     ret = nil
     find { |e| ret ||= yield(e) }
-    ret || nil # force
+    ret || nil
   end
+end
 
-  def argmin
-    best, bestval = nil, nil
-    each do |e|
-      val = yield e
-      if bestval.nil? || val < bestval
-        best, bestval = e, val
-      end
-    end
-    best
+class Symbol
+  def to_proc
+    proc { |obj, *args| obj.send(self, *args) }
   end
 end
 
