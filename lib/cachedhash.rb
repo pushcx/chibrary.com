@@ -7,7 +7,7 @@ class CachedHash
 
   def initialize prefix
     @prefix = prefix
-    @@cache[prefix] = {}
+    @@cache[prefix] ||= {}
   end
 
   def [] key
