@@ -1,5 +1,6 @@
 require 'yaml'
 require 'aws'
+require 'remote_connection'
 
 class SequenceExhausted < RuntimeError ; end
 
