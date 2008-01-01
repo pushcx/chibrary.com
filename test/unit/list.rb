@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'cachedhash'
+require 'list'
 
 class ListTest < Test::Unit::TestCase
   def test_slug
