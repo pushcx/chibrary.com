@@ -7,9 +7,9 @@ class Message
   attr_reader   :call_number, :message_id, :references, :subject, :date, :from, :no_archive, :key # for yaml
   attr_accessor :overwrite
 
-  RE_PATTERN = /\s*\[?(Re|Fwd)([\[\(]?\d+[\]\)]?)?:\s*/i
-  def self.subject_is_reply? s ; !!(s =~ RE_PATTERN)    ; end
-  def self.normalize_subject s ; s.gsub(RE_PATTERN, '') ; end
+  RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
+  def self.subject_is_reply? s ; !!(s =~ RE_PATTERN) ; end
+  def self.normalize_subject s ; s.gsub(RE_PATTERN, '').strip ; end
 
   def initialize message, source=nil, call_number=nil
     @source = source
