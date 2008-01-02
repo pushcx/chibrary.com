@@ -1,84 +1,55 @@
-# GPLv2
-
-## At the top level, we have a ThreadSet. A ThreadSet represents a set
-## of threads, e.g. a message folder or an inbox. Each ThreadSet
-## contains zero or more LLThreads. A LLThread represents all the message
-## related to a particular subject. Each LLThread has one or more
-## Containers. A Container is a recursive structure that holds the
-## tree structure as determined by the references: and in-reply-to:
-## headers. A LLThread with multiple Containers occurs if they have the
-## same subject, but (most likely due to someone using a primitive
-## MUA) we don't have evidence from in-reply-to: or references:
-## headers, only subject: (and thus our tree is probably broken). A
-## Container holds zero or one message. In the case of no message, it
-## means we've seen a reference to the message but haven't seen the
-## message itself (yet).
+# based on http://www.jwz.org/doc/threading.html
 
 require 'message'
-
-class Module
-  def defer_all_other_method_calls_to obj
-    class_eval %{
-      def method_missing meth, *a, &b; @#{obj}.send meth, *a, &b; end
-      def respond_to? meth; @#{obj}.respond_to?(meth); end
-    }
-  end
-end
-
-# These two hashes replace SavingHash, which can't save and load its
-# contructor proc.
-class ContainerHash
-  def initialize ; @hash = Hash.new ; end
-  def [] key ; @hash[key] ||= Container.new(key) ; end
-  defer_all_other_method_calls_to :hash
-end
-class LLThreadHash
-  def initialize ; @hash = Hash.new ; end
-  def [] key ; @hash[key] ||= LLThread.new ; end
-  defer_all_other_method_calls_to :hash
-end
 
 # Each container holds 0 or 1 messages, so that we can build a thread's tree from
 # References and In-Reply-To headers even before seeing all of the messages.
 class Container
-  attr_accessor :message, :parent, :children, :id, :thread
+  include Enumerable
 
-  def initialize id
-    raise "non-String #{id.inspect}" unless id.is_a? String
-    @id = id
-    @message, @parent, @thread = nil, nil, nil
+  attr_reader :message_id, :message, :parent, :children
+
+  def initialize message
+    if message.is_a? Message
+      @message_id = message.message_id
+      @message    = message
+    else
+      @message_id = message
+      @message    = nil
+    end
+    @parent = nil
     @children = []
   end      
 
-  def each
-    # yeild this continer
-    yield self
-    @children.each do |c|
-      # and yield what all children containers yield
-      c.each { |cc| yield cc }
-    end
-  end
-
-  # Containers are considered descendants of themselves
-  def descendant_of? o
-    if o == self
-      true
-    else
-      @parent and @parent.descendant_of?(o)
-    end
-  end
+  # container accessors
 
   def == container
-    Container === container and @id == container.id
+    container.is_a? Container and @message_id == container.message_id
+  end
+
+  def <=> container
+    date <=> container.date
   end
 
   def empty?
     @message.nil?
   end
 
+  def to_s
+    (empty? ? "<empty container>" : "#{@message.from} - #{@message.date}") + " - #{@message_id}"
+  end
+
+  # parentage accessors
+
+  def child_of? c
+    return (c == self or (@parent and @parent.child_of? c))
+  end
+
   def root?
     @parent.nil?
   end
+  # Different context, same effects
+  alias :orphan? :root?
 
   def root
     if root?
@@ -88,9 +59,19 @@ class Container
     end
   end
 
-  # The effective root of the container tree is the first container with a
-  # message or with multiple children (meaning we've seen it referenced from
-  # multiple messages).
+  def each
+    # yeild this container
+    yield self
+    @children.sort!
+    @children.each do |child|
+      # and yield what all children containers yield
+      child.each { |y| yield y }
+    end
+  end
+
+  # A thread may have empty containers at its root as containers are created from References.
+  # The effective root is the first container with a # message or with multiple
+  # children (meaning we've seen it referenced from multiple messages).
   def effective_root
     if empty? and @children.size == 1
       @children.first.effective_root
@@ -99,233 +80,217 @@ class Container
     end
   end
 
-  # Find the attribute in the first container with a message.
-  def find_attr attr
-    if empty?
-      @children.argfind { |c| c.find_attr attr }
-    else
-      @message.send attr
+  # When asked for subject or date, return the earliest available.
+  def effective_field field
+    each do |container|
+      return container.message.send(field) unless container.empty?
     end
+    nil
   end
-  def subject; find_attr :subject; end
-  def date   ; find_attr :date   ; end
-
-  def to_s
-    [ "<container #{id}",
-      (@parent.nil?     ? nil : "parent=#{@parent.id}"),
-      (@children.empty? ? nil : "children=#{@children.map { |c| c.id }.inspect}"),
-    ].compact.join(" ") + ">"
+  def subject
+    effective_field :subject or ''
+  end
+  def n_subject
+    effective_field :n_subject or ''
+  end
+  def date
+    effective_field :date or Time.now
   end
 
-  def dump indent=0, root=true, parent=nil
-    raise "inconsistency" unless parent.nil? || parent.children.include?(self)
-    unless root
-      $stdout.print " " * indent
-      $stdout.print "+->"
+  # parenting methods
+
+  # Break the parent -> child relationship pointing to this container.
+  def orphan
+    @parent.disown self if @parent
+    @parent = nil
+  end
+
+  # Call #orphan on the child and it will call this. If you call this instead
+  # of #orphan, the child will have a lingering bad pointer to this container
+  # as a parent.
+  def disown container
+    @children.delete container
+  end
+  protected :disown
+
+  def parent= container
+    @parent = container
+  end
+  protected :parent=
+
+  def message= m
+    raise "Message id #{m.message_id} doesn't match container #{@message_id}" unless m.message_id == @message_id
+    @message = m
+  end
+
+  # Make this the parent of another container.
+  def adopt container
+    return if container.child_of?(self) or self.child_of?(container)
+    # Don't adopt any messages that already have parents (that is, they're threaded).
+    # A message with a malicious References header should not be able to reparent
+    # other messages willy-nilly, but we do trust a message to report its own parent.
+    return unless container.orphan? or (container.message and container.message.references.last == @message_id)
+
+    container.orphan
+    @children << container
+    container.parent = self
+  end
+
+  # debugging
+
+  def dump depth=0
+    puts "  " * depth + self.to_s
+    @children.each do |container|
+      container.dump depth + 1
     end
-    line = #"[#{useful? ? 'U' : ' '}] " +
-      if @message
-        "[#{thread}] #{@message.subject} " ##{@message.references.inspect} / #{@message.replytos.inspect}"
-      else
-        "<no message>"
-      end
-
-    $stdout.puts "#{id} #{line}"#[0 .. (105 - indent)]
-    indent += 3
-    @children.each { |c| c.dump indent, false, self }
   end
 end
 
-class LLThread
+# A ThreadSet holds the threads (container trees) and does the work of sorting
+# messages into container trees.
+class ThreadSet
   include Enumerable
 
   attr_reader :containers
 
-  def initialize
-    @containers = []
-  end
-
-  def << c
-    @count = nil
-    @containers << c
-  end
-
-  def empty?
-    @containers.empty?
-  end
-
-  def empty!
-    @containers.clear
-    @count = nil
-  end
-
-  def drop c
-    @containers.delete(c)
-    @count = nil
-  end #or raise "#{self}: bad drop #{c}"; end
-
-  def each_container
-    @containers.each do |container|
-      container.each { |c| yield c }
-    end
-  end
-
-  def each # Each message, that is
-    @containers.each do |container|
-      container.each { |c| yield c.message unless c.empty? }
-    end
-  end
-
-  def count
-    @count ||= collect { 1 }.sum
-  end
-
-  def first
-    each { |m| return m }
-    nil
-  end
-
-  def call_number
-    first.call_number if first
-  end
-
-  def to_s
-    "<thread with containers: #{@containers.join ', '}>"
-  end
-
-  def dump
-    $stdout.puts "=== start thread with #{@containers.length} trees ==="
-    @containers.each { |c| c.dump }
-    $stdout.puts "=== end thread ==="
-  end
-end
-
-## Builds thread structures, a set of threads.
-class ThreadSet
-  attr_reader :num_messages, :threads
-
   def self.month slug, year, month
     threadset = ThreadSet.new
-    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
-      threadset.add_thread AWS::S3::S3Object.load_yaml(key)
+    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/messages/#{year}/#{month}/").each do |key|
+      AWS::S3::S3Object.load_yaml(key).each do |container|
+        threadset << container
+      end
     end
     threadset
   end
 
   def initialize
-    @num_messages = 0
-    ## map from message ids to container objects
-    @messages = ContainerHash.new
-    ## map from subject strings or (or root message ids) to thread objects
-    @threads = LLThreadHash.new
+    # @containers holds all containers, not just root-level containers
+    # @containers is roughly id_table from JWZ's doc
+    @containers = {} # message_id -> container
+    @subjects   = {} # threads: normalized subject -> root container
+    @root_set = nil
   end
 
-  def contains_id? id; @messages.member?(id) && !@messages[id].empty?; end
-  def thread_for m
-    (c = @messages[m.message_id]) && c.root.thread
-  end
+  def subjects ; @subjects ; end
+  protected :subjects
 
-  def delete_cruft
-    @threads.each { |k, v| @threads.delete(k) if v.empty? }
-  end
-  private :delete_cruft
-
-  def threads; delete_cruft; @threads.values; end
-  def size; delete_cruft; @threads.size; end
-
-  ## unused
-  def dump f=$stdout
-    @threads.each do |s, t|
-      f.puts "** subject: #{s}"
-      t.dump f
+  def == threadset
+    #puts "testing =="
+    #puts "threadset has subjects key we don't" if @subjects.keys - threadset.subjects.keys != []
+    return false if @subjects.keys - threadset.subjects.keys != []
+    #puts "we have subjects key threadset doesn't" if threadset.subjects.keys - @subjects.keys != []
+    return false if threadset.subjects.keys - @subjects.keys != []
+    @subjects.each do |subject, container|
+      return false if container != threadset.subjects[subject]
     end
-    nil
+    #puts "threadset has containers key we don't" if @containers.keys - threadset.containers.keys != []
+    return false if @containers.keys - threadset.containers.keys != []
+    #puts "threadset has containers key we don't" if threadset.containers.keys - @containers.keys != []
+    return false if threadset.containers.keys - @containers.keys != []
+    @containers.each do |message_id, container|
+      return false if container != threadset.containers[message_id]
+    end
+    true
   end
 
-  def link p, c, overwrite=false
-    # don't create loops
-    return if p == c or c.descendant_of?(p) or p.descendant_of?(c)
-    # don't overwrite c's parent unless requested
-    return unless c.parent.nil? or overwrite
-
-    c.parent.children.delete c unless c.parent.nil?
-    if c.thread
-      c.thread.drop c 
-      c.thread = nil
-    end
-    p.children << c
-    c.parent = p
+  # yield the root set of containers
+  def root_set
+    @root_set ||= @containers.values.select { |c| c.root? }
   end
-  private :link
+  private :root_set
 
-  def remove mid
-    return unless(c = @messages[mid])
+  # finish the threading and yield each root container (thread) in turn
+  def each
+    # build the cache if necessary
+    if @subjects.empty?
+      # First, pick the likeliest thread roots.
+      root_set.each do |container| # 5.4.B
+        subject = container.n_subject
+        existing = @subjects.fetch(subject, nil)
+        # This is more likely the thread root if...
+        # 1. There is no existing root
+        # 2. The existing root isn't empty and this one is
+        # 3. The existing root has more re/fwd gunk on it
+        @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or existing.subject.length > container.subject.length
+      end
+      # Next, move the rest of the same-subject roots under it.
+      root_set.each do |container| # 5.4.C
+        subject = container.n_subject
+        existing = @subjects.fetch(subject, nil)
+        next if !existing or existing == container
 
-    c.parent.children.delete c if c.parent
-    if c.thread
-      c.thread.drop c
-      c.thread = nil
-    end
-  end
-
-  # extract messages from a thread and add them
-  def add_thread thread
-    raise "duplicate" if @threads.values.member? thread
-    thread.each { |m| add_message m }
-  end
-
-  ## the heart of the threading code
-  def add_message message
-    return unless message.is_a? Message
-
-    # Fetch/create the message's container
-    container = @messages[message.message_id]
-    # Already threaded if the container already has the message
-    return if container.message
-
-    container.message = message
-    # save the thread root, which this message may replace
-    oldroot = container.root
-
-    # link via references:
-    prev = nil
-    message.references.each do |id|
-      ref = @messages[id]
-      link prev, ref if prev
-      prev = ref
-    end
-    link prev, container, true if prev
-
-    root = container.root
-
-    # this message is the new root; clean up the old
-    if container.root? && oldroot.thread
-      oldroot.thread.drop oldroot
-      oldroot.thread = nil
-    end
-
-    key = Message.normalize_subject root.subject
-
-    # check to see if the subject is still the same (in the case
-    # that we first added a child message with a different
-    # subject)
-    if root.thread
-      unless @threads[key] == root.thread
-        if @threads[key]
-          root.thread.empty!
-          @threads[key] << root
-          root.thread = @threads[key]
+        # If they're both dummies, let them share children.
+        if container.empty? and existing.empty?
+          container.children.each do |child|
+            child.orphan
+            existing.adopt child
+          end
+          @containers.delete container.message_id
+        # If one is empty, assume it's the parent of the other
+        elsif container.empty? and !existing.empty?
+          container.adopt existing
+        elsif !container.empty? and existing.empty?
+          existing.adopt container
+        # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
+        elsif !existing.empty? and existing.subject.length <= container.subject.length
+          existing.adopt container
+        # Otherwise, they're either both replies to a missing, unreferenced
+        # message (so make them siblings).
+        # Or they just happened to share the same subject, so... eh, make 'em
+        # siblings.
         else
-          @threads[key] = root.thread
+          c = Container.new(existing.message_id + container.message_id)
+          c.adopt existing
+          c.adopt container
+          @containers[c.message_id] = c
+          @subjects[c.n_subject] = c
         end
       end
+    end
+    @subjects.values.sort.each { |c| yield c }
+  end
+
+  def << message
+    if @containers.has_key? message.message_id
+      container = @containers[message.message_id]
+      return unless container.empty? # message already stored; done
+      container.message = message
     else
-      thread = @threads[key]
-      thread << root
-      root.thread = thread
+      container = Container.new(message)
+      @containers[message.message_id] = container
     end
 
-    ## last bit
-    @num_messages += 1
+    # references are sorted oldest -> youngest
+    # walk this container's references and parent them
+    previous = nil
+    message.references.each do |message_id|
+      if @containers.has_key? message_id
+        child = @containers[message_id]
+      else
+        child = Container.new(message_id)
+        @containers[message_id] = child
+      end
+      previous.adopt child if previous
+      previous = child
+    end
+    # the last reference is trusted to be the parent of this message
+    previous.adopt container if previous
+
+    @subjects = {} # clear top-level thread cache
+    @root_set = nil
+  end
+
+  def dump
+    puts
+    puts "subjects: "
+    @subjects.each do |subject, container|
+      puts "#{subject}  ->  #{container.message_id}"
+    end
+    puts "threads: "
+    each do |container|
+      puts
+      puts container.subject
+      container.dump
+    end
   end
 end

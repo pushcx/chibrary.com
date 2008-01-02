@@ -47,13 +47,6 @@ end
 
 module Enumerable
   def sum ; inject(0) { |x, y| x + y }; end
-
-  # Like find, but return the value of the block instead of the element.
-  def argfind
-    ret = nil
-    find { |e| ret ||= yield(e) }
-    ret || nil
-  end
 end
 
 class Symbol

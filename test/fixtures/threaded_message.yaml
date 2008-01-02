@@ -1,0 +1,47 @@
+root: |
+  From: Alice <alice@example.com>
+  Subject: Threaded Message Fixtures
+  Date: Tue, 24 Oct 2006 15:47:48 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <root@example.com>
+
+  Message body.
+
+child: |
+  From: Bob <bob@example.com>
+  Subject: Re: Threaded Message Fixtures
+  Date: Sun, 30 Dec 2007 23:13:32 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <child@example.com>
+  In-Reply-To: <root@example.com>
+
+  > Message body.
+
+  Reply.
+
+grandchild: |
+  From: Carol <carol@example.com>
+  Subject: Re: Threaded Message Fixtures
+  Date: Sun, 30 Dec 2007 23:14:51 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <grandchild@example.com>
+  References: <root@example.com> <child@example.com>
+
+  > > Message body.
+  > Reply.
+
+  Further response.
+
+orphan: |
+  From: Emily <emily@example.com>
+  Subject: Re: Re: Threaded Message Fixtures
+  Date: Sun, 30 Dec 2007 23:17:19 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <orphan@example.com>
+  In-Reply-To: <missing@example.com>
+  References: <root@example.com> <child@example.com> <grandchild@example.com> <missing@example.com>
+
+  > > Reply.
+  > Missing response.
+
+  Possibly nonsensical followup.

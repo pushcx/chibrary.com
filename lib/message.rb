@@ -4,7 +4,7 @@ require 'aws'
 
 class Message
   attr_reader   :from, :message, :source, :slug # used by code
-  attr_reader   :call_number, :message_id, :references, :subject, :date, :from, :no_archive, :key # for yaml
+  attr_reader   :call_number, :message_id, :references, :subject, :n_subject, :date, :from, :no_archive, :key # for yaml
   attr_accessor :overwrite
 
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
@@ -32,8 +32,6 @@ class Message
   def body
     message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
   end
-
-  alias :id :message_id # threading code prefers this, haven't fixed it
 
   def store
     unless @overwrite
@@ -136,7 +134,8 @@ class Message
   def load_references
     in_reply_to = (get_header('In-Reply-To') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }.first
     references = (get_header('References') or '').split(/[^\w@\.\-]/).select { |s| s =~ /@/ }
-    references << in_reply_to unless in_reply_to.nil? or references.include? in_reply_to
+    references << in_reply_to unless in_reply_to.nil?
+    references.uniq!
     @references = references
   end
 
@@ -167,5 +166,6 @@ class Message
 
   def load_subject
     @subject = (get_header('Subject') or '')
+    @n_subject = Message.normalize_subject @subject
   end
 end
