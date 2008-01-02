@@ -155,7 +155,7 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new
-    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/messages/#{year}/#{month}/").each do |key|
+    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
       AWS::S3::S3Object.load_yaml(key).each do |container|
         threadset << container
       end
@@ -175,17 +175,12 @@ class ThreadSet
   protected :subjects
 
   def == threadset
-    #puts "testing =="
-    #puts "threadset has subjects key we don't" if @subjects.keys - threadset.subjects.keys != []
     return false if @subjects.keys - threadset.subjects.keys != []
-    #puts "we have subjects key threadset doesn't" if threadset.subjects.keys - @subjects.keys != []
     return false if threadset.subjects.keys - @subjects.keys != []
     @subjects.each do |subject, container|
       return false if container != threadset.subjects[subject]
     end
-    #puts "threadset has containers key we don't" if @containers.keys - threadset.containers.keys != []
     return false if @containers.keys - threadset.containers.keys != []
-    #puts "threadset has containers key we don't" if threadset.containers.keys - @containers.keys != []
     return false if threadset.containers.keys - @containers.keys != []
     @containers.each do |message_id, container|
       return false if container != threadset.containers[message_id]

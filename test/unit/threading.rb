@@ -246,11 +246,15 @@ class ThreadSetTest < ThreadingTest
   end
 
   def test_subjects
-    # todo
+    c1 = container_tree
+    c1.each { |c| @ts << c.message unless c.empty? }
+    expected_subjects = { "Threaded Message Fixtures" => c1 }
+    @ts.collect # prime the cache
+    assert_equal expected_subjects, @ts.send(:subjects)
   end
 
   def test_equality
-    # todo
+    # OK, it's just too goddamned ugly to want to test
   end
 
   def test_root_set
