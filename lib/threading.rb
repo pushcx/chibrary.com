@@ -87,6 +87,9 @@ class Container
     end
     nil
   end
+  def call_number
+    effective_field :call_number or ''
+  end
   def subject
     effective_field :subject or ''
   end

@@ -29,7 +29,7 @@ class Threader
       job.delete
       $stdout.puts "#{slug}/#{year}/#{month}"
 
-      message_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message_cache/#{year}/#{month}") or [])
+      message_cache = AWS::S3::S3Object.load_yaml("list/#{slug}/message/#{year}/#{month}/") or []
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       next if message_cache == message_list
@@ -49,7 +49,7 @@ class Threader
       messages = []
       added.each do |mail|
         messages << Message.new(mail)
-        threadset.add_message messages.last
+        threadset << messages.last
       end
 
       cache_work(slug, year, month, message_list, threadset) unless removed.empty? and added.empty?
@@ -60,16 +60,13 @@ class Threader
     render_queue = CachedHash.new("render_queue")
     render_month = CachedHash.new("render/month/#{slug}")
     AWS::S3::S3Object.store(
-      "list/#{slug}/message_cache/#{year}/#{month}",
+      "list/#{slug}/message/#{year}/#{month}",
       message_list.sort.to_yaml,
       'listlibrary_archive',
       :content_type => 'text/plain'
     )
 
-    threads = []
-    threadset.threads.each do |thread|
-      threads << { :call_number => thread.call_number, :subject => thread.subject, :messages => thread.count }
-
+    threads = threadset.collect do |thread|
       name = "#{year}/#{month}/#{thread.call_number}"
       yaml = thread.to_yaml
       begin
@@ -88,6 +85,8 @@ class Threader
         'listlibrary_archive',
         :content_type => 'text/plain'
       )
+
+      { :call_number => thread.call_number, :subject => thread.subject, :messages => thread.count }
     end
 
     render_month["#{year}/#{month}"] = threads.to_yaml

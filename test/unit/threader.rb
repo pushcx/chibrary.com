@@ -50,7 +50,7 @@ class ThreaderTest < Test::Unit::TestCase
     message = mock
     Message.expects(:new).with("2@example.com").returns(message)
     ts = mock
-    ts.expects(:add_message).with(message)
+    ts.expects(:<<).with(message)
     ThreadSet.expects(:month).returns(ts)
 
     t.expects(:cache_work)
@@ -81,8 +81,8 @@ class ThreaderTest < Test::Unit::TestCase
 
     message_list = ['1@example.com']
     threadset = mock
-    threadset.expects(:threads).returns([])
-    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    threadset.expects(:collect).returns([])
+    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
     CachedHash.expects(:new).with('render_queue').returns(mock)
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
@@ -94,19 +94,18 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
-    thread = mock
-    thread.expects(:count).returns(1)
+    thread = mock("thread")
     thread.expects(:to_yaml).returns("yaml")
     thread.expects(:call_number).at_least_once.returns('00000000')
-    thread.expects(:subject).returns('subject')
-    threadset = mock
-    threadset.expects(:threads).returns([thread])
-    o = mock
+    threadset = mock("threadset")
+    threadset.expects(:collect).yields(thread)
+
+    o = mock("object")
     o.expects(:about).returns({ 'content-length' => "yaml".length })
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
-    CachedHash.expects(:new).with('render_queue').returns(mock)
+    CachedHash.expects(:new).with('render_queue').returns(mock("queue"))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
     t.cache_work slug, year, month, message_list, threadset
@@ -117,7 +116,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message_cache/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock
     thread.expects(:count).returns(1)
@@ -125,7 +124,7 @@ class ThreaderTest < Test::Unit::TestCase
     thread.expects(:call_number).at_least_once.returns('00000000')
     thread.expects(:subject).returns('subject')
     threadset = mock
-    threadset.expects(:threads).returns([thread])
+    threadset.expects(:collect).yields(thread)
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
     CachedHash.expects(:new).with('render_queue').returns(stub_everything('render_queue'))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
