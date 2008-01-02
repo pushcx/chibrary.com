@@ -44,6 +44,12 @@ class MessageTest < Test::Unit::TestCase
     assert_equal false, m.no_archive
   end
 
+  def test_likely_lazy_reply_to?
+    good = Message.new message(:good), 'test', '00000000'
+    lazy_reply = Message.new message(:lazy_reply), 'test', '00000000'
+    assert lazy_reply.likely_lazy_reply_to?(good)
+  end
+
   class Message_test_from < Message ; public :load_from ; end
   def test_from
     m = Message_test_from.new message(:good), 'test', '00000000'

@@ -33,6 +33,27 @@ class Message
     message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
   end
 
+  # Guess if this message actually starts a new thread instead of replying to parent
+  def likely_lazy_reply_to? parent
+    raise "that's not set as parent" if @references.empty? or @references.last != parent.message_id
+    return false if @n_subject == parent.n_subject # didn't change subject, almost certainly a reply
+    return false if @body =~ /^> .+/               # quoted something to reply to it
+
+    # from and subject are especially important
+    m_counts = {}
+    (@subject.to_s * 2 + get_header('To').to_s * 2 + body).split(/\s+/).each { |word| m_counts[word] = m_counts.fetch(word, 0) + 1 if word.length > 6 }
+    m_top_words = m_counts.sort_by { |word, count| count }.reverse[0..10]
+    p_counts = {}
+    (parent.subject.to_s * 2 + parent.from.to_s * 2 + parent.body).split(/\s+/).each { |word| p_counts[word] = p_counts.fetch(word, 0) + 1 if word.length > 6 }
+    p_top_words = p_counts.sort_by { |word, count| count }.reverse[0..20]
+    similar = 0
+    m_top_words.each do |word|
+      similar += 1 if p_top_words.include? word
+      return false if similar > 6
+    end
+    return true
+  end
+
   def store
     unless @overwrite
       raise "overwrite attempted for listlibrary_archive #{@key}" if AWS::S3::S3Object.exists?(@key, "listlibrary_archive")

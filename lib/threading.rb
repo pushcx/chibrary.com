@@ -201,7 +201,14 @@ class ThreadSet
   def each
     # build the cache if necessary
     if @subjects.empty?
-      # First, pick the likeliest thread roots.
+      # First, break parenting for messages that are lazy thread creation
+      @containers.values.each do |container|
+        # skip where there's not enough info to judge
+        next if container.empty? or container.orphan? or container.parent.empty?
+        container.orphan if container.message.likely_lazy_reply_to? container.parent.message
+      end
+      @root_set = nil
+      # Next, pick the likeliest thread roots.
       root_set.each do |container| # 5.4.B
         subject = container.n_subject
         existing = @subjects.fetch(subject, nil)
@@ -271,7 +278,8 @@ class ThreadSet
       previous.adopt child if previous
       previous = child
     end
-    # the last reference is trusted to be the parent of this message
+    # The last reference is trusted to be the parent of this message,
+    # but once we have all the messages we confirm.
     previous.adopt container if previous
 
     @subjects = {} # clear top-level thread cache
