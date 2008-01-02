@@ -227,7 +227,7 @@ class Renderer
     previous_link, next_link = thread_previous_next(slug, year, month, call_number)
     thread = AWS::S3::S3Object.load_yaml("list/#{slug}/thread/#{year}/#{month}/#{call_number}")
     html = View::render :page => "thread", :locals => {
-      :title         => "#{thread.subject} (#{slug} #{year}-#{month})",
+      :title         => "#{thread.n_subject} (#{slug} #{year}-#{month})",
       :thread        => thread,
       :previous_link => previous_link,
       :next_link     => next_link,

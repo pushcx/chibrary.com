@@ -1,6 +1,6 @@
 %ol.thread_list
   - @missing_count = 0
-  - subjects = [{ :depth => -1, :subject => thread.subject }]
+  - subjects = [{ :depth => -1, :subject => thread.n_subject }]
   - thread.each do |message, depth, parent|
     %li
       - if message.nil?
@@ -15,7 +15,7 @@
           %span.indent{ :style => "width: #{depth * 1.5}em" } &nbsp;
           = h message.from
           %span.date= message.date.strftime("%m-%d %H:%M")
-          - s = Message.normalize_subject(message.subject)
+          - s = Message.normalize_subject(message.n_subject)
           - subjects.pop while depth <= subjects.last[:depth]
           - if s != subjects.last[:subject] and !subjects.last[:subject].include? s
             - subjects << { :depth => depth, :subject => s }
