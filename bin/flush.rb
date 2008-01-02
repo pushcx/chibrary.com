@@ -39,7 +39,7 @@ jobs.each do |job|
   end
 
   # delete message cache
-  AWS::S3::S3Object.delete("list/#{slug}/message_cache/#{year}/#{month}", 'listlibrary_archive')
+  AWS::S3::S3Object.delete("list/#{slug}/message/#{year}/#{month}", 'listlibrary_archive')
 
   # delete thread cache
   AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}").each do |key|
