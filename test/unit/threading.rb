@@ -49,6 +49,12 @@ class ContainerTest < ThreadingTest
     assert c1 != c2
   end
 
+  def test_count
+    assert_equal 0, Container.new('1@example.com').count
+    assert_equal 1, Container.new(Message.new(threaded_message(:root), 'test', '0000root')).count
+    assert_equal 4, container_tree.count
+  end
+
   def test_empty?
     c = Container.new('root@example.com')
     assert c.empty?

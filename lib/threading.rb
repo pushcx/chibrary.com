@@ -31,6 +31,11 @@ class Container
     date <=> container.date
   end
 
+  def count
+    # count of messages, not just containers
+    collect { |c| 1 unless c.empty? }.compact.sum
+  end
+
   def empty?
     @message.nil?
   end
