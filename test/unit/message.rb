@@ -50,6 +50,12 @@ class MessageTest < Test::Unit::TestCase
     assert lazy_reply.likely_lazy_reply_to?(good)
   end
 
+  def test_formatting_message_id
+    expect_list 'example@list.example.com', 'example'
+    m = Message.new message(:formatting_message_id), 'test', '00000000'
+    assert_equal "list/example/message/2008/01/id%m%d%s@example.com", m.key
+  end
+
   class Message_test_from < Message ; public :load_from ; end
   def test_from
     m = Message_test_from.new message(:good), 'test', '00000000'

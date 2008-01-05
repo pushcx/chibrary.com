@@ -128,7 +128,7 @@ class Message
   end
 
   def load_key
-    @key = "list/#{@slug}/message/#{@date.year}/%02d/#{@message_id}" % [@date.month]
+    @key = "list/#{@slug}/message/#{@date.year}/%02d/" % @date.month + @message_id
   end
 
   def load_from

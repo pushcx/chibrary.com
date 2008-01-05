@@ -19,6 +19,15 @@ lazy_reply: |
   A reply without a quote and a new subject is probably a lazy way to create a
   new thread.
 
+formatting_message_id: |
+  From: Alice <alice@example.com>
+  Subject: Good message
+  Date: Tue, 4 Jan 2008 17:39:38 -0400
+  X-Mailing-List: example@list.example.com
+  Message-Id: <id%m%d%s@example.com>
+
+  Message body.
+
 no_archive: |
   From: Alice <alice@example.com>
   Subject: Good message
