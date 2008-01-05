@@ -114,6 +114,7 @@ class Filer
       queue_threader
       teardown
     end
+    return @message_count
   end
 
   def queue_threader

@@ -51,7 +51,7 @@ if __FILE__ == $0
   max = (ARGV.shift or MAX_MAILS).to_i
   Log << "bin/fetcher: up to #{max} messages"
   while max > 0
-    Fetcher.new.run
+    break if Fetcher.new.run < PER_CONNECTION
     sleep 1
     max -= PER_CONNECTION
   end
