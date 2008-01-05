@@ -319,10 +319,19 @@ class ThreadSetTest < ThreadingTest
   def test_complex_threading
     messages = YAML::load_file( File.join(File.dirname(__FILE__), '..', 'fixtures', "complex_thread.yaml") )
     messages.each { |m| @ts << Message.new(m, 'test', '00000000') }
-    expected_threads = %w{1183313785.421818.119180@n2g2000hse.googlegroups.com 46B1E8B9.6040905@cesmail.net 20070803062022.GB17735@polycrystal.org 469096F0.2080203@atdot.net 46A605C1.6030806@sarion.co.jp e0a4c0830708060853y78c58fdcsb916086b098bf814@mail.gmail.com 46B76A46.1000902@davidflanagan.com 4e4a257e0708070124h273cbf52la918f07525d28c40@mail.gmail.com 51BF19F7-15F6-4399-956C-008CC1432D0D@grayproductions.net 4656BC23.5010201@ruby-lang.org 200707280246.l6S2k9Mi011192@ci.ruby-lang.org 20070808185938.GA16490@danisch.de 46BA305A.4030300@davidflanagan.com 46BA5403.4010307@davidflanagan.com 46BC70E8.8080002@qwest.com daff01530708122145i2cdaf470t6320c960308562e2@mail.gmail.com 46C00B17.5090202@sun.com 20070814090704.GA32034@uk.tiscali.com 20070814101715.GA9138@bart.bertram-scharpf.homelinux.com 20070814214858.GA23413@danisch.de d8a74af10708141459t7d12ceabla8b0f9ac875fe81f@mail.gmail.com 46C51F13.2070104@cesmail.net 335e48a90708180348w5304e0fcp98dd9aad304055b6@mail.gmail.com F58FE69873E2D5459B72C347DE15824116B61980CB@NA-EXMSG-C112.redmond.corp.microsoft.com 46CAFA7B.9060904@atdot.net d8a74af10708210846s6ccd7649u16ca78cdb308f68f@mail.gmail.com 20070822005417.GA53919@lizzy.catnook.local 46CBE1C2.7070109@davidflanagan.com 46CC5605.9050003@maven-group.org 46CC8548.3010802@davidflanagan.com 46CCE027.30307@dan42.com e3caf1460706051414x41ad8f69k7068d26a835fd232@mail.gmail.com F58FE69873E2D5459B72C347DE15824116B6199049@NA-EXMSG-C112.redmond.corp.microsoft.com 46CE0A81.1050205@qwest.com 4088e1c90708232328v4e2cd446xe6016b1f740a92a1@mail.gmail.com 46CF2040.2050504@davidflanagan.com 7d9a1f530708250122k43cdd24fo6f0cdc8efe972abb@mail.gmail.com 16956643-A0EE-47E7-BB4D-9FCCC5796FD0@segment7.net 20060718213611.65816A97001C@rubyforge.org 20070827222111.GA21576@bart.bertram-scharpf.homelinux.com 20070829164912.M60248@jena-stew.de 46D5D510.7060706@qwest.com 20070830123014.GA25287@uk.tiscali.com 7524A45A1A5B264FA4809E2156496CFBE72DBD@ITOMAE2KM01.AD.QINTRA.COM Pine.GSO.4.64.0708301844080.337@brains.eng.cse.dmu.ac.uk 20070830191148.GA8233@bart.bertram-scharpf.homelinux.com 46D7B697.1070201@davidflanagan.com 46D7BABE.60101@davidflanagan.com 46D84D65.2020604@sun.com}
-    assert_equal expected_threads, @ts.collect(&:message_id)
 
-    expected_parents = "      1183313785.421818.119180@n2g2000hse.googlegroups.com under nobody
+    # confirm that no extra threads are created or missed
+    expected_threads = %w{1183313785.421818.119180@n2g2000hse.googlegroups.com 46B1E8B9.6040905@cesmail.net 20070803062022.GB17735@polycrystal.org 469096F0.2080203@atdot.net 46A605C1.6030806@sarion.co.jp e0a4c0830708060853y78c58fdcsb916086b098bf814@mail.gmail.com 46B76A46.1000902@davidflanagan.com 4e4a257e0708070124h273cbf52la918f07525d28c40@mail.gmail.com 51BF19F7-15F6-4399-956C-008CC1432D0D@grayproductions.net 4656BC23.5010201@ruby-lang.org 200707280246.l6S2k9Mi011192@ci.ruby-lang.org 20070808185938.GA16490@danisch.de 46BA305A.4030300@davidflanagan.com 46BA5403.4010307@davidflanagan.com 46BC70E8.8080002@qwest.com daff01530708122145i2cdaf470t6320c960308562e2@mail.gmail.com 46C00B17.5090202@sun.com 20070814090704.GA32034@uk.tiscali.com 20070814101715.GA9138@bart.bertram-scharpf.homelinux.com 20070814214858.GA23413@danisch.de d8a74af10708141459t7d12ceabla8b0f9ac875fe81f@mail.gmail.com 46C51F13.2070104@cesmail.net 335e48a90708180348w5304e0fcp98dd9aad304055b6@mail.gmail.com F58FE69873E2D5459B72C347DE15824116B61980CB@NA-EXMSG-C112.redmond.corp.microsoft.com 46CAFA7B.9060904@atdot.net d8a74af10708210846s6ccd7649u16ca78cdb308f68f@mail.gmail.com 20070822005417.GA53919@lizzy.catnook.local 46CBE1C2.7070109@davidflanagan.com 46CC5605.9050003@maven-group.org 46CC8548.3010802@davidflanagan.com 46CCE027.30307@dan42.com e3caf1460706051414x41ad8f69k7068d26a835fd232@mail.gmail.com F58FE69873E2D5459B72C347DE15824116B6199049@NA-EXMSG-C112.redmond.corp.microsoft.com 46CE0A81.1050205@qwest.com 4088e1c90708232328v4e2cd446xe6016b1f740a92a1@mail.gmail.com 46CF2040.2050504@davidflanagan.com 7d9a1f530708250122k43cdd24fo6f0cdc8efe972abb@mail.gmail.com 16956643-A0EE-47E7-BB4D-9FCCC5796FD0@segment7.net 20060718213611.65816A97001C@rubyforge.org 20070827222111.GA21576@bart.bertram-scharpf.homelinux.com 20070829164912.M60248@jena-stew.de 46D5D510.7060706@qwest.com 20070830123014.GA25287@uk.tiscali.com 7524A45A1A5B264FA4809E2156496CFBE72DBD@ITOMAE2KM01.AD.QINTRA.COM Pine.GSO.4.64.0708301844080.337@brains.eng.cse.dmu.ac.uk 20070830191148.GA8233@bart.bertram-scharpf.homelinux.com 46D7B697.1070201@davidflanagan.com 46D7BABE.60101@davidflanagan.com 46D84D65.2020604@sun.com}
+    assert found_threads = @ts.collect(&:message_id)
+    # check for missing threads
+    assert_equal [], expected_threads - found_threads
+    # check for extra threads
+    assert_equal [], found_threads - expected_threads
+    # check order
+    assert_equal expected_threads, found_threads
+
+    # confirm that all messages have proper parents
+    expected_parents = "1183313785.421818.119180@n2g2000hse.googlegroups.com under nobody
       1183321232.853043.171940@q75g2000hsh.googlegroups.com under 1183313785.421818.119180@n2g2000hse.googlegroups.com
       200707160357.l6G3vBng012285@sharui.nakada.kanuma.tochigi.jp under 1183321232.853043.171940@q75g2000hsh.googlegroups.com
       1186016852.936524.8480@q75g2000hsh.googlegroups.com under 200707160357.l6G3vBng012285@sharui.nakada.kanuma.tochigi.jp
@@ -574,15 +583,20 @@ class ThreadSetTest < ThreadingTest
       Pine.GSO.4.64.0708311415320.337@brains.eng.cse.dmu.ac.uk under 3B63D4BC-EF35-48E8-91BB-67181D79270D@grayproductions.net
       46D84BEC.3000909@davidflanagan.com under E1IR15x-0001r7-G0@x31
       46D84E74.7050906@davidflanagan.com under E1IR15x-0001r7-G0@x31
-      46D84D65.2020604@sun.com under nobody"
+      46D84D65.2020604@sun.com under nobody".split(/\n\s+/)
 
-    parents = []
+    found_parents = []
     @ts.each do |thread|
       thread.each do |message|
-        parents << "      #{message.message_id} under " + (message.root? ? "nobody" : message.parent.message_id)
+        found_parents << "#{message.message_id} under " + (message.root? ? "nobody" : message.parent.message_id)
       end
     end
-    assert_equal expected_parents, parents.join("\n")
+    # check for missing messages
+    assert_equal [], expected_parents - found_parents
+    # check for extra messages
+    assert_equal [], found_parents - expected_parents
+    # check order
+    assert_equal expected_parents, found_parents
   end
 
   class FakeMessage

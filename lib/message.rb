@@ -37,7 +37,7 @@ class Message
   def likely_lazy_reply_to? parent
     raise "that's not set as parent" if @references.empty? or @references.last != parent.message_id
     return false if @n_subject == parent.n_subject # didn't change subject, almost certainly a reply
-    return false if @body =~ /^> .+/               # quoted something to reply to it
+    return false if body =~ /^> .+/                # quoted something to reply to it
 
     # from and subject are especially important
     m_counts = {}
