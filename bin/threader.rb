@@ -5,6 +5,7 @@ require 'ostruct'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
+require 'log'
 require 'threading'
 
 class Threader
@@ -27,9 +28,9 @@ class Threader
     while job = get_job
       slug, year, month = job.key.split('/')[1..-1]
       job.delete
-      $stdout.puts "#{slug}/#{year}/#{month}"
+      Log << "#{slug}/#{year}/#{month}"
 
-      message_cache = AWS::S3::S3Object.load_yaml("list/#{slug}/message/#{year}/#{month}/") or []
+      message_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message/#{year}/#{month}/") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
       next if message_cache == message_list
@@ -42,7 +43,7 @@ class Threader
       else
         threadset = ThreadSet.month(slug, year, month)
         added = message_list - message_cache
-        $stdout.puts "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
+        Log << "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
       end
 
       # add messages
@@ -95,10 +96,12 @@ end
 
 if __FILE__ == $0
   t = Threader.new
+  Log << "bin/threader: run starting"
   ARGV.each do |job|
     t.stop_on_empty = true
     AWS::S3::S3Object.delete("thread_queue/#{job}", 'listlibrary_cachedhash')
     t.jobs << OpenStruct.new(:key => "thread_queue/#{job}", :delete => nil)
   end
   t.run
+  Log << "bin/threader: done"
 end
