@@ -52,6 +52,7 @@ if __FILE__ == $0
   Log << "bin/fetcher: up to #{max} messages"
   while max > 0
     Fetcher.new.run
+    sleep 1
     max -= PER_CONNECTION
   end
   Log << "bin/fetcher: done"
