@@ -23,7 +23,7 @@ class Fetcher < Filer
     @pop.read_timeout = 300
     #@pop.set_debug_output $stderr
     @pop.start(MAIL_USER, MAIL_PASSWORD)
-    $stdout.puts "#{@pop.n_mails} available, fetching a max of #{@max}:"
+    Log << "#{@pop.n_mails} available, fetching a max of #{@max}:"
   end
 
   def acquire
@@ -43,6 +43,7 @@ class Fetcher < Filer
   end
 
   def teardown
+    Log << "done"
     #@pop.finish
   end
 end

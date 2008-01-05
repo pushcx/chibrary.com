@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'fetcher'
 
 class FetcherTest < Test::Unit::TestCase
-
   def test_setup
     Net::POP3.expects(:new).returns(mock(
       :open_timeout= => nil,
@@ -10,7 +9,6 @@ class FetcherTest < Test::Unit::TestCase
       :start => nil,
       :n_mails => 0
     ))
-    $stdout.expects(:puts)
     f = Fetcher.new(0, 0)
     f.setup
   end

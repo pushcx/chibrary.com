@@ -16,7 +16,7 @@ require 'aws'
 # Don't really log dev stuff
 require 'log'
 class Log
-  def << ; end
+  def self.<< message ; message ; end
 end
 
 class Test::Unit::TestCase
