@@ -3,7 +3,7 @@
 require 'net/pop'
 
 MAX_MAILS = 1000000
-PER_CONNECTION = 100
+PER_CONNECTION = 50
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
