@@ -198,7 +198,7 @@ class ThreadSet
   private :root_set
 
   # finish the threading and yield each root container (thread) in turn
-  def each
+  def finish
     # build the cache if necessary
     if @subjects.empty?
       # First, break parenting for messages that are lazy thread creation
@@ -238,7 +238,26 @@ class ThreadSet
           existing.adopt container
         # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
         elsif !existing.empty? and existing.subject.length <= container.subject.length
-          existing.adopt container
+          chosen_parent = existing
+          if !container.empty? and container.message.references.empty?
+            # It's a reply without references, use quoting to find its parents
+            direct_quotes = container.message.body.scan(/^> [^>].+/).collect { |q| q.sub(/^> /, '') }
+            # Loop through all containers to find the message with the most
+            # matched quotes. (Can't just look through the existing container's
+            # children, as this may be a reply to a reply that's also missing
+            # its references but hasn't been sorted in yet.)
+            best = 0
+            @containers.each do |message_id, potential_parent|
+              next unless potential_parent.n_subject == container.n_subject
+              next if message_id == container.message_id
+              count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
+              if count > best
+                chosen_parent = potential_parent
+                break if count == direct_quotes.size
+              end
+            end
+          end
+          chosen_parent.adopt container
         # Otherwise, they're either both replies to a missing, unreferenced
         # message (so make them siblings).
         # Or they just happened to share the same subject, so... eh, make 'em
@@ -252,6 +271,11 @@ class ThreadSet
         end
       end
     end
+  end
+  private :finish
+
+  def each
+    finish
     @subjects.values.sort.each { |c| yield c }
   end
 

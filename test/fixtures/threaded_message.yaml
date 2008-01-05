@@ -45,3 +45,94 @@ orphan: |
   > Missing response.
 
   Possibly nonsensical followup.
+
+initial_message: |
+  Date: Fri, 31 Aug 2007 15:35:09 +0900
+  Posted: Thu, 30 Aug 2007 23:35:03 -0700
+  From: David Flanagan <david@davidflanagan.com>
+  Reply-To: ruby-core@ruby-lang.org
+  Subject: Pragmas in Ruby 1.9
+  To: ruby-core@ruby-lang.org
+  Message-Id: <46D7B697.1070201@davidflanagan.com>
+
+  So, I have two suggestions:
+
+  1) Let's not ever refer to these comment-based encoding directives as
+  pragmas.  Note that Python's PEP 263 cited by Matz does not call them
+  pragmas either
+
+  2) If we need to introduce more general pragmas, I suggest overloading
+  Kernel.require.  It should behave as usual if passed a string.  But it
+  can handle pragmas if passed a hash.  Some possible examples (using Ruby
+  1.9 hash syntax):
+
+regular_reply: |
+  Date: Sat, 1 Sep 2007 01:52:24 +0900
+  Posted: Fri, 31 Aug 2007 11:52:15 -0500
+  From: Charles Oliver Nutter <charles.nutter@sun.com>
+  Reply-To: ruby-core@ruby-lang.org
+  Subject: Re: Pragmas in Ruby 1.9
+  Sender: Charles.O.Nutter@sun.com
+  To: ruby-core@ruby-lang.org
+  Message-Id: <46D8473F.1000406@sun.com>
+  In-Reply-To: <46D7B697.1070201@davidflanagan.com>
+
+  David Flanagan wrote:
+  > 2) If we need to introduce more general pragmas, I suggest overloading
+  > Kernel.require.  It should behave as usual if passed a string.  But it
+  > can handle pragmas if passed a hash.  Some possible examples (using Ruby
+  > 1.9 hash syntax):
+  >
+  >   require encoding: "utf-8"
+  >   require unsafe: "fibers"
+  >   require thread-model: "concurrent"
+  >   require version: 1.9
+  >   require decimal: true
+  >   require strict: true
+
+  If this ever happens, I hope it's first accompanied by a standardized
+  mechanism for extending (without replacing) require. Already rubygems
+  and rails add their own require logic, and there's complications in both
+  to make sure they work right. A standard way to extend require's
+  behavior programmatically without physically replacing require would
+  help guarantee future require extensions don't break old ones.
+
+  - Charlie
+
+quoting_reply: |
+  Date: Sat, 1 Sep 2007 03:00:51 +0900
+  Posted: Fri, 31 Aug 2007 14:00:49 -0400
+  From: "Austin Ziegler" <halostatue@gmail.com>
+  Reply-To: ruby-core@ruby-lang.org
+  Subject: Re: Pragmas in Ruby 1.9
+  To: ruby-core@ruby-lang.org
+
+  On 8/31/07, Charles Oliver Nutter <charles.nutter@sun.com> wrote:
+  > David Flanagan wrote:
+  > > 2) If we need to introduce more general pragmas, I suggest overloading
+  > > Kernel.require.  It should behave as usual if passed a string.  But it
+  > > can handle pragmas if passed a hash.  Some possible examples (using Ruby
+  > > 1.9 hash syntax):
+  > >
+  > >   require encoding: "utf-8"
+  > >   require unsafe: "fibers"
+  > >   require thread-model: "concurrent"
+  > >   require version: 1.9
+  > >   require decimal: true
+  > >   require strict: true
+  >
+  > If this ever happens, I hope it's first accompanied by a standardized
+  > mechanism for extending (without replacing) require. Already rubygems
+  > and rails add their own require logic, and there's complications in both
+  > to make sure they work right. A standard way to extend require's
+  > behavior programmatically without physically replacing require would
+  > help guarantee future require extensions don't break old ones.
+
+  Completely and totally agreed. I'd actually want to see two mechanisms
+  for this -- one for adding new pragmas and one for overloading
+  standard require.
+
+  IMO, it'd be better if Kernel#require weren't overridable and offered
+  a different function for require extensions.
+
+  -austin

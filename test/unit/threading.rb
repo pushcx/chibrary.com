@@ -599,6 +599,16 @@ class ThreadSetTest < ThreadingTest
     assert_equal expected_parents, found_parents
   end
 
+  def test_threading_by_quotes
+    [
+      initial_message = Message.new(threaded_message(:initial_message), 'test', '00000000'),
+      regular_reply   = Message.new(threaded_message(:regular_reply), 'test', '00000000'),
+      quoting_reply   = Message.new(threaded_message(:quoting_reply), 'test', '00000000'),
+    ].each { |m| @ts << m }
+    @ts.send(:finish) # force the final threading
+    assert_equal regular_reply.message_id, @ts.containers[quoting_reply.message_id].parent.message_id
+  end
+
   class FakeMessage
     attr_accessor :message_id, :subject, :references
     def initialize message_id, subject, references ; @message_id = message_id ; @subject = subject ; @references = references ; end
