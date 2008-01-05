@@ -5,6 +5,7 @@ require 'net/pop'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
 require 'filer'
+require 'log'
 
 class Fetcher < Filer
   def initialize server=nil, sequence=nil, max=1000
