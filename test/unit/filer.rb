@@ -58,7 +58,7 @@ class FilerTest < Test::Unit::TestCase
     message = mock('message')
     message.expects(:store).raises(RuntimeError, "something bad happened")
     Message.expects(:new).returns(message)
-    AWS::S3::S3Object.expects(:store)
+    AWS::S3::S3Object.expects(:store) # the error store
 
     f = Filer.new(0, 0)
     f.store message(:good)

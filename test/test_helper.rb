@@ -13,6 +13,12 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 AWS_connection = true
 require 'aws'
 
+# Don't ever actually make pop connections
+require 'net/pop'
+class Net::POP3
+  def initialize server, port ; raise "un-mocked POP3 call" ; end
+end
+
 # Don't really log dev stuff
 require 'log'
 class Log

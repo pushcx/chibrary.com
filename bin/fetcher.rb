@@ -2,13 +2,16 @@
 
 require 'net/pop'
 
+MAX_MAILS = 1000000
+PER_CONNECTION = 100
+
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
 require 'filer'
 require 'log'
 
 class Fetcher < Filer
-  def initialize server=nil, sequence=nil, max=1000
+  def initialize server=nil, sequence=nil, max=PER_CONNECTION
     @max = max.to_i
     super server, sequence
   end
@@ -23,7 +26,7 @@ class Fetcher < Filer
     @pop.open_timeout = 300
     @pop.read_timeout = 300
     @pop.start(MAIL_USER, MAIL_PASSWORD)
-    Log << "#{@pop.n_mails} available, fetching a max of #{@max}:"
+    Log << "Fetcher: #{@pop.n_mails} available, fetching a max of #{@max}:"
   end
 
   def acquire
@@ -39,13 +42,17 @@ class Fetcher < Filer
   end
 
   def teardown
-    Log << "done"
+    Log << "Fetcher: done"
     @pop.finish
   end
 end
 
-
 if __FILE__ == $0
-  f = Fetcher.new nil, nil, ARGV.shift
-  f.run
+  max = (ARGV.shift or MAX_MAILS).to_i
+  Log << "bin/fetcher: up to #{max} messages"
+  while max > 0
+    Fetcher.new.run
+    max -= PER_CONNECTION
+  end
+  Log << "bin/fetcher: done"
 end
