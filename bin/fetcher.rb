@@ -32,12 +32,8 @@ class Fetcher < Filer
       begin
         yield mail.mail
         mail.delete
-        if (@max -= 1) <= 0
-          teardown
-          return
-        end
+        return if (@max -= 1) <= 0
       rescue SequenceExhausted
-        teardown
         return
       end
     end
@@ -45,7 +41,7 @@ class Fetcher < Filer
 
   def teardown
     Log << "done"
-    #@pop.finish
+    @pop.finish
   end
 end
 
