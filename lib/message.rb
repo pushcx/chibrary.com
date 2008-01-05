@@ -14,10 +14,11 @@ class Message
   def initialize message, source=nil, call_number=nil
     @source = source
     @call_number = call_number
+    @overwrite = :error
     if message.match "\n" # initialized with a message
       @message = message
     else                  # initialize with a url
-      @overwrite = true
+      @overwrite = :do
       o = AWS::S3::S3Object.find(message, 'listlibrary_archive')
       @message = o.value.to_s
       @call_number ||= o.metadata['call_number']
@@ -55,8 +56,10 @@ class Message
   end
 
   def store
-    unless @overwrite
-      raise "overwrite attempted for listlibrary_archive #{@key}" if AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
+    unless @overwrite == :do
+      attempted = AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
+      return self if attempted and @overwrite == :dont
+      raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
     end
     AWS::S3::S3Object.store(@key, message, "listlibrary_archive", {
       :content_type             => "text/plain",

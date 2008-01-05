@@ -61,7 +61,7 @@ X-Mailing-List: listlibrary_subscriptions
     end
 
     message.add_header("X-Mailing-List: listlibrary_subscriptions@listlibrary.net")
-    message.overwrite = true
+    message.overwrite = :do
     message.mailing_list
     message.store
     mail.delete

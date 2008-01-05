@@ -162,20 +162,33 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
   end
 
-  def test_overwrite
+  def test_overwrite_error
     expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
-    key = 'list/example/message/2006/10/goodid@example.com'
-    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(true)
-    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{key}") do
+    assert_equal :error, m.overwrite
+    AWS::S3::S3Object.expects(:exists?).with(m.key, 'listlibrary_archive').returns(true)
+    assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{m.key}") do
       m.store
     end
-    m.overwrite = true
-    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
+  end
+
+  def test_overwrite_do
+    expect_list 'example@list.example.com', 'example'
+    m = Message.new message(:good), 'test', '00000000'
+    m.overwrite = :do
+    AWS::S3::S3Object.expects(:store).with(m.key, m.message, 'listlibrary_archive', {
       :content_type             => "text/plain",
       :'x-amz-meta-source'      => 'test',
       :'x-amz-meta-call_number' => '00000000'
     })
+    m.store
+  end
+
+  def test_overwrite_dont
+    expect_list 'example@list.example.com', 'example'
+    m = Message.new message(:good), 'test', '00000000'
+    m.overwrite = :dont
+    AWS::S3::S3Object.expects(:exists?).with(m.key, 'listlibrary_archive').returns(true)
     m.store
   end
 

@@ -23,7 +23,7 @@ class FetcherTest < Test::Unit::TestCase
 
   def test_teardown
     f = Fetcher.new(0, 0)
-    #nil.expects(:finish)
+    nil.expects(:finish)
     f.teardown
   end
 
@@ -36,7 +36,6 @@ class FetcherTest < Test::Unit::TestCase
   def test_sequence_exhaustion
     f = Fetcher.new(0, 2 ** 20)
     nil.expects(:each_mail).yields(mock(:mail => "Test message"))
-    f.expects(:teardown)
     f.acquire { |mail| f.store mail }
   end
 

@@ -22,7 +22,6 @@ class Fetcher < Filer
     @pop = Net::POP3.new(MAIL_SERVER, MAIL_POP3_PORT)
     @pop.open_timeout = 300
     @pop.read_timeout = 300
-    #@pop.set_debug_output $stderr
     @pop.start(MAIL_USER, MAIL_PASSWORD)
     Log << "#{@pop.n_mails} available, fetching a max of #{@max}:"
   end
