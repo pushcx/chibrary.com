@@ -13,6 +13,12 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 AWS_connection = true
 require 'aws'
 
+# Don't really log dev stuff
+require 'log'
+class Log
+  def << ; end
+end
+
 class Test::Unit::TestCase
   @@fixtures = {}
   def self.fixtures list
@@ -27,3 +33,4 @@ class Test::Unit::TestCase
     end
   end
 end
+
