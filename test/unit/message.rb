@@ -204,6 +204,17 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "#{m.call_number}@generated-message-id.listlibrary.net", m.message_id
   end
 
+  def test_base64_encoded
+    m = Message.new message(:base64_encoded), 'test', '00000000'
+    assert m.from.include?("Pea, Botp")
+    assert m.body.include?('put those in a batch file')
+  end
+
+  def test_quoted_printable
+    m = Message.new message(:quoted_printable), 'test', '00000000'
+    assert !m.body.include?('=20')
+  end
+
   private
 
   def expect_list address, value

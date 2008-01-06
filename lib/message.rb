@@ -1,3 +1,4 @@
+require 'base64'
 require 'time'
 require 'md5'
 require 'aws'
@@ -31,7 +32,16 @@ class Message
   # public methods
 
   def body
-    message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
+    return @body if @body
+    raw_body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
+    case get_header('Content-Transfer-Encoding')
+    when 'quoted-printable'
+      @body = raw_body.unpack('M').shift
+    when 'base64'
+      @body = raw_body.unpack('m').shift
+    else
+      @body = raw_body
+    end
   end
 
   # Guess if this message actually starts a new thread instead of replying to parent
@@ -136,6 +146,7 @@ class Message
 
   def load_from
     @from = (get_header('From') or '').sub(/"(.*?)"/, '\1')
+    @from = Base64.decode_b(@from) if @from =~ /^=\?.*=\?=/
   end
 
   def load_message_id
@@ -190,6 +201,7 @@ class Message
 
   def load_subject
     @subject = (get_header('Subject') or '')
+    @subject = Base64.decode_b(@subject) if @subject =~ /^=\?.*=\?=$/
     @n_subject = Message.normalize_subject @subject
   end
 end
