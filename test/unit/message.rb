@@ -210,6 +210,12 @@ class MessageTest < Test::Unit::TestCase
     assert m.body.include?('put those in a batch file')
   end
 
+  def test_mime_encoded
+    m = Message.new message(:mime_encoded), 'test', '00000000'
+    assert !m.body.include?('AppleMail')
+    assert m.body.include?('Use the unix file')
+  end
+
   def test_quoted_printable
     m = Message.new message(:quoted_printable), 'test', '00000000'
     assert !m.body.include?('=20')

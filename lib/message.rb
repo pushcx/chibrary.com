@@ -1,3 +1,5 @@
+require 'rmail'
+
 require 'base64'
 require 'time'
 require 'md5'
@@ -33,15 +35,33 @@ class Message
 
   def body
     return @body if @body
-    raw_body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
+    rmail = RMail::Parser.read(@message)
+    @body = rmail.body
+    if @body.is_a? Array
+      body = nil
+      @body.each do |rmail|
+        if rmail.header['Content-Type'].include? 'text/plain'
+          body = rmail.body
+          break
+        end
+      end
+      if body
+        @body = body
+      else
+        @body = "This MIME-encoded message did not include a plain text body or could not be decoded."
+      end
+    end
+
+    #@body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
     case get_header('Content-Transfer-Encoding')
     when 'quoted-printable'
-      @body = raw_body.unpack('M').shift
+      @body = @body.unpack('M').shift
     when 'base64'
-      @body = raw_body.unpack('m').shift
-    else
-      @body = raw_body
-    end
+      @body = @body.unpack('m').shift
+    end # else it's fine
+
+    @body.strip!
+    # Hack: use the RMail lib to find MIME-encoded body
   end
 
   # Guess if this message actually starts a new thread instead of replying to parent
