@@ -1,0 +1,7 @@
+# List of gems required
+aws-s3
+mocha
+net-sftp
+net-ssh
+permutation
+redgreen
