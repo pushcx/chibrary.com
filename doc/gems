@@ -1,5 +1,6 @@
 # List of gems required
 aws-s3
+haml
 mocha
 net-sftp
 net-ssh
