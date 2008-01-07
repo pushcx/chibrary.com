@@ -36,6 +36,14 @@ class Container
     collect { |c| 1 unless c.empty? }.compact.sum
   end
 
+  def depth
+    if root?
+      0
+    else
+      @parent.depth + 1
+    end
+  end
+
   def empty?
     @message.nil?
   end

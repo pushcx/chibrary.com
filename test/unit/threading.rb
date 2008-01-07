@@ -55,6 +55,13 @@ class ContainerTest < ThreadingTest
     assert_equal 4, container_tree.count
   end
 
+  def test_depth
+    c = container_tree
+    assert_equal 0, c.depth
+    assert_equal 1, c.children.first.depth
+    assert_equal 2, c.children.first.children.first.depth
+  end
+
   def test_empty?
     c = Container.new('root@example.com')
     assert c.empty?
