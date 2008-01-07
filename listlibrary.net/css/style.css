@@ -26,6 +26,9 @@ div.previous_next {
 #footer p {
   float: left;
 }
+#footer div.search {
+  float: left;
+}
 #footer p.tagline {
   margin-right: 1.5em;
 }

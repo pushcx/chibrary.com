@@ -9,6 +9,7 @@ require 'rubygems'
 require 'cgi'
 require 'haml'
 require 'ostruct'
+require 'tidy'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
@@ -29,13 +30,20 @@ class View
     locals[:title] = (locals[:title].to_s + " - ListLibrary").strip.sub(/^- /, '')
 
     filename = (options[:page] or options[:partial])
-    if options[:page]
+    html = if options[:page]
       Haml::Engine.new(File.read("view/layout.haml"), :locals => locals, :filename => "layout").render(View) do
         Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
       end
     elsif options[:partial]
       Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
     end
+
+    Tidy.path = '/usr/lib/libtidy.so'
+    Tidy.open do |tidy|
+      tidy.clean(html)
+      raise "Tidy found errors rendering #{options}: \n" + tidy.errors.join("\n") unless tidy.errors.empty?
+    end
+    html
   end
 
   # helpers
