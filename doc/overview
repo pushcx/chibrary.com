@@ -67,7 +67,7 @@ list/*slug*/thread/*year*/*month*/*call number* and adding any new messages.
 
 The threader caches all the threads and a list of messages at the locations
 above. It creates a job for the Renderer at
-list/*slug*/thread/*year*/*month*/*call number* for each changed thread and,
+render_queue/*slug*/*year*/*month*/*call number* for each changed thread and,
 for each month, caches thread subject, call number, and message count at the
 CachedHash key render/month/*slug*/*year*/*month*.
 

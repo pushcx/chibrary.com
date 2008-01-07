@@ -71,7 +71,7 @@ class Threader
       name = "#{year}/#{month}/#{thread.call_number}"
       yaml = thread.to_yaml
       begin
-        o = AWS::S3::S3Object.find("list/#{slug}/#{name}", 'listlibrary_archive')
+        o = AWS::S3::S3Object.find("list/#{slug}/thread/#{name}", 'listlibrary_archive')
         cached = o.about["content-length"] == yaml.size
       rescue
         cached = false

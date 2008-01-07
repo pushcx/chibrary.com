@@ -104,7 +104,7 @@ class ThreaderTest < Test::Unit::TestCase
 
     o = mock("object")
     o.expects(:about).returns({ 'content-length' => "yaml".length })
-    AWS::S3::S3Object.expects(:find).with("list/example/2007/08/00000000", "listlibrary_archive").returns(o)
+    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
     CachedHash.expects(:new).with('render_queue').returns(mock("queue"))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
@@ -125,7 +125,7 @@ class ThreaderTest < Test::Unit::TestCase
     thread.expects(:subject).returns('subject')
     threadset = mock
     threadset.expects(:collect).yields(thread)
-    AWS::S3::S3Object.expects(:find).with("list/example/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
+    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
     CachedHash.expects(:new).with('render_queue').returns(stub_everything('render_queue'))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
     AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
