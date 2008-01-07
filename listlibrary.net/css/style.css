@@ -158,7 +158,7 @@ div.message.missing p {
   background: #eeeedd;
   border-top: 0.1em solid #ddddcc;
 }
-div.message pre.body {
+div.message div.body pre.body {
   background-color: transparent;
   border: none;
   overflow: auto;
@@ -167,7 +167,7 @@ div.message pre.body {
 
 /* message view */
 
-div.message .body blockquote {
+div.message div.body blockquote {
   background-color: #dddddd;
   border-bottom:1px solid #EEEEEE;
   border-top:1px solid #EEEEEE;
@@ -175,14 +175,14 @@ div.message .body blockquote {
   font-style: normal;
   margin: 0;
 }
-  div.message .body blockquote.closed {
+  div.message div.body blockquote.closed {
     background-color: transparent;
     color: #666666;
     display: inline;
     font-style: italic;
     padding: 0 0.1em;
   }
-  div.message .body blockquote.closed:hover {
+  div.message div.body blockquote.closed:hover {
     background-color: #dddddd;
     cursor: pointer;
   }
