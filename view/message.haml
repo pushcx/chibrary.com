@@ -2,6 +2,8 @@
   %a{ :id => "m#{message.call_number}", :name => "m#{message.call_number}" }/
   .header
     %h4.from= h message.from
-    %a{ :href => "#m#{message.call_number}", :title => "Link to this message" }
-      %h6.date= message.date.strftime("%Y-%m-%d %H:%M:%S")
-  = '<pre class="body">' + preserve(message_body(message)) + '</pre>'
+    %h6.date
+      %a{ :href => "#m#{message.call_number}", :title => "Link to this message" }
+        = message.date.strftime("%Y-%m-%d %H:%M:%S")
+  .body
+    = '<pre class="body">' + preserve(message_body(message)) + '</pre>'

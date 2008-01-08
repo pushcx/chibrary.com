@@ -12,7 +12,7 @@
       %a{ :id => "t#{thread.call_number}", :name => "t#{thread.call_number}" }/
       .header
         %span.count= thread.count
-        %a.subject{ :href => thread.call_number }= subject(thread.first)
+        %a.subject{ :href => thread.call_number }= subject(thread)
       = render :partial => 'thread_list', :locals => { :thread => thread }
 
 = render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }

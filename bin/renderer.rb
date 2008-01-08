@@ -38,10 +38,19 @@ class View
       Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
     end
 
-    Tidy.path = '/usr/lib/libtidy.so'
-    Tidy.open do |tidy|
-      tidy.clean(html)
-      raise "Tidy found errors rendering #{options}: \n" + tidy.errors.join("\n") unless tidy.errors.empty?
+    unless options[:partial]
+      Tidy.path = '/usr/lib/libtidy.so'
+      tidy_options = {
+        'doctype' => 'omit',
+        'tidy-mark' => 'false',
+        'show-body-only' => 'true',
+        'new-blocklevel-tags' => 'pre',
+      }
+      Tidy.open(tidy_options) do |tidy|
+        tidy.clean(html)
+        $stderr.puts html unless tidy.errors.empty?
+        raise "Tidy found errors rendering #{options.inspect}: \n" + tidy.errors.join("\n") unless tidy.errors.empty?
+      end
     end
     html
   end
@@ -77,9 +86,9 @@ class View
       lines = quote.length
       quote = quote.join("\n")
       if lines <= 3
-        '<blockquote class="short">' + quote + "</blockquote>\n"
+        '</pre><blockquote class="short"><pre>' + quote + "</pre></blockquote><pre>\n"
       else
-        '<blockquote>' + quote + "</blockquote>\n"
+        '</pre><blockquote><pre>' + quote + "</pre></blockquote><pre>\n"
       end
     end
     str.strip
@@ -91,19 +100,20 @@ class View
     str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
   end
 
-  def self.message_partial message
-    if message.nil? or message.is_a? Symbol
-      'message_missing'
-    elsif message.no_archive
-      'message_no_archive'
+  def self.container_partial c
+    if c.empty?
+      View::render(:partial => 'message_missing')
+    elsif c.message.no_archive
+      View::render(:partial => 'message_no_archive')
     else
-      'message'
+      # Load the full message from s3 to get body and etc.
+      View::render(:partial => 'message', :locals => { :message => Message.new(c.message.key.to_s.gsub('+',' ')) })
     end
   end
 
-  def self.subject message
-    s = Message.normalize_subject(message.subject)
-    (s.empty? ? '<i>no subject</i>' : s)
+  def self.subject o
+    subj = o.n_subject
+    (subj.empty? ? '<i>no subject</i>' : subj)
   end
 end
 
@@ -144,6 +154,7 @@ class Renderer
       :slug      => slug,
     })
     @rc.upload_file "#{slug}/index.html", html
+    html
   end
 
   def month_previous_next(slug, year, month)
@@ -187,6 +198,7 @@ class Renderer
       :month         => month,
     })
     @rc.upload_file "#{slug}/#{year}/#{month}/index.html", html
+    html
   end
 
   def thread_previous_next(slug, year, month, call_number)
@@ -245,6 +257,7 @@ class Renderer
       :month         => month,
     }
     @rc.upload_file "#{slug}/#{year}/#{month}/#{call_number}", html
+    html
   end
 
   def delete_thread slug, year, month, call_number

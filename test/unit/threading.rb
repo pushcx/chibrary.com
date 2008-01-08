@@ -604,10 +604,10 @@ class ThreadSetTest < ThreadingTest
         found_parents << "#{message.message_id} under " + (message.root? ? "nobody" : message.parent.message_id)
       end
     end
-    # check for missing messages
-    assert_equal [], expected_parents - found_parents
     # check for extra messages
     assert_equal [], found_parents - expected_parents
+    # check for missing messages
+    assert_equal [], expected_parents - found_parents
     # check order
     assert_equal expected_parents, found_parents
   end

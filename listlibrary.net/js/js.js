@@ -26,7 +26,7 @@ $(function() {
   });
 
   // thread view: toggleable blockquotes
-  $("div.message blockquote").toggle(function() {
+  $("div.body blockquote").toggle(function() {
     // close up
     this.quote = $(this).html();
     $(this).html("---- click to show quote ----")

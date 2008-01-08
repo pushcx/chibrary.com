@@ -26,19 +26,19 @@ short quotes not blockquoted:
     > four line quote
     reply
   expect: |-
-    <blockquote class="short">&gt; one line quote</blockquote>
+    </pre><blockquote class="short"><pre>&gt; one line quote</pre></blockquote><pre>
     reply
-    <blockquote class="short">&gt; two line quote
-    &gt; two line quote</blockquote>
+    </pre><blockquote class="short"><pre>&gt; two line quote
+    &gt; two line quote</pre></blockquote><pre>
     reply
-    <blockquote class="short">&gt; three line quote
+    </pre><blockquote class="short"><pre>&gt; three line quote
     &gt; three line quote
-    &gt; three line quote</blockquote>
+    &gt; three line quote</pre></blockquote><pre>
     reply
-    <blockquote>&gt; four line quote
+    </pre><blockquote><pre>&gt; four line quote
     &gt; four line quote
     &gt; four line quote
-    &gt; four line quote</blockquote>
+    &gt; four line quote</pre></blockquote><pre>
     reply
 
 single headered quote:
@@ -51,11 +51,11 @@ single headered quote:
 
     Actual reply.
   expect: |-
-    <blockquote>Bob Barker wrote:
+    </pre><blockquote><pre>Bob Barker wrote:
     &gt; Some quoted text.
     &gt; That's several lines.
     &gt; long, isn't it.
-    &gt; Just keeps going.</blockquote>
+    &gt; Just keeps going.</pre></blockquote><pre>
     Actual reply.
 single unheadered quote:
   input: |
@@ -66,10 +66,10 @@ single unheadered quote:
 
     Actual reply.
   expect: |-
-    <blockquote>&gt; Some quoted text.
+    </pre><blockquote><pre>&gt; Some quoted text.
     &gt; That's several lines.
     &gt; long, isn't it.
-    &gt; Just keeps going.</blockquote>
+    &gt; Just keeps going.</pre></blockquote><pre>
     Actual reply.
 two quotes with break:
   input: |
@@ -82,12 +82,12 @@ two quotes with break:
 
     Actual reply.
   expect: |-
-    <blockquote>&gt; Some quoted text.
+    </pre><blockquote><pre>&gt; Some quoted text.
     &gt; That's several lines.
     &gt; long, isn't it.
 
     &gt; Just keeps going.
-    &gt; And going.</blockquote>
+    &gt; And going.</pre></blockquote><pre>
     Actual reply.
 multiple quotes:
   input: |
@@ -106,17 +106,17 @@ multiple quotes:
 
     More reply.
   expect: |-
-    <blockquote>On 2/3/2007, Bob Barker wrote:
+    </pre><blockquote><pre>On 2/3/2007, Bob Barker wrote:
     &gt; Some quoted text.
     &gt; That is several lines.
     &gt;
-    &gt; Just keeps going.</blockquote>
+    &gt; Just keeps going.</pre></blockquote><pre>
     Some actual reply.
 
-    <blockquote>&gt; yep,
+    </pre><blockquote><pre>&gt; yep,
     &gt; another
     &gt; quote
-    &gt; here</blockquote>
+    &gt; here</pre></blockquote><pre>
     More reply.
 trim blank leading andtrailing:
   input: |
@@ -128,8 +128,8 @@ trim blank leading andtrailing:
 
     Actual reply.
   expect: |-
-    <blockquote class="short">&gt; several lines
-    &gt; long, isn't it.</blockquote>
+    </pre><blockquote class="short"><pre>&gt; several lines
+    &gt; long, isn't it.</pre></blockquote><pre>
     Actual reply.
 basic outlook quoting:
   input: |
@@ -158,7 +158,7 @@ basic outlook quoting:
 
     Multiline.
 
-    <blockquote>----Original Message-----
+    </pre><blockquote><pre>----Original Message-----
     From: dima [mailto:dejan.dimic@gm...com] 
     Sent: Monday, August 13, 2007 5:00 AM
     To: ruby-talk ML
@@ -173,7 +173,7 @@ basic outlook quoting:
     &gt; some response
     &gt; that is properly quoted
 
-    This is actually quoted text, not part of the reply.</blockquote>
+    This is actually quoted text, not part of the reply.</pre></blockquote><pre>
 quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011NY36f:
   input: |
     On 7/24/07, F. Senault <fred@lacave.net> wrote:
@@ -193,11 +193,11 @@ quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011
     -- Kent Beck
 
   expect: |-
-    <blockquote>On 7/24/07, F. Senault &lt;fred@la...net&gt; wrote:
+    </pre><blockquote><pre>On 7/24/07, F. Senault &lt;fred@la...net&gt; wrote:
     &gt; class TestA
     &gt;   include Plugin
     &gt; end
-    &gt; class TestA1 &lt; TestA ; end</blockquote>
+    &gt; class TestA1 &lt; TestA ; end</pre></blockquote><pre>
     class TestA1
         include Plugin
 
@@ -250,20 +250,20 @@ PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW
   expect: |-
     Hi Eric,
 
-    <blockquote>Eric Hodel wrote:
+    </pre><blockquote><pre>Eric Hodel wrote:
     &gt;&gt; Matz plans to import gem into Ruby 1.9.  Does anyone has any
     &gt; RubyGems is still missing one key feature, the ability to handle
     &gt; platform-specific gems.  There may be a few other minor features that
-    &gt; are missing, but I don't think RubyGems is ready for inclusion until then.</blockquote>
+    &gt; are missing, but I don't think RubyGems is ready for inclusion until then.</pre></blockquote><pre>
     Are you and RubyGems maintainers negative to include RubyGems in
     ruby/1.9.1 ?
 
     I have a plan to propose unbundling some libraries such as soap4r, tk,
     webrick, json, etc.  Maintainer-less libraries such as yaml should be
 
-    <blockquote class="short">&gt; Also, RubyGems can make releases faster than Ruby can, so it should
+    </pre><blockquote class="short"><pre>&gt; Also, RubyGems can make releases faster than Ruby can, so it should
     &gt; still be possible to upgrade RubyGems to never versions independent of
-    &gt; Ruby.</blockquote>
+    &gt; Ruby.</pre></blockquote><pre>
     Do you mean RubyGems can be a gem?  Looks smart.
 
     // NaHi
@@ -288,10 +288,10 @@ rdoc is not outlook quoting http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m0
     James Edward Gray II
 
   expect: |-
-    <blockquote>On Jul 24, 2007, at 5:10 AM, F. Senault wrote:
+    </pre><blockquote><pre>On Jul 24, 2007, at 5:10 AM, F. Senault wrote:
 
     &gt; I can find the constant in Object.constants, but there is
-    &gt; no delete_const in there.  :|</blockquote>
+    &gt; no delete_const in there.  :|</pre></blockquote><pre>
     $ ri -T remove_const
     ---------------------------------------------------- Module#remove_const
           remove_const(sym)   =&gt; obj

@@ -35,7 +35,10 @@ class Message
 
   def body
     return @body if @body
-    rmail = RMail::Parser.read(@message)
+    return '' if @message.nil? # body is not serialized
+
+    # Hack: use the RMail lib to find MIME-encoded body
+    rmail = RMail::Parser.read(@message.gsub("\r", ''))
     @body = rmail.body
     if @body.is_a? Array
       body = nil
@@ -55,20 +58,19 @@ class Message
     #@body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
     case get_header('Content-Transfer-Encoding')
     when 'quoted-printable'
-      @body = @body.unpack('M').shift
+      @body = @body.unpack('M').first
     when 'base64'
-      @body = @body.unpack('m').shift
+      @body = @body.unpack('m').first
     end # else it's fine
 
     @body.strip!
-    # Hack: use the RMail lib to find MIME-encoded body
   end
 
   # Guess if this message actually starts a new thread instead of replying to parent
   def likely_lazy_reply_to? parent
     raise "that's not set as parent" if @references.empty? or @references.last != parent.message_id
-    return false if @n_subject == parent.n_subject # didn't change subject, almost certainly a reply
-    return false if body =~ /^> .+/                # quoted something to reply to it
+    return false if n_subject == parent.n_subject # didn't change subject, almost certainly a reply
+    return false if body =~ /^[>\|] .+/                # quoted something to reply to it
 
     # from and subject are especially important
     m_counts = {}
@@ -99,17 +101,23 @@ class Message
     self
   end
 
-  # In threading, LLThread caches YAML messages, so we limit the serialization
-  # to the fields the threader needs (@from and @no_archive for
+  # In threading, the Container caches YAML messages, so we limit the
+  # serialization to the fields the threader needs (@from and @no_archive for
   # view/thread_list which shouldn't need to load the whole message).
   # view/thread must actually load messages from their keys.
   def to_yaml_properties ; %w{@call_number @message_id @references @subject @date @from @no_archive @key} ; end
+
+  # method rather than var so that unserialized Messages don't have to save both
+  def n_subject
+    Message.normalize_subject @subject
+  end
 
   private
 
   # header code
 
   def headers
+    return '' if message.nil?
     message.split(/\n\r?\n/)[0]
   end
 
@@ -222,6 +230,5 @@ class Message
   def load_subject
     @subject = (get_header('Subject') or '')
     @subject = Base64.decode_b(@subject) if @subject =~ /^=\?.*=\?=$/
-    @n_subject = Message.normalize_subject @subject
   end
 end

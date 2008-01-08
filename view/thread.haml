@@ -1,4 +1,4 @@
-%h1.subject= subject(thread.first)
+%h1.subject= subject(thread)
 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
 = render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
@@ -6,7 +6,7 @@
 
 .thread
   - @missing_count = 0
-  = thread.collect { |m, depth, parent| m = Message.new(m.key.to_s.gsub('+',' '), m.source, m.call_number) if m.is_a? Message; render :partial => message_partial(m), :locals => { :message => m } }
+  = thread.collect { |c| container_partial(c) }
 
 %hr 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }

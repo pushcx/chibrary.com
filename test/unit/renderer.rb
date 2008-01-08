@@ -55,16 +55,27 @@ class ViewTest < Test::Unit::TestCase
     end
   end
 
-  def test_message_partial
-    assert_equal 'message',            View::message_partial(Message.new(message(:good), 'test', '00000000'))
-    assert_equal 'message_no_archive', View::message_partial(Message.new(message(:no_archive), 'test', '00000000'))
-    assert_equal 'message_missing',    View::message_partial(nil)
-    assert_equal 'message_missing',    View::message_partial(:fake_root)
+  def test_container_partial
+    mock_message = mock('message', :no_archive => false, :key => 'key' )
+    used_container = mock("used container", :empty? => false)
+    used_container.expects(:message).returns(mock_message).times(2)
+    mock_created_message = mock("created message")
+    Message.expects(:new).returns(mock_created_message)
+    View.expects(:render).with(:partial => 'message', :locals => { :message => mock_created_message })
+    View::container_partial(used_container)
+
+    empty_container = mock(:empty? => true)
+    View.expects(:render).with(:partial => 'message_missing')
+    View::container_partial(empty_container)
+
+    empty_container = mock(:empty? => false, :message => mock(:no_archive => true))
+    View.expects(:render).with(:partial => 'message_no_archive')
+    View::container_partial(empty_container)
   end
 
   def test_subject
-    assert_equal 'subject',           View::subject(mock(:subject => 'subject'))
-    assert_equal '<i>no subject</i>', View::subject(mock(:subject => ''))
+    assert_equal 'subject',           View::subject(mock(:n_subject => 'subject'))
+    assert_equal '<i>no subject</i>', View::subject(mock(:n_subject => ''))
   end
 end
 

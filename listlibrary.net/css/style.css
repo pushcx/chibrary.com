@@ -158,22 +158,27 @@ div.message.missing p {
   background: #eeeedd;
   border-top: 0.1em solid #ddddcc;
 }
-div.message div.body pre.body {
+div.message div.body {
+  padding: 1.5em 0 1.5em 0;
+}
+div.message div.body pre {
   background-color: transparent;
   border: none;
+  margin: 0;
   overflow: auto;
-  padding: 1.5em 0 1.5em 0;
+  padding: 0;
 }
 
 /* message view */
 
 div.message div.body blockquote {
   background-color: #dddddd;
-  border-bottom:1px solid #EEEEEE;
-  border-top:1px solid #EEEEEE;
+  border-bottom: 1px solid #EEEEEE;
+  border-top: 1px solid #EEEEEE;
   color: #222222;
   font-style: normal;
   margin: 0;
+  padding: 0 0.1em;
 }
   div.message div.body blockquote.closed {
     background-color: transparent;
@@ -181,6 +186,7 @@ div.message div.body blockquote {
     display: inline;
     font-style: italic;
     padding: 0 0.1em;
+    width: 30em;
   }
   div.message div.body blockquote.closed:hover {
     background-color: #dddddd;
