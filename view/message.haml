@@ -5,5 +5,20 @@
     %h6.date
       %a{ :href => "#m#{message.call_number}", :title => "Link to this message" }
         = message.date.strftime("%Y-%m-%d %H:%M:%S")
+    .parent
+      - if parent
+        %a{ :href => "#m#{parent.call_number}", :title => "Message this one responds to" } In Reply To
+      - unless children.empty?
+        Replies:
+        - children.each_with_index do |child, i|
+          - text = "<sub>#</sub>#{i + 1}"
+          - f = child.from
+          - if children.size <= 10
+            - text = f
+            - text = f.slice(0, f.index(' ')) if f.include? ' '
+          - if children.size <= 4
+            - text = f.slice(0, f.index(' <')) if f.include? ' <'
+          %a{ :href => "#m#{child.call_number}", :title => "#{h child.from} #{child.date.strftime("%m/%d %H:%M")}" }= text
+
   .body
     = '<pre class="body">' + preserve(message_body(message)) + '</pre>'

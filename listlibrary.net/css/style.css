@@ -154,6 +154,12 @@ div.message div.header {
     float: right;
     margin-top: -1.5em;
   }
+  div.message div.header div.parent {
+    background: #ddeeee;
+    display: none;
+    float: left;
+    width: 100%;
+  }
 div.message.missing p {
   background: #eeeedd;
   border-top: 0.1em solid #ddddcc;

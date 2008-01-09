@@ -1,6 +1,6 @@
 $(function() {
   // month view: toggleable thread_lists
-  $("li.thread").click(function() {
+  $("li.thread").click(function(){
     $(this).toggleClass('closed');
     $(this).find('ol.thread_list').toggleClass('closed');
   }).dblclick(function() {
@@ -41,4 +41,14 @@ $(function() {
     $(location.hash).ScrollTo(0);
     $(location.hash).parent().find('blockquote.closed').each(function(){ $(this).click(); });
   }
+
+  // thread view: hover over thread for parent/child links
+  $("div.message").hover(
+    function(){
+      $(this).find("div.parent").show();
+    },
+    function(){
+      $(this).find("div.parent").hide();
+    }
+  );
 });

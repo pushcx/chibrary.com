@@ -108,7 +108,11 @@ class View
       View::render(:partial => 'message_no_archive')
     else
       # Load the full message from s3 to get body and etc.
-      View::render(:partial => 'message', :locals => { :message => Message.new(c.message.key.to_s.gsub('+',' ')) })
+      View::render(:partial => 'message', :locals => {
+        :message => Message.new(c.message.key.to_s.gsub('+',' ')),
+        :parent => c.root? ? nil : c.parent.message,
+        :children => c.children.sort.collect { |c| c.message unless c.empty? }.compact,
+      })
     end
   end
 
