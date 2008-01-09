@@ -57,11 +57,11 @@ class ViewTest < Test::Unit::TestCase
 
   def test_container_partial
     mock_message = mock('message', :no_archive => false, :key => 'key' )
-    used_container = mock("used container", :empty? => false)
+    used_container = mock("used container", :empty? => false, :root? => true, :children => [])
     used_container.expects(:message).returns(mock_message).times(2)
     mock_created_message = mock("created message")
     Message.expects(:new).returns(mock_created_message)
-    View.expects(:render).with(:partial => 'message', :locals => { :message => mock_created_message })
+    View.expects(:render).with(:partial => 'message', :locals => { :message => mock_created_message, :parent => nil, :children => [] })
     View::container_partial(used_container)
 
     empty_container = mock(:empty? => true)
