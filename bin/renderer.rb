@@ -14,6 +14,7 @@ require 'tidy'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
+require 'log'
 require 'remote_connection'
 require 'time_'
 
@@ -281,7 +282,7 @@ class Renderer
 
     while job = get_job
       slug, year, month, call_number = job.key.split('/')[1..-1]
-      $stdout.puts [slug, year, month, call_number].compact.join('/')
+      Log << [slug, year, month, call_number].compact.join('/')
       job.delete
       render_static && next if slug == '_static'
 
@@ -303,6 +304,7 @@ class Renderer
 end
 
 if __FILE__ == $0
+  Log << "bin/renderer: run starting"
   r = Renderer.new
   ARGV.each do |job|
     r.stop_on_empty = true
@@ -310,4 +312,5 @@ if __FILE__ == $0
     r.jobs << OpenStruct.new(:key => "render_queue/#{job}", :delete => nil)
   end
   r.run
+  Log << "bin/renderer: done"
 end

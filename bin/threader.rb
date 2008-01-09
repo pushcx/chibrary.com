@@ -95,8 +95,8 @@ class Threader
 end
 
 if __FILE__ == $0
-  t = Threader.new
   Log << "bin/threader: run starting"
+  t = Threader.new
   ARGV.each do |job|
     t.stop_on_empty = true
     AWS::S3::S3Object.delete("thread_queue/#{job}", 'listlibrary_cachedhash')
