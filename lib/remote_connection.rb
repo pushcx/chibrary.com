@@ -36,7 +36,7 @@ class RemoteConnection
       @sftp.fsetstat(handle, :permissions => 0644)
     end
     command("/bin/mkdir -p /home/listlibrary/listlibrary.net/#{path}")
-    command("/bin/mv /home/listlibrary/tmp/#{tmpname} /home/listlibrary/listlibrary.net/#{path}/#{filename}")
+    command("/bin/mv /home/listlibrary/#{tmpname} /home/listlibrary/listlibrary.net/#{path}/#{filename}")
   end
 
 end
