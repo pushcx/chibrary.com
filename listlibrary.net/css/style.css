@@ -1,24 +1,7 @@
-/* layout */
+/* typography */
 
-#thread-side-ad {
-  left: 25px;
-  position: fixed;
-  top: 65px;
-}
-div.previous_next {
-  height: 18px;
-  margin-bottom: 18px;
-}
-  div.previous_next a.none {
-    font-style: italic;
-  }
-  div.previous_next div.previous {
-    float: left;
-  }
-  div.previous_next div.next {
-    float: right;
-    text-align: right;
-  }
+
+/* common layout */
 #footer h4 {
   float: left;
   margin-right: 1em;
@@ -100,6 +83,22 @@ ol.threads {
       display: none;
     }
 
+/* month view and thread view */
+div.previous_next {
+  height: 18px;
+  margin-bottom: 18px;
+}
+  div.previous_next a.none {
+    font-style: italic;
+  }
+  div.previous_next div.previous {
+    float: left;
+  }
+  div.previous_next div.next {
+    float: right;
+    text-align: right;
+  }
+
 /* thread list */
 
 ol.thread_list {
@@ -175,7 +174,7 @@ div.message div.body pre {
   padding: 0;
 }
 
-/* message view */
+/* message */
 
 div.message div.body blockquote {
   background-color: #dddddd;
