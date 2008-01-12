@@ -100,16 +100,23 @@ $(function() {
         window.location = "http://listlibrary.net" + p.attr("href");
       break;
     case 113: // q, toggle quotes in message
-      var b = current_message().find("div.body blockquote:first");
+      var current = current_message();
+      if (!current)
+        current = $("div.message:first");
+
+      var b = current.find("div.body blockquote:first");
       if (b.size() == 1 && b.is('.closed'))
-        current_message().find("div.body blockquote.closed").click();
+        current.find("div.body blockquote.closed").click();
       else
-        current_message().find("div.body blockquote:not(.closed)").click();
+        current.find("div.body blockquote:not(.closed)").click();
       break;
     case 81:  // Q, toggle all quotes
       var current = current_message();
-      var b = current.find("div.body blockquote:first");
-      if (b.size() == 1 && b.is('.closed'))
+      if (current)
+        var b = current.find("div.body blockquote:first");
+      else
+        var b = $("div.body blockquote:first");
+      if (b && b.size() == 1 && b.is('.closed'))
         $("div.body blockquote.closed").click();
       else
         $("div.body blockquote:not(.closed)").click();
