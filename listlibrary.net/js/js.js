@@ -128,4 +128,13 @@ $(function() {
     }
     return false;
   });
+
+  // thread view: ajaxify the flag links
+  $("div.message div.header div.flag").css("display", "block").find("a").click(function(){
+    console.log($(this).attr("href"));
+    $(this).css("display", "none");
+    $.get($(this).attr("href"));
+    $(this).after("Thanks");
+    return false;
+  });
 });

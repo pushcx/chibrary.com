@@ -142,7 +142,8 @@ div.message div.header {
     float: left;
     width: 100%;
   }
-    div.message div.header div.more a.flag {
+    div.message div.header div.more div.flag {
+      display: none;
       font-size: 10px;
       float: right;
     }

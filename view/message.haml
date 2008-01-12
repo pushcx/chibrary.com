@@ -6,7 +6,8 @@
       %a{ :href => "#m#{message.call_number}", :title => "Link to this message" }
         = message.date.strftime("%Y-%m-%d %H:%M:%S")
     .more
-      %a{ :href => "http://dynamic.listlibrary.net/flag?list=#{message.slug}&amp;year=#{message.date.year}&amp;month=#{message.date.month}&amp;message=#{message.call_number}", :title => "Flag spam or misfiled mail", :class => "flag" } Flag
+      .flag
+        %a{ :href => "http://dynamic.listlibrary.net/flag?list=#{message.slug}&amp;year=#{message.date.year}&amp;month=#{message.date.month}&amp;message=#{message.call_number}", :title => "Flag spam or misfiled mail" } Flag
       - if parent
         %a{ :href => "#m#{parent.call_number}", :title => "Message this one responds to", :class => "in-reply-to" } In Reply To
       - unless children.empty?

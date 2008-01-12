@@ -1,21 +1,8 @@
 <?php
-$MYSQL_SERVER   = 'db.dynamic.listlibrary.net';
-$MYSQL_DATABASE = 'listlibrary';
-$MYSQL_USERNAME = 'listlibrary';
-$MYSQL_PASSWORD = 'rew0tqVgwpkyaviOwynp9ufycjghpr';
+require_once('db.php');
 
 $KEY = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb";
-
-if (get_magic_quotes_gpc()) {
-  foreach($_POST as $k => $v) {
-    $_POST[$k] = stripslashes($v);
-  }
-}
-
 if ($_POST['key'] != $KEY) die("unknown password");
-
-mysql_connect($MYSQL_SERVER, $MYSQL_USERNAME, $MYSQL_PASSWORD);
-mysql_select_db($MYSQL_DATABASE);
 
 $server  = (int) $_POST['server'];
 $pid     = (int) $_POST['pid'];
