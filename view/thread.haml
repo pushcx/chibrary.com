@@ -2,7 +2,19 @@
 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
 = render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
+
 = render :partial => 'thread_list', :locals => { :thread => thread }
+
+.ad
+  :plain
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3425662504305490";
+    //thread top 728x90
+    google_ad_slot = "3323202291";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    //--></script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
 .thread
   - @missing_count = 0
@@ -10,4 +22,16 @@
 
 %hr 
 = render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
+
+.ad
+  :plain
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3425662504305490";
+    //thread bottom 728x90
+    google_ad_slot = "8057217730";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    //--></script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+
 = render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
