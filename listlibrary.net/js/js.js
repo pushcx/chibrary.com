@@ -62,6 +62,7 @@ $(function() {
       return $(match);
   };
   $(document).keypress(function(e){
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
     switch(e.which) {
     case 106: // j, next message
       var current = current_message();
