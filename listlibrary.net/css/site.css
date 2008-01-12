@@ -154,7 +154,7 @@ div.message div.body pre {
   background-color: transparent;
   border: none;
   margin: 0;
-  overflow: auto;
+  overflow: visible;
   padding: 0;
 }
 
