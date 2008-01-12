@@ -135,13 +135,17 @@ div.message div.header {
     float: right;
     margin-top: -18px;
   }
-  div.message div.header div.parent {
+  div.message div.header div.more {
     background: #ddeeee;
     display: none;
     height: 18px;
     float: left;
     width: 100%;
   }
+    div.message div.header div.more a.flag {
+      font-size: 10px;
+      float: right;
+    }
 div.message.missing p {
   background: #eeeedd;
   border-top: 1px solid #ddddcc;

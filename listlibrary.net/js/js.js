@@ -44,8 +44,8 @@ $(function() {
 
   // thread view: hover over thread for parent/child links
   $("div.message").hover(
-    function(){ $(this).find("div.parent").show(); },
-    function(){ $(this).find("div.parent").hide(); }
+    function(){ $(this).find("div.more").show(); },
+    function(){ $(this).find("div.more").hide(); }
   );
 
   // thread view: keyboard shortcuts
