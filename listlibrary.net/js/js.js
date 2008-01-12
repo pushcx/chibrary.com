@@ -65,28 +65,35 @@ $(function() {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     switch(e.which) {
     case 106: // j, next message
+      $("div.more").hide(); 
       var current = current_message();
       if (current)
         var next = current.next();
       else
         var next = $("div.message:first");
+      next.find("div.more").show();
       if (next.size() == 1)
         window.scrollTo(0, next[0].offsetTop);
       break;
     case 107: // k, previous message
+      $("div.more").hide(); 
       var current = current_message();
       if (current)
         var prev = current_message().prev();
       if (!current || prev.size() == 0)
         var prev = $("h1.subject");
+      prev.find("div.more").show();
       window.scrollTo(0, prev[0].offsetTop);
       break;
     case 105: // i, in-reply-to
+      $("div.more").hide(); 
       var current = current_message();
       if (current) {
         var a = current.find("a.in-reply-to")
-        if (a.size() == 1)
-          window.scrollTo(0, $(a.attr("href"))[0].offsetTop);
+        if (a.size() != 1)
+          break;
+        $(a.attr("href")).parent().find("div.more").show();
+        window.scrollTo(0, $(a.attr("href"))[0].offsetTop);
       }
       break;
     case 110: // n, next thread
