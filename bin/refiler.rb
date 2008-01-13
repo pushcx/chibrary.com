@@ -15,7 +15,7 @@ class Refiler < Filer
   def call_number ; nil ; end
 
   def acquire
-    AWS::S3::Bucket.keylist('listlibrary_archive', 'list/').each { |key| yield key }
+    AWS::S3::Bucket.keylist('listlibrary_archive', 'list/').each { |key| yield key, nil }
   end
 
 end

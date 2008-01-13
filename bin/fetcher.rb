@@ -32,7 +32,7 @@ class Fetcher < Filer
   def acquire
     @pop.each_mail do |mail|
       begin
-        yield mail.mail
+        yield mail.mail, nil
         mail.delete
         return if (@max -= 1) <= 0
       rescue SequenceExhausted

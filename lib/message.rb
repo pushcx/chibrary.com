@@ -91,7 +91,12 @@ class Message
     unless @overwrite == :do
       attempted = AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
       return self if attempted and @overwrite == :dont
-      raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
+      if @overwrite == :new
+        generate_message_id
+        load_key
+      else
+        raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
+      end
     end
     AWS::S3::S3Object.store(@key, message, "listlibrary_archive", {
       :content_type             => "text/plain",
@@ -134,6 +139,12 @@ class Message
     return nil if match.nil?
     # take first match so that lines we add_header'd take precedence
     match.captures.shift.sub(/(\s)+/, ' ').sub(/\n[ \t]+/m, " ").strip
+  end
+
+  def generate_message_id
+    @message_id = "#{call_number}@generated-message-id.listlibrary.net"
+    add_header "Message-Id: <#{@message_id}>"
+    load_key
   end
 
   # metadata code
@@ -181,8 +192,7 @@ class Message
     if message_id = get_header('Message-Id') and message_id =~ /^<?[a-zA-Z0-9!#$\%&'*+\-\.\/=?^_`{|}~]+@[a-zA-Z0-9_\-\.]+>?$/ and message_id.length < 120
       @message_id = /^<?([^@]+@[^\>]+)>?/.match(message_id)[1].chomp
     else
-      @message_id = "#{call_number}@generated-message-id.listlibrary.net"
-      add_header "Message-Id: <#{@message_id}>"
+      generate_message_id
     end
   end
 

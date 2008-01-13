@@ -30,13 +30,13 @@ class FetcherTest < Test::Unit::TestCase
   def test_acquire
     f = Fetcher.new(0, 0)
     nil.expects(:each_mail).yields(mock(:mail => "Test message", :delete => true))
-    f.acquire { |mail| assert_equal 'Test message', mail }
+    f.acquire { |mail, overwrite| assert_equal 'Test message', mail }
   end
 
   def test_sequence_exhaustion
     f = Fetcher.new(0, 2 ** 20)
     nil.expects(:each_mail).yields(mock(:mail => "Test message"))
-    f.acquire { |mail| f.store mail }
+    f.acquire { |mail, overwrite| f.store mail }
   end
 
   def test_source

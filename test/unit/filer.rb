@@ -66,10 +66,7 @@ class FilerTest < Test::Unit::TestCase
     assert_equal({}, f.mailing_lists)
   end
 
-  class TestRunFiler < Filer
-    def store message ; @sequence += 1 ; end
-  end
-  def test_run
+  def test_run_empty
     # no messages
     f = Filer.new(0, 0)
     f.expects(:setup)
@@ -78,10 +75,15 @@ class FilerTest < Test::Unit::TestCase
     f.expects(:teardown)
     f.sequences.expects(:[]=).with("0/#{Process.pid}", 0)
     f.run
+  end
 
+  class TestRunFiler < Filer
+    def store message, overwrite ; @sequence += 1 ; end
+  end
+  def test_run
     f = TestRunFiler.new(0, 0)
     f.expects(:setup)
-    f.expects(:acquire).yields("message")
+    f.expects(:acquire).yields("message", nil)
     f.expects(:queue_threader)
     f.expects(:teardown)
     f.sequences.expects(:[]=).with("0/#{Process.pid}", 1)
@@ -106,8 +108,8 @@ class FilerTest < Test::Unit::TestCase
     # and also immediately after the last message safely read
     f = Filer.new(0, (2 ** 20))
     f.expects(:setup)
-    f.expects(:acquire).yields(:message)
-    f.expects(:store).with(:message).raises(SequenceExhausted, "sequence exhausted")
+    f.expects(:acquire).yields(:message, nil)
+    f.expects(:store).with(:message, nil).raises(SequenceExhausted, "sequence exhausted")
     f.sequences.expects(:[]=).with("0/#{Process.pid}", 2 ** 20)
     assert_raises SequenceExhausted do
       f.run

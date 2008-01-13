@@ -58,12 +58,13 @@ class Filer
   def release  ; end
   def source   ; 'filer' ; end
 
-  def store mail
+  def store mail, overwrite=nil
     return false if mail.length >= (100 * 1024)
 
     @message_count += 1
     begin
       message = Message.new mail, source, call_number
+      message.overwrite = overwrite if overwrite
       message.store
       unless message.slug.match /^_/
         @mailing_lists[message.slug] ||= []
@@ -75,7 +76,6 @@ class Filer
     rescue Exception => e
       begin
         $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
-        $stdout.puts e.backtrace
         error_info = {
           :exception => e.class.to_s,
           :message   => e.message,
@@ -110,10 +110,9 @@ class Filer
     # no error-catching for setup; if it fails we'll just stop
     setup
     begin
-      acquire { |m| store m }
+      acquire { |message, overwrite| store message, overwrite }
     ensure
-      $stdout.puts "logging sequence end"
-      @sequences["#{@server}/#{Process.pid}"] = sequence
+      @sequences["#{@server}/#{Process.pid}"] = @sequence
       queue_threader
       teardown
     end
