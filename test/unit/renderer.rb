@@ -14,10 +14,10 @@ class ViewTest < Test::Unit::TestCase
   end
 
   def test_message_body
-    View.expects(:remove_footer)
-    View.expects(:h)
-    View.expects(:compress_quotes)
-    View.message_body(stub_everything)
+    View.expects(:remove_footer).returns("body text")
+    View.expects(:h).returns("body text")
+    View.expects(:compress_quotes).returns("body text")
+    View.message_body(stub(:slug => 'example', :body => "body text"))
   end
 
   def test_remove_footer
