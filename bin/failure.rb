@@ -66,7 +66,7 @@ class Failure < Filer
           delete_error key
           break
         when 'g'
-          File.open(key, 'w') { |f| f.puts error.to_yaml }
+          File.open(key.split('/').last, 'w') { |f| f.puts error.to_yaml }
         when 'n'
           break
         else # 'f'
