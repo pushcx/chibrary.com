@@ -75,6 +75,7 @@ class Filer
     rescue Exception => e
       begin
         $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
+        $stdout.puts e.backtrace
         error_info = {
           :exception => e.class.to_s,
           :message   => e.message,
@@ -102,6 +103,7 @@ class Filer
       release
       @sequence += 1
     end
+    true
   end
 
   def run
@@ -110,6 +112,7 @@ class Filer
     begin
       acquire { |m| store m }
     ensure
+      $stdout.puts "logging sequence end"
       @sequences["#{@server}/#{Process.pid}"] = sequence
       queue_threader
       teardown
