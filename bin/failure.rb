@@ -8,6 +8,7 @@ require 'filer'
 class Failure < Filer
   def setup
     @errors = AWS::S3::Bucket.keylist("listlibrary_archive", "filer_failure/")
+    @ignores = []
     puts "#{@errors.size} errors"
   end
 
@@ -18,6 +19,11 @@ class Failure < Filer
   def acquire
     @errors.each do |key|
       error = AWS::S3::S3Object.load_yaml(key)
+
+      if @ignores.include? error[:message]
+        delete_error key
+        next
+      end
 
       if error[:exception] == 'RuntimeError' and error[:message] =~ /^overwrite attempted/
         print "#{key} is an overwrite, "
@@ -41,7 +47,7 @@ class Failure < Filer
           #`xterm -e vimdiff #{c_tf.path} #{a_tf.path}`
           #c_tf.unlink
           #a_tf.unlink
-          yield attempt.message, :new
+          yield attempt.message, :dont
           puts "filed as new message"
         else
           puts "deleted the dupe"
@@ -56,13 +62,17 @@ class Failure < Filer
       while 1
         puts
         puts key
-        print "File/Backtrace/Mail/Delete/Next/Get: "
+        print "File/Backtrace/Mail/Delete/Ignore/Next/Get: "
         case gets.chomp.downcase[0..0]
         when 'b'
           puts error[:backtrace]
         when 'm'
           puts error[:mail]
         when 'd'
+          delete_error key
+          break
+        when 'i'
+          @ignores << error[:message]
           delete_error key
           break
         when 'g'
