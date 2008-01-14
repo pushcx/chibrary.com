@@ -32,10 +32,12 @@ class Fetcher < Filer
   def acquire
     @pop.each_mail do |mail|
       begin
+        raise Net::POPError if mail.mail.nil? or mail.mail == ''
         yield mail.mail, :do
         mail.delete
         return if (@max -= 1) <= 0
       rescue Net::POPError
+        # just rebuild the connection and soldier on
         teardown rescue nil
         setup
       rescue SequenceExhausted

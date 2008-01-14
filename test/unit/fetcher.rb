@@ -35,6 +35,27 @@ class FetcherTest < Test::Unit::TestCase
     f.acquire { |mail, overwrite| assert_equal 'Test message', mail }
   end
 
+  def test_empty_mail # this is a POP error Dreamhost likes to pull
+    f = Fetcher.new(0, 0)
+    mail = mock("mail")
+    mail.expects(:mail).returns(nil)
+    nil.expects(:each_mail).yields(mail)
+    # expect it to be treated as a POP error
+    f.expects(:teardown)
+    f.expects(:setup)
+    f.acquire { |mail, overwrite| }
+  end
+
+  def test_pop_error
+    f = Fetcher.new(0, 0)
+    mail = mock("mail")
+    mail.expects(:mail).raises(Net::POPError, "Something went terribly wrong")
+    nil.expects(:each_mail).yields(mail)
+    f.expects(:teardown)
+    f.expects(:setup)
+    f.acquire { |mail, overwrite| }
+  end
+
   def test_sequence_exhaustion
     f = Fetcher.new(0, 2 ** 20)
     mail = mock("mail")
