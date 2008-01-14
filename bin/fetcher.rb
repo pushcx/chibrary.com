@@ -2,8 +2,8 @@
 
 require 'net/pop'
 
-MAX_MAILS = 1000000
-PER_CONNECTION = 50
+MAX_MAILS = 1_000_000
+PER_CONNECTION = 500
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
@@ -32,9 +32,12 @@ class Fetcher < Filer
   def acquire
     @pop.each_mail do |mail|
       begin
-        yield mail.mail, nil
+        yield mail.mail, :do
         mail.delete
         return if (@max -= 1) <= 0
+      rescue Net::POPError
+        teardown rescue nil
+        setup
       rescue SequenceExhausted
         return
       end
@@ -51,7 +54,7 @@ if __FILE__ == $0
   max = (ARGV.shift or MAX_MAILS).to_i
   Log << "bin/fetcher: up to #{max} messages"
   while max > 0
-    break if Fetcher.new.run < (PER_CONNECTION - 1)
+    break if Fetcher.new.run < 10
     sleep 1
     max -= PER_CONNECTION
   end
