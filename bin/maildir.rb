@@ -5,10 +5,15 @@ require 'filer'
 require 'log'
 
 class Maildir < Filer
-  def initialize server=nil, sequence=nil, maildir=nil
-    raise "Usage: bin/maildir.rb path/to/maildir" if maildir.nil?
+  def initialize server=nil, sequence=nil, maildir=nil, slug=nil
+    raise "Usage: bin/maildir.rb path/to/maildir [slug]" if maildir.nil?
     @maildir = maildir
+    @slug = slug
     super server, sequence
+  end
+
+  def slug
+    @slug
   end
 
   def source
@@ -34,4 +39,4 @@ class Maildir < Filer
   end
 end
 
-Maildir.new(nil, nil, ARGV.shift).run if __FILE__ == $0
+Maildir.new(nil, nil, ARGV.shift, ARGV.shift).run if __FILE__ == $0

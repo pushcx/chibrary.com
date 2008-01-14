@@ -65,6 +65,7 @@ class Filer
     begin
       message = Message.new mail, source, call_number
       message.overwrite = overwrite if overwrite
+      message.slug = slug unless slug.nil?
       message.store
       unless message.slug.match /^_/
         @mailing_lists[message.slug] ||= []

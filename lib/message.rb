@@ -87,6 +87,11 @@ class Message
     return true
   end
 
+  def slug= s
+    @slug = s
+    load_key
+  end
+
   def store
     unless @overwrite == :do
       attempted = AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
