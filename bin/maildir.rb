@@ -26,7 +26,7 @@ class Maildir < Filer
         # another scraper moved it already
         next
       end
-      yield IO.read(File.join(tmp, filename))
+      yield IO.read(File.join(tmp, filename)), :dont
       File.rename(File.join(tmp, filename), File.join(cur, filename))
     end
   end
