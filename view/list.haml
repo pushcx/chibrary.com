@@ -10,13 +10,13 @@
       %a{ :href => list['homepage'] }= list['homepage']
 
 
-  %table
+  %table{ :summary => "Links to monthly archives of this list" }
     %thead
       %tr.months
         %td.upper_left
         - 1.upto(12) do |i|
           %td= i
-    %tbody{ :summary => "Links to monthly archives of this list" }
+    %tbody
       - years.to_a.each do |year, months|
         %tr
           %td.year= year
