@@ -57,6 +57,7 @@ class Filer
   # hook if anything needs to be done to clean up after store
   def release  ; end
   def source   ; 'filer' ; end
+  def slug     ; nil ; end
 
   def store mail, overwrite=nil
     return false if mail.length >= (100 * 1024)
