@@ -12,7 +12,7 @@ require 'log'
 
 class Fetcher < Filer
   def initialize server=nil, sequence=nil, max=PER_CONNECTION
-    @max = max.to_i
+    @max = [max.to_i, PER_CONNECTION].min
     super server, sequence
   end
 
@@ -54,7 +54,7 @@ if __FILE__ == $0
   max = (ARGV.shift or MAX_MAILS).to_i
   Log << "bin/fetcher: up to #{max} messages"
   while max > 0
-    break if Fetcher.new.run < 10
+    break if Fetcher.new(nil, nil, max).run < 10
     sleep 1
     max -= PER_CONNECTION
   end
