@@ -30,20 +30,20 @@ class Threader
       job.delete
       Log << "#{slug}/#{year}/#{month}"
 
-      message_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message/#{year}/#{month}/") or [])
+      message_list_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message_list/#{year}/#{month}/") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
-      next if message_cache == message_list
+      next if message_list_cache == message_list
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
-      removed = (message_cache - message_list)
+      removed = (message_list_cache - message_list)
       if !removed.empty?
         threadset = ThreadSet.new
         added = message_list
       else
         threadset = ThreadSet.month(slug, year, month)
-        added = message_list - message_cache
-        Log << "#{message_list.size} messages, #{message_cache.size} in cache, adding #{added.size}"
+        added = message_list - message_list_cache
+        Log << "#{message_list.size} messages, #{message_list_cache.size} in cache, adding #{added.size}"
       end
 
       # add messages
@@ -61,7 +61,7 @@ class Threader
     render_queue = CachedHash.new("render_queue")
     render_month = CachedHash.new("render/month/#{slug}")
     AWS::S3::S3Object.store(
-      "list/#{slug}/message/#{year}/#{month}",
+      "list/#{slug}/message_list/#{year}/#{month}",
       message_list.sort.to_yaml,
       'listlibrary_archive',
       :content_type => 'text/plain'

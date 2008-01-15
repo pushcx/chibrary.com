@@ -82,7 +82,7 @@ class ThreaderTest < Test::Unit::TestCase
     message_list = ['1@example.com']
     threadset = mock
     threadset.expects(:collect).returns([])
-    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
     CachedHash.expects(:new).with('render_queue').returns(mock)
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
@@ -94,7 +94,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock("thread")
     thread.expects(:to_yaml).returns("yaml")
@@ -116,7 +116,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
+    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock
     thread.expects(:count).returns(1)
