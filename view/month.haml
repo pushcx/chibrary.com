@@ -18,7 +18,7 @@
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
 %ol.threads
-  - threadset.threads.each do |thread|
+  - threadset.each do |thread|
     %li.thread
       %a{ :id => "t#{thread.call_number}", :name => "t#{thread.call_number}" }/
       .header

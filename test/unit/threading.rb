@@ -253,8 +253,10 @@ class ThreadSetTest < ThreadingTest
     ts = mock
     ThreadSet.expects(:new).returns(ts)
     AWS::S3::Bucket.expects(:keylist).returns(%w{a b c d})
-    AWS::S3::S3Object.expects(:load_yaml).times(4).returns(['message'])
-    ts.expects(:<<).times(4)
+    message = mock("message")
+    message.expects(:message_id).times(4).returns("id@example.com")
+    AWS::S3::S3Object.expects(:load_yaml).times(4).returns(message)
+    ts.expects(:containers).times(4).returns(stub_everything)
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end
 

@@ -167,14 +167,13 @@ end
 class ThreadSet
   include Enumerable
 
-  attr_reader :containers
+  attr_accessor :containers
 
   def self.month slug, year, month
     threadset = ThreadSet.new
     AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
-      AWS::S3::S3Object.load_yaml(key).each do |container|
-        threadset << container
-      end
+      thread = AWS::S3::S3Object.load_yaml(key)
+      threadset.containers[thread.message_id] = thread
     end
     threadset
   end
