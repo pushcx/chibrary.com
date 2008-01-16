@@ -45,8 +45,8 @@ class Queue
     @stop_on_empty = false
   end
 
-  def add type, attributes
-    job = Job.new type, attributes
+  def add attributes
+    job = Job.new @type, attributes
     @queue[job.key] = job.to_yaml
   end
 

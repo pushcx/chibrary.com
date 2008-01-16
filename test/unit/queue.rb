@@ -19,3 +19,26 @@ class JobTest < Test::Unit::TestCase
     assert_equal 'render_month/example/2008/01', job.key
   end
 end
+
+class QueueTest < Test::Unit::TestCase
+  def test_new_bad_type
+    assert_raises(RuntimeError, /unknown job type/) do
+      Queue.new :foo
+    end
+  end
+
+  def test_new
+    CachedHash.expects(:new)
+    queue = Queue.new :render_list
+    assert_equal :render_list, queue.type
+  end
+
+  def test_add
+    CachedHash.expects(:new).returns(mock("queue", :[]= => nil))
+    queue = Queue.new :render_list
+    queue.add :slug => 'example'
+  end
+
+  def test_next
+  end
+end
