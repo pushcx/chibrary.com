@@ -33,6 +33,10 @@ class Job
   def key
     "#{@type.to_s}/" + JOB_TYPES[@type][:key].gsub(/:(\w+)/) { @attributes[$1.to_sym] }
   end
+
+  def delete
+    AWS::S3::S3Object.delete("queue/#{key}", "listlibrary_archive")
+  end
 end
 
 class Queue
@@ -42,7 +46,6 @@ class Queue
     raise "unknown job type #{type}" unless JOB_TYPES.has_key? type
     @type = type
     @queue = CachedHash.new("queue/#{type}")
-    @stop_on_empty = false
   end
 
   def add attributes
@@ -51,6 +54,8 @@ class Queue
   end
 
   def next
-    # generic worker?
+    object = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => @queue.prefix, :limit => 1).first
+    return nil if object.nil?
+    job = YAML::load(object.value)
   end
 end

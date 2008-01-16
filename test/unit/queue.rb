@@ -40,5 +40,17 @@ class QueueTest < Test::Unit::TestCase
   end
 
   def test_next
+    CachedHash.expects(:new).returns(mock("queue", :prefix => "prefix"))
+    queue = Queue.new :render_list
+    AWS::S3::Bucket.expects(:objects).returns([mock("object", :value => "yaml")])
+    YAML::expects(:load).with("yaml").returns("job")
+    assert_equal "job", queue.next
+  end
+
+  def test_next_none
+    CachedHash.expects(:new).returns(mock("queue", :prefix => "prefix"))
+    queue = Queue.new :render_list
+    AWS::S3::Bucket.expects(:objects).returns([])
+    assert_equal nil, queue.next
   end
 end
