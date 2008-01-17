@@ -6,34 +6,33 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'list'
 require 'log'
+require 'queue'
 require 'threading'
 
 class Threader
   attr_accessor :jobs, :stop_on_empty
 
   def initialize
-    @jobs = []
-    @stop_on_empty = false
+    @thread_q = Queue.new :thread
   end
 
   def get_job
-    if @jobs.empty?
-      exit if @stop_on_empty
-      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'thread_queue/')
-    end
-    @jobs.pop
+    @thread_q.next
   end
 
   def run
+    Log << "Threader: run"
     while job = get_job
-      slug, year, month = job.key.split('/')[1..-1]
-      job.delete
-      Log << "#{slug}/#{year}/#{month}"
+      Log << job.key
+      slug, year, month = job[:slug], job[:year], job[:month]
 
       message_list_cache = (AWS::S3::S3Object.load_yaml("list/#{slug}/message_list/#{year}/#{month}/") or [])
       message_list  = AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/message/#{year}/#{month}/").sort
 
-      next if message_list_cache == message_list
+      if message_list_cache == message_list
+        Log << "nothing to do"
+        next
+      end
 
       # if any messages were removed, rebuild for saftey over the speed of find and remove
       removed = (message_list_cache - message_list)
@@ -54,11 +53,13 @@ class Threader
       end
 
       cache_work(slug, year, month, message_list, threadset) unless removed.empty? and added.empty?
+      queue_renderer(slug, year, month, threadset) unless removed.empty? and added.empty?
+      Log << "job done"
     end
+  Log << "Threader: done"
   end
 
-  def cache_work(slug, year, month, message_list, threadset)
-    render_queue = CachedHash.new("render_queue")
+  def cache_work slug, year, month, message_list, threadset
     render_month = CachedHash.new("render/month/#{slug}")
     AWS::S3::S3Object.store(
       "list/#{slug}/message_list/#{year}/#{month}",
@@ -79,7 +80,6 @@ class Threader
 
       next if cached
 
-      render_queue["#{slug}/#{name}"] = ''
       AWS::S3::S3Object.store(
         "list/#{slug}/thread/#{name}",
         yaml,
@@ -92,16 +92,13 @@ class Threader
 
     render_month["#{year}/#{month}"] = threads.to_yaml
   end
+
+  def queue_renderer slug, year, month, threadset
+    thread_q = Queue.new :render_thread
+    threadset.each { |thread| thread_q.add :slug => slug, :year => year, :month => month, :call_number => thread.call_number }
+    Queue.new(:render_month).add :slug => slug, :year => year, :month => month
+    Queue.new(:render_list).add :slug => slug
+  end
 end
 
-if __FILE__ == $0
-  Log << "bin/threader: run starting"
-  t = Threader.new
-  ARGV.each do |job|
-    t.stop_on_empty = true
-    AWS::S3::S3Object.delete("thread_queue/#{job}", 'listlibrary_cachedhash')
-    t.jobs << OpenStruct.new(:key => "thread_queue/#{job}", :delete => nil)
-  end
-  t.run
-  Log << "bin/threader: done"
-end
+Threader.new.run if __FILE__ == $0

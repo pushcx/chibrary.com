@@ -6,6 +6,7 @@ require 'ostruct'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'aws'
 require 'log'
+require 'queue'
 require 'remote_connection'
 
 class Renderer
@@ -15,7 +16,7 @@ class Renderer
     @thread_q = Queue.new :render_thread
     @month_q  = Queue.new :render_month
     @list_q   = Queue.new :render_list
-    @static_q = Queue.new :static_list
+    @static_q = Queue.new :render_static
     @rc = RemoteConnection.new
   end
 
@@ -163,6 +164,7 @@ class Renderer
   end
 
   def run
+    Log << "Renderer: run"
     while job = get_job
       Log << "#{job.type} #{job.key}"
       case job.type
@@ -181,13 +183,10 @@ class Renderer
       else
         raise "Unknown job type: #{job.type}"
       end
-      Log << "done"
+      Log << "job done"
     end
+    Log << "Renderer: done"
   end
 end
 
-if __FILE__ == $0
-  Log << "bin/renderer: run starting"
-  Renderer.new.run
-  Log << "bin/renderer: done"
-end
+Renderer.new.run if __FILE__ == $0

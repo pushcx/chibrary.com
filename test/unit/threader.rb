@@ -7,15 +7,18 @@ class ThreaderTest < Test::Unit::TestCase
 
   def setup
     $stdout.expects(:puts).at_least(0)
+    @queue = mock("queue")
+    Queue.expects(:new).returns(@queue)
   end
 
   def test_get_job
     t = Threader.new
 
-    AWS::S3::Bucket.expects(:objects).returns(['thread_queue/example_list/2008/08'])
-    assert_equal 'thread_queue/example_list/2008/08', t.get_job
+    job = mock("job")
+    @queue.expects(:next).returns(job)
+    assert_equal job, t.get_job
 
-    AWS::S3::Bucket.expects(:objects).returns([])
+    @queue.expects(:next).returns(nil)
     assert_equal nil, t.get_job
   end
 
@@ -40,6 +43,7 @@ class ThreaderTest < Test::Unit::TestCase
     ThreadSet.expects(:new).returns(ts)
 
     t.expects(:cache_work).with('example', '2008', '08', [], ts)
+    t.expects(:queue_renderer).with('example', '2008', '08', ts)
     t.run
   end
 
@@ -54,6 +58,7 @@ class ThreaderTest < Test::Unit::TestCase
     ThreadSet.expects(:month).returns(ts)
 
     t.expects(:cache_work)
+    t.expects(:queue_renderer)
     t.run
   end
 
@@ -61,17 +66,15 @@ class ThreaderTest < Test::Unit::TestCase
     t = Threader.new
 
     # two empty jobs
-    job1 = mock(:delete => nil)
-    job1.expects(:key).returns('thread_queue/example/2008/07').at_least_once
+    job1 = Job.new :thread, :slug => 'example', :year => '2008', :month => '07'
     AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/07/').returns([])
 
-    job2 = mock(:delete => nil)
-    job2.expects(:key).returns('thread_queue/example/2008/08').at_least_once
+    job2 = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
     AWS::S3::S3Object.expects(:load_yaml).returns([])
     AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
 
-    t.expects(:get_job).returns(job1, job2, nil).times(3)
+    t.expects(:get_job).times(3).returns(job1, job2, nil)
     t.run
   end
 
@@ -83,7 +86,6 @@ class ThreaderTest < Test::Unit::TestCase
     threadset = mock
     threadset.expects(:collect).returns([])
     AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
-    CachedHash.expects(:new).with('render_queue').returns(mock)
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
     t.cache_work slug, year, month, message_list, threadset
@@ -105,7 +107,6 @@ class ThreaderTest < Test::Unit::TestCase
     o = mock("object")
     o.expects(:about).returns({ 'content-length' => "yaml".length })
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
-    CachedHash.expects(:new).with('render_queue').returns(mock("queue"))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
     t.cache_work slug, year, month, message_list, threadset
@@ -126,18 +127,26 @@ class ThreaderTest < Test::Unit::TestCase
     threadset = mock
     threadset.expects(:collect).yields(thread)
     AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
-    CachedHash.expects(:new).with('render_queue').returns(stub_everything('render_queue'))
     CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
     AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
 
     t.cache_work slug, year, month, message_list, threadset
   end
 
+  def test_queue_renderer
+    threadset = mock("threadset")
+    threadset.expects(:each).yields(mock(:call_number => '00000001'))
+    Queue.expects(:new).with(:render_thread).returns(mock("thread_q", :add => nil))
+    Queue.expects(:new).with(:render_month).returns(mock("month_q", :add => nil))
+    Queue.expects(:new).with(:render_list).returns(mock("list_q", :add => nil))
+
+    Threader.new.queue_renderer "example", "2008", "08", threadset
+  end
+
   private
   def new_threader
     t = Threader.new
-    job = mock(:delete => nil)
-    job.expects(:key).returns('thread_queue/example/2008/08').at_least_once
+    job = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
     t.expects(:get_job).returns(job, nil).at_least_once
     t
   end
