@@ -1,10 +1,5 @@
 #!/usr/bin/ruby
 
-# There are three kinds of jobs in the render queue:
-# render_queue/slug                        - render the list description
-# render_queue/slug/year/month             - render monthly thread list
-# render_queue/slug/year/month/call_number - render/delete a thread
-
 require 'rubygems'
 require 'ostruct'
 
@@ -17,8 +12,10 @@ class Renderer
   attr_accessor :jobs, :stop_on_empty
 
   def initialize
-    @jobs = []
-    @stop_on_empty = false
+    @thread_q = Queue.new :render_thread
+    @month_q  = Queue.new :render_month
+    @list_q   = Queue.new :render_list
+    @static_q = Queue.new :static_list
     @rc = RemoteConnection.new
   end
 
@@ -162,50 +159,35 @@ class Renderer
   end
 
   def get_job
-    if @jobs.empty?
-      if @stop_on_empty
-        @rc.close
-        exit
-      end
-      @jobs = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => 'render_queue/')
-    end
-    @jobs.pop
+    @thread_q.next or @month_q.next or @list_q.next or @static_q.next
   end
 
   def run
-    render_queue = CachedHash.new("render_queue")
-
     while job = get_job
-      slug, year, month, call_number = job.key.split('/')[1..-1]
-      Log << [slug, year, month, call_number].compact.join('/')
-      job.delete
-      render_static && next if slug == '_static'
-
-      if call_number # render/delete a thread
-        if AWS::S3::S3Object.exists? "list/#{slug}/thread/#{year}/#{month}/#{call_number}", "listlibrary_archive"
-          render_thread slug, year, month, call_number
+      Log << "#{job.type} #{job.key}"
+      case job.type
+      when :render_thread
+        if AWS::S3::S3Object.exists? "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}", "listlibrary_archive"
+          render_thread job[:slug], job[:year], job[:month], job[:call_number]
         else
-          delete_thread slug, year, month, call_number
+          delete_thread job[:slug], job[:year], job[:month], job[:call_number]
         end
-        render_queue["#{slug}/#{year}/#{month}"] = ''
-      elsif year and month # render monthly thread list
-        render_month slug, year, month
-        render_queue["#{slug}"] = ''
-      else # render list info page
-        render_list  slug
+      when :render_month
+        render_month job[:slug], job[:year], job[:month]
+      when :render_list
+        render_list job[:slug]
+      when :render_static
+        render_static
+      else
+        raise "Unknown job type: #{job.type}"
       end
+      Log << "done"
     end
   end
 end
 
 if __FILE__ == $0
   Log << "bin/renderer: run starting"
-  r = Renderer.new
-  ARGV.each do |job|
-    r.stop_on_empty = true
-    AWS::S3::S3Object.delete("render_queue/#{job}", 'listlibrary_cachedhash')
-    r.jobs << OpenStruct.new(:key => "render_queue/#{job}", :delete => nil)
-  end
-  r.run
+  Renderer.new.run
   Log << "bin/renderer: done"
 end

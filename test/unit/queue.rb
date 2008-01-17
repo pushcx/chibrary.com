@@ -14,8 +14,13 @@ class JobTest < Test::Unit::TestCase
     assert_equal 'example', job.attributes[:slug]
   end
 
+  def test_hash
+    job = Job.new :render_list, { :slug => 'example' }
+    assert_equal 'example', job[:slug]
+  end
+
   def test_key
-    job = Job.new :render_month, { :slug => 'example', :year => 2008, :month => '01' }
+    job = Job.new :render_month, { :slug => 'example', :year => '2008', :month => '01' }
     assert_equal 'render_month/example/2008/01', job.key
   end
 end
@@ -42,7 +47,7 @@ class QueueTest < Test::Unit::TestCase
   def test_next
     CachedHash.expects(:new).returns(mock("queue", :prefix => "prefix"))
     queue = Queue.new :render_list
-    AWS::S3::Bucket.expects(:objects).returns([mock("object", :value => "yaml")])
+    AWS::S3::Bucket.expects(:objects).returns([mock("object", :value => "yaml", :delete => true)])
     YAML::expects(:load).with("yaml").returns("job")
     assert_equal "job", queue.next
   end

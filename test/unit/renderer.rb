@@ -86,16 +86,20 @@ class RendererTest < Test::Unit::TestCase
     $stdout.expects(:puts).at_least(0)
     @rc = mock('remote connection')
     RemoteConnection.expects(:new).returns(@rc)
+    @queues = mock('queues')
+    Queue.expects(:new).times(4).returns(@queues)
   end
 
   def test_get_job
     r = Renderer.new
 
-    AWS::S3::Bucket.expects(:objects).returns(['render_queue/example_list/2008/08'])
-    assert_equal 'render_queue/example_list/2008/08', r.get_job
-
-    AWS::S3::Bucket.expects(:objects).returns([])
+    # empty queues
+    @queues.expects(:next).times(4)
     assert_equal nil, r.get_job
+
+    job = mock("job")
+    @queues.expects(:next).returns(job)
+    assert_equal job, r.get_job
   end
 
   def test_render_list
@@ -247,47 +251,40 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_run_empty
-    CachedHash.expects(:new).returns(mock)
     r = Renderer.new
     r.expects(:get_job).returns(nil)
     r.run
   end
 
   def test_run_list
-    CachedHash.expects(:new).returns(mock)
     r = Renderer.new
-    r.expects(:get_job).times(2).returns(mock(:key => "render_queue/example", :delete => nil), nil)
+    job = Job.new :render_list, :slug => "example"
+    r.expects(:get_job).times(2).returns(job, nil)
     r.expects(:render_list).with("example")
     r.run
   end
 
   def test_run_month
-    render_queue = mock
-    render_queue.expects(:[]=).with("example", '')
-    CachedHash.expects(:new).returns(render_queue)
     r = Renderer.new
-    r.expects(:get_job).times(2).returns(mock(:key => "render_queue/example/2007/08", :delete => nil), nil)
-    r.expects(:render_month).with("example", "2007", "08")
+    job = Job.new :render_month, :slug => "example", :year => "2008", :month => "01"
+    r.expects(:get_job).times(2).returns(job, nil)
+    r.expects(:render_month).with("example", "2008", "01")
     r.run
   end
 
   def test_run_thread_render
-    render_queue = mock
-    render_queue.expects(:[]=).with("example/2007/08", '')
-    CachedHash.expects(:new).returns(render_queue)
     r = Renderer.new
-    r.expects(:get_job).times(2).returns(mock(:key => "render_queue/example/2007/08/00000000", :delete => nil), nil)
+    job = Job.new :render_thread, :slug => "example", :year => "2007", :month => "08", :call_number => "00000000"
+    r.expects(:get_job).times(2).returns(job, nil)
     AWS::S3::S3Object.expects(:exists?).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(true)
     r.expects(:render_thread).with("example", "2007", "08", "00000000")
     r.run
   end
 
   def test_run_thread_delete
-    render_queue = mock
-    render_queue.expects(:[]=).with("example/2007/08", '')
-    CachedHash.expects(:new).returns(render_queue)
     r = Renderer.new
-    r.expects(:get_job).times(2).returns(mock(:key => "render_queue/example/2007/08/00000000", :delete => nil), nil)
+    job = Job.new :render_thread, :slug => "example", :year => "2007", :month => "08", :call_number => "00000000"
+    r.expects(:get_job).times(2).returns(job, nil)
     AWS::S3::S3Object.expects(:exists?).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(false)
     r.expects(:delete_thread).with("example", "2007", "08", "00000000")
     r.run

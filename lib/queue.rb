@@ -30,6 +30,8 @@ class Job
     @attributes = attributes
   end
 
+  def [] k ; @attributes[k] ; end
+
   def key
     "#{@type.to_s}/" + JOB_TYPES[@type][:key].gsub(/:(\w+)/) { @attributes[$1.to_sym] }
   end
@@ -57,5 +59,7 @@ class Queue
     object = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => @queue.prefix, :limit => 1).first
     return nil if object.nil?
     job = YAML::load(object.value)
+    object.delete
+    job
   end
 end
