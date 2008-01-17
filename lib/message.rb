@@ -74,10 +74,10 @@ class Message
 
     # from and subject are especially important
     m_counts = {}
-    (@subject.to_s * 2 + get_header('To').to_s * 2 + body).split(/\s+/).each { |word| m_counts[word] = m_counts.fetch(word, 0) + 1 if word.length > 6 }
+    (@subject.to_s * 2 + get_header('To').to_s * 2 + body.to_s).split(/\s+/).each { |word| m_counts[word] = m_counts.fetch(word, 0) + 1 if word.length > 6 }
     m_top_words = m_counts.sort_by { |word, count| count }.reverse[0..10]
     p_counts = {}
-    (parent.subject.to_s * 2 + parent.from.to_s * 2 + parent.body).split(/\s+/).each { |word| p_counts[word] = p_counts.fetch(word, 0) + 1 if word.length > 6 }
+    (parent.subject.to_s * 2 + parent.from.to_s * 2 + parent.body.to_s).split(/\s+/).each { |word| p_counts[word] = p_counts.fetch(word, 0) + 1 if word.length > 6 }
     p_top_words = p_counts.sort_by { |word, count| count }.reverse[0..20]
     similar = 0
     m_top_words.each do |word|
