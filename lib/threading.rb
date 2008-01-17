@@ -113,6 +113,21 @@ class Container
     effective_field :date or Time.now
   end
 
+  # persistance
+
+  def cache
+    slug = effective_field :slug
+    key = "list/#{slug}/thread/#{date.year}/%02d/#{call_number}" % date.month
+
+    yaml = self.to_yaml
+    begin
+      o = AWS::S3::S3Object.find(key, 'listlibrary_archive')
+      return if o.about["content-length"] == yaml.size
+    rescue Exception ; end
+
+    AWS::S3::S3Object.store(key, yaml, 'listlibrary_archive', :content_type => 'text/plain')
+  end
+
   # parenting methods
 
   # Break the parent -> child relationship pointing to this container.

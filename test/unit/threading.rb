@@ -133,6 +133,32 @@ class ContainerTest < ThreadingTest
     assert_equal 'Re: Re: Threaded Message Fixtures', c1.children.first.children.last.effective_field(:subject)
   end
 
+  def test_cache_uncached
+    c = container_tree
+    AWS::S3::S3Object.expects(:find).raises(AWS::S3::NoSuchKey)
+    AWS::S3::S3Object.expects(:store)
+    c.cache
+  end
+
+  def test_cache_same
+    c = container_tree
+    c.expects(:to_yaml).returns("yaml")
+    object = mock("object")
+    object.expects(:about).returns(mock("about", :[] => "yaml".size))
+    AWS::S3::S3Object.expects(:find).returns(object)
+    c.cache
+  end
+
+  def test_cache_different
+    c = container_tree
+    c.expects(:to_yaml).returns("yaml")
+    object = mock("object")
+    object.expects(:about).returns(mock("about", :[] => "old yaml"))
+    AWS::S3::S3Object.expects(:find).returns(object)
+    AWS::S3::S3Object.expects(:store)
+    c.cache
+  end
+
   def test_orphan
     c1 = Container.new Message.new(threaded_message(:root), 'test', '0000root')
     c2 = Container.new Message.new(threaded_message(:child), 'test', '000child')

@@ -34,6 +34,7 @@ class Renderer
 
   def render_list slug
     years = {}
+    raise "finish"
     AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/month/#{slug}/").each do |key|
       render_month = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
       year, month = key.split('/')[3..-1]
@@ -53,6 +54,7 @@ class Renderer
 
   def month_previous_next(slug, year, month)
     render_month = CachedHash.new("render/month/#{slug}")
+    raise "finish"
 
     p = Time.utc(year, month).plus_month(-1)
     p_month = "%02d" % p.month
@@ -75,6 +77,7 @@ class Renderer
 
   def render_month slug, year, month
     previous_link, next_link = month_previous_next(slug, year, month)
+    raise "finish"
     if render_month = AWS::S3::S3Object.load_yaml("render/month/#{slug}/#{year}/#{month}", "listlibrary_cachedhash")
       inventory = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
     else
@@ -97,6 +100,7 @@ class Renderer
 
   def thread_previous_next(slug, year, month, call_number)
     render_month = CachedHash.new("render/month/#{slug}")
+    raise "finish"
     threads = YAML::load(render_month["#{year}/#{month}"])
     index = nil
     threads.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }

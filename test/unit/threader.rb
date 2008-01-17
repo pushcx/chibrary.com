@@ -26,8 +26,10 @@ class ThreaderTest < Test::Unit::TestCase
     t = new_threader
 
     # no messages in cache or bucket
-    AWS::S3::S3Object.expects(:load_yaml).returns([])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+    list = mock("list")
+    list.expects(:cached_message_list).returns([])
+    list.expects(:fresh_message_list).returns([])
+    List.expects(:new).returns(list)
 
     # threader should exit cleanly
     t.run
@@ -37,8 +39,10 @@ class ThreaderTest < Test::Unit::TestCase
     t = new_threader
 
     # one message in cache, none in list
-    AWS::S3::S3Object.expects(:load_yaml).returns(["goodid@example.com"], mock)
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+    list = mock("list")
+    list.expects(:cached_message_list).returns(["1@example.com"])
+    list.expects(:fresh_message_list).returns([])
+    List.expects(:new).returns(list)
     ts = mock
     ThreadSet.expects(:new).returns(ts)
 
@@ -49,11 +53,14 @@ class ThreaderTest < Test::Unit::TestCase
 
   def test_run_add_message
     t = new_threader
-    AWS::S3::S3Object.expects(:load_yaml).returns(["1@example.com"])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns(["1@example.com", "2@example.com"])
-    message = mock
+    list = mock("list")
+    list.expects(:cached_message_list).returns(["1@example.com"])
+    list.expects(:fresh_message_list).returns(["1@example.com", "2@example.com"])
+    List.expects(:new).returns(list)
+
+    message = mock("message")
     Message.expects(:new).with("2@example.com").returns(message)
-    ts = mock
+    ts = mock("threadset")
     ts.expects(:<<).with(message)
     ThreadSet.expects(:month).returns(ts)
 
@@ -67,70 +74,56 @@ class ThreaderTest < Test::Unit::TestCase
 
     # two empty jobs
     job1 = Job.new :thread, :slug => 'example', :year => '2008', :month => '07'
-    AWS::S3::S3Object.expects(:load_yaml).returns([])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/07/').returns([])
+    list = mock("list")
+    list.expects(:cached_message_list).returns([])
+    list.expects(:fresh_message_list).returns([])
+    List.expects(:new).returns(list)
 
     job2 = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
-    AWS::S3::S3Object.expects(:load_yaml).returns([])
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_archive', 'list/example/message/2008/08/').returns([])
+    list = mock("list")
+    list.expects(:cached_message_list).returns([])
+    list.expects(:fresh_message_list).returns([])
+    List.expects(:new).returns(list)
 
     t.expects(:get_job).times(3).returns(job1, job2, nil)
     t.run
   end
 
   def test_cache_work_empty
-    t = Threader.new
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    threadset = mock
+    threadset = mock("threadset")
     threadset.expects(:collect).returns([])
-    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
-    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
 
-    t.cache_work slug, year, month, message_list, threadset
+    list = mock("list")
+    list.expects(:cache_message_list).with("2007", "08", message_list)
+    list.expects(:cache_thread_list).with("2007", "08", [])
+    List.expects(:new).returns(list)
+
+    Threader.new.cache_work slug, year, month, message_list, threadset
   end
 
-  def test_cache_work_cached
-    t = Threader.new
+  def test_cache_work
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
 
     thread = mock("thread")
-    thread.expects(:to_yaml).returns("yaml")
-    thread.expects(:call_number).at_least_once.returns('00000000')
+    thread.expects(:cache)
+    thread.expects(:call_number).returns('00000000')
+    thread.expects(:n_subject).returns('subject')
+    thread.expects(:count).returns(1)
+
     threadset = mock("threadset")
     threadset.expects(:collect).yields(thread)
 
-    o = mock("object")
-    o.expects(:about).returns({ 'content-length' => "yaml".length })
-    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").returns(o)
-    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
+    list = mock("list")
+    list.expects(:cache_message_list).with("2007", "08", message_list)
+    list.expects(:cache_thread_list).with("2007", "08", [{ :call_number => "00000000", :subject => "subject", :messages => 1 }])
+    List.expects(:new).returns(list)
 
-    t.cache_work slug, year, month, message_list, threadset
-  end
-
-  def test_cache_work_uncached
-    t = Threader.new
-    slug, year, month = 'example', '2007', '08'
-
-    message_list = ['1@example.com']
-    AWS::S3::S3Object.expects(:store).with("list/example/message_list/2007/08", message_list.to_yaml, 'listlibrary_archive', { :content_type => 'text/plain' })
-
-    thread = mock
-    thread.expects(:count).returns(1)
-    thread.expects(:to_yaml).returns("yaml")
-    thread.expects(:call_number).at_least_once.returns('00000000')
-    thread.expects(:subject).returns('subject')
-    threadset = mock
-    threadset.expects(:collect).yields(thread)
-    AWS::S3::S3Object.expects(:find).with("list/example/thread/2007/08/00000000", "listlibrary_archive").raises(RuntimeError)
-    CachedHash.expects(:new).with('render/month/example').returns(stub_everything('render_month'))
-    AWS::S3::S3Object.expects(:store).with('list/example/thread/2007/08/00000000', 'yaml', 'listlibrary_archive', {:content_type => 'text/plain'})
-
-    t.cache_work slug, year, month, message_list, threadset
+    Threader.new.cache_work slug, year, month, message_list, threadset
   end
 
   def test_queue_renderer
