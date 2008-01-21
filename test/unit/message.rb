@@ -228,6 +228,12 @@ class MessageTest < Test::Unit::TestCase
     assert m.body.include?('shoot their own')
   end
 
+  def test_missing_body
+    m = Message.new message(:missing_body), 'test', '00000000'
+    assert !m.body.nil?
+    assert m.body.include?('just heuristics')
+  end
+
   private
 
   def expect_list address, value

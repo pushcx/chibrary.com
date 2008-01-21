@@ -50,7 +50,7 @@ class Message
         next
       end
       # content type is nil for very plain messages, or text/plain for proper ones
-      if part.header['Content-Type'].nil? or part.header['Content-Type'].include? 'text/plain'
+      if part.header['Content-Type'].nil? or part.header['Content-Type'].downcase.include? 'text/plain'
         @body = part.body
         break
       end
