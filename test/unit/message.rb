@@ -222,6 +222,12 @@ class MessageTest < Test::Unit::TestCase
     assert !m.body.include?('=20')
   end
 
+  def test_nested_mime
+    m = Message.new message(:nested_mime), 'test', '00000000'
+    assert !m.body.nil?
+    assert m.body.include?('shoot their own')
+  end
+
   private
 
   def expect_list address, value

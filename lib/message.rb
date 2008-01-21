@@ -41,22 +41,23 @@ class Message
     return @body if @body
     return '' if @message.nil? # body is not serialized
 
-    # Hack: use the RMail lib to find MIME-encoded body
+    # Hack: use the RMail lib to find MIME-encoded body, which can be nested inside a MIME enclosure
     rmail = RMail::Parser.read(@message.gsub("\r", ''))
-    @body = rmail.body
-    if @body.is_a? Array
-      body = nil
-      @body.each do |rmail|
-        if rmail.header['Content-Type'].include? 'text/plain'
-          body = rmail.body
-          break
-        end
+    parts = [rmail]
+    while part = parts.shift
+      if part.multipart?
+        part.each_part { |p| parts << p }
+        next
       end
-      if body
-        @body = body
-      else
-        @body = "This MIME-encoded message did not include a plain text body or could not be decoded."
+      # content type is nil for very plain messages, or text/plain for proper ones
+      if part.header['Content-Type'].nil? or part.header['Content-Type'].include? 'text/plain'
+        @body = part.body
+        break
       end
+    end
+
+    if @body.nil? # didn't find a text/plain body
+      @body = "This MIME-encoded message did not include a plain text body or could not be decoded."
     end
 
     #@body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
