@@ -47,10 +47,8 @@ class Threader
       end
 
       # add messages
-      messages = []
       added.each do |mail|
-        messages << Message.new(mail)
-        threadset << messages.last
+        threadset << Message.new(mail)
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
