@@ -275,6 +275,7 @@ class ThreadSet
             # its references but hasn't been sorted in yet.)
             best = 0
             @containers.each do |message_id, potential_parent|
+              next if potential_parent.empty?
               next unless potential_parent.n_subject == container.n_subject
               next if message_id == container.message_id
               count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
@@ -304,6 +305,11 @@ class ThreadSet
   def each
     finish
     @subjects.values.sort.each { |c| yield c }
+  end
+
+  def length
+    finish
+    @subjects.length
   end
 
   def << message
