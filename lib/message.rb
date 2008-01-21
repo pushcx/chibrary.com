@@ -44,6 +44,7 @@ class Message
     # Hack: use the RMail lib to find MIME-encoded body, which can be nested inside a MIME enclosure
     rmail = RMail::Parser.read(@message.gsub("\r", ''))
     parts = [rmail]
+    encoding = nil
     while part = parts.shift
       if part.multipart?
         part.each_part { |p| parts << p }
@@ -51,6 +52,7 @@ class Message
       end
       # content type is nil for very plain messages, or text/plain for proper ones
       if part.header['Content-Type'].nil? or part.header['Content-Type'].downcase.include? 'text/plain'
+        encoding = part.header['Content-Transfer-Encoding']
         @body = part.body
         break
       end
@@ -60,15 +62,14 @@ class Message
       @body = "This MIME-encoded message did not include a plain text body or could not be decoded."
     end
 
-    #@body = message.split(/\n\r?\n/)[1..-1].join("\n\n").tr("\r", '').strip
-    case get_header('Content-Transfer-Encoding')
-    when 'quoted-printable'
+    case encoding
+    when /quoted-printable/i
       @body = @body.unpack('M').first
-    when 'base64'
+    when /base64/i
       @body = @body.unpack('m').first
     end # else it's fine
 
-    @body.strip!
+    return @body = @body.strip
   end
 
   # Guess if this message actually starts a new thread instead of replying to parent

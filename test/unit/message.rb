@@ -228,10 +228,17 @@ class MessageTest < Test::Unit::TestCase
     assert m.body.include?('shoot their own')
   end
 
-  def test_missing_body
-    m = Message.new message(:missing_body), 'test', '00000000'
+  def test_bad_content_type
+    m = Message.new message(:bad_content_type), 'test', '00000000'
     assert !m.body.nil?
     assert m.body.include?('just heuristics')
+  end
+
+  def test_more_mime_fun
+    m = Message.new message(:more_mime_fun), 'test', '00000000'
+    assert !m.body.nil?
+    assert m.body.include?('Later Christoph')
+    assert !m.body.include?('=C3')
   end
 
   private
