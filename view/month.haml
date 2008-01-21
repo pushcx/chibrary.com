@@ -3,8 +3,8 @@
     %a{ :href => "/#{slug}" }= (list['name'] or slug)
     = "#{year}-#{month}"
 
-  - if inventory
-    %p= "#{inventory[:messages]} messages in #{inventory[:threads]} threads"
+  - if message_count
+    %p= "#{message_count} messages in #{threadset.length} threads"
 
 .ad
   :plain

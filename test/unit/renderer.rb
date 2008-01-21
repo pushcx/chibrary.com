@@ -44,44 +44,48 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_month_previous_next_exist
+    list = mock("list")
+    list.expects(:thread_list).with(2007, '06').returns(true)
+    list.expects(:thread_list).with(2007, '08').returns(true)
+    List.expects(:new).with('example').returns(list)
+
     r = Renderer.new
-    render_month = mock
-    render_month.expects(:[]).with('2007/06').returns(true)
-    render_month.expects(:[]).with('2007/08').returns(true)
-    CachedHash.expects(:new).with('render/month/example').returns(render_month)
     previous_link, next_link = r.month_previous_next "example", "2007", "07"
     assert_match /"\/example\/2007\/06"/, previous_link
     assert_match /"\/example\/2007\/08"/, next_link
   end
 
   def test_month_previous_next_none
+    list = mock("list")
+    list.expects(:thread_list).with(2007, '06').returns(nil)
+    list.expects(:thread_list).with(2007, '08').returns(nil)
+    List.expects(:new).with('example').returns(list)
+
     r = Renderer.new
-    render_month = mock
-    render_month.expects(:[]).with('2007/06').returns(nil)
-    render_month.expects(:[]).with('2007/08').returns(nil)
-    CachedHash.expects(:new).with('render/month/example').returns(render_month)
     previous_link, next_link = r.month_previous_next "example", "2007", "07"
     assert_match /"\/example"/, previous_link
     assert_match /"\/example"/, next_link
   end
 
   def test_month_previous_next_previous_wraps
+    list = mock("list")
+    list.expects(:thread_list).with(2006, '12').returns(true)
+    list.expects(:thread_list).with(2007, '02').returns(nil)
+    List.expects(:new).with('example').returns(list)
+
     r = Renderer.new
-    render_month = mock
-    render_month.expects(:[]).with('2006/12').returns(true)
-    render_month.expects(:[]).with('2007/02').returns(nil)
-    CachedHash.expects(:new).with('render/month/example').returns(render_month)
     previous_link, next_link = r.month_previous_next "example", "2007", "01"
     assert_match /"\/example\/2006\/12"/, previous_link
     assert_match /"\/example"/, next_link
   end
 
   def test_month_previous_next_next_wraps
+    list = mock("list")
+    list.expects(:thread_list).with(2007, '11').returns(nil)
+    list.expects(:thread_list).with(2008, '01').returns(true)
+    List.expects(:new).with('example').returns(list)
+
     r = Renderer.new
-    render_month = mock
-    render_month.expects(:[]).with('2007/11').returns(nil)
-    render_month.expects(:[]).with('2008/01').returns(true)
-    CachedHash.expects(:new).with('render/month/example').returns(render_month)
     previous_link, next_link = r.month_previous_next "example", "2007", "12"
     assert_match /"\/example"/, previous_link
     assert_match /"\/example\/2008\/01"/, next_link
@@ -90,15 +94,16 @@ class RendererTest < Test::Unit::TestCase
   def test_render_month
     r = Renderer.new
     r.expects(:month_previous_next).with('example', '2007', '08').returns(['previous', 'next'])
-    list = mock
-    List.expects(:new).with('example').returns(list)
+
     ts = mock
     ThreadSet.expects(:month).with('example', '2007', '08').returns(ts)
-    AWS::S3::S3Object.expects(:load_yaml).returns([{:messages => 1}, {:messages => 1}])
+    list = mock("list")
+    list.expects(:thread_list).with('2007', '08').returns([{ :messages => 2 }])
+    List.expects(:new).with('example').returns(list)
     View.expects(:render).with(:page => "month", :locals => {
       :title         => 'example 2007-08',
       :threadset     => ts,
-      :inventory     => { :threads => 2, :messages => 2 },
+      :message_count => 2,
       :previous_link => 'previous',
       :next_link     => 'next',
       :list          => list,

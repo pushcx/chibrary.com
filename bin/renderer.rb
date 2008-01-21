@@ -55,12 +55,11 @@ class Renderer
   end
 
   def month_previous_next(slug, year, month)
-    render_month = CachedHash.new("render/month/#{slug}")
-    raise "finish"
+    list = List.new(slug)
 
     p = Time.utc(year, month).plus_month(-1)
     p_month = "%02d" % p.month
-    if render_month["#{p.year}/#{p_month}"]
+    if list.thread_list(p.year, p_month)
       p_link = "<a href=\"/#{slug}/#{p.year}/#{p_month}\">#{p.year}-#{p_month}</a>"
     else
       p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
@@ -68,7 +67,7 @@ class Renderer
 
     n = Time.utc(year, month).plus_month(1)
     n_month = "%02d" % n.month
-    if render_month["#{n.year}/#{n_month}"]
+    if list.thread_list(n.year, n_month)
       n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}\">#{n.year}-#{n_month}</a>"
     else
       n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
@@ -78,20 +77,20 @@ class Renderer
   end
 
   def render_month slug, year, month
+    list = List.new(slug)
     previous_link, next_link = month_previous_next(slug, year, month)
-    raise "finish"
-    if render_month = AWS::S3::S3Object.load_yaml("render/month/#{slug}/#{year}/#{month}", "listlibrary_cachedhash")
-      inventory = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
+    if thread_list = list.thread_list(year, month)
+      message_count = thread_list.collect { |t| t[:messages] }.sum
     else
-      inventory = nil
+      message_count = nil
     end
     html = View::render(:page => "month", :locals => {
       :title         => "#{slug} #{year}-#{month}",
       :threadset     => ThreadSet.month(slug, year, month),
-      :inventory     => inventory,
+      :message_count => message_count,
       :previous_link => previous_link,
       :next_link     => next_link,
-      :list          => List.new(slug),
+      :list          => list,
       :slug          => slug,
       :year          => year,
       :month         => month,
