@@ -28,14 +28,13 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def test_render_list
-    AWS::S3::Bucket.expects(:keylist).with('listlibrary_cachedhash', 'render/month/example/').returns([])
-    AWS::S3::S3Object.expects(:exists?).with('render/index/example', 'listlibrary_cachedhash').returns(false)
-    CachedHash.expects(:new).returns(stub_everything)
-    List.expects(:new).with('example').returns('list')
+    list = mock("list")
+    list.expects(:year_counts).returns({})
+    List.expects(:new).with('example').returns(list)
     View.expects(:render).with(:page => 'list', :locals => {
       :title => 'example',
       :years => {},
-      :list => 'list',
+      :list => list,
       :slug => 'example',
     }).returns('html')
     r = Renderer.new

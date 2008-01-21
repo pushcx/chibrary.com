@@ -35,19 +35,13 @@ class Renderer
   end
 
   def render_list slug
-    years = {}
-    raise "finish"
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/month/#{slug}/").each do |key|
-      render_month = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
-      year, month = key.split('/')[3..-1]
-      years[year] ||= {}
-      years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
-    end
-    CachedHash.new('render/index')[slug] = '' unless AWS::S3::S3Object.exists?("render/index/#{slug}", 'listlibrary_cachedhash')
+    list = List.new(slug)
+    years = list.year_counts
+
     html = View::render(:page => "list", :locals => {
       :title     => slug,
       :years     => years,
-      :list      => List.new(slug),
+      :list      => list,
       :slug      => slug,
     })
     @rc.upload_file "#{slug}/index.html", html

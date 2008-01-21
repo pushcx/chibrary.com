@@ -28,6 +28,17 @@ class List < CachedHash
     AWS::S3::S3Object.load_yaml(thread_list_key(year, month), "listlibrary_archive")
   end
 
+  def year_counts
+    years = {}
+    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "list/#{@slug}/thread_list/").each do |key|
+      thread_list = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
+      year, month = key.split('/')[3..4]
+      years[year] ||= {}
+      years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
+    end
+    return years
+  end
+
   def cache_thread_list year, month, thread_list
     AWS::S3::S3Object.store(thread_list_key(year, month), thread_list.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
   end
