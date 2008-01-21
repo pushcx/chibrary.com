@@ -20,6 +20,10 @@ class List < CachedHash
     AWS::S3::S3Object.store(month_list_key(year, month), message_list.sort.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
   end
 
+  def thread year, month, call_number
+    AWS::S3::S3Object.load_yaml("list/#{@slug}/thread/#{year}/#{month}/#{call_number}")
+  end
+
   def thread_list year, month
     AWS::S3::S3Object.load_yaml(thread_list_key(year, month), "listlibrary_archive")
   end
