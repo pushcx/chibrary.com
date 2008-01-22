@@ -18,18 +18,26 @@ class Message
     @source = source
     @call_number = call_number
     @overwrite = :error
-    if message.match "\n" # initialized with a message
+
+    if message.is_a? String and message.match "\n" # initialized with a message
       @message = message
-    else                  # initialize with a url
-      while 1
-        @overwrite = :do
-        o = AWS::S3::S3Object.find(message, 'listlibrary_archive')
-        @message = o.value.to_s
-        @call_number ||= o.metadata['call_number']
-        @source ||= o.metadata['source']
-        break unless o.about['content-length'].nil?
-        sleep 2
+    else
+      @overwrite = :do
+      if message.is_a? String # initialized with a url
+        while 1
+          o = AWS::S3::S3Object.find(message, 'listlibrary_archive')
+          break unless o.about['content-length'].nil?
+          sleep 2
+        end
+      elsif message.is_a? AWS::S3::S3Object # initialized with an S3Object
+        o = message
+      else
+        raise "Can't build Message from a #{message.class}"
       end
+
+      @message = o.value.to_s
+      @call_number ||= o.metadata['call_number']
+      @source ||= o.metadata['source']
     end
     raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
     extract_metadata

@@ -58,8 +58,19 @@ class ThreaderTest < Test::Unit::TestCase
     list.expects(:fresh_message_list).returns(["1@example.com", "2@example.com"])
     List.expects(:new).returns(list)
 
+    # the expects for s3object are optional as they don't happen in one fork
+    s3object = mock("S3Object")
+    s3object.expects(:value).at_least(0)
+    s3object.expects(:metadata).at_least(0)
+    s3object.expects(:yaml).at_least(0)
+    about = mock("about")
+    about.expects(:[]).at_least(0).returns(1)
+    s3object.expects(:about).at_least(0).returns(about)
+    AWS::S3::S3Object.expects(:find).at_least(0).returns(s3object)
+
+    YAML.expects(:load_file).returns(s3object)
     message = mock("message")
-    Message.expects(:new).with("2@example.com").returns(message)
+    Message.expects(:new).with(s3object).returns(message)
     ts = mock("threadset")
     ts.expects(:<<).with(message)
     ThreadSet.expects(:month).returns(ts)
