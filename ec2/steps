@@ -1,15 +1,16 @@
 dd if=/dev/zero of=ubuntu.fs count=512 bs=1M
 mke2fs -F ubuntu.fs
 sudo mount -o loop ubuntu.fs /mnt
-sudo debootstrap dapper /mnt
-# add universe, etc to /mnt/etc/apt/sources.list
+sudo debootstrap gutsy /mnt # change to current ver, of course
 sudo chroot /mnt
+# add 'universe multiverse restricted' to /etc/apt/sources.list
 passwd
-aptitude update ; aptitude upgrade
-aptitude purge ubuntu-minimal wpasupplicant console-terminus console-tools console-setup python-common python2.5 python # alsa, sound, perl, others
-aptitude install openssh-server subversion ruby irb rubygems libopenssl-ruby libc6-xen
+aptitude update ; aptitude safe-upgrade
+aptitude purge ubuntu-minimal wpasupplicant console-terminus console-tools console-setup python-common python2.5 python alsa-utils lsb-release pcmciautils reiser4progs reiserfsprogs xfsprogs wireless-tools memtest86+ jfsutils hfsplus hfsutils 
+aptitude install openssh-server subversion ruby irb rubygems libopenssl-ruby libc6-xen host ssh
+# may need to add 'exit 0' to /usr/sbin/invoke-rc.d to install openssh-server
 aptitude autoclean
-gem install -y aws-s3 haml hoe mocha net-ssh rake redgreen sqs tidy
+gem install -y --no-rdoc --no-ri # ...paste list from doc/gems
 gem cleanup
 # run 'date', sanity check it's UTC
 vi /etc/ssh/sshd_config:
@@ -21,14 +22,15 @@ mkdir /m
 # add fstab
 exit
 df -h # note size
-umount /mnt
+sudo umount /mnt
 
 # bundle and upload the AMI
 e2fsck -f ubuntu.fs
-resize2fs -p ubuntu.fs 1234M # from df -h
-time ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
-time ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
-ec2-register listlibrary_ec2/ubuntu.fs.manifest.xml
+resize2fs -p ubuntu.fs 1234M # size from df -h + ~10M
+time ec2-ami-tools/bin/ec2-bundle-image -i ubuntu.fs -u '5906-9161-4368' -c ~/.ec2/cert-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem -k ~/.ec2/pk-XTZONLJE24FFLKW3E75MEIE6JPPEEDX3.pem 
+# remove old AMI from s3
+time ec2-ami-tools/bin/ec2-upload-bundle -b listlibrary_ec2 -m /tmp/ubuntu.fs.manifest.xml -a 0B8FSQ35925T27X8Q4R2 -s 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
+ec2-ami-tools/bin/ec2-register listlibrary_ec2/ubuntu.fs.manifest.xml
 
 # Notes on installing tools on Ubuntu from
 # http://developer.amazonwebservices.com/connect/entry.jspa?externalID=368&categoryID=88
