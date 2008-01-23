@@ -1,5 +1,6 @@
 require 'yaml'
 require 'aws'
+require 'queue'
 require 'remote_connection'
 
 class SequenceExhausted < RuntimeError ; end
@@ -23,7 +24,7 @@ end
 
 class Filer
   attr_reader :server, :sequence, :message_count
-  attr_accessor :mailing_lists, :sequences, :thread_queue
+  attr_accessor :mailing_lists, :sequences
 
   def initialize server=nil, sequence=nil
     # load server id and sequence number for this server and pid
@@ -32,7 +33,6 @@ class Filer
     @server = @server.to_i
     @sequences = CachedHash.new("sequence")
     @sequence = (sequence or @sequences["#{@server}/#{Process.pid}"].to_i)
-    @thread_queue = CachedHash.new("thread_queue")
 
     # queue up threading workers for this mailing list, year, and month
     @mailing_lists = {}
@@ -122,9 +122,10 @@ class Filer
   end
 
   def queue_threader
-    @mailing_lists.each do |list, dates|
+    @thread_q = Queue.new :thread
+    @mailing_lists.each do |slug, dates|
       dates.each do |year, month|
-        @thread_queue[ "#{list}/#{year}/%02d" % month ] = ''
+        @thread_q.add :slug => slug, :year => year, :month => "%02d" % month
       end
     end
   end

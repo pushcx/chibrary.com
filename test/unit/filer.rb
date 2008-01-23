@@ -93,8 +93,10 @@ class FilerTest < Test::Unit::TestCase
   def test_queue_threader
     f = Filer.new(0, 0)
     f.mailing_lists = { 'example_list' => [[2007, 8], [2007, 9]] }
-    f.thread_queue.expects(:'[]=').with('example_list/2007/08', '')
-    f.thread_queue.expects(:'[]=').with('example_list/2007/09', '')
+    q = mock("thread queue")
+    Queue.expects(:new).with(:thread).returns(q)
+    q.expects(:add).with(:slug => "example_list", :year => 2007, :month => "08")
+    q.expects(:add).with(:slug => "example_list", :year => 2007, :month => "09")
     f.queue_threader
   end
 
