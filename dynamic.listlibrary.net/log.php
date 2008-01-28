@@ -1,8 +1,8 @@
 <?php
 require_once('db.php');
 
-$KEY = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb";
-if ($_POST['key'] != $KEY) die("unknown password");
+$PASSWD = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb";
+if ($_POST['passwd'] != $PASSWD) die("unknown password");
 
 $server  = (int) $_POST['server'];
 $pid     = (int) $_POST['pid'];

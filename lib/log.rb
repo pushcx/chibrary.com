@@ -3,15 +3,50 @@ require 'uri'
 
 require 'cachedhash'
 
-KEY = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb"
+PASSWD = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb"
+STATUSES = [:begin, :end, :error, :warning, :status]
 
 class Log
-  def self.<< message
+  attr_reader :worker, :key
+
+  def initialize worker
     @@server ||= CachedHash.new("server")[`hostname`.chomp]
+    @worker = worker
+  end
+
+  # begin/end: evil temporal coupling
+  def begin key, message=nil
+    @key = key
+    log :begin, message
+  end
+
+  def end message=nil
+    log :end, message
+    @key = nil
+    message
+  end
+
+  def block key, message=nil
+    self.begin key, message
+    msg = yield Log.new(@worker)
+    msg = nil unless msg.is_a? String
+    self.end msg
+  end
+
+  def error message   ; log :error,   message ; end
+  def warning message ; log :warning, message ; end
+  def status message  ; log :status,  message ; end
+
+  private
+
+  def log status, message
     response = Net::HTTP.post_form(URI.parse('http://dynamic.listlibrary.net/log.php'), {
-      'key'     => KEY,
+      'passwd'  => PASSWD,
       'server'  => @@server,
       'pid'     => Process.pid,
+      'key'     => @key,
+      'worker'  => @worker,
+      'status'  => status,
       'message' => message,
     })
     raise "couldn't log: #{response.body}" unless response.body == '1'

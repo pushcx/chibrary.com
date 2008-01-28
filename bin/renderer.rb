@@ -165,9 +165,10 @@ class Renderer
   end
 
   def run
-    Log << "Renderer: run"
+    log = Log.new "Renderer"
+    log.block "renderer" do |log|
     while job = get_job
-      Log << "#{job.type} #{job.key}"
+      log.block job.key, job.type do |log|
       case job.type
       when :render_thread
         if AWS::S3::S3Object.exists? "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}", "listlibrary_archive"
@@ -182,11 +183,11 @@ class Renderer
       when :render_static
         render_static
       else
-        raise "Unknown job type: #{job.type}"
+        raise log.error("Unknown job type: #{job.type}")
       end
-      Log << "job done"
+      end
     end
-    Log << "Renderer: done"
+  end
   end
 end
 

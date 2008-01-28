@@ -6,8 +6,7 @@ class FetcherTest < Test::Unit::TestCase
     Net::POP3.expects(:new).returns(mock(
       :open_timeout= => nil,
       :read_timeout= => nil,
-      :start => nil,
-      :n_mails => 0
+      :start => nil
     ))
     f = Fetcher.new(0, 0)
     f.setup
@@ -31,6 +30,8 @@ class FetcherTest < Test::Unit::TestCase
     f = Fetcher.new(0, 0)
     mail = mock("mail", :delete => true)
     mail.expects(:mail).at_least(1).returns("Test message")
+    nil.expects(:block).yields(stub_everything)
+    nil.expects(:n_mails).yields(0)
     nil.expects(:each_mail).yields(mail)
     f.acquire { |mail, overwrite| assert_equal 'Test message', mail }
   end
@@ -39,6 +40,8 @@ class FetcherTest < Test::Unit::TestCase
     f = Fetcher.new(0, 0)
     mail = mock("mail")
     mail.expects(:mail).returns(nil)
+    nil.expects(:block).yields(stub_everything)
+    nil.expects(:n_mails).yields(0)
     nil.expects(:each_mail).yields(mail)
     # expect it to be treated as a POP error
     f.expects(:teardown)
@@ -50,6 +53,8 @@ class FetcherTest < Test::Unit::TestCase
     f = Fetcher.new(0, 0)
     mail = mock("mail")
     mail.expects(:mail).raises(Net::POPError, "Something went terribly wrong")
+    nil.expects(:block).yields(stub_everything)
+    nil.expects(:n_mails).yields(0)
     nil.expects(:each_mail).yields(mail)
     f.expects(:teardown)
     f.expects(:setup)
@@ -60,6 +65,8 @@ class FetcherTest < Test::Unit::TestCase
     f = Fetcher.new(0, 2 ** 20)
     mail = mock("mail")
     mail.expects(:mail).at_least(1).returns("Test Message")
+    nil.expects(:block).yields(stub_everything)
+    nil.expects(:n_mails).yields(0)
     nil.expects(:each_mail).yields(mail)
     f.acquire { |mail, overwrite| f.store mail }
   end

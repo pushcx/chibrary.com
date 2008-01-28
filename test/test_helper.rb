@@ -22,7 +22,8 @@ end
 # Don't really log dev stuff
 require 'log'
 class Log
-  def self.<< message ; message ; end
+  def initialize worker ; @worker = worker ; end
+  def log status, message ; message ; end
 end
 
 class Test::Unit::TestCase

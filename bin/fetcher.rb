@@ -26,28 +26,30 @@ class Fetcher < Filer
     @pop.open_timeout = 300
     @pop.read_timeout = 300
     @pop.start(MAIL_USER, MAIL_PASSWORD)
-    Log << "Fetcher: #{@pop.n_mails} available, fetching a max of #{@max}:"
+    @log = Log.new "Fetcher"
   end
 
   def acquire
-    @pop.each_mail do |mail|
-      begin
-        raise Net::POPError if mail.mail.nil? or mail.mail == ''
-        yield mail.mail, :do
-        mail.delete
-        return if (@max -= 1) <= 0
-      rescue Net::POPError
-        # just rebuild the connection and soldier on
-        teardown rescue nil
-        setup
-      rescue SequenceExhausted
-        return
+    @log.block "pop3", "#{@pop.n_mails} available, fetching a max of #{@max}" do |log|
+      @pop.each_mail do |mail|
+        begin
+          raise Net::POPError if mail.mail.nil? or mail.mail == ''
+          yield mail.mail, :do
+          mail.delete
+          return if (@max -= 1) <= 0
+        rescue Net::POPError => e
+          # just rebuild the connection and soldier on
+          log.warning "rebuilding after #{e.class}: #{e.message}"
+          teardown rescue nil
+          setup
+        rescue SequenceExhausted
+          return
+        end
       end
     end
   end
 
   def teardown
-    Log << "Fetcher: done"
     @pop.finish
   end
 end
@@ -55,13 +57,16 @@ end
 if __FILE__ == $0
   max = (ARGV.shift or MAX_MAILS).to_i
   fetched = 0
-  Log << "bin/fetcher: up to #{max} messages"
-  while max > 0
-    run = Fetcher.new(nil, nil, max).run
-    fetched += run
-    break if run < 10
-    sleep 1
-    max -= PER_CONNECTION
+  log = Log.new "Fetcher"
+  log.block "fetcher", "up to #{max} messages" do |log|
+    while max > 0
+      run = Fetcher.new(nil, nil, max).run
+      puts run
+      fetched += run
+      break if run < 10
+      sleep 10
+      max -= PER_CONNECTION
+    end
+    "fetched #{fetched}"
   end
-  Log << "bin/fetcher: done, fetched #{fetched}"
 end

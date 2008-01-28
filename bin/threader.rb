@@ -22,9 +22,10 @@ class Threader
   end
 
   def run
-    Log << "Threader: run"
+    log = Log.new "Threader"
+    log.block "threader" do |log|
     while job = get_job
-      Log << job.key
+      log.block job.key do |log|
       slug, year, month = job[:slug], job[:year], job[:month]
       list = List.new slug
 
@@ -32,7 +33,7 @@ class Threader
       fresh_message_list  = list.fresh_message_list year, month
 
       if cached_message_list == fresh_message_list
-        Log << "nothing to do"
+        log.status "nothing to do"
         next
       end
 
@@ -44,7 +45,7 @@ class Threader
       else
         threadset = ThreadSet.month(slug, year, month)
         added = fresh_message_list - cached_message_list 
-        Log << "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
+        log.status "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
       end
 
       # add messages
@@ -79,9 +80,9 @@ class Threader
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
       queue_renderer(slug, year, month, threadset) unless removed.empty? and added.empty?
-      Log << "job done"
+      end # log
     end
-    Log << "Threader: done"
+    end
   end
 
   def cache_work slug, year, month, message_list, threadset
