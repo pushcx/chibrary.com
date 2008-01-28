@@ -185,6 +185,7 @@ class Renderer
       else
         raise log.error("Unknown job type: #{job.type}")
       end
+      nil
       end
     end
   end

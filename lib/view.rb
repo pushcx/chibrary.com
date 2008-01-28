@@ -43,20 +43,20 @@ class View
       Haml::Engine.new(File.read("view/#{filename}.haml"), :locals => locals, :filename => filename).render(View)
     end
 
-    unless options[:partial]
-      Tidy.path = '/usr/lib/libtidy.so'
-      tidy_options = {
-        'doctype' => 'omit',
-        'tidy-mark' => 'false',
-        'show-body-only' => 'true',
-        'new-blocklevel-tags' => 'pre',
-      }
-      Tidy.open(tidy_options) do |tidy|
-        tidy.clean(html)
-        $stderr.puts html unless tidy.errors.empty?
-        raise "Tidy found errors rendering #{options.inspect}: \n" + tidy.errors.join("\n") unless tidy.errors.empty?
-      end
-    end
+    #unless options[:partial]
+    #  Tidy.path = '/usr/lib/libtidy.so'
+    #  tidy_options = {
+    #    'doctype' => 'omit',
+    #    'tidy-mark' => 'false',
+    #    'show-body-only' => 'true',
+    #    'new-blocklevel-tags' => 'pre',
+    #  }
+    #  Tidy.open(tidy_options) do |tidy|
+    #    tidy.clean(html)
+    #    $stderr.puts html unless tidy.errors.empty?
+    #    raise "Tidy found errors rendering #{options.inspect}: \n" + tidy.errors.join("\n") unless tidy.errors.empty?
+    #  end
+    #end
     html
   end
 
@@ -67,7 +67,7 @@ class View
     str = remove_footer(str, m.slug)
     str = h(str)
     str = compress_quotes(str)
-    str.gsub!(/([A-Z]{3,})/, '<span class="caps">\1</span>')
+    #str.gsub!(/([A-Z]{3,})/, '<span class="caps">\1</span>')
     str
   end
 
@@ -103,7 +103,7 @@ class View
   def self.h str
     str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2...\3') # hide mail addresses
     str = CGI::escapeHTML(str)
-    str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
+    #str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
   end
 
   def self.container_partial c

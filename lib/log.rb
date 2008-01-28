@@ -50,7 +50,7 @@ class Log
       'message' => message,
     })
     raise "couldn't log: #{response.body}" unless response.body == '1'
-    puts message
+    puts "#{@key}: #{message}"
     message
   end
 end
