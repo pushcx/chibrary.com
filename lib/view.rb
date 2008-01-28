@@ -16,10 +16,8 @@ class String
     n = 0
     self.split('').reverse.each_with_index do |char, i|
       val = chars.index(char) * (64 ** i)
-      puts "char #{char}, i #{i}, position #{chars.index(char)}, val #{val}, n #{n}"
       n += val
     end
-    puts "#{self} -> #{n.to_base_36}"
     n.to_base_36
   end
 end
