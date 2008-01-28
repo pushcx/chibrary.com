@@ -11,6 +11,7 @@ $worker  = mysql_real_escape_string($_POST['worker']);
 $status  = mysql_real_escape_string($_POST['status']);
 $message = mysql_real_escape_string($_POST['message']);
 
-mysql_query("INSERT INTO log (at, server, pid, key, worker, status, message) VALUES (now(), $server, $pid, '$key', '$worker', '$status', '$message');") or die (mysql_error());
+$query = "INSERT INTO log (`at`, `server`, `pid`, `key`, `worker`, `status`, `message`) VALUES (now(), $server, $pid, '$key', '$worker', '$status', '$message');";
+mysql_query($query) or die ($query . "\n" . mysql_error());
 print 1;
 ?>
