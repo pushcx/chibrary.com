@@ -56,10 +56,17 @@ class Queue
   end
 
   def next
-    object = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => "queue/#{type}/", :max_keys => 1).first
-    return nil if object.nil?
-    job = YAML::load(object.value)
-    object.delete
+    while 1
+      begin
+        object = AWS::S3::Bucket.objects('listlibrary_cachedhash', :reload => true, :prefix => "queue/#{type}/", :max_keys => 1).first
+        return nil if object.nil?
+        job = YAML::load(object.value)
+        object.delete
+        break
+      rescue
+        # another worker took this job, try again
+      end
+    end
     job
   end
 end

@@ -58,4 +58,15 @@ class QueueTest < Test::Unit::TestCase
     AWS::S3::Bucket.expects(:objects).returns([])
     assert_equal nil, queue.next
   end
+
+  def test_next_gone
+    CachedHash.expects(:new).returns(mock("queue"))
+    queue = Queue.new :render_list
+    object1 = mock("object1")
+    object1.expects(:value).raises(RuntimeError, "key deleted") # can't actually call AWS::S3::NoSuchKey
+    object2 = mock("object2", :delete => true, :value => "yaml")
+    AWS::S3::Bucket.expects(:objects).times(2).returns([object1], [object2])
+    YAML::expects(:load).with("yaml").returns("job")
+    assert_equal "job", queue.next
+  end
 end
