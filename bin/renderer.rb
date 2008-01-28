@@ -4,10 +4,10 @@ require 'rubygems'
 require 'ostruct'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
+require 'queue'
 require 'aws'
 require 'list'
 require 'log'
-require 'queue'
 require 'remote_connection'
 require 'view'
 
