@@ -1,15 +1,15 @@
 .message
-  %a{ :id => "m#{message.call_number}", :name => "m#{message.call_number}" }/
+  %a{ :id => "m-#{message.call_number.to_base_36}", :name => "m-#{message.call_number.to_base_36}" } 
   .header
     %h4.from= h message.from
     %h6.date
-      %a{ :href => "#m#{message.call_number}", :title => "Link to this message" }
+      %a{ :href => "#m-#{message.call_number.to_base_36}", :title => "Link to this message" }
         = message.date.strftime("%Y-%m-%d %H:%M:%S")
     .more
       .flag
         %a{ :href => "http://dynamic.listlibrary.net/flag?list=#{message.slug}&amp;year=#{message.date.year}&amp;month=#{message.date.month}&amp;message=#{message.call_number}", :title => "Flag spam or misfiled mail" } Flag
       - if parent
-        %a{ :href => "#m#{parent.call_number}", :title => "Message this one responds to", :class => "in-reply-to" } In Reply To
+        %a{ :href => "#m-#{parent.call_number.to_base_36}", :title => "Message this one responds to", :class => "in-reply-to" } In Reply To
       - unless children.empty?
         Replies:
         - children.each_with_index do |child, i|
@@ -20,7 +20,7 @@
             - text = f.slice(0, f.index(' ')) if f.include? ' '
           - if children.size <= 4
             - text = f.slice(0, f.index(' <')) if f.include? ' <'
-          %a{ :href => "#m#{child.call_number}", :title => "#{h child.from} #{child.date.strftime("%m/%d %H:%M")}", :class => "child" }= text
+          %a{ :href => "#m-#{child.call_number.to_base_36}", :title => "#{h child.from} #{child.date.strftime("%m/%d %H:%M")}", :class => "child" }= text
 
   .body
     = '<pre class="body">' + preserve(message_body(message)) + '</pre>'

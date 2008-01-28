@@ -20,6 +20,20 @@ class Integer
     raise "Unexpectedly large int converted" if str.length > 8
     ("%8s" % str).tr(' ', '0')
   end
+
+  def to_base_36
+    raise "No negative numbers" if self < 0
+
+    chars = (0..9).to_a + ('a'..'z').to_a
+    str = ""
+    current = self
+
+    while current != 0
+      str = chars[current % 36].to_s + str
+      current = current / 36
+    end
+    str
+  end
 end
 
 class Filer

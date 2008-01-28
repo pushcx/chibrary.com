@@ -10,9 +10,9 @@
         %a{ :href => "#missing-#{@missing_count}", :class => "missing" } missing
       - elsif message.no_archive
         %span.indent{ :style => "width: #{container.depth * 1.5}em" } &nbsp;
-        %a{ :href => "#m#{message.call_number}", :class => "missing" } not archived
+        %a{ :href => "#m-#{message.call_number.to_base_36}", :class => "missing" } not archived
       - else
-        %a{ :href => "#m#{message.call_number}", :class => "message" }
+        %a{ :href => "#m-#{message.call_number.to_base_36}", :class => "message" }
           %span.indent{ :style => "width: #{container.depth * 1.5}em" } &nbsp;
           = h message.from
           %span.date= message.date.strftime("%m-%d %H:%M")

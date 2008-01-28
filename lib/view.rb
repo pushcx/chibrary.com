@@ -8,6 +8,22 @@ require 'aws'
 require 'list'
 require 'time_'
 
+class String
+  def to_base_36 
+    chars = (0..9).to_a + ('a'..'z').to_a + ('A'..'Z').to_a + ['_', '-']
+    chars = chars.collect { |c| c.to_s }
+
+    n = 0
+    self.split('').reverse.each_with_index do |char, i|
+      val = chars.index(char) * (64 ** i)
+      puts "char #{char}, i #{i}, position #{chars.index(char)}, val #{val}, n #{n}"
+      n += val
+    end
+    puts "#{self} -> #{n.to_base_36}"
+    n.to_base_36
+  end
+end
+
 class View
   def self.render options={}
     locals = (options[:locals] or {})

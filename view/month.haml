@@ -20,7 +20,7 @@
 %ol.threads
   - threadset.each do |thread|
     %li.thread
-      %a{ :id => "t#{thread.call_number}", :name => "t#{thread.call_number}" }/
+      %a{ :id => "t-#{thread.call_number.to_base_36}", :name => "t-#{thread.call_number.to_base_36}" }/
       .header
         %span.count= thread.count
         %a.subject{ :href => thread.call_number }= subject(thread)
