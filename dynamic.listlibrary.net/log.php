@@ -6,8 +6,11 @@ if ($_POST['passwd'] != $PASSWD) die("unknown password");
 
 $server  = (int) $_POST['server'];
 $pid     = (int) $_POST['pid'];
+$key     = mysql_real_escape_string($_POST['key']);
+$worker  = mysql_real_escape_string($_POST['worker']);
+$status  = mysql_real_escape_string($_POST['status']);
 $message = mysql_real_escape_string($_POST['message']);
 
-mysql_query("INSERT INTO log (at, server, pid, message) VALUES (now(), $server, $pid, '$message');") or die (mysql_error());
+mysql_query("INSERT INTO log (at, server, pid, key, worker, status, message) VALUES (now(), $server, $pid, '$key', '$worker', '$status', '$message');") or die (mysql_error());
 print 1;
 ?>
