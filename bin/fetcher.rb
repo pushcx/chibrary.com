@@ -3,7 +3,7 @@
 require 'net/pop'
 
 MAX_MAILS = 1_000_000
-PER_CONNECTION = 500
+PER_CONNECTION = 1_000
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'mail'
@@ -40,6 +40,7 @@ class Fetcher < Filer
         rescue Net::POPError => e
           # just rebuild the connection and soldier on
           log.warning "rebuilding after #{e.class}: #{e.message}"
+          sleep 20
           teardown rescue nil
           setup
         rescue SequenceExhausted
