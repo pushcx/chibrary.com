@@ -1,4 +1,5 @@
 require 'storage'
+require 'cachedhash'
 require 'stdlib'
 
 class List < CachedHash
