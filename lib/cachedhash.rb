@@ -1,4 +1,4 @@
-require 'aws'
+require 'storage'
 
 class CachedHash
   attr_reader :prefix
@@ -14,14 +14,14 @@ class CachedHash
     return @@cache[@prefix][key] if @@cache[@prefix].has_key? key
 
     @@cache[@prefix][key] = begin
-        AWS::S3::S3Object.find("#{@prefix}/#{key}", "listlibrary_cachedhash").value.chomp
-      rescue
-        nil
+      $storage.load_string("listlibrary_cachedhash", "#{@prefix}/#{key}").value.chomp
+    rescue NotFound
+      nil
     end
   end
 
   def []= key, value
-    AWS::S3::S3Object.store("#{@prefix}/#{key}", (@@cache[@prefix][key] = value.to_s.chomp), "listlibrary_cachedhash", :content_type => 'text/plain')
+    $storage.store_string("listlibrary_cachedhash", "#{@prefix}/#{key}", (@@cache[@prefix][key] = value.to_s.chomp))
     value
   end
 end

@@ -1,7 +1,8 @@
 require 'yaml'
-require 'aws'
+require 'storage'
 require 'queue'
 require 'remote_connection'
+require 'message'
 
 class SequenceExhausted < RuntimeError ; end
 
@@ -97,13 +98,8 @@ class Filer
           :message   => e.message,
           :backtrace => e.backtrace,
           :mail      => mail
-        }.to_yaml
-        AWS::S3::S3Object.store(
-          "filer_failure/#{call_number}",
-          error_info,
-          'listlibrary_archive',
-          :content_type => "text/plain"
-        )
+        }
+        $storage.store_yaml('listlibrary_archive', "filer_failure/#{call_number}", error_info)
       rescue
         $stdout.puts "#{@message_count} #{call_number} DOUBLE FAILURE: #{e.message}"
         secondary_error_info = {

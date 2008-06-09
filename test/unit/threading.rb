@@ -135,27 +135,23 @@ class ContainerTest < ThreadingTest
 
   def test_cache_uncached
     c = container_tree
-    AWS::S3::S3Object.expects(:find).raises(AWS::S3::NoSuchKey)
-    AWS::S3::S3Object.expects(:store)
+    $storage.expects(:size).raises(NotFound)
+    $storage.expects(:store_string)
     c.cache
   end
 
   def test_cache_same
     c = container_tree
     c.expects(:to_yaml).returns("yaml")
-    object = mock("object")
-    object.expects(:about).returns(mock("about", :[] => "yaml".size))
-    AWS::S3::S3Object.expects(:find).returns(object)
+    $storage.expects(:size).returns("yaml".size)
     c.cache
   end
 
   def test_cache_different
     c = container_tree
     c.expects(:to_yaml).returns("yaml")
-    object = mock("object")
-    object.expects(:about).returns(mock("about", :[] => "old yaml"))
-    AWS::S3::S3Object.expects(:find).returns(object)
-    AWS::S3::S3Object.expects(:store)
+    $storage.expects(:size).returns("old yaml".size)
+    $storage.expects(:store_string)
     c.cache
   end
 
@@ -278,10 +274,10 @@ class ThreadSetTest < ThreadingTest
   def test_month
     ts = mock
     ThreadSet.expects(:new).returns(ts)
-    AWS::S3::Bucket.expects(:keylist).returns(%w{a b c d})
+    $storage.expects(:list_keys).returns(%w{a b c d})
     message = mock("message")
     message.expects(:message_id).times(4).returns("id@example.com")
-    AWS::S3::S3Object.expects(:load_yaml).times(4).returns(message)
+    $storage.expects(:load_yaml).times(4).returns(message)
     ts.expects(:containers).times(4).returns(stub_everything)
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end

@@ -5,7 +5,7 @@ require 'ostruct'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'queue'
-require 'aws'
+require 'stdlib'
 require 'list'
 require 'log'
 require 'remote_connection'
@@ -28,7 +28,7 @@ class Renderer
     end
 
     lists = []
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render/index/").each do |key|
+    $storage.list_keys('listlibrary_cachedhash', "render/index/").each do |key|
       lists << List.new(key.split('/')[-1])
     end
     @rc.upload_file 'index', View::render(:page => 'index', :locals => { :lists => lists })
@@ -171,7 +171,7 @@ class Renderer
       log.block job.key, job.type do |log|
       case job.type
       when :render_thread
-        if AWS::S3::S3Object.exists? "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}", "listlibrary_archive"
+        if $storage.exists? 'listlibrary_archive', "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}"
           render_thread job[:slug], job[:year], job[:month], job[:call_number]
         else
           delete_thread job[:slug], job[:year], job[:month], job[:call_number]

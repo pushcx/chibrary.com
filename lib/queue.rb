@@ -1,7 +1,7 @@
 require 'rubygems'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
+require 'storage'
 
 JOB_TYPES = {
   :thread => {
@@ -37,7 +37,7 @@ class Job
   end
 
   def delete
-    AWS::S3::S3Object.delete("queue/#{key}", "listlibrary_archive")
+    $storage.delete("listlibrary_archive", "queue/#{key}")
   end
 end
 

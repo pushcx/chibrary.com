@@ -1,6 +1,8 @@
 # based on http://www.jwz.org/doc/threading.html
 
+require 'storage'
 require 'message'
+require 'stdlib'
 
 # Each container holds 0 or 1 messages, so that we can build a thread's tree from
 # References and In-Reply-To headers even before seeing all of the messages.
@@ -121,11 +123,11 @@ class Container
 
     yaml = self.to_yaml
     begin
-      o = AWS::S3::S3Object.find(key, 'listlibrary_archive')
-      return if o.about["content-length"] == yaml.size
-    rescue Exception ; end
+      return if $storage.size('listlibrary_archive', key) == yaml.size
+    rescue NotFound ; end
 
-    AWS::S3::S3Object.store(key, yaml, 'listlibrary_archive', :content_type => 'text/plain')
+    # Doesn't use store_yaml because the yaml was already generated once
+    $storage.store_string('listlibrary_archive', key, yaml)
   end
 
   # parenting methods
@@ -186,8 +188,8 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new
-    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
-      thread = AWS::S3::S3Object.load_yaml(key)
+    $storage.list_keys('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
+      thread = $storage.load_yaml('listlibrary_archive', key)
       threadset.containers[thread.message_id] = thread
     end
     threadset

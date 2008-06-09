@@ -1,4 +1,5 @@
-require 'aws'
+require 'storage'
+require 'stdlib'
 
 class List < CachedHash
   attr_reader :slug
@@ -9,29 +10,29 @@ class List < CachedHash
   end
 
   def cached_message_list year, month
-    (AWS::S3::S3Object.load_yaml(month_list_key(year, month)) or [])
+    ($storage.load_yaml(month_list_key(year, month)) or [])
   end
 
   def fresh_message_list year, month
-    AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/").sort
+    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/").sort
   end
 
   def cache_message_list year, month, message_list
-    AWS::S3::S3Object.store(month_list_key(year, month), message_list.sort.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
+    $storage.store_yaml('listlibrary_archive', month_list_key(year, month), message_list)
   end
 
   def thread year, month, call_number
-    AWS::S3::S3Object.load_yaml("list/#{@slug}/thread/#{year}/#{month}/#{call_number}")
+    $storage.load_yaml('listlibrary_archive', "list/#{@slug}/thread/#{year}/#{month}/#{call_number}")
   end
 
   def thread_list year, month
-    AWS::S3::S3Object.load_yaml(thread_list_key(year, month), "listlibrary_archive")
+    $storage.load_yaml('listlibrary_archive', thread_list_key(year, month))
   end
 
   def year_counts
     years = {}
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', "list/#{@slug}/thread_list/").each do |key|
-      thread_list = AWS::S3::S3Object.load_yaml(key, "listlibrary_cachedhash")
+    $storage.list_keys('listlibrary_cachedhash', "list/#{@slug}/thread_list/").each do |key|
+      thread_list = $storage.load_yaml("listlibrary_cachedhash", key)
       year, month = key.split('/')[3..4]
       years[year] ||= {}
       years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
@@ -40,7 +41,7 @@ class List < CachedHash
   end
 
   def cache_thread_list year, month, thread_list
-    AWS::S3::S3Object.store(thread_list_key(year, month), thread_list.to_yaml, 'listlibrary_archive', :content_type => 'text/plain')
+    $storage.store_yaml('listlibrary_archive', thread_list_key(year, month), thread_list)
   end
 
   private

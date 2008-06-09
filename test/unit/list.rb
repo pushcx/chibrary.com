@@ -11,37 +11,37 @@ class ListTest < Test::Unit::TestCase
   end
 
   def test_cached_message_list_empty
-    AWS::S3::S3Object.expects(:load_yaml).returns(nil)
+    $storage.expects(:load_yaml).returns(nil)
     assert_equal [], @list.cached_message_list("2008", "01")
   end
 
   def test_cached_message_list
-    AWS::S3::S3Object.expects(:load_yaml).returns(["1@example.com", "2@example.com"])
+    $storage.expects(:load_yaml).returns(["1@example.com", "2@example.com"])
     assert_equal ["1@example.com", "2@example.com"], @list.cached_message_list("2008", "01")
   end
 
   def test_fresh_message_list_empty
-    AWS::S3::Bucket.expects(:keylist).returns([])
+    $storage.expects(:list_keys).returns([])
     assert_equal [], @list.fresh_message_list("2008", "01")
   end
 
   def test_fresh_message_list
-    AWS::S3::Bucket.expects(:keylist).returns(["1@example.com", "2@example.com"])
+    $storage.expects(:list_keys).returns(["1@example.com", "2@example.com"])
     assert_equal ["1@example.com", "2@example.com"], @list.fresh_message_list("2008", "01")
   end
 
   def test_cache_message_list
-    AWS::S3::S3Object.expects(:store)
+    $storage.expects(:store_yaml)
     @list.cache_message_list "2008", "01", ["1@example.com", "2@example.com"]
   end
 
   def test_thread_list
-    AWS::S3::S3Object.expects(:load_yaml).returns(["thread..."])
+    $storage.expects(:load_yaml).returns(["thread..."])
     assert_equal ["thread..."], @list.thread_list("2008", "01")
   end
 
   def test_cache_thread_list
-    AWS::S3::S3Object.expects(:store)
+    $storage.expects(:store_yaml)
     @list.cache_thread_list "2008", "01", ["1@example.com", "2@example.com"]
   end
 end

@@ -23,10 +23,8 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_new_saved
-    o = mock("object")
-    o.expects(:value).returns(mock(:to_s => message(:good)))
-    o.expects(:about).returns(mock(:[] => '4'))
-    AWS::S3::S3Object.expects(:find).with('/path/to/message', 'listlibrary_archive').returns(o)
+    m = Message.new message(:good), 'test', '00000000'
+    $storage.expects(:load_yaml).with('listlibrary_archive', '/path/to/message').returns(m)
     m = Message.new '/path/to/message', 'test', '00000000'
     assert_equal message(:good), m.message
   end
@@ -116,12 +114,8 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
     assert_equal '_listlibrary_no_list', m.slug
     key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
-    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
-    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
-      :content_type             => "text/plain",
-      :'x-amz-meta-source'      => 'test',
-      :'x-amz-meta-call_number' => '00000000'
-    })
+    $storage.expects(:exists?).with('listlibrary_archive', key).returns(false)
+    $storage.expects(:store_yaml).with('listlibrary_archive', key, m)
     m.store
   end
 
@@ -149,12 +143,8 @@ class MessageTest < Test::Unit::TestCase
     expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
-    AWS::S3::S3Object.expects(:exists?).with(key, 'listlibrary_archive').returns(false)
-    AWS::S3::S3Object.expects(:store).with(key, m.message, 'listlibrary_archive', {
-      :content_type             => "text/plain",
-      :'x-amz-meta-source'      => 'test',
-      :'x-amz-meta-call_number' => '00000000'
-    })
+    $storage.expects(:exists?).with('listlibrary_archive', key).returns(false)
+    $storage.expects(:store_yaml).with('listlibrary_archive', key, m)
     m.store
   end
 
@@ -167,7 +157,7 @@ class MessageTest < Test::Unit::TestCase
     expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     assert_equal :error, m.overwrite
-    AWS::S3::S3Object.expects(:exists?).with(m.key, 'listlibrary_archive').returns(true)
+    $storage.expects(:exists?).with('listlibrary_archive', m.key).returns(true)
     assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{m.key}") do
       m.store
     end
@@ -177,11 +167,7 @@ class MessageTest < Test::Unit::TestCase
     expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     m.overwrite = :do
-    AWS::S3::S3Object.expects(:store).with(m.key, m.message, 'listlibrary_archive', {
-      :content_type             => "text/plain",
-      :'x-amz-meta-source'      => 'test',
-      :'x-amz-meta-call_number' => '00000000'
-    })
+    $storage.expects(:store_yaml).with('listlibrary_archive', m.key, m)
     m.store
   end
 
@@ -189,7 +175,7 @@ class MessageTest < Test::Unit::TestCase
     expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     m.overwrite = :dont
-    AWS::S3::S3Object.expects(:exists?).with(m.key, 'listlibrary_archive').returns(true)
+    $storage.expects(:exists?).with('listlibrary_archive', m.key).returns(true)
     m.store
   end
 

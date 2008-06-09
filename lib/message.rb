@@ -3,11 +3,11 @@ require 'rmail'
 require 'base64'
 require 'time'
 require 'md5'
-require 'aws'
+require 'storage'
 
 class Message
-  attr_reader   :from, :message, :source, :slug # used by code
-  attr_reader   :call_number, :message_id, :references, :subject, :n_subject, :date, :from, :no_archive, :key # for yaml
+  attr_reader   :from, :message, :source, :slug, :call_number, :message_id
+  attr_reader   :references, :subject, :n_subject, :date, :no_archive, :key
   attr_accessor :overwrite
 
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
@@ -18,26 +18,20 @@ class Message
     @source = source
     @call_number = call_number
     @overwrite = :error
-
-    if message.is_a? String and message.match "\n" # initialized with a message
+    
+    if message.is_a?(String) and message.match("\n") # initialized with a raw mail
       @message = message
     else
       @overwrite = :do
       if message.is_a? String # initialized with a url
-        while 1
-          o = AWS::S3::S3Object.find(message, 'listlibrary_archive')
-          break unless o.about['content-length'].nil?
-          sleep 2
-        end
-      elsif message.is_a? AWS::S3::S3Object # initialized with an S3Object
-        o = message
+        m = $storage.load_yaml('listlibrary_archive', message)
       else
         raise "Can't build Message from a #{message.class}"
       end
 
-      @message = o.value.to_s
-      @call_number ||= o.metadata['call_number']
-      @source ||= o.metadata['source']
+      @message = m.message
+      @call_number ||= m.call_number
+      @source ||= m.source
     end
     raise "call_number '#{@call_number}' is invalid string" unless @call_number.instance_of? String and @call_number.length == 8
     extract_metadata
@@ -107,7 +101,7 @@ class Message
 
   def store
     unless @overwrite == :do
-      attempted = AWS::S3::S3Object.exists?(@key, "listlibrary_archive")
+      attempted = $storage.exists? 'listlibrary_archive', @key
       return self if attempted and @overwrite == :dont
       if @overwrite == :new
         generate_message_id
@@ -116,19 +110,11 @@ class Message
         raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
       end
     end
-    AWS::S3::S3Object.store(@key, message, "listlibrary_archive", {
-      :content_type             => "text/plain",
-      :'x-amz-meta-source'      => @source,
-      :'x-amz-meta-call_number' => call_number
-    })
+    $storage.store_yaml('listlibrary_archive', @key, self)
     self
   end
 
-  # In threading, the Container caches YAML messages, so we limit the
-  # serialization to the fields the threader needs (@from and @no_archive for
-  # view/thread_list which shouldn't need to load the whole message).
-  # view/thread must actually load messages from their keys.
-  def to_yaml_properties ; %w{@call_number @message_id @references @subject @date @from @no_archive @key} ; end
+  def to_yaml_properties ; %w{@source @call_number @message_id @references @subject @date @from @no_archive @key @slug @message} ; end
 
   # method rather than var so that unserialized Messages don't have to save both
   def n_subject

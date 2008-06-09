@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'test/unit'
 require 'haml'
 require 'mocha'
 require 'pp'
@@ -11,7 +12,7 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 
 # Don't make a real AWS S3 connection
 AWS_connection = true
-require 'aws'
+require 'storage'
 
 # Don't ever actually make pop connections
 require 'net/pop'

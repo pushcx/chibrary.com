@@ -3,7 +3,7 @@
 require 'ostruct'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
+require 'storage'
 require 'list'
 require 'log'
 require 'queue'
@@ -49,34 +49,9 @@ class Threader
       end
 
       # add messages
-      tmpdir = File.join("tmp", Process.pid.to_s)
-      Dir.mkdir(tmpdir)
       added.each_with_index do |key, i|
-        fork do
-          while 1
-            o = AWS::S3::S3Object.find(key, 'listlibrary_archive')
-            break unless o.about['content-length'].nil?
-            sleep 2
-          end
-
-          File.open("#{tmpdir}/object.#{i}", 'w') do |file|
-            # s3 interface lazily loads value and metadata
-            o.value
-            o.metadata
-            file.puts o.to_yaml
-          end
-        end
-        if i % 15 == 0 or i == (added.length - 1)
-          Process.waitall
-          Dir.foreach(tmpdir) do |filename|
-            next unless filename =~ /^object/
-            object = YAML::load_file("#{tmpdir}/#{filename}")
-            threadset << Message.new(object)
-            File.delete("#{tmpdir}/#{filename}")
-          end
-        end
+        threadset << $storage.load_yaml('listlibrary_archive', key)
       end
-      Dir.delete("tmp/#{Process.pid}")
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
       queue_renderer(slug, year, month, threadset) unless removed.empty? and added.empty?

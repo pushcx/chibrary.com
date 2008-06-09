@@ -58,7 +58,7 @@ class FilerTest < Test::Unit::TestCase
     message = mock('message')
     message.expects(:store).raises(RuntimeError, "something bad happened")
     Message.expects(:new).returns(message)
-    AWS::S3::S3Object.expects(:store) # the error store
+    $storage.expects(:store_string) # the error store
 
     f = Filer.new(0, 0)
     f.store message(:good)
@@ -120,7 +120,7 @@ class FilerTest < Test::Unit::TestCase
 
   def test_store_double_failure
     Message.expects(:new).raises(RuntimeError, "Primary Error")
-    AWS::S3::S3Object.expects(:store).raises(RuntimeError, "Secondary Error")
+    $storage.expects(:store_yaml).raises(RuntimeError, "Secondary Error")
 
     rc = mock("remote connection")
     RemoteConnection.expects(:new).returns(rc)

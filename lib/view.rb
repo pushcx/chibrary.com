@@ -4,7 +4,7 @@ require 'haml'
 require 'tidy'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
+require 'storage'
 require 'list'
 require 'time_'
 
@@ -103,7 +103,7 @@ class View
   def self.h str
     str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2...\3') # hide mail addresses
     str = CGI::escapeHTML(str)
-    #str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
+    str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
   end
 
   def self.container_partial c
@@ -117,7 +117,7 @@ class View
         :parent => c.root? ? nil : c.parent.message,
         :children => c.children.sort.collect { |c| c.message unless c.empty? }.compact,
       })
-    rescue AWS::S3::NoSuchKey
+    rescue NotFound
       View::render(:partial => 'message_missing')
     end
   end
