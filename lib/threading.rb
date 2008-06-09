@@ -188,7 +188,7 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new
-    $storage.list_keys('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/").each do |key|
+    $storage.list_keys('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/") do |key|
       thread = $storage.load_yaml('listlibrary_archive', key)
       threadset.containers[thread.message_id] = thread
     end

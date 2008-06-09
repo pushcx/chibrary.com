@@ -28,7 +28,7 @@ class Renderer
     end
 
     lists = []
-    $storage.list_keys('listlibrary_cachedhash', "render/index/").each do |key|
+    $storage.list_keys('listlibrary_cachedhash', "render/index/") do |key|
       lists << List.new(key.split('/')[-1])
     end
     @rc.upload_file 'index', View::render(:page => 'index', :locals => { :lists => lists })

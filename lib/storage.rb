@@ -13,20 +13,18 @@ class AWS::S3::Connection
 end
 
 class AWS::S3::Bucket
-  def self.keylist bucket, prefix
-    last = prefix
-    keys = []
+  def self.keylist bucket, prefix, last=nil
+    last = prefix if last.nil?
     loop do
-      list = begin
+      keys = begin
         get(path(bucket, { :prefix => prefix, :marker => last})).parsed['contents'].collect { |o| o['key'].to_s }
       rescue NoMethodError
         []
       end
-      break if list.empty?
-      keys += list
+      break if keys.empty?
+      keys.each { |k| yield k }
       last = keys.last
     end
-    keys
   end
 end
 
@@ -76,7 +74,7 @@ end
 
 class FileStorage
   def list_keys(bucket, prefix)
-    Dir.entries(filename(bucket, prefix))[2..-1]
+    Dir.entries(filename(bucket, prefix))[2..-1].each { |k| yield k }
   end
 
   def exists?(bucket, key)

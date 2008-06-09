@@ -15,7 +15,7 @@ class List < CachedHash
   end
 
   def fresh_message_list year, month
-    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/").sort
+    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/").collect.sort
   end
 
   def cache_message_list year, month, message_list
@@ -32,7 +32,7 @@ class List < CachedHash
 
   def year_counts
     years = {}
-    $storage.list_keys('listlibrary_cachedhash', "list/#{@slug}/thread_list/").each do |key|
+    $storage.list_keys('listlibrary_cachedhash', "list/#{@slug}/thread_list/") do |key|
       thread_list = $storage.load_yaml("listlibrary_cachedhash", key)
       year, month = key.split('/')[3..4]
       years[year] ||= {}
