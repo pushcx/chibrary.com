@@ -14,7 +14,7 @@ class CachedHash
     return @@cache[@prefix][key] if @@cache[@prefix].has_key? key
 
     @@cache[@prefix][key] = begin
-      $storage.load_string("listlibrary_cachedhash", "#{@prefix}/#{key}").value.chomp
+      $storage.load_string("listlibrary_cachedhash", "#{@prefix}/#{key}").chomp
     rescue NotFound
       nil
     end
