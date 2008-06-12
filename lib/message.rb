@@ -193,7 +193,7 @@ class Message
   end
 
   def load_message_id
-    if message_id = get_header('Message-Id') and message_id =~ /^<?[a-zA-Z0-9!#$\%&'*+\-\.\/=?^_`{|}~]+@[a-zA-Z0-9_\-\.]+>?$/ and message_id.length < 120
+    if message_id = get_header('Message-Id') and message_id =~ /^<?[a-zA-Z0-9%+\-\.\/=_]+@[a-zA-Z0-9_\-\.]+>?$/ and message_id.length < 120
       @message_id = /^<?([^@]+@[^\>]+)>?/.match(message_id)[1].chomp
     else
       generate_message_id
