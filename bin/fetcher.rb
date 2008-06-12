@@ -39,10 +39,9 @@ class Fetcher < Filer
           return if (@max -= 1) <= 0
         rescue Net::POPError => e
           # just rebuild the connection and soldier on
-          log.warning "rebuilding after #{e.class}: #{e.message}"
-          sleep 20
-          teardown rescue nil
-          setup
+          log.warning "stopping after #{e.class}: #{e.message}"
+          teardown
+          return
         rescue SequenceExhausted
           return
         end
@@ -62,10 +61,9 @@ if __FILE__ == $0
   log.block "fetcher", "up to #{max} messages" do |log|
     while max > 0
       run = Fetcher.new(nil, nil, max).run
-      puts run
       fetched += run
-      break if run < 10
-      sleep 10
+      break if run < 50
+      sleep 25
       max -= PER_CONNECTION
     end
     "fetched #{fetched}"
