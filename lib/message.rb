@@ -3,6 +3,8 @@ require 'rmail'
 require 'base64'
 require 'time'
 require 'md5'
+
+require 'cachedhash'
 require 'storage'
 
 class Message
