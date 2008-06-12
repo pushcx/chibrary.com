@@ -54,7 +54,6 @@ class Threader
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
-      queue_renderer(slug, year, month, threadset) unless removed.empty? and added.empty?
       end # log
     end
     end
@@ -72,13 +71,6 @@ class Threader
     list = List.new slug
     list.cache_message_list year, month, message_list
     list.cache_thread_list  year, month, thread_list
-  end
-
-  def queue_renderer slug, year, month, threadset
-    thread_q = Queue.new :render_thread
-    threadset.each { |thread| thread_q.add :slug => slug, :year => year, :month => month, :call_number => thread.call_number }
-    Queue.new(:render_month).add :slug => slug, :year => year, :month => month
-    Queue.new(:render_list).add :slug => slug
   end
 end
 

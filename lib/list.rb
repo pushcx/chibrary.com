@@ -11,11 +11,17 @@ class List < CachedHash
   end
 
   def cached_message_list year, month
-    ($storage.load_yaml(month_list_key(year, month)) or [])
+    begin
+      $storage.load_yaml('listlibrary_archive', month_list_key(year, month))
+    rescue NotFound
+      []
+    end
   end
 
   def fresh_message_list year, month
-    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/").collect.sort
+    l = []
+    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/") { |k| l << k }
+    l.sort
   end
 
   def cache_message_list year, month, message_list

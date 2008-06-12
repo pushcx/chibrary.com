@@ -81,7 +81,28 @@ end
 
 class FileStorage
   def list_keys(bucket, prefix)
-    Dir.entries(filename(bucket, prefix))[2..-1].each { |k| yield k }
+    begin
+      Dir.entries(filename(bucket, prefix)).each do |k|
+        next if %w{. ..}.include? k
+        yield filename(prefix, k)
+      end
+    rescue Errno::ENOENT
+      []
+    end
+  end
+
+  def first_key(bucket, prefix)
+    Dir.entries(filename(bucket, prefix)).each do |file|
+      next if %w{. ..}.include? file
+      f = filename(bucket, prefix, file)
+      if File.directory? f
+        r = first_key(bucket, filename(prefix, file))
+        return r if r
+      elsif File.file? f
+        return f.split('/')[1..-1].join('/') # return without bucket name
+      end
+    end
+    return nil
   end
 
   def exists?(bucket, key)
@@ -124,8 +145,8 @@ class FileStorage
 
   private
 
-  def filename(bucket, key)
-    "#{bucket}/#{key}"
+  def filename(*parts)
+    parts.map { |s| s.sub(/^\//, '').sub(/\/$/, '') }.collect.join '/'
   end
 end
 

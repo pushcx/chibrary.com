@@ -21,7 +21,7 @@ class Container
     end
     @parent = nil
     @children = []
-  end      
+  end
 
   # container accessors
 
