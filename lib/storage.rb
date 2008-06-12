@@ -84,6 +84,9 @@ class FileStorage
     begin
       Dir.entries(filename(bucket, prefix)).each do |k|
         next if %w{. ..}.include? k
+        if File.directory? filename(bucket, prefix, k)
+          list_keys(bucket, filename(prefix, k)) { |k| yield k }
+        end
         yield filename(prefix, k)
       end
     rescue Errno::ENOENT
