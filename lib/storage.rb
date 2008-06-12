@@ -22,7 +22,14 @@ class AWS::S3::Bucket
         []
       end
       break if keys.empty?
-      keys.each { |k| yield k }
+      keys.each do |k|
+        begin
+          yield k
+        rescue Errno::ECONNRESET
+          sleep 2
+          yield k
+        end
+      end
       last = keys.last
     end
   end
@@ -105,7 +112,7 @@ class FileStorage
 
   def store_string(bucket, key, str)
     f = filename(bucket, key)
-    `mkdir -p #{f.split('/')[0..-2]}`
+    `mkdir -p #{f.split('/')[0..-2].join('/')}`
     File.open(f, 'w') do |f|
       f.write(str.to_s.chomp)
     end
