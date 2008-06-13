@@ -87,6 +87,7 @@ class Filer
         @mailing_lists[message.slug] ||= []
         @mailing_lists[message.slug] << [message.date.year, message.date.month]
       end
+      $storage.delete("listlibrary_archive", mail) unless mail == message.key
       $stdout.puts "#{@message_count} #{call_number} stored: #{message.key}"
     rescue SequenceExhausted
       raise
