@@ -15,7 +15,11 @@ class Refiler < Filer
   def call_number ; nil ; end
 
   def acquire
-    AWS::S3::Bucket.keylist('listlibrary_archive', 'list/').each { |key| yield key, nil }
+    $storage.list_keys('listlibrary_archive', 'list/') do |key|
+      next unless key.match '/message/'
+      next unless File.file? "listlibrary_archive/#{key}"
+      yield key, :do
+    end
   end
 
 end
