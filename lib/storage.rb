@@ -95,6 +95,7 @@ class FileStorage
   end
 
   def first_key(bucket, prefix)
+    return nil unless File.exists? filename(bucket, prefix)
     Dir.entries(filename(bucket, prefix)).each do |file|
       next if %w{. ..}.include? file
       f = filename(bucket, prefix, file)
