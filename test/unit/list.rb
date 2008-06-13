@@ -21,12 +21,12 @@ class ListTest < Test::Unit::TestCase
   end
 
   def test_fresh_message_list_empty
-    $storage.expects(:list_keys).returns([])
+    $storage.expects(:list_keys)
     assert_equal [], @list.fresh_message_list("2008", "01")
   end
 
   def test_fresh_message_list
-    $storage.expects(:list_keys).returns(["1@example.com", "2@example.com"])
+    $storage.expects(:list_keys).multiple_yields("1@example.com", "2@example.com")
     assert_equal ["1@example.com", "2@example.com"], @list.fresh_message_list("2008", "01")
   end
 

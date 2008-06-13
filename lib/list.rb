@@ -12,7 +12,7 @@ class List < CachedHash
 
   def cached_message_list year, month
     begin
-      $storage.load_yaml('listlibrary_archive', month_list_key(year, month))
+      $storage.load_yaml('listlibrary_archive', month_list_key(year, month)) or []
     rescue NotFound
       []
     end
