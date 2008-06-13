@@ -8,7 +8,7 @@ class CachedHashTest < Test::Unit::TestCase
     assert_equal CachedHash, ch.class
     $storage.expects(:load_string).with('listlibrary_cachedhash', 'unit_test/missing').raises(NotFound)
     assert_nil ch['missing']
-    $storage.expects(:load_string).with('listlibrary_cachedhash', 'unit_test/working').returns(mock(:value => 'working'))
+    $storage.expects(:load_string).with('listlibrary_cachedhash', 'unit_test/working').returns(mock(:chomp => 'working'))
     assert_equal 'working', ch['working']
   end
 
