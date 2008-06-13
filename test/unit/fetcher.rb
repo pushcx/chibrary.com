@@ -46,7 +46,6 @@ class FetcherTest < Test::Unit::TestCase
     nil.expects(:each_mail).yields(mail)
     # expect it to be treated as a POP error
     f.expects(:teardown)
-    f.expects(:setup)
     f.acquire { |mail, overwrite| }
   end
 
@@ -59,7 +58,6 @@ class FetcherTest < Test::Unit::TestCase
     nil.expects(:n_mails).yields(0)
     nil.expects(:each_mail).yields(mail)
     f.expects(:teardown)
-    f.expects(:setup)
     f.acquire { |mail, overwrite| }
   end
 
