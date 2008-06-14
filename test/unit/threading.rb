@@ -274,7 +274,7 @@ class ThreadSetTest < ThreadingTest
   def test_month
     ts = mock
     ThreadSet.expects(:new).returns(ts)
-    $storage.expects(:list_keys).returns(%w{a b c d})
+    $storage.expects(:list_keys).multiple_yields(*%w{a b c d})
     message = mock("message")
     message.expects(:message_id).times(4).returns("id@example.com")
     $storage.expects(:load_yaml).times(4).returns(message)
