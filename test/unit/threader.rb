@@ -47,7 +47,6 @@ class ThreaderTest < Test::Unit::TestCase
     ThreadSet.expects(:new).returns(ts)
 
     t.expects(:cache_work).with('example', '2008', '08', [], ts)
-    t.expects(:queue_renderer).with('example', '2008', '08', ts)
     t.run
   end
 
@@ -65,7 +64,6 @@ class ThreaderTest < Test::Unit::TestCase
     ThreadSet.expects(:month).returns(ts)
 
     t.expects(:cache_work)
-    t.expects(:queue_renderer)
     t.run
   end
 
@@ -124,16 +122,6 @@ class ThreaderTest < Test::Unit::TestCase
     List.expects(:new).returns(list)
 
     Threader.new.cache_work slug, year, month, message_list, threadset
-  end
-
-  def test_queue_renderer
-    threadset = mock("threadset")
-    threadset.expects(:each).yields(mock(:call_number => '00000001'))
-    Queue.expects(:new).with(:render_thread).returns(mock("thread_q", :add => nil))
-    Queue.expects(:new).with(:render_month).returns(mock("month_q", :add => nil))
-    Queue.expects(:new).with(:render_list).returns(mock("list_q", :add => nil))
-
-    Threader.new.queue_renderer "example", "2008", "08", threadset
   end
 
   private
