@@ -1,5 +1,4 @@
 Scrapers: minimum headers to set are
   * From
-  * X-Mailing-List
   * Date
   * Subject
