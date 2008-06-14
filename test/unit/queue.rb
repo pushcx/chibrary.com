@@ -47,15 +47,16 @@ class QueueTest < Test::Unit::TestCase
   def test_next
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :render_list
-    AWS::S3::Bucket.expects(:objects).returns([mock("object", :value => "yaml", :delete => true)])
-    YAML::expects(:load).with("yaml").returns("job")
+    $storage.expects(:first_key).returns("key")
+    $storage.expects(:load_yaml).returns("job")
+    $storage.expects(:delete).returns("job")
     assert_equal "job", queue.next
   end
 
   def test_next_none
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :render_list
-    AWS::S3::Bucket.expects(:objects).returns([])
+    $storage.expects(:first_key).returns(nil)
     assert_equal nil, queue.next
   end
 
@@ -63,10 +64,9 @@ class QueueTest < Test::Unit::TestCase
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :render_list
     object1 = mock("object1")
-    object1.expects(:value).raises(RuntimeError, "key deleted") # can't actually call AWS::S3::NoSuchKey
-    object2 = mock("object2", :delete => true, :value => "yaml")
-    AWS::S3::Bucket.expects(:objects).times(2).returns([object1], [object2])
-    YAML::expects(:load).with("yaml").returns("job")
+    $storage.expects(:first_key).times(2).returns("taken key", "good key")
+    $storage.expects(:load_yaml).times(2).raises(RuntimeError, "key deleted").then.returns("job")
+    $storage.expects(:delete)
     assert_equal "job", queue.next
   end
 end

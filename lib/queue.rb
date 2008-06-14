@@ -60,12 +60,10 @@ class Queue
       begin
         key = $storage.first_key('listlibrary_cachedhash', "queue/#{type}")
         return nil if key.nil?
-        puts "queue returning #{key}"
         job = $storage.load_yaml('listlibrary_cachedhash', key)
         $storage.delete('listlibrary_cachedhash', key)
         break
       rescue Exception => e
-        puts e
         # another worker took this job, try again
       end
     end
