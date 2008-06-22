@@ -33,7 +33,7 @@ class Job
   def [] k ; @attributes[k] ; end
 
   def key
-    "#{@type.to_s}/" + JOB_TYPES[@type][:key].gsub(/:(\w+)/) { @attributes[$1.to_sym] }
+    JOB_TYPES[@type][:key].gsub(/:(\w+)/) { @attributes[$1.to_sym] }
   end
 
   def delete
