@@ -123,11 +123,10 @@ class Container
 
     yaml = self.to_yaml
     begin
-      return if $storage.size('listlibrary_archive', key) == yaml.size
+      return if $archive[key].size == yaml.size
     rescue NotFound ; end
 
-    # Doesn't use store_yaml because the yaml was already generated once
-    $storage.store_string('listlibrary_archive', key, yaml)
+    $archive[key] = yaml
   end
 
   # parenting methods
@@ -188,8 +187,8 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new
-    $storage.list_keys('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}/") do |key|
-      thread = $storage.load_yaml('listlibrary_archive', key)
+    $archive["list/#{slug}/thread/#{year}/#{month}/"].each do |key|
+      thread = $archive[key]
       threadset.containers[thread.message_id] = thread
     end
     threadset

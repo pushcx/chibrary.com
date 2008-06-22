@@ -28,7 +28,7 @@ class Renderer
     end
 
     lists = []
-    $storage.list_keys('listlibrary_cachedhash', "render/index/") do |key|
+    $archive['render/index'].each do |key|
       lists << List.new(key.split('/')[-1])
     end
     @rc.upload_file 'index', View::render(:page => 'index', :locals => { :lists => lists })
@@ -171,7 +171,7 @@ class Renderer
       log.block job.key, job.type do |log|
       case job.type
       when :render_thread
-        if $storage.exists? 'listlibrary_archive', "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}"
+        if $archive.has_key? "list/#{job[:slug]}/thread/#{job[:year]}/#{job[:month]}/#{job[:call_number]}"
           render_thread job[:slug], job[:year], job[:month], job[:call_number]
         else
           delete_thread job[:slug], job[:year], job[:month], job[:call_number]

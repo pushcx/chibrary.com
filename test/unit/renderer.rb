@@ -210,7 +210,7 @@ class RendererTest < Test::Unit::TestCase
     r = Renderer.new
     job = Job.new :render_thread, :slug => "example", :year => "2007", :month => "08", :call_number => "00000000"
     r.expects(:get_job).times(2).returns(job, nil)
-    $storage.expects(:exists?).with('listlibrary_archive', "list/example/thread/2007/08/00000000").returns(true)
+    $archive.expects(:has_key?).with("list/example/thread/2007/08/00000000").returns(true)
     r.expects(:render_thread).with("example", "2007", "08", "00000000")
     r.run
   end
@@ -219,7 +219,7 @@ class RendererTest < Test::Unit::TestCase
     r = Renderer.new
     job = Job.new :render_thread, :slug => "example", :year => "2007", :month => "08", :call_number => "00000000"
     r.expects(:get_job).times(2).returns(job, nil)
-    $storage.expects(:exists?).with("listlibrary_archive", "list/example/thread/2007/08/00000000").returns(false)
+    $archive.expects(:has_key?).with("list/example/thread/2007/08/00000000").returns(false)
     r.expects(:delete_thread).with("example", "2007", "08", "00000000")
     r.run
   end

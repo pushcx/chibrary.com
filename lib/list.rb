@@ -12,34 +12,32 @@ class List < CachedHash
 
   def cached_message_list year, month
     begin
-      $storage.load_yaml('listlibrary_archive', month_list_key(year, month)) or []
+      $archive[month_list_key(year, month)] or []
     rescue NotFound
       []
     end
   end
 
   def fresh_message_list year, month
-    l = []
-    $storage.list_keys('listlibrary_archive', "list/#{@slug}/message/#{year}/#{month}/") { |k| l << k }
-    l.sort
+    $archive["list/#{@slug}/message/#{year}/#{month}/"].collect(true).sort
   end
 
   def cache_message_list year, month, message_list
-    $storage.store_yaml('listlibrary_archive', month_list_key(year, month), message_list)
+    $archive[month_list_key(year, month)] = message_list
   end
 
   def thread year, month, call_number
-    $storage.load_yaml('listlibrary_archive', "list/#{@slug}/thread/#{year}/#{month}/#{call_number}")
+    $archive["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
   end
 
   def thread_list year, month
-    $storage.load_yaml('listlibrary_archive', thread_list_key(year, month))
+    $archive[thread_list_key(year, month)]
   end
 
   def year_counts
     years = {}
-    $storage.list_keys('listlibrary_cachedhash', "list/#{@slug}/thread_list/") do |key|
-      thread_list = $storage.load_yaml("listlibrary_cachedhash", key)
+    $cachedhash["list/#{@slug}/thread_list/"].each do |key|
+      thread_list = $archive[key]
       year, month = key.split('/')[3..4]
       years[year] ||= {}
       years[year][month] = { :threads => render_month.length, :messages => render_month.collect { |t| t[:messages] }.sum }
@@ -48,7 +46,7 @@ class List < CachedHash
   end
 
   def cache_thread_list year, month, thread_list
-    $storage.store_yaml('listlibrary_archive', thread_list_key(year, month), thread_list)
+    $archive[thread_list_key(year, month)] = thread_list
   end
 
   private

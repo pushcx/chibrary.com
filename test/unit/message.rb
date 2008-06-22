@@ -6,6 +6,13 @@ class MessageTest < Test::Unit::TestCase
 
   REPLY_SUBJECTS = ["Re: foo", "RE: foo", "RE[9]: foo", "re(9): foo", "re:foo", "re: Re: foo", "fwd: foo", "Fwd: foo", "Fwd[14]: foo", "Re: Fwd: RE: fwd(3): foo", "fw: foo"]
 
+  def setup
+    addresses = mock('addresses')
+    addresses.expects(:[]).at_least(0).returns('example')
+    addresses.expects(:[]).with('bob@example.com').at_least(0).returns(nil)
+    CachedHash.expects(:new).with('list_address').at_least(0).returns(addresses)
+  end
+
   def test_subject_is_reply?
     REPLY_SUBJECTS.each do |subject|
       assert_equal true, Message.subject_is_reply?(subject)
@@ -24,7 +31,7 @@ class MessageTest < Test::Unit::TestCase
 
   def test_new_saved
     m = Message.new message(:good), 'test', '00000000'
-    $storage.expects(:load_yaml).with('listlibrary_archive', '/path/to/message').returns(m)
+    $archive.expects(:[]).with('/path/to/message').returns(m)
     m = Message.new '/path/to/message', 'test', '00000000'
     assert_equal message(:good), m.message
   end
@@ -50,7 +57,6 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_formatting_message_id
-    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:formatting_message_id), 'test', '00000000'
     assert_equal "list/example/message/2008/01/id%m%d%s@example.com", m.key
   end
@@ -86,7 +92,6 @@ class MessageTest < Test::Unit::TestCase
 
   def test_mailing_list_in_various_places
     [:good, :list_in_to, :list_in_cc, :list_in_bcc, :list_in_reply_to].each do |fixture|
-      expect_list 'example@list.example.com', 'example'
       m = Message.new message(fixture), 'test', '00000000'
       assert_equal "example", m.slug
     end
@@ -114,8 +119,8 @@ class MessageTest < Test::Unit::TestCase
     assert_equal "00000000@generated-message-id.listlibrary.net", m.message_id
     assert_equal '_listlibrary_no_list', m.slug
     key = 'list/_listlibrary_no_list/message/2006/10/00000000@generated-message-id.listlibrary.net'
-    $storage.expects(:exists?).with('listlibrary_archive', key).returns(false)
-    $storage.expects(:store_yaml).with('listlibrary_archive', key, m)
+    $archive.expects(:has_key?).with(key).returns(false)
+    $archive.expects(:[]=).with(key, m)
     m.store
   end
 
@@ -140,11 +145,10 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_store_metadata
-    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     key = 'list/example/message/2006/10/goodid@example.com'
-    $storage.expects(:exists?).with('listlibrary_archive', key).returns(false)
-    $storage.expects(:store_yaml).with('listlibrary_archive', key, m)
+    $archive.expects(:has_key?).with(key).returns(false)
+    $archive.expects(:[]=).with(key, m)
     m.store
   end
 
@@ -154,28 +158,25 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_overwrite_error
-    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     assert_equal :error, m.overwrite
-    $storage.expects(:exists?).with('listlibrary_archive', m.key).returns(true)
+    $archive.expects(:has_key?).with(m.key).returns(true)
     assert_raises(RuntimeError, "overwrite attempted for listlibrary_archive #{m.key}") do
       m.store
     end
   end
 
   def test_overwrite_do
-    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     m.overwrite = :do
-    $storage.expects(:store_yaml).with('listlibrary_archive', m.key, m)
+    $archive.expects(:[]=).with(m.key, m)
     m.store
   end
 
   def test_overwrite_dont
-    expect_list 'example@list.example.com', 'example'
     m = Message.new message(:good), 'test', '00000000'
     m.overwrite = :dont
-    $storage.expects(:exists?).with('listlibrary_archive', m.key).returns(true)
+    $archive.expects(:has_key?).with(m.key).returns(true)
     m.store
   end
 
@@ -230,7 +231,7 @@ class MessageTest < Test::Unit::TestCase
   private
 
   def expect_list address, value
-    addresses = mock('addresses')
+    addresses = mock('addresses2')
     addresses.expects(:[]).with(address).at_least_once.returns(value)
     CachedHash.expects(:new).with('list_address').returns(addresses)
   end

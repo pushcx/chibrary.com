@@ -1,167 +1,138 @@
 require 'rubygems'
-require 'aws/s3'
+require 'fileutils'
 require 'yaml'
+require 'zip/zip'
 
 class NotFound < RuntimeError ; end
 
-
-class AWS::S3::Connection
-  def self.prepare_path(path)
-    path = path.remove_extended unless path.utf8?
-    URI.escape(path).gsub('+', '%2B')
-  end
-end
-
-class AWS::S3::Bucket
-  def self.keylist bucket, prefix, last=nil
-    last = prefix if last.nil?
-    loop do
-      keys = begin
-        get(path(bucket, { :prefix => prefix, :marker => last})).parsed['contents'].collect { |o| o['key'].to_s }
-      rescue NoMethodError
-        []
-      end
-      break if keys.empty?
-      keys.each do |k|
-        begin
-          yield k
-        rescue Errno::ECONNRESET
-          sleep 2
-          yield k
-        end
-      end
-      last = keys.last
+class Zip::ZipEntry
+  def contents
+    get_input_stream do |is|
+      output = is.read
+      return YAML::load(output) if output =~ /^--- /
+      return output
     end
   end
 end
 
-
-class S3Storage
-  ACCESS_KEY_ID = '0B8FSQ35925T27X8Q4R2'
-  SECRET_ACCESS_KEY = 'ryM3xNKV/3OL9j5jMeJHRqSzWETxK5MeSlXj6/rv'
-
-  def list_keys(bucket, prefix)
-    AWS::S3::Bucket.keylist(bucket, prefix)
+class File
+  def contents
+    seek(0)
+    output = read
+    return YAML::load(output) if output =~ /^--- /
+    return output
   end
 
-  def exists?(bucket, key)
-    AWS::S3::S3Object.exists? key, bucket
-  end
-
-  def size(bucket, key)
-    begin
-      AWS::S3::S3Object.find(key, 'listlibrary_archive').about['content-length']
-    rescue AWS::S3::NoSuchKey ; raise NotFound ; end
-  end
-
-  def delete(bucket, key)
-    AWS::S3::S3Object.delete(key, bucket)
-  end
-
-  def load_string(bucket, key)
-    AWS::S3::S3Object.value(key, bucket)
-  end
-
-  def load_yaml(bucket, key)
-    begin
-      YAML::load(load_string(bucket, key))
-    rescue AWS::S3::NoSuchKey
-      nil
-    end
-  end
-
-  def store_string(bucket, key, str)
-    AWS::S3::S3Object.store(key, str.to_s.chomp, bucket, :content_type => 'text/plain')
-  end
-
-  def store_yaml(bucket, key, obj)
-    store_string(bucket, key, obj.to_yaml)
+  def size
+    read.length
   end
 end
 
-class FileStorage
-  def list_keys(bucket, prefix)
-    begin
-      Dir.entries(filename(bucket, prefix)).each do |k|
-        next if %w{. ..}.include? k
-        if File.directory? filename(bucket, prefix, k)
-          list_keys(bucket, filename(prefix, k)) { |k| yield k }
-        end
-        yield filename(prefix, k)
-      end
-    rescue Errno::ENOENT
-      []
-    end
+class ZZip
+  include Enumerable
+
+  def initialize path
+    @path = path
+    @zip = Zip::ZipFile.open(@path)
   end
 
-  def first_key(bucket, prefix)
-    return nil unless File.exists? filename(bucket, prefix)
-    Dir.entries(filename(bucket, prefix)).each do |file|
-      next if %w{. ..}.include? file
-      f = filename(bucket, prefix, file)
-      if File.directory? f
-        r = first_key(bucket, filename(prefix, file))
-        return r if r
-      elsif File.file? f
-        return f.split('/')[1..-1].join('/') # return without bucket name
+  def has_key? path
+    !!@zip.find_entry(path)
+  end
+
+  def each
+    @zip.each { |entry| yield entry.name }
+  end
+
+  def first
+    each { |path| return path }
+  end
+
+  def [] path
+    # zip files cannot be nested, don't do ZDir#[]'s check for .zip
+    @zip.get_entry(path).contents
+  rescue Errno::ENOENT
+    raise NotFound
+  end
+
+  def []= path, value
+    @zip.get_output_stream(path) { |os| os.write value }
+    @zip.commit
+  end
+
+  def delete path
+    @zip.remove(path)
+  end
+end 
+
+class ZDir
+  include Enumerable
+
+  def initialize path='.'
+    @path = path
+  end
+
+  def has_key? path
+    return self[path.split('/').first].has_key?(path.split('/')[1..-1].join('/')) if path =~ /\//
+      
+    File.exists? [@path, path].join('/') or File.exists? [@path, "#{path}.zip"].join('/')
+  end
+
+  def each(recurse=false)
+    Dir.entries(@path).each do |path|
+      next if %w{. ..}.include? path
+      if File.directory? [@path, path].join('/')
+        ZDir.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
+      elsif path =~ /.zip$/
+        ZZip.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
+      else
+        yield path
       end
     end
-    return nil
   end
 
-  def exists?(bucket, key)
-    File.exists? filename(bucket, key)
+  def collect(recurse=false)
+    l = []
+    each(recurse) { |path| l << path }
+    l
   end
 
-  def size(bucket, key)
-    begin
-      File.size(filename(bucket, key))
-    rescue Errno::ENOENT ; raise NotFound ; end
+  def first(recurse=false)
+    each(recurse) { |path| return path }
   end
 
-  def delete(bucket, key)
-    begin
-      File.delete(filename(bucket, key))
-    rescue Errno::ENOENT ; end # ignore exception to act idempotently
+  def [] path
+    return self[path.split('/').first][path.split('/')[1..-1].join('/')] if path =~ /\//
+    path = "#{path}.zip" unless File.exists? path or path !~ /\.zip$/
+    path = [@path, path].join('/')
+    raise NotFound unless File.exists? path
+
+    return ZZip.new(path)            if path =~ /\.zip/
+    return ZDir.new(path)            if File.directory? path
+    return File.open(path, 'r').read if File.file? path
+
+    raise "ZDir(#{@path}) doesn't know what to do with [#{path}]"
   end
 
-  def load_string(bucket, key)
-    begin
-      File.read(filename(bucket, key))
-    rescue Errno::ENOENT ; raise NotFound ; end
-  end
-
-  def load_yaml(bucket, key)
-    YAML::load(load_string(bucket, key))
-  end
-
-  def store_string(bucket, key, str)
-    f = filename(bucket, key)
-    `mkdir -p #{f.split('/')[0..-2].join('/')}`
-    File.open(f, 'w') do |f|
-      f.write(str.to_s.chomp)
+  def []= path, value
+    return self[path.split('/').first][path.split('/')[1..-1].join('/')] = value if path =~ /\//
+    if value.is_a? ZDir
+      File.mkdir(path)
+    elsif value.is_a? ZZip or value.is_a? String
+      File.open([@path, path].join('/'), 'w') do |f|
+        f.write(value.to_s.chomp)
+      end
+    else
+      self[path] = value.to_yaml.to_s
     end
   end
-  
-  def store_yaml(bucket, key, obj)
-    store_string(bucket, key, obj.to_yaml)
-  end
 
-  private
+  def delete path
+    return self[path.split('/').first].delete(path.split('/')[1..-1].join('/')) if path =~ /\//
 
-  def filename(*parts)
-    parts.map { |s| s.sub(/^\//, '').sub(/\/$/, '') }.collect.join '/'
+    FileUtils.rm_rf([@path, path].join('/')) rescue nil
   end
 end
 
-$storage ||= FileStorage.new
-
-if $storage.is_a? S3Storage
-  unless defined? AWS_connection
-    AWS_connection = AWS::S3::Base.establish_connection!(
-      :access_key_id     => ACCESS_KEY_ID,
-      :secret_access_key => SECRET_ACCESS_KEY,
-      :persistent        => false
-    )
-  end
-end
+$archive    = ZDir.new('listlibrary_archive')
+$cachedhash = ZDir.new('listlibrary_cachedhash')

@@ -25,6 +25,12 @@ class ThreadingTest < Test::Unit::TestCase
 end
 
 class ContainerTest < ThreadingTest
+  def setup
+    addresses = mock('addresses')
+    addresses.expects(:[]).at_least(0).returns('example')
+    CachedHash.expects(:new).with('list_address').at_least(0).returns(addresses)
+  end
+
   def test_initialize
     c = Container.new 'id@example.com'
     assert c.empty?
@@ -135,23 +141,23 @@ class ContainerTest < ThreadingTest
 
   def test_cache_uncached
     c = container_tree
-    $storage.expects(:size).raises(NotFound)
-    $storage.expects(:store_string)
+    $archive.expects(:[]).raises(NotFound)
+    $archive.expects(:[]=)
     c.cache
   end
 
   def test_cache_same
     c = container_tree
     c.expects(:to_yaml).returns("yaml")
-    $storage.expects(:size).returns("yaml".size)
+    $archive.expects(:[]).returns("yaml")
     c.cache
   end
 
   def test_cache_different
     c = container_tree
     c.expects(:to_yaml).returns("yaml")
-    $storage.expects(:size).returns("old yaml".size)
-    $storage.expects(:store_string)
+    $archive.expects(:[]).returns("old yaml")
+    $archive.expects(:[]=)
     c.cache
   end
 
@@ -266,6 +272,10 @@ end
 class ThreadSetTest < ThreadingTest
   def setup
     @ts = ThreadSet.new
+
+    addresses = mock('addresses')
+    addresses.expects(:[]).at_least(0).returns('example')
+    CachedHash.expects(:new).with('list_address').at_least(0).returns(addresses)
   end
   def teardown
     @ts = nil
@@ -274,10 +284,11 @@ class ThreadSetTest < ThreadingTest
   def test_month
     ts = mock
     ThreadSet.expects(:new).returns(ts)
-    $storage.expects(:list_keys).multiple_yields(*%w{a b c d})
+    c = mock("archive")
+    c.expects(:each).multiple_yields(*%w{a b c d})
     message = mock("message")
     message.expects(:message_id).times(4).returns("id@example.com")
-    $storage.expects(:load_yaml).times(4).returns(message)
+    $archive.expects(:[]).times(5).returns(c, message, message, message, message)
     ts.expects(:containers).times(4).returns(stub_everything)
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end

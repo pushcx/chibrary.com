@@ -10,9 +10,8 @@ require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__), "..", "bin")
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 
-# Don't make a real AWS S3 connection
-AWS_connection = true
 require 'storage'
+$archive = $cachedhash = nil # avoid accidental real changes
 
 # Don't ever actually make pop connections
 require 'net/pop'

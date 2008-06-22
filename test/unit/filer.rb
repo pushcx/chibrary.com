@@ -58,7 +58,7 @@ class FilerTest < Test::Unit::TestCase
     message = mock('message')
     message.expects(:store).raises(RuntimeError, "something bad happened")
     Message.expects(:new).returns(message)
-    $storage.expects(:store_string) # the error store
+    $archive.expects(:[]=) # the error store
 
     f = Filer.new(0, 0)
     f.store message(:good)
@@ -120,7 +120,7 @@ class FilerTest < Test::Unit::TestCase
 
   def test_store_double_failure
     Message.expects(:new).raises(RuntimeError, "Primary Error")
-    $storage.expects(:store_yaml).raises(RuntimeError, "Secondary Error")
+    $archive.expects(:[]=).raises(RuntimeError, "Secondary Error")
 
     rc = mock("remote connection")
     RemoteConnection.expects(:new).returns(rc)

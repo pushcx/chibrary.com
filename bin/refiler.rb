@@ -15,9 +15,8 @@ class Refiler < Filer
   def call_number ; nil ; end
 
   def acquire
-    $storage.list_keys('listlibrary_archive', 'list/') do |key|
+    $archive['list'].each(true) do |key|
       next unless key.match '/message/'
-      next unless File.file? "listlibrary_archive/#{key}"
       yield key, :do
     end
   end

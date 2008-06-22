@@ -50,7 +50,7 @@ class Threader
 
       # add messages
       added.each_with_index do |key, i|
-        threadset << $storage.load_yaml('listlibrary_archive', key)
+        threadset << $archive[key]
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?

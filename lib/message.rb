@@ -26,7 +26,7 @@ class Message
     else
       @overwrite = :do
       if message.is_a? String # initialized with a url
-        m = $storage.load_yaml('listlibrary_archive', message)
+        m = $archive[message]
       else
         raise "Can't build Message from a #{message.class}"
       end
@@ -103,7 +103,7 @@ class Message
 
   def store
     unless @overwrite == :do
-      attempted = $storage.exists? 'listlibrary_archive', @key
+      attempted = $archive.has_key? @key
       return self if attempted and @overwrite == :dont
       if @overwrite == :new
         generate_message_id
@@ -112,7 +112,7 @@ class Message
         raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
       end
     end
-    $storage.store_yaml('listlibrary_archive', @key, self)
+    $archive[@key] = self
     self
   end
 

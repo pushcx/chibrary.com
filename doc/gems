@@ -1,10 +1,12 @@
 # List of gems required
 aws-s3
 haml
+htmlentities
 mocha
 net-sftp
 net-ssh
 permutation
 redgreen
 rmail
+rubyzip
 tidy

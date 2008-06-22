@@ -4,7 +4,6 @@ require 'net/smtp'
 require 'time'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
 require 'mail'
 require 'message'
 

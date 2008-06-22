@@ -99,7 +99,7 @@ class Filer
           :backtrace => e.backtrace,
           :mail      => mail
         }
-        $storage.store_yaml('listlibrary_archive', "filer_failure/#{call_number}", error_info)
+        $archive["filer_failure/#{call_number}"] = error_info
       rescue
         $stdout.puts "#{@message_count} #{call_number} DOUBLE FAILURE: #{e.message}"
         secondary_error_info = {

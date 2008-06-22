@@ -37,7 +37,7 @@ class Job
   end
 
   def delete
-    $storage.delete("listlibrary_archive", "queue/#{key}")
+    $archive.delete["queue/#{key}"]
   end
 end
 
@@ -56,12 +56,13 @@ class Queue
   end
 
   def next
+    c = $cachedhash["queue/#{@type}"]
     while 1
       begin
-        key = $storage.first_key('listlibrary_cachedhash', "queue/#{type}")
+        key = c.first_key
         return nil if key.nil?
-        job = $storage.load_yaml('listlibrary_cachedhash', key)
-        $storage.delete('listlibrary_cachedhash', key)
+        job = c[key]
+        c.delete key
         break
       rescue Exception => e
         # another worker took this job, try again

@@ -1,7 +1,6 @@
 #!/usr/bin/ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
 
 if ARGV.empty?
   puts "call with one or more slug[/year[/month]]"
@@ -18,7 +17,7 @@ ARGV.each do |url|
   else
     prefix = "render/month/#{slug}/"
     prefix += "#{year}/" if year
-    AWS::S3::Bucket.keylist('listlibrary_cachedhash', prefix).each do |key|
+    $cachedhash[prefix].each do |key|
       y, m= key.split('/')[2..-1]
       jobs << { :slug => slug, :year => y, :month => m }
     end
@@ -31,23 +30,23 @@ jobs.each do |job|
   slug, year, month = job[:slug], job[:year], job[:month]
 
   # delete threading job
-  AWS::S3::S3Object.delete("thread_queue/#{slug}/#{year}/#{month}", 'listlibrary_cachedhash')
+  $cachedhash.delete "thread_queue/#{slug}/#{year}/#{month}"
 
   # delete render jobs
-  AWS::S3::Bucket.keylist('listlibrary_cachedhash', "render_queue/#{slug}/#{year}/#{month}").each do |key|
-    AWS::S3::S3Object.delete(key, 'listlibrary_cachedhash')
+  $cachedhash["render_queue/#{slug}/#{year}/#{month}"].each do |key|
+    $cachedhash.delete key
   end
 
   # delete message cache
-  AWS::S3::S3Object.delete("list/#{slug}/message/#{year}/#{month}", 'listlibrary_archive')
+  $archive.delete "list/#{slug}/message/#{year}/#{month}"
 
   # delete thread cache
-  AWS::S3::Bucket.keylist('listlibrary_archive', "list/#{slug}/thread/#{year}/#{month}").each do |key|
-    AWS::S3::S3Object.delete(key, 'listlibrary_archive')
+  $archive["list/#{slug}/thread/#{year}/#{month}"].each do |key|
+    $archive.delete key
   end
 
   # delete render/month
-  AWS::S3::S3Object.delete("render/month/#{slug}/#{year}/#{month}", 'listlibrary_cachedhash')
+  $cachedhash.delete "render/month/#{slug}/#{year}/#{month}"
 
   # queue rethread
   thread_queue["#{slug}/#{year}/#{month}"] = ''

@@ -2,7 +2,6 @@
 
 require 'tempfile'
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'aws'
 require 'filer'
 
 class Failure < Filer
