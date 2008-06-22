@@ -85,7 +85,8 @@ class Filer
       message.store
       unless message.slug.match /^_/
         @mailing_lists[message.slug] ||= []
-        @mailing_lists[message.slug] << [message.date.year, message.date.month]
+        pair = [message.date.year, message.date.month]
+        @mailing_lists[message.slug] << pair unless @mailing_lists[message.slug].include? pair
       end
       $stdout.puts "#{@message_count} #{call_number} stored: #{message.key}"
     rescue SequenceExhausted
