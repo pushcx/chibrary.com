@@ -120,7 +120,7 @@ class ZDir
   def []= path, value
     return self[path.split('/').first][path.split('/')[1..-1].join('/')] = value if path =~ /\//
     if value.is_a? ZDir
-      File.mkdir(path)
+      FileUtils.mkdir_p(path)
     elsif value.is_a? ZZip or value.is_a? String
       File.open([@path, path].join('/'), 'w') do |f|
         f.write(value.to_s.chomp)
