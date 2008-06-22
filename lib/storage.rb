@@ -118,9 +118,13 @@ class ZDir
   end
 
   def []= path, value
+    dir = "#{@path}/#{path}".split('/')[0..-2].join('/')
+    FileUtils.mkdir_p(dir) unless File.exists? "#{dir}.zip"
+
+    # recurse into zips
     return self[path.split('/').first][path.split('/')[1..-1].join('/')] = value if path =~ /\//
     if value.is_a? ZDir
-      FileUtils.mkdir_p(path)
+      FileUtils.mkdir_p([@path, path].join('/'))
     elsif value.is_a? ZZip or value.is_a? String
       File.open([@path, path].join('/'), 'w') do |f|
         f.write(value.to_s.chomp)
