@@ -56,6 +56,7 @@ class ZZip
   end
 
   def []= path, value
+    value = value.to_yaml unless value.is_a? String
     @zip.get_output_stream(path) { |os| os.write value }
     @zip.commit
   end
@@ -76,13 +77,15 @@ class ZDir
     return self[path.split('/').first].has_key?(path.split('/')[1..-1].join('/')) if path =~ /\//
       
     File.exists? [@path, path].join('/') or File.exists? [@path, "#{path}.zip"].join('/')
+  rescue NotFound
+    false
   end
 
   def each(recurse=false)
     Dir.entries(@path).each do |path|
       next if %w{. ..}.include? path
       if File.directory? [@path, path].join('/')
-        ZDir.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
+        ZDir.new([@path, path].join('/')).each(recurse) { |p| yield [path, p].join('/') } if recurse
       elsif path =~ /.zip$/
         ZZip.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
       else
@@ -103,13 +106,13 @@ class ZDir
 
   def [] path
     return self[path.split('/').first][path.split('/')[1..-1].join('/')] if path =~ /\//
-    path = "#{path}.zip" unless File.exists? path or path !~ /\.zip$/
+    path = "#{path}.zip" if !File.exists?([@path, path].join('/')) and path !~ /\.zip$/
     path = [@path, path].join('/')
     raise NotFound unless File.exists? path
 
-    return ZZip.new(path)            if path =~ /\.zip/
-    return ZDir.new(path)            if File.directory? path
-    return File.open(path, 'r').read if File.file? path
+    return ZZip.new(path)                if path =~ /\.zip/
+    return ZDir.new(path)                if File.directory? path
+    return File.open(path, 'r').contents if File.file? path
 
     raise "ZDir(#{@path}) doesn't know what to do with [#{path}]"
   end

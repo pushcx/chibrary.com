@@ -47,7 +47,7 @@ class Queue
   def initialize type
     raise "unknown job type #{type}" unless JOB_TYPES.has_key? type
     @type = type
-    @queue = CachedHash.new("queue/#{type}")
+    @queue = CachedHash.new("queue/#{@type}")
   end
 
   def add attributes

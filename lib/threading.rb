@@ -187,7 +187,8 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new
-    $archive["list/#{slug}/thread/#{year}/#{month}/"].each do |key|
+    return threadset unless $archive.has_key? "list/#{slug}/thread/#{year}/#{month}"
+    $archive["list/#{slug}/thread/#{year}/#{month}"].each do |key|
       thread = $archive[key]
       threadset.containers[thread.message_id] = thread
     end

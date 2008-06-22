@@ -19,7 +19,7 @@ class List < CachedHash
   end
 
   def fresh_message_list year, month
-    $archive["list/#{@slug}/message/#{year}/#{month}/"].collect(true).sort
+    $archive["list/#{@slug}/message/#{year}/#{month}"].collect.sort
   end
 
   def cache_message_list year, month, message_list
@@ -36,7 +36,7 @@ class List < CachedHash
 
   def year_counts
     years = {}
-    $cachedhash["list/#{@slug}/thread_list/"].each do |key|
+    $cachedhash["list/#{@slug}/thread_list"].each do |key|
       thread_list = $archive[key]
       year, month = key.split('/')[3..4]
       years[year] ||= {}
