@@ -123,7 +123,7 @@ class Container
 
     yaml = self.to_yaml
     begin
-      return if $archive[key].size == yaml.size
+      return if $archive[key].to_yaml.size == yaml.size
     rescue NotFound ; end
 
     $archive[key] = yaml
@@ -188,8 +188,9 @@ class ThreadSet
   def self.month slug, year, month
     threadset = ThreadSet.new
     return threadset unless $archive.has_key? "list/#{slug}/thread/#{year}/#{month}"
-    $archive["list/#{slug}/thread/#{year}/#{month}"].each do |key|
-      thread = $archive[key]
+    threads = $archive["list/#{slug}/thread/#{year}/#{month}"]
+    threads.each do |key|
+      thread = threads[key]
       threadset.containers[thread.message_id] = thread
     end
     threadset

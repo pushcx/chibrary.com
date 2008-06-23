@@ -1,7 +1,5 @@
 #!/usr/bin/ruby
 
-require 'ostruct'
-
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'storage'
 require 'list'
@@ -50,7 +48,7 @@ class Threader
 
       # add messages
       added.each_with_index do |key, i|
-        threadset << $archive[key]
+        threadset << $archive["list/#{slug}/message/#{year}/#{month}/#{key}"]
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
