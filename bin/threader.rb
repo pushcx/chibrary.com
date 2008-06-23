@@ -9,8 +9,6 @@ require 'tempfile'
 require 'threading'
 
 class Threader
-  attr_accessor :jobs, :stop_on_empty
-
   def initialize
     @thread_q = Queue.new :thread
   end
@@ -21,9 +19,9 @@ class Threader
 
   def run
     log = Log.new "Threader"
-    log.block "threader" do |log|
+    log.block "threader" do |threader_log|
     while job = get_job
-      log.block job.key do |log|
+      threader_log.block job.key do |job_log|
       slug, year, month = job[:slug], job[:year], job[:month]
       list = List.new slug
 
@@ -31,7 +29,7 @@ class Threader
       fresh_message_list  = list.fresh_message_list year, month
 
       if cached_message_list == fresh_message_list
-        log.status "nothing to do"
+        job_log.status "nothing to do"
         next
       end
 
@@ -43,7 +41,7 @@ class Threader
       else
         threadset = ThreadSet.month(slug, year, month)
         added = fresh_message_list - cached_message_list 
-        log.status "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
+        job_log.status "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
       end
 
       # add messages
@@ -52,9 +50,9 @@ class Threader
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
-      end # log
-    end
-    end
+      end # job_log
+    end # while job
+    end # threader_log
   end
 
   def cache_work slug, year, month, message_list, threadset
