@@ -9,9 +9,10 @@ STATUSES = [:begin, :end, :error, :warning, :status]
 class Log
   attr_reader :worker, :key
 
-  def initialize worker
+  def initialize worker, depth=0
     @@server ||= CachedHash.new("server")[`hostname`.chomp]
     @worker = worker
+    @depth = depth
   end
 
   # begin/end: evil temporal coupling
@@ -28,7 +29,7 @@ class Log
 
   def block key, message=nil
     self.begin key, message
-    msg = yield Log.new(@worker)
+    msg = yield Log.new(@worker, @depth + 1)
     msg = nil unless msg.is_a? String
     self.end msg
   end
@@ -50,7 +51,7 @@ class Log
       'message' => message,
     })
     raise "couldn't log: #{response.body}" unless response.body == '1'
-    puts "#{@key}: #{message}"
+    puts '  ' * @depth + "#{@key}: #{message}"
     message
   end
 end
