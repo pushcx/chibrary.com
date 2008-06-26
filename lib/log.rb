@@ -10,7 +10,7 @@ class Log
   attr_reader :worker, :key
 
   def initialize worker, depth=0
-    @@server ||= CachedHash.new("server")[`hostname`.chomp]
+    @@server ||= CachedHash.new("server")[`hostname`.chomp] unless in_test_mode?
     @worker = worker
     @depth = depth
   end
@@ -54,4 +54,6 @@ class Log
     puts '  ' * @depth + "#{@key}: #{message}"
     message
   end
+
+  def in_test_mode? ; false ; end
 end

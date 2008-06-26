@@ -1,11 +1,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'log'
 
-class LogHashTest < Test::Unit::TestCase
+class LoggerHashTest < Test::Unit::TestCase
   def setup
-    ch = mock("cachedhash")
-    ch.expects(:[]).at_least(0).returns('server')
-    CachedHash.expects(:new).at_least(0).returns(ch)
     @log = Log.new 'worker'
   end
   def teardown ; @log = nil ; end

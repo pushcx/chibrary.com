@@ -22,7 +22,7 @@ end
 # Don't really log dev stuff
 require 'log'
 class Log
-  def initialize worker ; @worker = worker ; end
+  def in_test_mode? ; true ; end
   def log status, message ; message ; end
 end
 
