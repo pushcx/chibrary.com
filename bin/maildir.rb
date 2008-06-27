@@ -5,15 +5,13 @@ require 'filer'
 require 'log'
 
 class Maildir < Filer
+  attr_reader :slug
+
   def initialize server=nil, sequence=nil, maildir=nil, slug=nil
     raise "Usage: bin/maildir.rb path/to/maildir [slug]" if maildir.nil?
     @maildir = maildir
     @slug = slug
     super server, sequence
-  end
-
-  def slug
-    @slug
   end
 
   def source
