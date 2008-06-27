@@ -1,16 +1,26 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'storage'
 
-class ZipEntryTest < Test::Unit::TestCase
+class ZipFileTest < Test::Unit::TestCase
+  def setup
+    FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
+  end
+
+  def teardown
+    File.unlink('/tmp/test.zip') if File.exists? '/tmp/test.zip'
+  end
+
   def test_string
-    z = Zip::ZipEntry.new
-    z.expects(:get_input_stream).yields(mock("inputstream", :read => "a bunch of text"))
+    archive = Zip::Archive.open '/tmp/test.zip'
+    z = archive.fopen('mail1@example.com')
+    z.expects(:read).yields("a bunch of text")
     assert_equal "a bunch of text", z.contents
   end
 
   def test_yaml
-    z = Zip::ZipEntry.new
-    z.expects(:get_input_stream).yields(mock("inputstream", :read => "--- \n:a: :b\n"))
+    archive = Zip::Archive.open '/tmp/test.zip'
+    z = archive.fopen('mail1@example.com')
+    z.expects(:read).yields("--- \n:a: :b\n")
     assert_equal({ :a => :b }, z.contents)
   end
 end

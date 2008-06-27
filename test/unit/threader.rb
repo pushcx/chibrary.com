@@ -58,7 +58,7 @@ class ThreaderTest < Test::Unit::TestCase
     List.expects(:new).returns(list)
 
     message = mock("message")
-    $archive.expects(:[]).with('2@example.com').returns(message)
+    $archive.expects(:[]).with('list/example/message/2008/08/2@example.com').returns(message)
     ts = mock("threadset")
     ts.expects(:<<).with(message)
     ThreadSet.expects(:month).returns(ts)

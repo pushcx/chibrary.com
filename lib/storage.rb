@@ -1,17 +1,16 @@
 require 'rubygems'
 require 'fileutils'
 require 'yaml'
-require 'zip/zip'
+require 'zipruby'
 
 class NotFound < RuntimeError ; end
 
-class Zip::ZipEntry
+class Zip::File
   def contents
-    get_input_stream do |is|
-      output = is.read
-      return YAML::load(output) if output =~ /^--- /
-      return output
-    end
+    output = ''
+    read { |chunk| output << chunk }
+    return YAML::load(output) if output =~ /^--- /
+    return output
   end
 end
 
@@ -33,15 +32,14 @@ class ZZip
 
   def initialize path
     @path = path
-    @zip = Zip::ZipFile.open(@path)
   end
 
   def has_key? path
-    !!@zip.find_entry(path)
+    zip { |z| z.locate_name(path) != -1 }
   end
 
   def each
-    @zip.each { |entry| yield entry.name }
+    zip { |z| z.each { |entry| yield entry.name } }
   end
 
   def first
@@ -50,19 +48,30 @@ class ZZip
 
   def [] path
     # zip files cannot be nested, don't do ZDir#[]'s check for .zip
-    @zip.get_entry(path).contents
+    zip { |z| z.fopen(path) { |f| f.contents } }
   rescue Errno::ENOENT
     raise NotFound
   end
 
   def []= path, value
     value = value.to_yaml unless value.is_a? String
-    @zip.get_output_stream(path) { |os| os.write value }
-    @zip.commit
+    zip { |z| z.add_or_replace_buffer(path, value) }
   end
 
   def delete path
-    @zip.remove(path)
+    zip do |z|
+      if (index = z.locate_name(path)) != -1
+        z.fdelete(index)
+      end
+    end
+  end
+
+  private
+  def zip
+    zip = Zip::Archive.open(@path)
+    yield zip
+  ensure
+    zip.close
   end
 end 
 
@@ -86,7 +95,7 @@ class ZDir
       next if %w{. ..}.include? path
       if File.directory? [@path, path].join('/')
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield [path, p].join('/') } if recurse
-      elsif path =~ /.zip$/
+      elsif path =~ /\.zip$/
         ZZip.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
       else
         yield path
@@ -110,7 +119,7 @@ class ZDir
     path = [@path, path].join('/')
     raise NotFound unless File.exists? path
 
-    return ZZip.new(path)                if path =~ /\.zip/
+    return ZZip.new(path)                if path =~ /\.zip$/
     return ZDir.new(path)                if File.directory? path
     return File.open(path, 'r').contents if File.file? path
 
