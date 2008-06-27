@@ -72,6 +72,7 @@ class Filer
   # hook if anything needs to be done to clean up after store
   def release  ; end
   def source   ; 'filer' ; end
+  # define this to force a slug; handy for mailing list imports
   def slug     ; nil ; end
 
   def store mail, overwrite=nil

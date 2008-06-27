@@ -11,8 +11,11 @@ class Refiler < Filer
     'subscription'
   end
 
+  # define this to force a slug; handy for mailing list imports
+  #def slug ; 'linux-kernel' ; end
+
   # comment out to force messages to get new call numbers
-  def call_number ; nil ; end
+  #def call_number ; nil ; end
 
   def acquire
     $archive['list'].each(true) do |key|
