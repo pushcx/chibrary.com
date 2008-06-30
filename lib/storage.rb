@@ -38,7 +38,8 @@ class ZZip
     zip { |z| z.locate_name(path) != -1 }
   end
 
-  def each
+  def each(recurse=false)
+    # recurse is unused, but listed to match ZDir
     zip { |z| z.each { |entry| yield entry.name } }
   end
 
@@ -51,7 +52,7 @@ class ZZip
     # zip files cannot be nested, don't do ZDir#[]'s check for .zip
     zip { |z| z.fopen(path) { |f| f.contents } }
   rescue Zip::Error
-    raise NotFound.join(@path, path)
+    raise NotFound, File.join(@path, path)
   end
 
   def []= path, value
