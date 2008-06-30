@@ -43,8 +43,8 @@ module ThreadHelper
   end
 
   def container_partial c
-    return View::render(:partial => 'message_missing') if c.empty?
-    return View::render(:partial => 'message_no_archive') if c.message.no_archive
+    return render(:partial => 'message_missing') if c.empty?
+    return render(:partial => 'message_no_archive') if c.message.no_archive
 
     begin
       # Load the full message from s3 to get body and etc.
