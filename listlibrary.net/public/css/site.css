@@ -84,6 +84,7 @@ div.previous_next {
 /* thread list */
 
 ol.thread_list {
+  clear: both; /* needed when next/previous has very long subjects */
   background: transparent url(/img/thread_list_line.png) repeat-y -1px 0;
   list-style-type: none;
   margin-left: 0;
