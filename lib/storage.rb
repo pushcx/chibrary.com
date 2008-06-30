@@ -40,7 +40,10 @@ class ZZip
 
   def each(recurse=false)
     # recurse is unused, but listed to match ZDir
-    zip { |z| z.each { |entry| yield entry.name } }
+    files = []
+    zip { |z| z.each { |entry| files << entry.name } }
+    files.sort!
+    files.each { |f| yield f }
   end
 
   def first
@@ -93,13 +96,13 @@ class ZDir
   end
 
   def each(recurse=false)
-    Dir.entries(@path).each do |path|
+    Dir.entries(@path).sort.each do |path|
       next if %w{. ..}.include? path
       yield path
       if File.directory? File.join(@path, path)
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
-        ZZip.new([@path, path].join('/')).each { |p| yield File.join(path, p) } if recurse
+        ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       end
     end
   end
