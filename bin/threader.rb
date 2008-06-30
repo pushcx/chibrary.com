@@ -45,7 +45,7 @@ class Threader
       end
 
       # add messages
-      added.each_with_index do |key, i|
+      added.each do |key|
         threadset << $archive["list/#{slug}/message/#{year}/#{month}/#{key}"]
       end
 
@@ -70,4 +70,8 @@ class Threader
   end
 end
 
-Threader.new.run if __FILE__ == $0
+begin
+  Threader.new.run if __FILE__ == $0
+rescue Exception => e
+  puts "#{e.class}: #{e}\n" + e.backtrace.join("\n")
+end
