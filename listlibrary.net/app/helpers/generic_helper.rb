@@ -1,0 +1,2 @@
+module GenericHelper
+end

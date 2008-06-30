@@ -1,13 +1,13 @@
 .list
-  %h1= (list['name'] or slug)
+  %h1= (@list['name'] or @slug)
 
-  - if list['description']
-    %p.description= list['description']
+  - if @list['description']
+    %p.description= @list['description']
 
-  - if list['homepage']
+  - if @list['homepage']
     %p
       Homepage: 
-      %a{ :href => list['homepage'] }= list['homepage']
+      %a{ :href => @list['homepage'] }= @list['homepage']
 
 
   %table{ :summary => "Links to monthly archives of this list" }
@@ -17,18 +17,18 @@
         - 1.upto(12) do |i|
           %td= i
     %tbody
-      - years.to_a.each do |year, months|
+      - @year_counts.to_a.each do |year, months|
         %tr
           %td.year= year
           - 1.upto(12) do |i|
             - month = "%02d" % i
             - if months.has_key?(month)
               %td.month.small
-                %a{ :href => "#{year}/#{month}" }= months[month][:threads].to_s + ':' + months[month][:messages].to_s
+                %a{ :href => "/#{@slug}/#{year}/#{month}" }= months[month][:threads].to_s + ':' + months[month][:messages].to_s
             - else
               %td.empty_month= ''
 
-.ad
+-# .ad
   :plain
     <script type="text/javascript"><!--
     google_ad_client = "pub-3425662504305490";

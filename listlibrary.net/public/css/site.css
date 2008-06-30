@@ -65,6 +65,7 @@ ol.threads {
     }
 
 /* month view and thread view */
+
 div.previous_next {
   height: 18px;
   margin-bottom: 18px;
@@ -186,3 +187,7 @@ div.message div.body blockquote {
     background-color: #dddddd;
     cursor: pointer;
   }
+
+div.ad {
+  margin-bottom: 18px;
+}

@@ -1,11 +1,11 @@
-%h1.subject= subject(thread)
+%h1.subject= subject(@thread)
 
-= render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
-= render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
+= render :partial => 'thread_line', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
+= render :partial => 'previous_next', :locals => { :previous_link => @previous_link, :next_link => @next_link }
 
-= render :partial => 'thread_list', :locals => { :thread => thread }
+= render :partial => 'thread_list', :locals => { :thread => @thread }
 
-.ad
+-# .ad
   :plain
     <script type="text/javascript"><!--
     google_ad_client = "pub-3425662504305490";
@@ -18,12 +18,12 @@
 
 .thread
   - @missing_count = 0
-  = thread.collect { |c| container_partial(c) }
+  = @thread.collect { |c| container_partial(c) }
 
 %hr 
-= render :partial => 'thread_line', :locals => { :thread => thread, :list => list, :slug => slug, :year => year, :month => month }
+= render :partial => 'thread_line', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
 
-.ad
+-# .ad
   :plain
     <script type="text/javascript"><!--
     google_ad_client = "pub-3425662504305490";
@@ -34,4 +34,4 @@
     //--></script>
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
-= render :partial => 'previous_next', :locals => { :previous_link => previous_link, :next_link => next_link }
+= render :partial => 'previous_next', :locals => { :previous_link => @previous_link, :next_link => @next_link }

@@ -49,8 +49,8 @@ class ZZip
   def [] path
     # zip files cannot be nested, don't do ZDir#[]'s check for .zip
     zip { |z| z.fopen(path) { |f| f.contents } }
-  rescue Errno::ENOENT
-    raise NotFound
+  rescue Zip::Error
+    raise NotFound.join(@path, path)
   end
 
   def []= path, value
@@ -86,19 +86,18 @@ class ZDir
     return self[path.split('/').first].has_key?(path.split('/')[1..-1].join('/')) if path =~ /\//
       
     File.exists? [@path, path].join('/') or File.exists? [@path, "#{path}.zip"].join('/')
-  rescue NotFound
+  rescue NotFound, File.join(@path, path)
     false
   end
 
   def each(recurse=false)
     Dir.entries(@path).each do |path|
       next if %w{. ..}.include? path
-      if File.directory? [@path, path].join('/')
-        ZDir.new([@path, path].join('/')).each(recurse) { |p| yield [path, p].join('/') } if recurse
+      yield path
+      if File.directory? File.join(@path, path)
+        ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
-        ZZip.new([@path, path].join('/')).each { |p| yield [path, p].join('/') } if recurse
-      else
-        yield path
+        ZZip.new([@path, path].join('/')).each { |p| yield File.join(path, p) } if recurse
       end
     end
   end
@@ -114,10 +113,10 @@ class ZDir
   end
 
   def [] path
-    return self[path.split('/').first][path.split('/')[1..-1].join('/')] if path =~ /\//
-    path = "#{path}.zip" if !File.exists?([@path, path].join('/')) and path !~ /\.zip$/
+    return self[path.split('/').first][File.join(path.split('/')[1..-1])] if path =~ /\//
+    path = "#{path}.zip" if !File.exists?(File.join(@path, path)) and path !~ /\.zip$/
     path = [@path, path].join('/')
-    raise NotFound unless File.exists? path
+    raise NotFound, File.join(@path, path) unless File.exists? path
 
     return ZZip.new(path)                if path =~ /\.zip$/
     return ZDir.new(path)                if File.directory? path

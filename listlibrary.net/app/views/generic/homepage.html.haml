@@ -6,5 +6,5 @@
   we'd be happy to archive it for you. (More <a href="/about">about</a> us.)
 
 %ul.lists
-  - lists.each do |list|
+  - @lists.each do |list|
     %li= "<a href=\"/#{list.slug}\">#{(list['name'] or list.slug)}</a>"
