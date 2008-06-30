@@ -44,6 +44,7 @@ class ZZip
 
   def first
     each { |path| return path }
+    nil
   end
 
   def [] path
@@ -108,8 +109,12 @@ class ZDir
     l
   end
 
-  def first(recurse=false)
-    each(recurse) { |path| return path }
+  def first # find first file
+    each(true) do |path|
+      object = self[path]
+      return path unless object.is_a? ZDir or object.is_a? ZZip
+    end
+    nil
   end
 
   def [] path

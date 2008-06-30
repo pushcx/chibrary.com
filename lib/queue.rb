@@ -59,17 +59,17 @@ class Queue
     c = $cachedhash["queue/#{@type}"]
     while 1
       begin
-        key = c.first(true)
+        key = c.first
         return nil if key.nil?
         job = c[key]
         c.delete key
-        break
+        return job
       rescue Exception => e
         puts "e #{e}"
         exit
         # another worker took this job, try again
       end
     end
-    job
+    nil
   end
 end
