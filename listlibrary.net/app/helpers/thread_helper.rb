@@ -1,7 +1,11 @@
 module ThreadHelper
   def subject o
     subj = o.n_subject
-    (subj.empty? ? '<i>no subject</i>' : subj)
+    subj = subj.empty? ? '<i>no subject</i>' : subj
+    if marker = @list['marker']
+      subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
+    end
+    subj
   end
 
   def message_body m
