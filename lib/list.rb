@@ -46,7 +46,7 @@ class List < CachedHash
       years[year] ||= {}
       years[year][month] = { :threads => thread_list.length, :messages => thread_list.collect { |t| t[:messages] }.sum }
     end
-    return years
+    return years.sort
   rescue NotFound
     return []
   end
