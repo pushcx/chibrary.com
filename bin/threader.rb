@@ -13,14 +13,10 @@ class Threader
     @thread_q = Queue.new :thread
   end
 
-  def get_job
-    @thread_q.next
-  end
-
   def run
     log = Log.new "Threader"
     log.block "threader" do |threader_log|
-    while job = get_job
+    @thread_q.work do |job|
       threader_log.block job.key do |job_log|
       slug, year, month = job[:slug], job[:year], job[:month]
       list = List.new slug
@@ -51,7 +47,7 @@ class Threader
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
       end # job_log
-    end # while job
+    end # work loop
     end # threader_log
   end
 

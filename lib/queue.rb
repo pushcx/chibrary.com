@@ -55,21 +55,36 @@ class Queue
     @queue[job.key] = job.to_yaml
   end
 
-  def next
-    c = $cachedhash["queue/#{@type}"]
+  def work
+    queue = $cachedhash["queue/#{@type}"]
+    in_progress = $cachedhash["in_progress/#{@type}"]
     while 1
+      while 1
+        begin
+          key = queue.first
+          return nil if key.nil?
+          job = queue[key]
+          puts key
+          queue.delete key
+          in_progress[key] = job
+          break
+        rescue Exception => e
+          puts "fucked up: #{e.class} #{e}\n" + e.backtrace.join("\n")
+          exit
+          # another worker took this job, try again
+        end
+      end
+
       begin
-        key = c.first
-        return nil if key.nil?
-        job = c[key]
-        c.delete key
-        return job
+        yield job
       rescue Exception => e
-        puts "e #{e}"
-        exit
-        # another worker took this job, try again
+        queue[key] = job
+        in_progress.delete key
+        puts "returning #{key} to queue, caught: #{e.class} #{e}\n" + e.backtrace.join("\n")
+        return nil # stop execution
+      else
+        in_progress.delete key
       end
     end
-    nil
   end
 end
