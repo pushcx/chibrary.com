@@ -1,14 +1,6 @@
 .list
   %h1= (@list['name'] or @slug)
 
-  - if @list['description']
-    %p.description= @list['description']
-
-  - if @list['homepage']
-    %p
-      Homepage: 
-      %a{ :href => @list['homepage'] }= @list['homepage']
-
 
   %table{ :summary => "Links to monthly archives of this list" }
     %thead
@@ -27,6 +19,14 @@
                 %a{ :href => "/#{@slug}/#{year}/#{month}" }= months[month][:threads].to_s + ':' + months[month][:messages].to_s
             - else
               %td.empty_month= ''
+
+  - if @list['description']
+    = @list['description']
+
+  - if @list['homepage']
+    %p
+      Homepage:
+      %a{ :href => @list['homepage'] }= @list['homepage']
 
 -# .ad
   :plain
