@@ -42,9 +42,6 @@ Rails::Initializer.run do |config|
   require 'threading'
   require 'time_'
 
-  $archive    = ZDir.new('../listlibrary_archive')
-  $cachedhash = ZDir.new('../listlibrary_cachedhash')
-
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)
   # config.log_level = :debug
