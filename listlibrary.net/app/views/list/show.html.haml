@@ -20,13 +20,13 @@
             - else
               %td.empty_month= ''
 
-  - if @list['description']
-    = @list['description']
-
   - if @list['homepage']
     %p
       Homepage:
       %a{ :href => @list['homepage'] }= @list['homepage']
+
+  - if @list['description']
+    = @list['description']
 
 -# .ad
   :plain
