@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
 
   def load_list
     @slug = params[:slug]
-    raise ActionController::RoutingError, "Invalid list slug" unless @slug =~ /^[a-z\-]+$/ and @slug.length <= 20
+    raise ActionController::RoutingError, "Invalid list slug" unless @slug =~ /^[a-z0-9\-]+$/ and @slug.length <= 20
     raise ActionController::RoutingError, "Unknown list" unless $archive.has_key? "list/#{@slug}"
     @list = List.new(@slug)
   end
