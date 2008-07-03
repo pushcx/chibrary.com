@@ -2,6 +2,7 @@ require 'rubygems'
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require 'storage'
+require 'cachedhash'
 
 JOB_TYPES = {
   :thread => {
