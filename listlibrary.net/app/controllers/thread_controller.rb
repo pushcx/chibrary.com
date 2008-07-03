@@ -29,29 +29,29 @@ class ThreadController < ApplicationController
       p_month = "%02d" % p.month
       # if there's a thread_list for the previous month, link to its last message
       if tl = list.thread_list(p.year, p_month)
-        call_number, subject = tl.last[:call_number], tl.last[:subject]
-        p_link = "&lt; <a href=\"/#{slug}/#{p.year}/#{p_month}/#{call_number}\">#{f(subject)}</a><br />#{p.year}-#{p_month}"
+        call_number, subj = tl.last[:call_number], tl.last[:subject]
+        p_link = "&lt; <a href=\"/#{slug}/#{p.year}/#{p_month}/#{call_number}\">#{f(subject(subj))}</a><br />#{p.year}-#{p_month}"
       else
         p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
       end
     else
       p_index = index - 1
-      call_number, subject = threads[p_index][:call_number], threads[p_index][:subject]
-      p_link = "&lt; <a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject)}</a>"
+      call_number, subj = threads[p_index][:call_number], threads[p_index][:subject]
+      p_link = "&lt; <a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject(subj))}</a>"
     end
 
     # if there's a next thread, link it
     n_index = index + 1
     if threads[n_index]
-      call_number, subject = threads[n_index][:call_number], threads[n_index][:subject]
-      n_link = "<a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject)}</a> &gt;"
+      call_number, subj = threads[n_index][:call_number], threads[n_index][:subject]
+      n_link = "<a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject(subj))}</a> &gt;"
     else
       # otherwise, link to first thread of next month's thread_list
       n = Time.utc(year, month).plus_month(1)
       n_month = "%02d" % n.month
       if tl = list.thread_list(n.year, n_month)
-        call_number, subject = tl.first[:call_number], tl.first[:subject]
-        n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}/#{call_number}\">#{f(subject)}</a> &gt;<br />#{n.year}-#{n_month}"
+        call_number, subj = tl.first[:call_number], tl.first[:subject]
+        n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}/#{call_number}\">#{f(subject(subj))}</a> &gt;<br />#{n.year}-#{n_month}"
       else
         n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
       end

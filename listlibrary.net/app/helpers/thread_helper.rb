@@ -1,13 +1,4 @@
 module ThreadHelper
-  def subject o
-    subj = o.n_subject
-    subj = subj.empty? ? '<i>no subject</i>' : subj
-    if marker = @list['marker']
-      subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
-    end
-    subj
-  end
-
   def message_body m
     str = m.body
     str = remove_footer(str, m.slug)
