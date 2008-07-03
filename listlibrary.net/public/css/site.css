@@ -43,6 +43,10 @@ ol.threads {
   list-style-type: none;
   margin-left: 0;
 }
+    ol.threads li.thread .header a.subject {
+      background-color: white;
+      padding: 2px 1em 2px 0.5em;
+    }
     ol.threads li.thread.closed .header {
       background-color: transparent;
     }
@@ -58,7 +62,7 @@ ol.threads {
       width: 2.5em;
     }
     ol.threads ol.thread_list {
-      margin-left: 3em;
+      margin-left: 3.5em;
     }
     ol.threads li.thread ol.thread_list.closed {
       display: none;
