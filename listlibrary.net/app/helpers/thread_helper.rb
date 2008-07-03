@@ -2,7 +2,7 @@ module ThreadHelper
   def message_body m
     str = m.body
     str = remove_footer(str, m.slug)
-    str = h(str)
+    str = f(str)
     str = compress_quotes(str)
     #str.gsub!(/([A-Z]{3,})/, '<span class="caps">\1</span>')
     str

@@ -36,7 +36,6 @@ class ApplicationController < ActionController::Base
     raise ActionController::RoutingError, "Invalid month" unless @month =~ /^\d{2}$/
   end
 
-
   # format (hide mail addresses, link URLs) and html-escape a string
   def f str
     str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([a-z]+)/, '\1@\2...\3') # hide mail addresses

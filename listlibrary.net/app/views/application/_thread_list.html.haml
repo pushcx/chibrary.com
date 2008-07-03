@@ -14,7 +14,7 @@
       - else
         %a{ :href => "#m-#{message.call_number.to_base_36}", :class => "message" }
           %span.indent{ :style => "width: #{container.depth * 1.5}em" } &nbsp;
-          = h message.from
+          = f message.from
           %span.date= message.date.strftime("%m-%d %H:%M")
           - subjects.pop while container.depth <= subjects.last[:depth]
           - if message.n_subject != subjects.last[:subject] and !subjects.last[:subject].include? message.n_subject

@@ -1,7 +1,7 @@
 .message
   %a{ :id => "m-#{message.call_number.to_base_36}", :name => "m-#{message.call_number.to_base_36}" } 
   .header
-    %h4.from= h message.from
+    %h4.from= f message.from
     %h6.date
       %a{ :href => "#m-#{message.call_number.to_base_36}", :title => "Link to this message" }
         = message.date.strftime("%Y-%m-%d %H:%M:%S")
@@ -20,7 +20,7 @@
             - text = f.slice(0, f.index(' ')) if f.include? ' '
           - if children.size <= 4
             - text = f.slice(0, f.index(' <')) if f.include? ' <'
-          %a{ :href => "#m-#{child.call_number.to_base_36}", :title => "#{h child.from} #{child.date.strftime("%m/%d %H:%M")}", :class => "child" }= text
+          %a{ :href => "#m-#{child.call_number.to_base_36}", :title => "#{f child.from} #{child.date.strftime("%m/%d %H:%M")}", :class => "child" }= text
 
   .body
     = '<pre class="body">' + preserve(message_body(message)) + '</pre>'
