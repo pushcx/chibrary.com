@@ -1,14 +1,18 @@
 # no browsing around
 Options -Indexes
 
-
-# performance: etag, gzip css/js
+# performance: etag should not include server id
 FileETag Size MTime
+
+# performance: gzip css/js
 AddType application/x-javascript;charset=utf-8 js
 AddOutputFilterByType DEFLATE text/css
-AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
-
 BrowserMatch ^Mozilla/4 gzip-only-text/html
 BrowserMatch ^Mozilla/4.0[678] no-gzip
 BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+# performance: long expiration for css/js
+ExpiresActive On
+ExpiresByType text/css "access plus 10 years"
+ExpiresByType application/x-javascript "access plus 10 years"
