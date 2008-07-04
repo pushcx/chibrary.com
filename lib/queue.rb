@@ -70,8 +70,6 @@ class Queue
           in_progress[key] = job
           break
         rescue Exception => e
-          puts "fucked up: #{e.class} #{e}\n" + e.backtrace.join("\n")
-          exit
           # another worker took this job, try again
         end
       end
