@@ -42,9 +42,8 @@ module ThreadHelper
     return render(:partial => 'message_no_archive') if c.message.no_archive
 
     begin
-      # Load the full message from s3 to get body and etc.
       render(:partial => 'message', :locals => {
-        :message => Message.new(c.message.key.to_s.gsub('+',' ')),
+        :message => c.message,
         :parent => c.root? ? nil : c.parent.message,
         :children => c.children.sort.collect { |c| c.message unless c.empty? }.compact,
       })
