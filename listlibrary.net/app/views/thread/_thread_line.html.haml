@@ -1,6 +1,6 @@
 %p
   = thread.count
   messages in this thread from 
-  %a{ :href => "../../" }= (list['name'] or slug)
+  %a{ :href => "/#{@slug}" }= (list['name'] or slug)
   in
-  %a{ :href => "../#{month}/#t-#{thread.call_number.to_base_36}" }= year.to_s + "-" + month
+  %a{ :href => "/#{@slug}/#{month}/#t-#{thread.call_number.to_base_36}" }= year.to_s + "-" + month
