@@ -1,0 +1,20 @@
+# Miscellaneous useful/important commands
+
+# rsync cachedhash to production
+rsync -a --delete --exclude=in_progress/ --exclude=sequence/ --exclude=queue/ -e "ssh -C" listlibrary_cachedhash/ listlibrary@listlibrary.net:~/listlibrary_cachedhash
+
+# rsync archive to production
+rsync -a --delete --exclude=filer_failure/ --exclude=_listlibrary_no_list --exclude=message/ --exclude=message_list/ -e "ssh -C" listlibrary_archive/ listlibrary@listlibrary.net:~/listlibrary_archive
+
+
+# zip up old message dirs:
+find listlibrary_archive/ -type d -wholename "*/message/[0-9][0-9][0-9][0-9]/*" -not \( -wholename "*/2008/06*" -o -wholename "*/2008/05*" \) -exec zip -rjTm {}.zip {} \;
+find listlibrary_archive/ -type d -empty -exec rm -r {} \;
+
+# find messages with odd characters in their message-ids
+find t -type f -wholename "*/message/*" -regex '.*[^a-zA-Z0-9@%+=_\/\.\-].*' -exec mv {} weird/new/ \;
+
+# fix subjects from odd archives
+# (better, though, to run this on the Maildir before importing them)
+find listlibrary_archive/list/ruby-talk/message -type f -print0 | xargs -0 perl -pi -e 's/^  Subject: \[ruby-talk:\d+\](.*)$/  Subject: \1/g'
+find listlibrary_archive/list/ruby-talk/message -type f -print0 | xargs -0 perl -pi -e 's/^subject: "\[ruby-talk:\d+\](.*)$/subject: "\1/g'
