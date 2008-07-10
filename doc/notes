@@ -18,3 +18,7 @@ find t -type f -wholename "*/message/*" -regex '.*[^a-zA-Z0-9@%+=_\/\.\-].*' -ex
 # (better, though, to run this on the Maildir before importing them)
 find listlibrary_archive/list/ruby-talk/message -type f -print0 | xargs -0 perl -pi -e 's/^  Subject: \[ruby-talk:\d+\](.*)$/  Subject: \1/g'
 find listlibrary_archive/list/ruby-talk/message -type f -print0 | xargs -0 perl -pi -e 's/^subject: "\[ruby-talk:\d+\](.*)$/subject: "\1/g'
+
+# pull down all .gz from pipermail archive like
+# http://mail.python.org/pipermail/chicago/
+wget -r -np -l1 -A.gz -nd http://example.com
