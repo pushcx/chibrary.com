@@ -2,7 +2,7 @@
 
 # Uncomment below to force Rails into production mode when
 # you don't control web/app server and can't set it the proper way
-ENV['RAILS_ENV'] ||= 'production'
+# ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
@@ -34,13 +34,13 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   config.load_paths += %W( #{RAILS_ROOT}/../lib/ )
 
+  ENV['GEM_PATH'] = '/home/listlibrary/gems' if ENV['RAILS_ENV'] == 'production'
+
   # load all the ListLibrary libs
   Dir.entries('lib').each do |lib|
     next unless lib =~ /.rb$/
     require lib
   end
-
-  ENV['GEM_PATH'] = '/home/listlibrary/gems' if ENV['RAILS_ENV'] == 'production'
 
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)
