@@ -1,5 +1,6 @@
 class ThreadController < ApplicationController
   before_filter :load_list, :load_month, :load_thread
+  caches_page :show
 
   def show
     @previous_link, @next_link = thread_previous_next(@slug, @year, @month, @call_number)

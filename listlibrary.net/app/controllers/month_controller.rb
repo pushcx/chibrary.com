@@ -1,5 +1,6 @@
 class MonthController < ApplicationController
   before_filter :load_list, :load_month
+  caches_page :show
 
   def show
     @previous_link, @next_link = month_previous_next(@slug, @year, @month)
