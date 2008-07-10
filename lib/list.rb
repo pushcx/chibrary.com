@@ -1,6 +1,5 @@
 require 'storage'
 require 'cachedhash'
-require 'stdlib'
 
 class List < CachedHash
   attr_reader :slug

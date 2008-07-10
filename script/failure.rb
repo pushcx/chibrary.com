@@ -1,8 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
 require 'tempfile'
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'filer'
 
 class Failure < Filer
   def setup

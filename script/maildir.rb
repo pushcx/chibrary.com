@@ -1,8 +1,6 @@
-#!/usr/bin/ruby
-
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'filer'
-require 'log'
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
 class Maildir < Filer
   attr_reader :slug

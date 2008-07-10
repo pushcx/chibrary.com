@@ -1,12 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'storage'
-require 'list'
-require 'log'
-require 'queue'
 require 'tempfile'
-require 'threading'
 
 class Threader
   def initialize

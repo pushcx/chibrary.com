@@ -1,11 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
 require 'net/smtp'
-require 'time'
-
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'mail'
-require 'message'
 
 def yn(str, expected)
   print str + " "

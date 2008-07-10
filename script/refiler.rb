@@ -1,9 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 # Fetches and refiles every stored message.
 # Useful for dicking with every message to add a header or something.
-
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'filer'
 
 class Refiler < Filer
 

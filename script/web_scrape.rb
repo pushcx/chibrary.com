@@ -1,8 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
 
 # Prototype scraper, customize for different sites.
 
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 CWD = Dir.getwd
 
 {

@@ -1,14 +1,11 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
 require 'net/pop'
 
 MAX_MAILS = 1_000_000
 PER_CONNECTION = 1_000
-
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'mail'
-require 'filer'
-require 'log'
 
 class Fetcher < Filer
   def initialize server=nil, sequence=nil, max=PER_CONNECTION

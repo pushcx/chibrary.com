@@ -32,15 +32,15 @@ Rails::Initializer.run do |config|
   # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
   # Add additional load paths for your own custom dirs
-  #config.load_paths += %W( #{RAILS_ROOT}/../lib/ )
+  config.load_paths += %W( #{RAILS_ROOT}/../lib/ )
+
+  # load all the ListLibrary libs
+  Dir.entries('lib').each do |lib|
+    next unless lib =~ /.rb$/
+    require lib
+  end
 
   ENV['GEM_PATH'] = '/home/listlibrary/gems' if ENV['RAILS_ENV'] == 'production'
-
-  require 'filer' # for the Integer patches
-  require 'list'
-  require 'storage'
-  require 'threading'
-  require 'time_'
 
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)

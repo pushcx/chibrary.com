@@ -2,7 +2,6 @@
 
 require 'storage'
 require 'message'
-require 'stdlib'
 
 # Each container holds 0 or 1 messages, so that we can build a thread's tree from
 # References and In-Reply-To headers even before seeing all of the messages.

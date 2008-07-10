@@ -1,7 +1,6 @@
-#!/usr/bin/ruby
-
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require 'queue'
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
 
 type = ARGV.shift.to_sym
 q = Queue.new(type)
