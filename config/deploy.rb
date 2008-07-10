@@ -21,7 +21,7 @@ role :db, "listlibrary.net"
 namespace :deploy do
   desc "Restarting Passenger with restart.txt"
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "touch #{current_path}/listlibrary.net/tmp/restart.txt"
+    run "touch #{current_path}/tmp/restart.txt"
   end
 
   [:start, :stop].each do |t|
