@@ -5,17 +5,8 @@ JOB_TYPES = {
   :thread => {
     :key => ":slug/:year/:month",
   },
-  :render_static => {
-    :key => '',
-  },
-  :render_list => {
-    :key => ":slug",
-  },
-  :render_month => {
+  :publish => {
     :key => ":slug/:year/:month",
-  },
-  :render_thread => {
-    :key => ":slug/:year/:month/:call_number",
   },
 }
 
@@ -62,7 +53,6 @@ class Queue
           key = queue.first
           return nil if key.nil?
           job = queue[key]
-          puts key
           queue.delete key
           in_progress[key] = job
           break
