@@ -63,6 +63,7 @@ class Threader
     # queue the publish
     @publish_q ||= Queue.new :publish
     @publish_q.add :slug => slug, :year => year, :month => month
+    nil
   end
 end
 
