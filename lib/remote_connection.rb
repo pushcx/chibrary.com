@@ -1,6 +1,15 @@
 require 'net/sftp'
 require 'net/ssh'
 
+class Net::SFTP::Session
+  def exists? filename
+    self.open!(filename) and return true
+  rescue Net::SFTP::Exception => e
+    return false if e.code == Net::SFTP::Constants::StatusCodes::FX_NO_SUCH_FILE
+    raise
+  end
+end
+
 class RemoteConnection
   def initialize
     @ssh = Net::SSH.start(
@@ -40,17 +49,20 @@ class RemoteConnection
 
   def remove filename
     return if filename.empty?
-    @sftp.remove "/home/listlibrary/#{filename}"
+    @sftp.remove! "/home/listlibrary/#{filename}"
+  rescue Net::SFTP::Exception => e
+    raise unless e.code == Net::SFTP::Constants::StatusCodes::FX_NO_SUCH_FILE
   end
 
   def rmdir dir
+    return unless @sftp.exists? dir
     # loop and remove files
+    @sftp.dir.foreach("/home/listlibrary/#{dir}") { |f|
+      next if %w{. ..}.include? f.name
+      remove "#{dir}/#{f.name}"
+    }
     begin
-      @sftp.dir.foreach("/home/listlibrary/#{dir}") { |f|
-        next if %w{. ..}.include? f.name
-        self.remove "#{dir}/#{f.name}"
-      }
-      @sftp.rmdir "/home/listlibrary/#{dir}"
+      @sftp.rmdir! "/home/listlibrary/#{dir}"
     rescue Net::SFTP::Exception => e
       raise unless e.code == Net::SFTP::Constants::StatusCodes::FX_NO_SUCH_FILE
     end

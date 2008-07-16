@@ -6,9 +6,12 @@ class Publisher
   def run
     rsync
 
+    @rc = RemoteConnection.new
     Queue.new(:publish).work do |job|
       flush job[:slug], job[:year], job[:month]
     end
+
+    @rc.remove "listlibrary.net/current/public/index.html"
   end
 
   def rsync
@@ -19,7 +22,6 @@ class Publisher
   end
 
   def flush(slug, year, month)
-    @rc ||= RemoteConnection.new
     @rc.remove "listlibrary.net/current/public/#{slug}.html"
     @rc.remove "listlibrary.net/current/public/#{slug}/#{year}/#{month}.html"
     @rc.rmdir  "listlibrary.net/current/public/#{slug}/#{year}/#{month}"
