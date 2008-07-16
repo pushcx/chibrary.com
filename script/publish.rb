@@ -4,27 +4,33 @@ require "#{RAILS_ROOT}/config/environment"
 
 class Publisher
   def run
-    rsync
+    # happens here in case list desc, etc. changes
+    rsync_cachedhash
 
     @rc = RemoteConnection.new
     Queue.new(:publish).work do |job|
+      rsync_month job[:slug], job[:year], job[:month]
       flush job[:slug], job[:year], job[:month]
     end
 
+    # flush to add any new lists to homepage
     @rc.remove "listlibrary.net/current/public/index.html"
-  end
-
-  def rsync
-    `/usr/bin/rsync -a --delete --exclude=in_progress/ --exclude=sequence/ --exclude=queue/ -e "ssh -C" listlibrary_cachedhash/ listlibrary@listlibrary.net:~/listlibrary_cachedhash`
-    # should this next change to just rsync up a given slug/year/month and make that part of flush()?
-    # might be necessary as the archive gets huge and the overhead of building the file list is painful
-    `/usr/bin/rsync -a --delete --exclude=filer_failure/ --exclude=_listlibrary_no_list --exclude=message/ --exclude=message_list/ -e "ssh -C" listlibrary_archive/ listlibrary@listlibrary.net:~/listlibrary_archive`
   end
 
   def flush(slug, year, month)
     @rc.remove "listlibrary.net/current/public/#{slug}.html"
     @rc.remove "listlibrary.net/current/public/#{slug}/#{year}/#{month}.html"
     @rc.rmdir  "listlibrary.net/current/public/#{slug}/#{year}/#{month}"
+  end
+
+  def rsync_cachedhash
+    `/usr/bin/rsync -a --delete --exclude=in_progress/ --exclude=sequence/ --exclude=queue/ -e "ssh -C" listlibrary_cachedhash/ listlibrary@listlibrary.net:~/listlibrary_cachedhash`
+  end
+
+  def rsync_month(slug, year, month)
+    %w{thread thread_list}.each do |data|
+      `/usr/bin/rsync -a --delete -e "ssh -C" listlibrary_archive/list/#{slug}/#{data}/#{year}/#{month}* listlibrary@listlibrary.net:~/listlibrary_archive/list/#{slug}/#{data}/#{year}/`
+    end
   end
 end
 
