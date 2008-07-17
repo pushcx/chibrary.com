@@ -3,6 +3,7 @@ class ThreadController < ApplicationController
   caches_page :show
 
   def show
+    @title = "#{subject(@thread.subject)} - #{@list['name'] or @slug}"
     @previous_link, @next_link = thread_previous_next(@slug, @year, @month, @call_number)
   end
 

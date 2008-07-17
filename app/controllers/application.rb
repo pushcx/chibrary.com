@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   session :off
   helper :all # include all helpers, all the time
   helper_method :f, :subject
-  after_filter :title
+  before_filter :title
 
   protect_from_forgery :secret => 'b6f6fc35252f52ac9a9bf52f129b0ac3'
   
@@ -16,11 +16,7 @@ class ApplicationController < ActionController::Base
 
   private
   def title
-    if @title
-      @title += " - ListLibrary.net"
-    else
-      @title = "ListLibrary.net - Free Mailing List Archives"
-    end
+    @title = "ListLibrary.net - Free Mailing List Archives"
   end
 
   def load_list

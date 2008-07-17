@@ -3,6 +3,7 @@ class MonthController < ApplicationController
   caches_page :show
 
   def show
+    @title = "#{@list['name'] or @slug} #{@year}-#{@month} archive"
     @previous_link, @next_link = month_previous_next(@slug, @year, @month)
     if @thread_list = @list.thread_list(@year, @month)
       @message_count = @thread_list.collect { |t| t[:messages] }.sum
