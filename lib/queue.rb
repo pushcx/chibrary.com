@@ -8,6 +8,9 @@ JOB_TYPES = {
   :publish => {
     :key => ":slug/:year/:month",
   },
+  :import_mailman => {
+    :key => ":slug",
+  }
 }
 
 class Job
