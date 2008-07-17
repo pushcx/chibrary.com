@@ -4,22 +4,27 @@ require "#{RAILS_ROOT}/config/environment"
 # Fetches and refiles every stored message.
 # Useful for dicking with every message to add a header or something.
 
+require 'open-uri'
+
 class Refiler < Filer
 
   def source
-    'subscription'
+    'archive'
   end
 
   # define this to force a slug; handy for mailing list imports
-  #def slug ; 'linux-kernel' ; end
+  def slug ; 'chipy' ; end
 
   # comment out to force messages to get new call numbers
-  #def call_number ; nil ; end
+  def call_number ; nil ; end
 
   def acquire
-    $archive['list'].each(true) do |key|
-      next unless key.match '/message/'
-      yield key, :do
+    #$archive['list'].each(true) do |key|
+    #  next unless key.match '/message/'
+    #  yield key, :do
+    #end
+    `find chipy -type f`.split("\n").each do |key|
+      yield YAML::load_file(key), :do
     end
   end
 
