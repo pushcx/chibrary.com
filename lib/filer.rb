@@ -76,7 +76,7 @@ class Filer
   def slug     ; nil ; end
 
   def store mail, overwrite=nil
-    return false if mail.length >= (100 * 1024)
+    return false if mail.is_a? String and mail.length >= (256 * 1024)
 
     @message_count += 1
     begin

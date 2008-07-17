@@ -27,6 +27,8 @@ class Message
       @overwrite = :do
       if message.is_a? String # initialized with a url
         m = $archive[message]
+      elsif message.is_a? Message
+        m = message
       else
         raise "Can't build Message from a #{message.class}"
       end
