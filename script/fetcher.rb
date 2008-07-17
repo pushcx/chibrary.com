@@ -8,6 +8,8 @@ MAX_MAILS = 1_000_000
 PER_CONNECTION = 1_000
 
 class Fetcher < Filer
+  attr_reader :n_mails
+
   def initialize server=nil, sequence=nil, max=PER_CONNECTION
     @max = [max.to_i, PER_CONNECTION].min
     super server, sequence
@@ -23,6 +25,7 @@ class Fetcher < Filer
     @pop.open_timeout = 300
     @pop.read_timeout = 300
     @pop.start(MAIL_USER, MAIL_PASSWORD)
+    @n_mails = @pop.n_mails
     @log = Log.new "Fetcher"
   end
 
@@ -57,10 +60,11 @@ if __FILE__ == $0
   log = Log.new "Fetcher"
   log.block "fetcher", "up to #{max} messages" do |log|
     while max > 0
-      run = Fetcher.new(nil, nil, max).run
+      fetcher = Fetcher.new(nil, nil, max)
+      run = fetcher.run
       fetched += run
-      break if run < 50
-      sleep 25
+      break if run < 50 or (run <= fetcher.n_mails and run < PER_CONNECTION)
+      sleep 15
       max -= PER_CONNECTION
     end
     "fetched #{fetched}"
