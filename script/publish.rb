@@ -6,6 +6,7 @@ class Publisher
   def run
     # happens here in case list desc, etc. changes
     rsync_cachedhash
+    rsync_snippets
 
     @rc = RemoteConnection.new
     Queue.new(:publish).work do |job|
@@ -31,6 +32,10 @@ class Publisher
     %w{thread thread_list}.each do |data|
       `/usr/bin/rsync -a --delete -e "ssh -C" listlibrary_archive/list/#{slug}/#{data}/#{year}/#{month}* listlibrary@listlibrary.net:~/listlibrary_archive/list/#{slug}/#{data}/#{year}/`
     end
+  end
+
+  def rsync_snippets
+    `/usr/bin/rsync -a --delete -e "ssh -C" listlibrary_archive/snippet listlibrary@listlibrary.net:~/listlibrary_archive/`
   end
 end
 

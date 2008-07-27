@@ -39,10 +39,11 @@
     //--></script>
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
-.snippets
-  <h2>Recent Messages</h2>
-  %ul
-    - @snippets.each do |snippet|
-      %li
-        %a.subject{ :href => snippet[:url] }= subject(snippet[:subject])
-        %span.excerpt= h snippet[:excerpt]
+- unless @snippets.empty?
+  .snippets
+    <h2>Recent Messages</h2>
+    %ul
+      - @snippets.each do |snippet|
+        %li
+          %a.subject{ :href => snippet[:url] }= subject(snippet[:subject])
+          %span.excerpt= h snippet[:excerpt]
