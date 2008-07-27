@@ -52,6 +52,7 @@ class Threader
     thread_list = []
     threadset.collect do |thread|
       thread.cache
+      snippet(slug, year, month, thread)
       thread_list << { :call_number => thread.call_number, :subject => thread.n_subject, :messages => thread.count }
     end
 
@@ -64,6 +65,18 @@ class Threader
     @publish_q ||= Queue.new :publish
     @publish_q.add :slug => slug, :year => year, :month => month
     nil
+  end
+
+  def snippet slug, year, month, thread
+    # names are descending time to make it easy to expire old snippets
+    name = 9999999999 - thread.date.utc.to_i
+    snippet = {
+      :url => "/#{slug}/#{year}/#{month}/#{thread.call_number}",
+      :subject => thread.n_subject,
+      :excerpt => (thread.effective_field(:body) or "").split("\n").select { |l| not l.chomp.empty? or l =~ /^>|@|:$/ }[0..4].join(" "),
+    }
+    $archive["snippet/homepage/#{name}"] = snippet
+    $archive["snippet/list/#{slug}/#{name}"] = snippet
   end
 end
 

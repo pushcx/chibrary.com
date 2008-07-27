@@ -16,7 +16,18 @@
   margin-right: 1.5em;
 }
 
-/* static pages */
+/* homepage */
+div.lists {
+  float: right;
+  margin: 0 0 18px 36px;
+  width: 20em;
+}
+  div.lists ul {
+    margin: 0;
+  }
+div.snippets h2 {
+  clear: none;
+}
 
 /* list view */
 

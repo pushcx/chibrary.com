@@ -121,14 +121,19 @@ class ZDir
   end
 
   def [] path
-    return self[path.split('/').first][File.join(path.split('/')[1..-1])] if path =~ /\//
-    path = "#{path}.zip" if !File.exists?(File.join(@path, path)) and path !~ /\.zip$/
-    path = [@path, path].join('/')
-    raise NotFound, File.join(@path, path) unless File.exists? path
+    full_path = File.join([@path, path])
+    if !File.exists? full_path
+      # look for if it's a zip:
+      return ZZip.new(full_path) if File.exists?(full_path + ".zip")
+      # look for if it's in a zip:
+      zip_path = File.join(full_path.split('/')[1..-1]) + ".zip"
+      return ZZip.new(zip_path)[path.split('/').last] if File.exists? zip_path
+    end
 
-    return ZZip.new(path)                if path =~ /\.zip$/
-    return ZDir.new(path)                if File.directory? path
-    return File.open(path, 'r').contents if File.file? path
+    raise NotFound, full_path unless File.exists? full_path
+
+    return ZDir.new(full_path)                if File.directory? full_path
+    return File.open(full_path, 'r').contents if File.file? full_path
 
     raise "ZDir(#{@path}) doesn't know what to do with [#{path}]"
   end
