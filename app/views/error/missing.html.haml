@@ -1,0 +1,12 @@
+%h1 Error 404 &ndash; Not Found
+%p
+  Sorry, couldn't find that page. Find mailing lists at the <a href='/'>homepage</a>.
+
+- unless @snippets.nil? or @snippets.empty?
+  .snippets
+    %p But here's some recent threads from that list:
+    %ul
+      - @snippets.each do |snippet|
+        %li
+          %a.subject{ :href => snippet[:url] }= subject(snippet[:subject])
+          %span.excerpt= h snippet[:excerpt]
