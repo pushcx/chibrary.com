@@ -68,3 +68,7 @@ Rails::Initializer.run do |config|
   # Activate observers that should always be running
   # config.active_record.observers = :cacher, :garbage_collector
 end
+
+ExceptionNotifier.exception_recipients = %w(harkins@barkingstapler.com)
+ExceptionNotifier.sender_address = "postmaster@listlibrary.net"
+ExceptionNotifier.email_prefix = ''
