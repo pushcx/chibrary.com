@@ -39,8 +39,6 @@ class ApplicationController < ActionController::Base
     rescue NotFound ; end
   end
 
-  alias_method :rescue_action_locally, :rescue_action_in_public
-
   def render_optional_error_file status_code
     return super unless status_code == :not_found
     @slug ||= (request.request_uri or '').split('/')[1]
