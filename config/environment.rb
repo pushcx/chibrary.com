@@ -41,6 +41,7 @@ Rails::Initializer.run do |config|
     next unless lib =~ /.rb$/
     require lib
   end
+  require 'threading'
 
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)
