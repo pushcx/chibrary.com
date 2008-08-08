@@ -30,37 +30,12 @@ class List < CachedHash
   end
 
   def thread_list year, month
-    $archive[thread_list_key(year, month)]
-  rescue NotFound
-    nil
-  end
-
-  def year_counts
-    years = {}
-    thread_lists = $archive["list/#{@slug}/thread_list"]
-    thread_lists.each(true) do |key|
-      next unless key =~ /^\d{4}\/\d{2}$/
-      thread_list = thread_lists[key]
-      year, month = key.split('/')
-      years[year] ||= {}
-      years[year][month] = { :threads => thread_list.length, :messages => thread_list.collect { |t| t[:messages] }.sum }
-    end
-    return years.sort
-  rescue NotFound
-    return []
-  end
-
-  def cache_thread_list year, month, thread_list
-    $archive[thread_list_key(year, month)] = thread_list
+    ThreadList.new @slug, year, month
   end
 
   private
 
   def month_list_key year, month
     "list/#{@slug}/message_list/#{year}/#{month}"
-  end
-
-  def thread_list_key year, month
-    "list/#{@slug}/thread_list/#{year}/#{month}"
   end
 end

@@ -3,8 +3,7 @@
     %a{ :href => "/#{@slug}" }= (@list['name'] or @slug)
     = "#{@year}-#{@month}"
 
-  - if @message_count
-    %p= "#{@message_count} messages in #{@threadset.length} threads"
+  %p= "#{@message_count} messages in #{@threadset.length} threads"
 
 %ol.threads
   - @threadset.each do |thread|

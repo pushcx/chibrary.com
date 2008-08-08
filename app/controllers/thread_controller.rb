@@ -12,6 +12,8 @@ class ThreadController < ApplicationController
     @call_number = params[:call_number]
     raise ActionController::RoutingError, "Invalid call_number" unless @call_number =~ /^[A-Za-z0-9\-_]{8}$/
     begin
+      r = ThreadList.new(@slug, @year, @month).redirect? @call_number
+      redirect_to :call_number => r, :anchor => "m-#{@call_number.to_base_36}" and return if r
       @thread = $archive["list/#{@list.slug}/thread/#{@year}/#{@month}/#{@call_number}"]
     rescue NotFound
       raise ActionController::RoutingError, "Thread not found"
@@ -19,46 +21,25 @@ class ThreadController < ApplicationController
   end
 
   def thread_previous_next(slug, year, month, call_number)
-    list = List.new(slug)
-    index = nil
-    threads = list.thread_list year, month
-    threads.each_with_index { |thread, i| index = i if thread[:call_number] == call_number }
-    return ["<a class=\"none\" href=\"/#{slug}\">archive</a>", "<a class=\"none\" href=\"/#{slug}\">archive</a>"] if index.nil?
+    def thread_link thread
+      "<a href=\"/#{thread[:slug]}/#{thread[:year]}/#{thread[:month]}/#{thread[:call_number]}\">#{f(subject(thread[:subject]))}</a>"
+    end
+    thread_list = ThreadList.new(slug, year, month)
 
-    # first thread in a month should link to last thread of previous month
-    if index == 0
-      p = Time.utc(year, month).plus_month(-1)
-      p_month = "%02d" % p.month
-      # if there's a thread_list for the previous month, link to its last message
-      if tl = list.thread_list(p.year, p_month)
-        call_number, subj = tl.last[:call_number], tl.last[:subject]
-        p_link = "&lt; <a href=\"/#{slug}/#{p.year}/#{p_month}/#{call_number}\">#{f(subject(subj))}</a><br />#{p.year}-#{p_month}"
-      else
-        p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
-      end
+    if previous_thread = thread_list.previous_thread(call_number)
+      previous_link = "&lt; #{thread_link(previous_thread)}"
+      previous_link += "<br />#{previous_thread[:year]}-#{previous_thread[:month]}" if previous_thread[:year] != year or previous_thread[:month] != month
     else
-      p_index = index - 1
-      call_number, subj = threads[p_index][:call_number], threads[p_index][:subject]
-      p_link = "&lt; <a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject(subj))}</a>"
+      previous_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
     end
 
-    # if there's a next thread, link it
-    n_index = index + 1
-    if threads[n_index]
-      call_number, subj = threads[n_index][:call_number], threads[n_index][:subject]
-      n_link = "<a href=\"/#{slug}/#{year}/#{month}/#{call_number}\">#{f(subject(subj))}</a> &gt;"
+    if next_thread = thread_list.next_thread(call_number)
+      next_link = "#{thread_link(next_thread)} &gt;"
+      next_link += "<br />#{next_thread[:year]}-#{next_thread[:month]}" if next_thread[:year] != year or next_thread[:month] != month
     else
-      # otherwise, link to first thread of next month's thread_list
-      n = Time.utc(year, month).plus_month(1)
-      n_month = "%02d" % n.month
-      if tl = list.thread_list(n.year, n_month)
-        call_number, subj = tl.first[:call_number], tl.first[:subject]
-        n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}/#{call_number}\">#{f(subject(subj))}</a> &gt;<br />#{n.year}-#{n_month}"
-      else
-        n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
-      end
+      next_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
     end
 
-    return [p_link, n_link]
+    [previous_link, next_link]
   end
 end

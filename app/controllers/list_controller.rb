@@ -4,6 +4,6 @@ class ListController < ApplicationController
 
   def show
     @title = "#{@list['name'] or @slug} archive"
-    @year_counts = @list.year_counts
+    @year_counts = ThreadList.year_counts @slug
   end
 end

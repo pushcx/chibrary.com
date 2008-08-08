@@ -49,17 +49,17 @@ class Threader
 
   def cache_work slug, year, month, message_list, threadset
     # cache each thread
-    thread_list = []
+    thread_list = ThreadList.new(slug, year, month)
     threadset.collect do |thread|
       thread.cache
       snippet(slug, year, month, thread)
-      thread_list << { :call_number => thread.call_number, :subject => thread.n_subject, :messages => thread.count }
+      thread_list.add_thread thread
     end
 
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
     list.cache_message_list year, month, message_list
-    list.cache_thread_list  year, month, thread_list
+    thread_list.store
 
     # queue the publish
     @publish_q ||= Queue.new :publish
