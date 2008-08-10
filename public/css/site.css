@@ -200,10 +200,10 @@ div.message div.body blockquote {
   div.message div.body blockquote.closed {
     background-color: transparent;
     color: #666666;
-    display: inline;
+    display: block;
     font-style: italic;
     padding: 0 0.1em;
-    width: 30em;
+    width: 100%;
   }
   div.message div.body blockquote.closed:hover {
     background-color: #dddddd;
