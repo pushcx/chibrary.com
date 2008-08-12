@@ -1,11 +1,2 @@
 User-agent: *
-Crawl-delay: 1
-
-User-agent: Googlebot
-Crawl-delay: 0
-
-User-agent: yahoo-slurb
-Crawl-delay: 0
-
-User-agent: msnbot
-Crawl-delay: 0
+Disallow: /contact
