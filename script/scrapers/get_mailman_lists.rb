@@ -17,6 +17,10 @@ class GetMailmanLists < Filer
     import_mailman = Queue.new :import_mailman
 
     @urls.each do |url|
+      # derive prefix from domain, prompt to ask if it's good
+      prefix = url.match(/https?:\/\/([^\/]+)/).captures.first.scan(/[^.]{4,}/).last
+      puts "Derived prefix '#{prefix}' from #{url}"
+
       doc = Hpricot(open(url))
       doc.search("//table/tr").each do |row|
         # archives are listed in a table with two cells
@@ -24,7 +28,15 @@ class GetMailmanLists < Filer
         next unless row.search('td[1]/a/strong').length == 1
 
         url  = row.at('td[1]/a').attributes['href']
-        slug = row.at('td[1]/a/strong').inner_html
+        mailman_slug = row.at('td[1]/a/strong').inner_html.downcase
+        # use mailman's slug if it already starts with the desired prefix
+        # eg. python has python-3000 and PythonCAD lists
+        if mailman_slug[0...(prefix.length)] == prefix
+          slug = mailman_slug
+        else
+          slug = "#{prefix}-#{mailman_slug}"
+        end
+        slug = slug[0...-2] if slug =~ /\-l$/
         name = row.at('td[2]').inner_html
         name = nil if name == "<em>[no description available]</em>"
 
