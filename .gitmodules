@@ -1,0 +1,3 @@
+[submodule "vendor/plugins/hoptoad_notifier"]
+	path = vendor/plugins/hoptoad_notifier
+	url = git://github.com/thoughtbot/hoptoad_notifier.git
