@@ -2,7 +2,6 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  include ExceptionNotifiable
   session :off
   helper :all # include all helpers, all the time
   helper_method :f, :subject
