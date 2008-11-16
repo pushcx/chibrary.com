@@ -7,6 +7,8 @@ set :repository, "harkins@argyle.redirectme.net:~/biz/listlibrary"
 
 set :deploy_to, "/home/listlibrary/listlibrary.net"
 set :deploy_via, :copy
+set :branch, "master"
+set :git_enable_submodules, 1
 
 set :user, "listlibrary"
 set :domain, "tron.dreamhost.com"
