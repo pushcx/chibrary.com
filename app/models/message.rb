@@ -1,6 +1,7 @@
 require 'rmail'
 
 require 'base64'
+require 'iconv'
 require 'time'
 require 'md5'
 
@@ -14,7 +15,23 @@ class Message
 
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
   def self.subject_is_reply? s ; !!(s =~ RE_PATTERN) ; end
-  def self.normalize_subject s ; s.gsub(RE_PATTERN, '').strip ; end
+  def self.normalize_subject s
+    s.gsub!(/=\?[^\?]+\?[^\?]+\?[^\?]+\?=/) do |encoded|
+      charset, encoding, text = *encoded.match(/=\?([^\?]+)\?([^\?]+)\?([^\?]+)\?=/).captures
+      if encoding == 'B'
+        text = text.unpack('m').first
+      elsif encoding == 'Q'
+        text = text.unpack('M').first
+      end
+      begin
+        text = Iconv.conv('utf-8', charset, text)
+      rescue Iconv::InvalidEncoding
+        text = '[Invalid encoded text]'
+      end
+      text
+    end
+    s.gsub(RE_PATTERN, '').strip
+  end
 
   def initialize message, source=nil, call_number=nil
     @source = source
@@ -57,7 +74,9 @@ class Message
         next
       end
       # content type is nil for very plain messages, or text/plain for proper ones
-      if part.header['Content-Type'].nil? or part.header['Content-Type'].downcase.include? 'text/plain'
+      content_type = part.header['Content-Type']
+      charset = content_type.match(/charset="?(\S+)"?/).captures.first if content_type and content_type =~ /charset="?(\S+)"?/
+      if content_type.nil? or content_type.downcase.include? 'text/plain'
         encoding = part.header['Content-Transfer-Encoding']
         @body = part.body
         break
@@ -74,6 +93,12 @@ class Message
     when /base64/i
       @body = @body.unpack('m').first
     end # else it's fine
+
+    if charset
+      begin
+        @body = Iconv.conv('utf-8', charset, @body)
+      rescue Iconv::InvalidEncoding ; end
+    end
 
     return @body = @body.strip
   end
