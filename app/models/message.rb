@@ -23,12 +23,7 @@ class Message
       elsif encoding == 'Q'
         text = text.unpack('M').first
       end
-      begin
-        text = Iconv.conv('utf-8', charset, text)
-      rescue Iconv::InvalidEncoding
-        text = '[Invalid encoded text]'
-      end
-      text
+      charset_convert(charset, text)
     end
     s.gsub(RE_PATTERN, '').strip
   end
@@ -94,11 +89,7 @@ class Message
       @body = @body.unpack('m').first
     end # else it's fine
 
-    if charset
-      begin
-        @body = Iconv.conv('utf-8', charset, @body)
-      rescue Iconv::InvalidEncoding ; end
-    end
+    @body = Message::charset_convert(charset, @body) if charset
 
     return @body = @body.strip
   end
@@ -151,6 +142,14 @@ class Message
   end
 
   private
+
+  def self.charset_convert charset, text
+    begin
+      Iconv.conv('utf-8', charset, text)
+    rescue Iconv::InvalidEncoding, Iconv::IllegalSequence
+      text
+    end
+  end
 
   # header code
 
