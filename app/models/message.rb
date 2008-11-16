@@ -16,16 +16,7 @@ class Message
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
   def self.subject_is_reply? s ; !!(s =~ RE_PATTERN) ; end
   def self.normalize_subject s
-    s.gsub!(/=\?[^\?]+\?[^\?]+\?[^\?]+\?=/) do |encoded|
-      charset, encoding, text = *encoded.match(/=\?([^\?]+)\?([^\?]+)\?([^\?]+)\?=/).captures
-      if encoding == 'B'
-        text = text.unpack('m').first
-      elsif encoding == 'Q'
-        text = text.unpack('M').first
-      end
-      charset_convert(charset, text)
-    end
-    s.gsub(RE_PATTERN, '').strip
+    encoded_word(s).gsub(RE_PATTERN, '').strip
   end
 
   def initialize message, source=nil, call_number=nil
@@ -151,6 +142,18 @@ class Message
     end
   end
 
+  def self.encoded_word str
+    str.gsub(/=\?[^\?]+\?[^\?]+\?[^\?]+\?=/) do |encoded|
+      charset, encoding, text = *encoded.match(/=\?([^\?]+)\?([^\?]+)\?([^\?]+)\?=/).captures
+      if encoding == 'B'
+        text = text.unpack('m').first
+      elsif encoding == 'Q'
+        text = text.unpack('M').first
+      end
+      charset_convert(charset, text)
+    end
+  end
+
   # header code
 
   def headers
@@ -217,7 +220,6 @@ class Message
 
   def load_from
     @from = (get_header('From') or '').sub(/"(.*?)"/, '\1')
-    @from = Base64.decode_b(@from) if @from =~ /^=\?.*=\?=/
   end
 
   def load_message_id
@@ -271,6 +273,5 @@ class Message
 
   def load_subject
     @subject = (get_header('Subject') or '')
-    @subject = Base64.decode_b(@subject) if @subject =~ /^=\?.*=\?=$/
   end
 end

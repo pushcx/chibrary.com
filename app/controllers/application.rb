@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include HoptoadNotifier::Catcher
   session :off
   helper :all # include all helpers, all the time
-  helper_method :f, :subject
+  helper_method :f, :from, :subject
   before_filter :title
 
   protect_from_forgery :secret => 'b6f6fc35252f52ac9a9bf52f129b0ac3'
@@ -54,6 +54,10 @@ class ApplicationController < ActionController::Base
     str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
   end
 
+  def from from
+    f Message::encoded_word(from)
+  end
+
   def subject o
     subj = (o.is_a? String) ? o : o.n_subject
     subj = subj.empty? ? '<i>no subject</i>' : subj
@@ -62,6 +66,5 @@ class ApplicationController < ActionController::Base
     else
       subj = subj.gsub(/\[.*?\]/, '')
     end
-    subj
   end
 end
