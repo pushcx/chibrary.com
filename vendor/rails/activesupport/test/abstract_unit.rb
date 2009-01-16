@@ -1,20 +1,36 @@
+require 'rubygems'
 require 'test/unit'
+gem 'mocha', '>= 0.9.3'
+require 'mocha'
 
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
-$:.unshift File.dirname(__FILE__)
 require 'active_support'
+require 'active_support/test_case'
 
-# Wrap tests that use Mocha and skip if unavailable.
-unless defined? uses_mocha
-  def uses_mocha(test_name)
-    require 'rubygems'
-    gem 'mocha', '>= 0.5.5'
-    require 'mocha'
+def uses_memcached(test_name)
+  require 'memcache'
+  MemCache.new('localhost').stats
+  yield
+rescue MemCache::MemCacheError
+  $stderr.puts "Skipping #{test_name} tests. Start memcached and try again."
+end
+
+def with_kcode(code)
+  if RUBY_VERSION < '1.9'
+    begin
+      old_kcode, $KCODE = $KCODE, code
+      yield
+    ensure
+      $KCODE = old_kcode
+    end
+  else
     yield
-  rescue LoadError
-    $stderr.puts "Skipping #{test_name} tests. `gem install mocha` and try again."
   end
 end
 
 # Show backtraces for deprecated behavior for quicker cleanup.
 ActiveSupport::Deprecation.debug = true
+
+if RUBY_VERSION < '1.9'
+  $KCODE = 'UTF8'
+end

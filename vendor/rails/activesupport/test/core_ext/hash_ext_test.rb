@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
+require 'builder'
 
 class HashExtTest < Test::Unit::TestCase
   def setup
@@ -6,6 +7,11 @@ class HashExtTest < Test::Unit::TestCase
     @symbols = { :a  => 1, :b  => 2 }
     @mixed   = { :a  => 1, 'b' => 2 }
     @fixnums = {  0  => 1,  1  => 2 }
+    if RUBY_VERSION < '1.9.0'
+      @illegal_symbols = { "\0" => 1, "" => 2, [] => 3 }
+    else
+      @illegal_symbols = { [] => 3 }
+    end
   end
 
   def test_methods
@@ -22,16 +28,17 @@ class HashExtTest < Test::Unit::TestCase
     assert_equal @symbols, @symbols.symbolize_keys
     assert_equal @symbols, @strings.symbolize_keys
     assert_equal @symbols, @mixed.symbolize_keys
-
-    assert_raises(NoMethodError) { { [] => 1 }.symbolize_keys }
   end
 
   def test_symbolize_keys!
     assert_equal @symbols, @symbols.dup.symbolize_keys!
     assert_equal @symbols, @strings.dup.symbolize_keys!
     assert_equal @symbols, @mixed.dup.symbolize_keys!
+  end
 
-    assert_raises(NoMethodError) { { [] => 1 }.symbolize_keys }
+  def test_symbolize_keys_preserves_keys_that_cant_be_symbolized
+    assert_equal @illegal_symbols, @illegal_symbols.symbolize_keys
+    assert_equal @illegal_symbols, @illegal_symbols.dup.symbolize_keys!
   end
 
   def test_symbolize_keys_preserves_fixnum_keys
@@ -56,7 +63,7 @@ class HashExtTest < Test::Unit::TestCase
     @symbols = @symbols.with_indifferent_access
     @mixed   = @mixed.with_indifferent_access
 
-    assert_equal 'a', @strings.send!(:convert_key, :a)
+    assert_equal 'a', @strings.__send__(:convert_key, :a)
 
     assert_equal 1, @strings.fetch('a')
     assert_equal 1, @strings.fetch(:a.to_s)
@@ -69,9 +76,9 @@ class HashExtTest < Test::Unit::TestCase
 
     hashes.each do |name, hash|
       method_map.sort_by { |m| m.to_s }.each do |meth, expected|
-        assert_equal(expected, hash.send!(meth, 'a'),
+        assert_equal(expected, hash.__send__(meth, 'a'),
                      "Calling #{name}.#{meth} 'a'")
-        assert_equal(expected, hash.send!(meth, :a),
+        assert_equal(expected, hash.__send__(meth, :a),
                      "Calling #{name}.#{meth} :a")
       end
     end
@@ -239,6 +246,16 @@ class HashExtTest < Test::Unit::TestCase
     assert(!indiff.keys.any? {|k| k.kind_of? String}, "A key was converted to a string!")
   end
 
+  def test_deep_merge
+    hash_1 = { :a => "a", :b => "b", :c => { :c1 => "c1", :c2 => "c2", :c3 => { :d1 => "d1" } } }
+    hash_2 = { :a => 1, :c => { :c1 => 2, :c3 => { :d2 => "d2" } } }
+    expected = { :a => 1, :b => "b", :c => { :c1 => 2, :c2 => "c2", :c3 => { :d1 => "d1", :d2 => "d2" } } }
+    assert_equal expected, hash_1.deep_merge(hash_2)
+
+    hash_1.deep_merge!(hash_2)
+    assert_equal expected, hash_1
+  end
+
   def test_reverse_merge
     defaults = { :a => "x", :b => "y", :c => 10 }.freeze
     options  = { :a => 1, :b => 2 }
@@ -270,10 +287,39 @@ class HashExtTest < Test::Unit::TestCase
     # Should return a new hash with only the given keys.
     assert_equal expected, original.slice(:a, :b)
     assert_not_equal expected, original
+  end
+
+  def test_slice_inplace
+    original = { :a => 'x', :b => 'y', :c => 10 }
+    expected = { :c => 10 }
 
     # Should replace the hash with only the given keys.
     assert_equal expected, original.slice!(:a, :b)
-    assert_equal expected, original
+  end
+
+  def test_slice_with_an_array_key
+    original = { :a => 'x', :b => 'y', :c => 10, [:a, :b] => "an array key" }
+    expected = { [:a, :b] => "an array key", :c => 10 }
+
+    # Should return a new hash with only the given keys when given an array key.
+    assert_equal expected, original.slice([:a, :b], :c)
+    assert_not_equal expected, original
+  end
+
+  def test_slice_inplace_with_an_array_key
+    original = { :a => 'x', :b => 'y', :c => 10, [:a, :b] => "an array key" }
+    expected = { :a => 'x', :b => 'y' }
+
+    # Should replace the hash with only the given keys when given an array key.
+    assert_equal expected, original.slice!([:a, :b], :c)
+  end
+
+  def test_slice_with_splatted_keys
+    original = { :a => 'x', :b => 'y', :c => 10, [:a, :b] => "an array key" }
+    expected = { :a => 'x', :b => "y" }
+
+    # Should grab each of the splatted keys.
+    assert_equal expected, original.slice(*[:a, :b])
   end
 
   def test_indifferent_slice
@@ -284,12 +330,28 @@ class HashExtTest < Test::Unit::TestCase
       # Should return a new hash with only the given keys.
       assert_equal expected, original.slice(*keys), keys.inspect
       assert_not_equal expected, original
+    end
+  end
 
+  def test_indifferent_slice_inplace
+    original = { :a => 'x', :b => 'y', :c => 10 }.with_indifferent_access
+    expected = { :c => 10 }.with_indifferent_access
+
+    [['a', 'b'], [:a, :b]].each do |keys|
       # Should replace the hash with only the given keys.
       copy = original.dup
       assert_equal expected, copy.slice!(*keys)
-      assert_equal expected, copy
     end
+  end
+
+  def test_indifferent_slice_access_with_symbols
+    original = {'login' => 'bender', 'password' => 'shiny', 'stuff' => 'foo'}
+    original = original.with_indifferent_access
+
+    slice = original.slice(:login, :password)
+
+    assert_equal 'bender', slice[:login]
+    assert_equal 'bender', slice['login']
   end
 
   def test_except
@@ -303,6 +365,18 @@ class HashExtTest < Test::Unit::TestCase
     # Should replace the hash with only the given keys.
     assert_equal expected, original.except!(:c)
     assert_equal expected, original
+  end
+
+  def test_except_with_original_frozen
+    original = { :a => 'x', :b => 'y' }
+    original.freeze
+    assert_nothing_raised { original.except(:a) }
+  end
+
+  def test_except_with_mocha_expectation_on_original
+    original = { :a => 'x', :b => 'y' }
+    original.expects(:delete).never
+    original.except(:a)
   end
 end
 
@@ -341,6 +415,13 @@ class HashToXmlTest < Test::Unit::TestCase
     assert_equal "<person>", xml.first(8)
     assert xml.include?(%(<street-name>Paulina</street-name>))
     assert xml.include?(%(<name>David</name>))
+  end
+
+  def test_one_level_camelize_true
+    xml = { :name => "David", :street_name => "Paulina" }.to_xml(@xml_options.merge(:camelize => true))
+    assert_equal "<Person>", xml.first(8)
+    assert xml.include?(%(<StreetName>Paulina</StreetName>))
+    assert xml.include?(%(<Name>David</Name>))
   end
 
   def test_one_level_with_types
@@ -527,9 +608,9 @@ class HashToXmlTest < Test::Unit::TestCase
   def test_single_record_from_xml_with_attributes_other_than_type
     topic_xml = <<-EOT
     <rsp stat="ok">
-    	<photos page="1" pages="1" perpage="100" total="16">
-    		<photo id="175756086" owner="55569174@N00" secret="0279bf37a1" server="76" title="Colored Pencil PhotoBooth Fun" ispublic="1" isfriend="0" isfamily="0"/>
-    	</photos>
+      <photos page="1" pages="1" perpage="100" total="16">
+        <photo id="175756086" owner="55569174@N00" secret="0279bf37a1" server="76" title="Colored Pencil PhotoBooth Fun" ispublic="1" isfriend="0" isfamily="0"/>
+      </photos>
     </rsp>
     EOT
 
@@ -591,6 +672,34 @@ class HashToXmlTest < Test::Unit::TestCase
     XML
     expected_blog_hash = {"blog" => {"posts" => ["a post", "another post"]}}
     assert_equal expected_blog_hash, Hash.from_xml(blog_xml)
+  end
+
+  def test_file_from_xml
+    blog_xml = <<-XML
+      <blog>
+        <logo type="file" name="logo.png" content_type="image/png">
+        </logo>
+      </blog>
+    XML
+    hash = Hash.from_xml(blog_xml)
+    assert hash.has_key?('blog')
+    assert hash['blog'].has_key?('logo')
+
+    file = hash['blog']['logo']
+    assert_equal 'logo.png', file.original_filename
+    assert_equal 'image/png', file.content_type
+  end
+
+  def test_file_from_xml_with_defaults
+    blog_xml = <<-XML
+      <blog>
+        <logo type="file">
+        </logo>
+      </blog>
+    XML
+    file = Hash.from_xml(blog_xml)['blog']['logo']
+    assert_equal 'untitled', file.original_filename
+    assert_equal 'application/octet-stream', file.content_type
   end
 
   def test_xsd_like_types_from_xml
@@ -668,7 +777,7 @@ class HashToXmlTest < Test::Unit::TestCase
   
   def test_empty_string_works_for_typecast_xml_value    
     assert_nothing_raised do
-      Hash.send!(:typecast_xml_value, "")
+      Hash.__send__(:typecast_xml_value, "")
     end
   end
   
@@ -698,6 +807,44 @@ class HashToXmlTest < Test::Unit::TestCase
     }.stringify_keys
 
     assert_equal hash, Hash.from_xml(hash.to_xml(@xml_options))['person']
+  end
+  
+  def test_datetime_xml_type_with_utc_time
+    alert_xml = <<-XML
+      <alert>
+        <alert_at type="datetime">2008-02-10T15:30:45Z</alert_at>
+      </alert>
+    XML
+    alert_at = Hash.from_xml(alert_xml)['alert']['alert_at']
+    assert alert_at.utc?
+    assert_equal Time.utc(2008, 2, 10, 15, 30, 45), alert_at
+  end
+  
+  def test_datetime_xml_type_with_non_utc_time
+    alert_xml = <<-XML
+      <alert>
+        <alert_at type="datetime">2008-02-10T10:30:45-05:00</alert_at>
+      </alert>
+    XML
+    alert_at = Hash.from_xml(alert_xml)['alert']['alert_at']
+    assert alert_at.utc?
+    assert_equal Time.utc(2008, 2, 10, 15, 30, 45), alert_at
+  end
+  
+  def test_datetime_xml_type_with_far_future_date
+    alert_xml = <<-XML
+      <alert>
+        <alert_at type="datetime">2050-02-10T15:30:45Z</alert_at>
+      </alert>
+    XML
+    alert_at = Hash.from_xml(alert_xml)['alert']['alert_at']
+    assert alert_at.utc?
+    assert_equal 2050,  alert_at.year
+    assert_equal 2,     alert_at.month
+    assert_equal 10,    alert_at.day
+    assert_equal 15,    alert_at.hour
+    assert_equal 30,    alert_at.min
+    assert_equal 45,    alert_at.sec
   end
 end
 
@@ -734,6 +881,27 @@ class QueryTest < Test::Unit::TestCase
   def test_array_values_are_not_sorted
     assert_query_equal 'person%5Bid%5D%5B%5D=20&person%5Bid%5D%5B%5D=10',
       :person => {:id => [20, 10]}
+  end
+
+  def test_expansion_count_is_limited
+    assert_raises RuntimeError do
+      attack_xml = <<-EOT
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE member [
+        <!ENTITY a "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">
+        <!ENTITY b "&c;&c;&c;&c;&c;&c;&c;&c;&c;&c;">
+        <!ENTITY c "&d;&d;&d;&d;&d;&d;&d;&d;&d;&d;">
+        <!ENTITY d "&e;&e;&e;&e;&e;&e;&e;&e;&e;&e;">
+        <!ENTITY e "&f;&f;&f;&f;&f;&f;&f;&f;&f;&f;">
+        <!ENTITY f "&g;&g;&g;&g;&g;&g;&g;&g;&g;&g;">
+        <!ENTITY g "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+      ]>
+      <member>
+      &a;
+      </member>
+      EOT
+      Hash.from_xml(attack_xml)
+    end
   end
 
   private

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
 
 class TestJSONDecoding < Test::Unit::TestCase
   TESTS = {
@@ -15,7 +15,8 @@ class TestJSONDecoding < Test::Unit::TestCase
     # no time zone
     %({a: "2007-01-01 01:12:34"})              => {'a' => "2007-01-01 01:12:34"}, 
     # needs to be *exact*
-    %({a: " 2007-01-01 01:12:34 Z "})          => {'a' => " 2007-01-01 01:12:34 Z "}, 
+    %({a: " 2007-01-01 01:12:34 Z "})          => {'a' => " 2007-01-01 01:12:34 Z "},
+    %({a: "2007-01-01 : it's your birthday"})  => {'a' => "2007-01-01 : it's your birthday"},
     %([])    => [],
     %({})    => {},
     %(1)     => 1,

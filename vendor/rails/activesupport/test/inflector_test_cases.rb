@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module InflectorTestCases
   SingularToPlural = {
     "search"      => "searches",
@@ -142,6 +144,28 @@ module InflectorTestCases
     "NodeChild"        => "node_children"
   }
 
+  StringToParameterized = {
+    "Donald E. Knuth"                     => "donald-e-knuth",
+    "Random text with *(bad)* characters" => "random-text-with-bad-characters",
+    "Allow_Under_Scores"                  => "allow_under_scores",
+    "Trailing bad characters!@#"          => "trailing-bad-characters",
+    "!@#Leading bad characters"           => "leading-bad-characters",
+    "Squeeze   separators"                => "squeeze-separators"
+  }
+
+  # Ruby 1.9 doesn't do Unicode normalization yet.
+  if RUBY_VERSION >= '1.9'
+    StringToParameterizedAndNormalized = {
+      "Malmö"                               => "malm",
+      "Garçons"                             => "gar-ons"
+    }
+  else
+    StringToParameterizedAndNormalized = {
+      "Malmö"                               => "malmo",
+      "Garçons"                             => "garcons"
+    }
+  end
+
   UnderscoreToHuman = {
     "employee_salary" => "Employee salary",
     "employee_id"     => "Employee",
@@ -155,7 +179,10 @@ module InflectorTestCases
     'Action Web Service'  => 'Action Web Service',
     'Action web service'  => 'Action Web Service',
     'actionwebservice'    => 'Actionwebservice',
-    'Actionwebservice'    => 'Actionwebservice'
+    'Actionwebservice'    => 'Actionwebservice',
+    "david's code"        => "David's Code",
+    "David's code"        => "David's Code",
+    "david's Code"        => "David's Code"
   }
 
   OrdinalNumbers = {

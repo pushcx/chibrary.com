@@ -1,13 +1,14 @@
-require File.dirname(__FILE__) + '/plugin_test_helper'
+require 'plugin_test_helper'
 
 uses_mocha "Plugin Tests" do
 
   class PluginTest < Test::Unit::TestCase
 
     def setup
-      @initializer       = Rails::Initializer.new(Rails::Configuration.new)
-      @valid_plugin_path = plugin_fixture_path('default/stubby')
-      @empty_plugin_path = plugin_fixture_path('default/empty')    
+      @initializer         = Rails::Initializer.new(Rails::Configuration.new)
+      @valid_plugin_path   = plugin_fixture_path('default/stubby')
+      @empty_plugin_path   = plugin_fixture_path('default/empty')
+      @gemlike_plugin_path = plugin_fixture_path('default/gemlike')
     end
 
     def test_should_determine_plugin_name_from_the_directory_of_the_plugin
@@ -70,7 +71,14 @@ uses_mocha "Plugin Tests" do
         plugin.stubs(:evaluate_init_rb)
         plugin.send(:load, @initializer)
       end
-    
+
+      # This path is fine so nothing is raised
+      assert_nothing_raised do
+        plugin = plugin_for(@gemlike_plugin_path)
+        plugin.stubs(:evaluate_init_rb)
+        plugin.send(:load, @initializer)
+      end
+
       # This is an empty path so it raises
       assert_raises(LoadError) do
         plugin = plugin_for(@empty_plugin_path)
@@ -130,8 +138,26 @@ uses_mocha "Plugin Tests" do
       end
       assert plugin.loaded?
     end
+    
+    def test_should_make_about_yml_available_as_about_method_on_plugin
+      plugin = plugin_for(@valid_plugin_path)
+      assert_equal "Plugin Author", plugin.about['author']
+      assert_equal "1.0.0", plugin.about['version']
+    end
+    
+    def test_should_return_empty_hash_for_about_if_about_yml_is_missing
+      assert_equal({}, plugin_for(about_yml_plugin_path('plugin_without_about_yaml')).about)
+    end
+    
+    def test_should_return_empty_hash_for_about_if_about_yml_is_malformed
+      assert_equal({}, plugin_for(about_yml_plugin_path('bad_about_yml')).about)
+    end
   
     private
+  
+      def about_yml_plugin_path(name)
+        File.join(File.dirname(__FILE__), 'fixtures', 'about_yml_plugins', name)
+      end
   
       def plugin_for(path)
         Rails::Plugin.new(path)

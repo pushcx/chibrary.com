@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
 
 uses_mocha 'rescue' do
 
@@ -62,6 +62,16 @@ class RescueController < ActionController::Base
     render :text => exception.message
   end
 
+  # This is a Dispatcher exception and should be in ApplicationController.
+  rescue_from ActionController::RoutingError do
+    render :text => 'no way'
+  end
+
+  before_filter(:only => :before_filter_raises) { raise 'umm nice' }
+
+  def before_filter_raises
+  end
+
   def raises
     render :text => 'already rendered'
     raise "don't panic!"
@@ -70,7 +80,7 @@ class RescueController < ActionController::Base
   def method_not_allowed
     raise ActionController::MethodNotAllowed.new(:get, :head, :put)
   end
-  
+
   def not_implemented
     raise ActionController::NotImplemented.new(:get, :put)
   end
@@ -102,7 +112,7 @@ class RescueController < ActionController::Base
   def record_invalid_raise_as_string
     raise RecordInvalidToRescueAsString
   end
-  
+
   def bad_gateway
     raise BadGateway
   end
@@ -130,22 +140,33 @@ class RescueController < ActionController::Base
     end
 end
 
-class RescueTest < Test::Unit::TestCase
+class RescueControllerTest < ActionController::TestCase
   FIXTURE_PUBLIC = "#{File.dirname(__FILE__)}/../fixtures".freeze
 
-  def setup
-    @controller = RescueController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+  setup :set_all_requests_local
+  setup :populate_exception_object
 
+  def set_all_requests_local
     RescueController.consider_all_requests_local = true
     @request.remote_addr = '1.2.3.4'
     @request.host = 'example.com'
+  end
 
+  def populate_exception_object
     begin
       raise 'foo'
     rescue => @exception
     end
+  end
+
+  def test_rescue_exceptions_raised_by_filters
+    with_rails_root FIXTURE_PUBLIC do
+      with_all_requests_local false do
+        get :before_filter_raises
+      end
+    end
+
+    assert_response :internal_server_error
   end
 
   def test_rescue_action_locally_if_all_requests_local
@@ -279,33 +300,17 @@ class RescueTest < Test::Unit::TestCase
     assert_equal ActionController::Rescue::DEFAULT_RESCUE_TEMPLATE, templates.default
     assert_equal ActionController::Rescue::DEFAULT_RESCUE_TEMPLATE, templates[Exception.new]
 
-    assert_equal 'missing_template',  templates[ActionController::MissingTemplate.name]
+    assert_equal 'missing_template',  templates[ActionView::MissingTemplate.name]
     assert_equal 'routing_error',     templates[ActionController::RoutingError.name]
     assert_equal 'unknown_action',    templates[ActionController::UnknownAction.name]
     assert_equal 'template_error',    templates[ActionView::TemplateError.name]
   end
 
-  def test_clean_backtrace
-    with_rails_root nil do
-      # No action if RAILS_ROOT isn't set.
-      cleaned = @controller.send(:clean_backtrace, @exception)
-      assert_equal @exception.backtrace, cleaned
-    end
-
-    with_rails_root Dir.pwd do
-      # RAILS_ROOT is removed from backtrace.
-      cleaned = @controller.send(:clean_backtrace, @exception)
-      expected = @exception.backtrace.map { |line| line.sub(RAILS_ROOT, '') }
-      assert_equal expected, cleaned
-
-      # No action if backtrace is nil.
-      assert_nil @controller.send(:clean_backtrace, Exception.new)
-    end
-  end
-  
   def test_not_implemented
     with_all_requests_local false do
-      head :not_implemented
+      with_rails_public_path(".") do
+        head :not_implemented
+      end
     end
     assert_response :not_implemented
     assert_equal "GET, PUT", @response.headers['Allow']
@@ -313,7 +318,9 @@ class RescueTest < Test::Unit::TestCase
 
   def test_method_not_allowed
     with_all_requests_local false do
-      get :method_not_allowed
+      with_rails_public_path(".") do
+        get :method_not_allowed
+      end
     end
     assert_response :method_not_allowed
     assert_equal "GET, HEAD, PUT", @response.headers['Allow']
@@ -374,6 +381,21 @@ class RescueTest < Test::Unit::TestCase
     assert_equal "RescueController::ResourceUnavailableToRescueAsString", @response.body
   end
 
+  def test_rescue_dispatcher_exceptions
+    env = @request.env
+    env["action_controller.rescue.request"] = @request
+    env["action_controller.rescue.response"] = @response
+
+    RescueController.call_with_exception(env, ActionController::RoutingError.new("Route not found"))
+    assert_equal "no way", @response.body
+  end
+
+  def test_rescue_dispatcher_exceptions_without_request_set
+    @request.env['REQUEST_URI'] = '/no_way'
+    response = RescueController.call_with_exception(@request.env, ActionController::RoutingError.new("Route not found"))
+    assert_kind_of ActionController::Response, response
+    assert_equal "no way", response.body
+  end
 
   protected
     def with_all_requests_local(local = true)
@@ -391,7 +413,19 @@ class RescueTest < Test::Unit::TestCase
       @request.remote_addr = old_remote_addr
     end
 
-    def with_rails_root(path = nil)
+    def with_rails_public_path(rails_root)
+      old_rails = Object.const_get(:Rails) rescue nil
+      mod = Object.const_set(:Rails, Module.new)
+      (class << mod; self; end).instance_eval do
+        define_method(:public_path) { "#{rails_root}/public" }
+      end
+      yield
+    ensure
+      Object.module_eval { remove_const(:Rails) } if defined?(Rails)
+      Object.const_set(:Rails, old_rails) if old_rails
+    end
+
+    def with_rails_root(path = nil,&block)
       old_rails_root = RAILS_ROOT if defined?(RAILS_ROOT)
       if path
         silence_warnings { Object.const_set(:RAILS_ROOT, path) }
@@ -399,7 +433,7 @@ class RescueTest < Test::Unit::TestCase
         Object.remove_const(:RAILS_ROOT) rescue nil
       end
 
-      yield
+      with_rails_public_path(path, &block)
 
     ensure
       if old_rails_root
@@ -438,14 +472,7 @@ class ExceptionInheritanceRescueController < ActionController::Base
   end
 end
 
-class ExceptionInheritanceRescueTest < Test::Unit::TestCase
-
-  def setup
-    @controller = ExceptionInheritanceRescueController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-  end
-
+class ExceptionInheritanceRescueControllerTest < ActionController::TestCase
   def test_bottom_first
     get :raise_grandchild_exception
     assert_response :no_content
@@ -475,14 +502,7 @@ class ControllerInheritanceRescueController < ExceptionInheritanceRescueControll
   end
 end
 
-class ControllerInheritanceRescueControllerTest < Test::Unit::TestCase
-
-  def setup
-    @controller = ControllerInheritanceRescueController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-  end
-
+class ControllerInheritanceRescueControllerTest < ActionController::TestCase
   def test_first_exception_in_child_controller
     get :raise_first_exception_in_child_controller
     assert_response :gone

@@ -1,5 +1,6 @@
+# encoding: utf-8
 require 'date'
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
 require 'inflector_test_cases'
 
 class StringInflectionsTest < Test::Unit::TestCase
@@ -29,6 +30,10 @@ class StringInflectionsTest < Test::Unit::TestCase
     CamelToUnderscore.each do |camel, underscore|
       assert_equal(camel, underscore.camelize)
     end
+  end
+
+  def test_camelize_lower
+    assert_equal('capital', 'Capital'.camelize(:lower))
   end
 
   def test_underscore
@@ -167,14 +172,85 @@ class StringInflectionsTest < Test::Unit::TestCase
     assert !s.end_with?('el')
   end
 
-  # FIXME: Ruby 1.9
-  def test_each_char_with_utf8_string_when_kcode_is_utf8
-    old_kcode, $KCODE = $KCODE, 'UTF8'
-    '€2.99'.each_char do |char|
-      assert_not_equal 1, char.length
-      break
+  def test_string_squish
+    original = %{ A string with tabs(\t\t), newlines(\n\n), and
+                  many spaces(  ). }
+
+    expected = "A string with tabs( ), newlines( ), and many spaces( )."
+
+    # Make sure squish returns what we expect:
+    assert_equal original.squish,  expected
+    # But doesn't modify the original string:
+    assert_not_equal original, expected
+
+    # Make sure squish! returns what we expect:
+    assert_equal original.squish!, expected
+    # And changes the original string:
+    assert_equal original, expected
+  end
+
+  if RUBY_VERSION < '1.9'
+    def test_each_char_with_utf8_string_when_kcode_is_utf8
+      with_kcode('UTF8') do
+        '€2.99'.each_char do |char|
+          assert_not_equal 1, char.length
+          break
+        end
+      end
     end
-  ensure
-    $KCODE = old_kcode
+  end
+end
+
+class StringBehaviourTest < Test::Unit::TestCase
+  def test_acts_like_string
+    assert 'Bambi'.acts_like_string?
+  end
+end
+
+class CoreExtStringMultibyteTest < ActiveSupport::TestCase
+  UNICODE_STRING = 'こにちわ'
+  ASCII_STRING = 'ohayo'
+  BYTE_STRING = "\270\236\010\210\245"
+
+  def test_core_ext_adds_mb_chars
+    assert UNICODE_STRING.respond_to?(:mb_chars)
+  end
+
+  def test_string_should_recognize_utf8_strings
+    assert UNICODE_STRING.is_utf8?
+    assert ASCII_STRING.is_utf8?
+    assert !BYTE_STRING.is_utf8?
+  end
+
+  if RUBY_VERSION < '1.8.7'
+    def test_core_ext_adds_chars
+      assert UNICODE_STRING.respond_to?(:chars)
+    end
+
+    def test_chars_warns_about_deprecation
+      assert_deprecated("String#chars") do
+        ''.chars
+      end
+    end
+  end
+
+  if RUBY_VERSION < '1.9'
+    def test_mb_chars_returns_self_when_kcode_not_set
+      with_kcode('none') do
+        assert UNICODE_STRING.mb_chars.kind_of?(String)
+      end
+    end
+
+    def test_mb_chars_returns_an_instance_of_the_chars_proxy_when_kcode_utf8
+      with_kcode('UTF8') do
+        assert UNICODE_STRING.mb_chars.kind_of?(ActiveSupport::Multibyte.proxy_class)
+      end
+    end
+  end
+
+  if RUBY_VERSION >= '1.9'
+    def test_mb_chars_returns_string
+      assert UNICODE_STRING.mb_chars.kind_of?(String)
+    end
   end
 end

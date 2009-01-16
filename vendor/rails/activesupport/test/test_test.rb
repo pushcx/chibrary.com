@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/abstract_unit'
-require 'active_support/test_case'
-class AssertDifferenceTest < Test::Unit::TestCase
+require 'abstract_unit'
+
+class AssertDifferenceTest < ActiveSupport::TestCase
   def setup
     @object = Class.new do
       attr_accessor :num 
@@ -59,15 +59,87 @@ class AssertDifferenceTest < Test::Unit::TestCase
         @object.increment
       end
     end
+
+    def test_array_of_expressions_identify_failure
+      assert_difference ['@object.num', '1 + 1'] do
+        @object.increment
+      end
+      fail 'should not get to here'
+    rescue Exception => e
+      assert_equal "<3> expected but was\n<2>.", e.message
+    end
+
+    def test_array_of_expressions_identify_failure_when_message_provided
+      assert_difference ['@object.num', '1 + 1'], 1, 'something went wrong' do
+        @object.increment
+      end
+      fail 'should not get to here'
+    rescue Exception => e
+      assert_equal "something went wrong.\n<3> expected but was\n<2>.", e.message
+    end
   else
     def default_test; end
   end
 end
 
 # These should always pass
-class NotTestingThingsTest < Test::Unit::TestCase
-  include ActiveSupport::Testing::Default
+if ActiveSupport::Testing.const_defined?(:Default)
+  class NotTestingThingsTest < Test::Unit::TestCase
+    include ActiveSupport::Testing::Default
+  end
 end
 
 class AlsoDoingNothingTest < ActiveSupport::TestCase
+end
+
+# Setup and teardown callbacks.
+class SetupAndTeardownTest < ActiveSupport::TestCase
+  setup :reset_callback_record, :foo
+  teardown :foo, :sentinel, :foo
+
+  def test_inherited_setup_callbacks
+    assert_equal [:reset_callback_record, :foo], self.class.setup_callback_chain.map(&:method)
+    assert_equal [:foo], @called_back
+    assert_equal [:foo, :sentinel, :foo], self.class.teardown_callback_chain.map(&:method)
+  end
+
+  def setup
+  end
+
+  def teardown
+  end
+
+  protected
+    def reset_callback_record
+      @called_back = []
+    end
+
+    def foo
+      @called_back << :foo
+    end
+
+    def sentinel
+      assert_equal [:foo, :foo], @called_back
+    end
+end
+
+
+class SubclassSetupAndTeardownTest < SetupAndTeardownTest
+  setup :bar
+  teardown :bar
+
+  def test_inherited_setup_callbacks
+    assert_equal [:reset_callback_record, :foo, :bar], self.class.setup_callback_chain.map(&:method)
+    assert_equal [:foo, :bar], @called_back
+    assert_equal [:foo, :sentinel, :foo, :bar], self.class.teardown_callback_chain.map(&:method)
+  end
+
+  protected
+    def bar
+      @called_back << :bar
+    end
+
+    def sentinel
+      assert_equal [:foo, :bar, :bar, :foo], @called_back
+    end
 end
