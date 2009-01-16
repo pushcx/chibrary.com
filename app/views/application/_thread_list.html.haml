@@ -1,6 +1,6 @@
 %ol.thread_list
   - @missing_count = 0
-  - subjects = [{ :depth => -1, :subject => subject(thread) }]
+  - subjects = [{ :depth => -1, :subject => thread.n_subject }]
   - thread.each do |container|
     %li
       - message = container.message
@@ -18,5 +18,5 @@
           %span.date= message.date.strftime("%m-%d %H:%M")
           - subjects.pop while container.depth <= subjects.last[:depth]
           - if message.n_subject != subjects.last[:subject] and !subjects.last[:subject].include? message.n_subject
-            - subjects << { :depth => container.depth, :subject => message.n_subject }
             %span.subject= subject(message)
+            - subjects << { :depth => container.depth, :subject => message.n_subject }
