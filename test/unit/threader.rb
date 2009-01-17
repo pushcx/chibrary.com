@@ -115,6 +115,20 @@ class ThreaderTest < Test::Unit::TestCase
     t.cache_work slug, year, month, message_list, threadset
   end
 
+  def test_snippet
+    t = Threader.new
+    body = ">The\nfirst\nfive\n\nunquoted\nnonblank\nlines"
+    snippet = {
+      :excerpt => "first five unquoted nonblank lines",
+      :subject => 'subject',
+      :url => '/slug/2009/01/00000000',
+    }
+    thread = mock(:date => Time.at(42), :call_number => '00000000', :n_subject => 'subject', :effective_field => body)
+    $archive.expects(:[]=).with('snippet/homepage/9999999957', snippet)
+    $archive.expects(:[]=).with('snippet/list/slug/9999999957', snippet)
+    t.snippet 'slug', '2009', '01', thread
+  end
+
   private
   def new_threader
     t = Threader.new

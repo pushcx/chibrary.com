@@ -73,7 +73,7 @@ class Threader
     snippet = {
       :url => "/#{slug}/#{year}/#{month}/#{thread.call_number}",
       :subject => thread.n_subject,
-      :excerpt => (thread.effective_field(:body) or "").split("\n").select { |l| not l.chomp.empty? or l =~ /^>|@|:$/ }[0..4].join(" "),
+      :excerpt => (thread.effective_field(:body) or "").split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join(" "),
     }
     $archive["snippet/homepage/#{name}"] = snippet
     $archive["snippet/list/#{slug}/#{name}"] = snippet
