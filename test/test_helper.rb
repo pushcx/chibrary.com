@@ -6,9 +6,12 @@ require 'pp'
 require 'redgreen'
 require 'yaml'
 
+require File.dirname(__FILE__) + '/../config/boot'
+require "#{RAILS_ROOT}/config/environment"
+
 # path magic from p152 of Programming Ruby
-$:.unshift File.join(File.dirname(__FILE__), "..", "bin")
-$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
+$:.unshift File.join(File.dirname(__FILE__), "..", "script")
+#$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'storage'
 $archive = $cachedhash = nil # avoid accidental real changes
