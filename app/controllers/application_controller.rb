@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   end
 
   def from from
-    f Message::encoded_word(from)
+    f from
   end
 
   def subject o

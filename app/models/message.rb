@@ -219,7 +219,7 @@ class Message
   end
 
   def load_from
-    @from = (get_header('From') or '').sub(/"(.*?)"/, '\1')
+    @from = Message::encoded_word((get_header('From') or '').sub(/"(.*?)"/, '\1'))
   end
 
   def load_message_id

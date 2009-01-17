@@ -194,7 +194,7 @@ class MessageTest < Test::Unit::TestCase
 
   def test_base64_encoded
     m = Message.new message(:base64_encoded), 'test', '00000000'
-    assert m.from.include?("Pea, Botp")
+    assert m.from.include?("Peña, Botp")
     assert m.body.include?('put those in a batch file')
   end
 
