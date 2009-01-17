@@ -148,7 +148,7 @@ class ContainerTest < ThreadingTest
 
   def test_cache_same
     c = container_tree
-    c.expects(:to_yaml).returns("yaml")
+    c.expects(:to_yaml).returns("yaml".to_yaml)
     $archive.expects(:[]).returns("yaml")
     c.cache
   end

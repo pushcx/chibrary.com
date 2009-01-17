@@ -114,7 +114,7 @@ class Container
     effective_field :date or Time.now
   end
 
-  # persistance
+  # persistence
 
   def cache
     slug = effective_field :slug
