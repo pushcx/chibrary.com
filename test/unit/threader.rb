@@ -7,32 +7,14 @@ class ThreaderTest < Test::Unit::TestCase
 
   def setup
     $stdout.expects(:puts).at_least(0)
-    @queue = mock("queue")
-    Queue.expects(:new).returns(@queue)
-  end
-
-  def test_get_job
-    t = Threader.new
-
-    job = mock("job")
-    @queue.expects(:next).returns(job)
-    assert_equal job, t.get_job
-
-    @queue.expects(:next).returns(nil)
-    assert_equal nil, t.get_job
+    @thread_q = mock("thread_q")
+    Queue.expects(:new).returns(@thread_q)
   end
 
   def test_run_empty
-    t = new_threader
-
-    # no messages in cache or bucket
-    list = mock("list")
-    list.expects(:cached_message_list).returns([])
-    list.expects(:fresh_message_list).returns([])
-    List.expects(:new).returns(list)
-
-    # threader should exit cleanly
-    t.run
+    @thread_q.expects(:work).returns nil
+    # threader should exit cleanly, doing nothing
+    Threader.new.run
   end
 
   def test_run_removed
@@ -72,18 +54,18 @@ class ThreaderTest < Test::Unit::TestCase
 
     # two empty jobs
     job1 = Job.new :thread, :slug => 'example', :year => '2008', :month => '07'
-    list = mock("list")
-    list.expects(:cached_message_list).returns([])
-    list.expects(:fresh_message_list).returns([])
-    List.expects(:new).returns(list)
+    list1 = mock("list1")
+    list1.expects(:cached_message_list).returns([])
+    list1.expects(:fresh_message_list).returns([])
 
     job2 = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
-    list = mock("list")
-    list.expects(:cached_message_list).returns([])
-    list.expects(:fresh_message_list).returns([])
-    List.expects(:new).returns(list)
+    list2 = mock("list2")
+    list2.expects(:cached_message_list).returns([])
+    list2.expects(:fresh_message_list).returns([])
 
-    t.expects(:get_job).times(3).returns(job1, job2, nil)
+    @thread_q.expects(:work).multiple_yields(job1, job2)
+    List.expects(:new).times(2).returns(list1).then.returns(list2)
+
     t.run
   end
 
@@ -128,7 +110,7 @@ class ThreaderTest < Test::Unit::TestCase
   def new_threader
     t = Threader.new
     job = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
-    t.expects(:get_job).returns(job, nil).at_least_once
+    @thread_q.expects(:work).yields(job)
     t
   end
 end
