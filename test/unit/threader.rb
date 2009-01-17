@@ -72,14 +72,19 @@ class ThreaderTest < Test::Unit::TestCase
   def test_cache_work_empty
     slug, year, month = 'example', '2007', '08'
 
+    thread_list = mock('thread_list')
+    thread_list.expects(:store)
+    ThreadList.expects(:new).returns(thread_list)
+
     message_list = ['1@example.com']
     threadset = mock("threadset")
     threadset.expects(:collect).returns([])
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
-    list.expects(:cache_thread_list).with("2007", "08", [])
     List.expects(:new).returns(list)
+
+    Queue.expects(:new).with(:publish).returns(mock('publish_q', :add => nil))
 
     Threader.new.cache_work slug, year, month, message_list, threadset
   end
@@ -91,19 +96,23 @@ class ThreaderTest < Test::Unit::TestCase
 
     thread = mock("thread")
     thread.expects(:cache)
-    thread.expects(:call_number).returns('00000000')
-    thread.expects(:n_subject).returns('subject')
-    thread.expects(:count).returns(1)
-
     threadset = mock("threadset")
     threadset.expects(:collect).yields(thread)
 
+    thread_list = mock('thread_list')
+    thread_list.expects(:add_thread).with(thread)
+    thread_list.expects(:store)
+    ThreadList.expects(:new).returns(thread_list)
+
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
-    list.expects(:cache_thread_list).with("2007", "08", [{ :call_number => "00000000", :subject => "subject", :messages => 1 }])
     List.expects(:new).returns(list)
 
-    Threader.new.cache_work slug, year, month, message_list, threadset
+    Queue.expects(:new).with(:publish).returns(mock('publish_q', :add => nil))
+
+    t = Threader.new
+    t.expects(:snippet)
+    t.cache_work slug, year, month, message_list, threadset
   end
 
   private
