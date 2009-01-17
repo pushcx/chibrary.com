@@ -281,14 +281,27 @@ class ThreadSetTest < ThreadingTest
     @ts = nil
   end
 
+  def test_month_new
+    ts = mock
+    ThreadSet.expects(:new).returns(ts)
+    $archive.expects(:has_key?).with("list/example/thread/2009/01").returns(false)
+    assert_equal ts, ThreadSet.month('example', '2009', '01')
+  end
+
   def test_month
     ts = mock
     ThreadSet.expects(:new).returns(ts)
-    c = mock("archive")
-    c.expects(:each).multiple_yields(*%w{a b c d})
+
     message = mock("message")
     message.expects(:message_id).times(4).returns("id@example.com")
-    $archive.expects(:[]).times(5).returns(c, message, message, message, message)
+
+    threads = mock("threads")
+    threads.expects(:each).multiple_yields(*%w{a b c d})
+    threads.expects(:[]).times(4).returns(message)
+
+    $archive.expects(:has_key?).with("list/example/thread/2007/08").returns(true)
+    $archive.expects(:[]).with("list/example/thread/2007/08").returns(threads)
+
     ts.expects(:containers).times(4).returns(stub_everything)
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end
@@ -528,7 +541,7 @@ class ThreadSetTest < ThreadingTest
       3a94cf510708220856r6804223ob1dfc823290baf03@mail.gmail.com under 1aedab802e2a57becaf23d5d59163ab2@localhost
       34435dbb849386ca654098bbd7cfdffd@localhost under 3a94cf510708220856r6804223ob1dfc823290baf03@mail.gmail.com
       20070823052055.GA434@ensemble.local under 34435dbb849386ca654098bbd7cfdffd@localhost
-      S384629AbXHWGlr/20070823064147Z+40700@swip002.ftl.affinity.com under 20070823052055.GA434@ensemble.local
+      00000000@generated-message-id.listlibrary.net under 20070823052055.GA434@ensemble.local
       40700@swip002.ftl.affinity.com under 20070823052055.GA434@ensemble.local
       3a94cf510708230447i4d71d8e9t8a7c7cbdcf99832f@mail.gmail.com under 40700@swip002.ftl.affinity.com
       20070823143356.GA14979@uk.tiscali.com under 20070823052055.GA434@ensemble.local
