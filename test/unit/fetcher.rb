@@ -6,7 +6,8 @@ class FetcherTest < Test::Unit::TestCase
     Net::POP3.expects(:new).returns(mock(
       :open_timeout= => nil,
       :read_timeout= => nil,
-      :start => nil
+      :start => nil,
+      :n_mails => 0
     ))
     f = Fetcher.new(0, 0)
     f.setup
