@@ -97,11 +97,12 @@ class ZDir
   def each(recurse=false)
     Dir.entries(@path).sort.each do |path|
       next if %w{. ..}.include? path
-      yield path
       if File.directory? File.join(@path, path)
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
         ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
+      else
+        yield path
       end
     end
   end

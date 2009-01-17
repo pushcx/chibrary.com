@@ -134,7 +134,7 @@ def test_truth ; assert true ; end
 
   def test_first
     z = ZDir.new("/tmp/test")
-    assert_match /mail.@example\.com/, z.first
+    assert_match /foo\/nested@example\.com/, z.first
   end
 
   def test_lookup
