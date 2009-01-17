@@ -9,19 +9,19 @@ class JobTest < Test::Unit::TestCase
   end
 
   def test_new
-    job = Job.new :render_list, { :slug => 'example' }
-    assert_equal :render_list, job.type
+    job = Job.new :import_mailman, { :slug => 'example' }
+    assert_equal :import_mailman, job.type
     assert_equal 'example', job.attributes[:slug]
   end
 
   def test_hash
-    job = Job.new :render_list, { :slug => 'example' }
+    job = Job.new :import_mailman, { :slug => 'example' }
     assert_equal 'example', job[:slug]
   end
 
   def test_key
-    job = Job.new :render_month, { :slug => 'example', :year => '2008', :month => '01' }
-    assert_equal 'render_month/example/2008/01', job.key
+    job = Job.new :thread, { :slug => 'example', :year => '2008', :month => '01' }
+    assert_equal 'example/2008/01', job.key
   end
 end
 
@@ -34,19 +34,19 @@ class QueueTest < Test::Unit::TestCase
 
   def test_new
     CachedHash.expects(:new)
-    queue = Queue.new :render_list
-    assert_equal :render_list, queue.type
+    queue = Queue.new :import_mailman
+    assert_equal :import_mailman, queue.type
   end
 
   def test_add
     CachedHash.expects(:new).returns(mock("queue", :[]= => nil))
-    queue = Queue.new :render_list
+    queue = Queue.new :import_mailman
     queue.add :slug => 'example'
   end
 
   def test_next
     CachedHash.expects(:new).returns(mock("queue"))
-    queue = Queue.new :render_list
+    queue = Queue.new :import_mailman
     c = mock
     c.expects(:first_key).returns("key")
     c.expects(:[]).returns("job")
@@ -57,7 +57,7 @@ class QueueTest < Test::Unit::TestCase
 
   def test_next_none
     CachedHash.expects(:new).returns(mock("queue"))
-    queue = Queue.new :render_list
+    queue = Queue.new :import_mailman
     c = mock
     c.expects(:first_key).returns(nil)
     $cachedhash.expects(:[]).returns(c)
@@ -66,7 +66,7 @@ class QueueTest < Test::Unit::TestCase
 
   def test_next_gone
     CachedHash.expects(:new).returns(mock("queue"))
-    queue = Queue.new :render_list
+    queue = Queue.new :import_mailman
     object1 = mock("object1")
     c = mock
     c.expects(:first_key).times(2).returns("taken key", "good key")
