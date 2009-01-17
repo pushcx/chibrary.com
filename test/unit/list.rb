@@ -36,12 +36,7 @@ class ListTest < Test::Unit::TestCase
   end
 
   def test_thread_list
-    $archive.expects(:[]).returns(["thread..."])
-    assert_equal ["thread..."], @list.thread_list("2008", "01")
-  end
-
-  def test_cache_thread_list
-    $archive.expects(:[]=)
-    @list.cache_thread_list "2008", "01", ["1@example.com", "2@example.com"]
+    ThreadList.expects(:new).with('slug', '2008', '01')
+    @list.thread_list("2008", "01")
   end
 end
