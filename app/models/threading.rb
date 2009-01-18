@@ -8,19 +8,23 @@ require 'message'
 class Container
   include Enumerable
 
-  attr_reader :message_id, :message, :parent, :children
+  attr_reader :message_id, :parent, :children
 
   def initialize message
     if message.is_a? Message
       @message_id = message.message_id
       @message    = message
+      @key        = message.key
     else
       @message_id = message
       @message    = nil
+      @key        = nil
     end
     @parent = nil
     @children = []
   end
+
+  def to_yaml_properties ; %w{@message_id @key @parent @children} ; end
 
   # container accessors
 
@@ -46,7 +50,20 @@ class Container
   end
 
   def empty?
-    @message.nil?
+    message.nil?
+  end
+
+  def message
+    # To save disk, threads do not save full message contents,
+    # just lazy load them when needed.
+    @message ||= $archive[@key] if @key
+    @message
+  end
+
+  def message= message
+    @message_id = message.id
+    @message    = message
+    @key        = message.key
   end
 
   def to_s
