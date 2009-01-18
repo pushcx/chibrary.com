@@ -25,7 +25,7 @@ class Threader
         next
       end
 
-      # if any messages were removed, rebuild for saftey over the speed of find and remove
+      # if any messages were removed, rebuild for safety over the speed of find and remove
       removed = (cached_message_list - fresh_message_list)
       if !removed.empty?
         threadset = ThreadSet.new
