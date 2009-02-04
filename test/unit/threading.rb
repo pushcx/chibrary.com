@@ -43,7 +43,7 @@ class ContainerTest < ThreadingTest
 
   def test_yaml
     c = Container.new Message.new(threaded_message(:root), 'test', '0000root')
-    assert !c.to_yaml.include? 'Message body'
+    assert !c.to_yaml.include?('Message body')
   end
 
   def test_equality
