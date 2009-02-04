@@ -16,6 +16,8 @@ class ThreadList
     end
   end
 
+  def to_yaml_properties ; %w{@source @call_number @message_id @references @subject @date @from @no_archive @key @slug @message} ; end
+
   def add_thread thread
     thread_call_number = thread.call_number
     @threads << { :call_number => thread_call_number, :subject => thread.n_subject, :messages => thread.count }
