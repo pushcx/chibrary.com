@@ -64,7 +64,7 @@ if __FILE__ == $0
       run = fetcher.run
       fetched += run
       break if run < 50 or (run <= fetcher.n_mails and run < PER_CONNECTION)
-      sleep 15
+      sleep 15 # this is long, but DH needs it to sync mailbox status
       max -= PER_CONNECTION
     end
     "fetched #{fetched}"
