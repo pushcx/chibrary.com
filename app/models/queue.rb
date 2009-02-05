@@ -52,16 +52,13 @@ class Queue
     in_progress = $cachedhash["in_progress/#{@type}"]
     while 1
       while 1
-        begin
-          key = queue.first
-          return nil if key.nil?
-          job = queue[key]
-          queue.delete key
-          in_progress[key] = job
-          break
-        rescue Exception => e
-          # another worker took this job, try again
-        end
+        key = queue.first
+        return nil if key.nil?
+        job = queue[key]
+        next if job.nil? # another worker took this job, try again
+        queue.delete key
+        in_progress[key] = job
+        break
       end
 
       begin

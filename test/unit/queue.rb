@@ -44,35 +44,40 @@ class QueueTest < Test::Unit::TestCase
     queue.add :slug => 'example'
   end
 
-  def test_next
+  def test_work
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
-    c = mock
-    c.expects(:first_key).returns("key")
-    c.expects(:[]).returns("job")
-    c.expects(:delete)
-    $cachedhash.expects(:[]).returns(c)
-    assert_equal "job", queue.next
+    c_q = mock("queue cachedhash")
+    c_q.expects(:first).times(2).returns("key", nil)
+    c_q.expects(:[]).with("key").returns("job")
+    c_q.expects(:delete)
+    inp_q = mock("in_progress cachedhash")
+    inp_q.expects(:[]=)
+    inp_q.expects(:delete)
+    $cachedhash.expects(:[]).times(2).returns(c_q, inp_q)
+    queue.work { |j| assert_equal 'job', j }
   end
 
-  def test_next_none
+  def test_work_none
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
     c = mock
-    c.expects(:first_key).returns(nil)
-    $cachedhash.expects(:[]).returns(c)
-    assert_equal nil, queue.next
+    c.expects(:first).returns(nil)
+    $cachedhash.expects(:[]).times(2).returns(c, nil)
+    assert_equal nil, queue.work { |job| raise "Should not have had a job yielded" }
   end
 
-  def test_next_gone
+  def test_work_gone
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
-    object1 = mock("object1")
-    c = mock
-    c.expects(:first_key).times(2).returns("taken key", "good key")
-    c.expects(:[]).times(2).raises(RuntimeError, "key deleted").then.returns("job")
-    c.expects(:delete)
-    $cachedhash.expects(:[]).returns(c)
-    assert_equal "job", queue.next
+    c_q = mock("queue cachedhash")
+    c_q.expects(:first).times(3).returns("taken key", "good key", nil)
+    c_q.expects(:[]).times(2).returns(nil).then.returns("job")
+    c_q.expects(:delete)
+    inp_q = mock("in_progress cachedhash")
+    inp_q.expects(:[]=)
+    inp_q.expects(:delete)
+    $cachedhash.expects(:[]).times(2).returns(c_q, inp_q)
+    queue.work { |j| assert_equal 'job', j }
   end
 end
