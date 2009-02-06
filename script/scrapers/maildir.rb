@@ -5,10 +5,11 @@ require "#{RAILS_ROOT}/config/environment"
 class Maildir < Filer
   attr_reader :slug
 
-  def initialize server=nil, sequence=nil, maildir=nil, slug=nil
-    raise "Usage: bin/maildir.rb path/to/maildir [slug]" if maildir.nil?
+  def initialize server=nil, sequence=nil, maildir=nil, slug=nil, unlink=False
+    raise "Usage: bin/maildir.rb path/to/maildir [slug] [unlink]" if maildir.nil?
     @maildir = maildir
     @slug = slug
+    @unlink = unlink
     super server, sequence
   end
 
@@ -30,9 +31,13 @@ class Maildir < Filer
       file = IO.read(File.join(tmp, filename))
       next if file.nil? or file == ''
       yield file, :dont
-      File.rename(File.join(tmp, filename), File.join(cur, filename))
+      if @unlink
+        File.unlink File.join(tmp, filename)
+      else
+        File.rename(File.join(tmp, filename), File.join(cur, filename))
+      end
     end
   end
 end
 
-Maildir.new(nil, nil, ARGV.shift, ARGV.shift).run if __FILE__ == $0
+Maildir.new(nil, nil, ARGV.shift, ARGV.shift, ARGV.shift).run if __FILE__ == $0
