@@ -242,76 +242,78 @@ class ThreadSet
   # finish the threading and yield each root container (thread) in turn
   def finish
     # build the cache if necessary
-    if @subjects.empty?
-      # First, break parenting for messages that are lazy thread creation
-      @containers.values.each do |container|
-        # skip where there's not enough info to judge
-        next if container.empty? or container.orphan? or container.parent.empty?
-        container.orphan if container.message.likely_lazy_reply_to? container.parent.message
-      end
-      @root_set = nil
-      # Next, pick the likeliest thread roots.
-      root_set.each do |container| # 5.4.B
-        subject = container.n_subject
-        existing = @subjects.fetch(subject, nil)
-        # This is more likely the thread root if...
-        # 1. There is no existing root
-        # 2. The existing root isn't empty and this one is
-        # 3. The existing root has more re/fwd gunk on it
-        @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or existing.subject.length > container.subject.length
-      end
-      # Next, move the rest of the same-subject roots under it.
-      root_set.each do |container| # 5.4.C
-        subject = container.n_subject
-        existing = @subjects.fetch(subject, nil)
-        next if !existing or existing == container
+    return unless @subjects.empty?
 
-        # If they're both dummies, let them share children.
-        if container.empty? and existing.empty?
-          container.children.each do |child|
-            child.orphan
-            existing.adopt child
-          end
-          @containers.delete container.message_id
-        # If one is empty, assume it's the parent of the other
-        elsif container.empty? and !existing.empty?
-          container.adopt existing
-        elsif !container.empty? and existing.empty?
-          existing.adopt container
-        # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
-        elsif !existing.empty? and existing.subject.length <= container.subject.length
-          chosen_parent = existing
-          if !container.empty? and container.message.references.empty?
-            # It's a reply without references, use quoting to find its parents
-            direct_quotes = container.message.body.scan(/^> [^>].+/).collect { |q| q.sub(/^> /, '') }
-            # Loop through all containers to find the message with the most
-            # matched quotes. (Can't just look through the existing container's
-            # children, as this may be a reply to a reply that's also missing
-            # its references but hasn't been sorted in yet.)
-            best = 0
-            @containers.each do |message_id, potential_parent|
-              next if potential_parent.empty?
-              next unless potential_parent.n_subject == container.n_subject
-              next if message_id == container.message_id
-              count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
-              if count > best
-                chosen_parent = potential_parent
-                break if count == direct_quotes.size
-              end
+    # First, break parenting for messages that are lazy thread creation
+    @containers.values.each do |container|
+      # skip where there's not enough info to judge
+      next if container.empty? or container.orphan? or container.parent.empty?
+      container.orphan if container.message.likely_lazy_reply_to? container.parent.message
+    end
+
+    @root_set = nil
+    # Next, pick the likeliest thread roots.
+    root_set.each do |container| # 5.4.B
+      subject = container.n_subject
+      existing = @subjects.fetch(subject, nil)
+      # This is more likely the thread root if...
+      # 1. There is no existing root
+      # 2. The existing root isn't empty and this one is
+      # 3. The existing root has more re/fwd gunk on it
+      @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or existing.subject.length > container.subject.length
+    end
+
+    # Next, move the rest of the same-subject roots under it.
+    root_set.each do |container| # 5.4.C
+      subject = container.n_subject
+      existing = @subjects.fetch(subject, nil)
+      next if !existing or existing == container
+
+      # If they're both dummies, let them share children.
+      if container.empty? and existing.empty?
+        container.children.each do |child|
+          child.orphan
+          existing.adopt child
+        end
+        @containers.delete container.message_id
+      # If one is empty, assume it's the parent of the other
+      elsif container.empty? and !existing.empty?
+        container.adopt existing
+      elsif !container.empty? and existing.empty?
+        existing.adopt container
+      # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
+      elsif !existing.empty? and existing.subject.length <= container.subject.length
+        chosen_parent = existing
+        if !container.empty? and container.message.references.empty?
+          # It's a reply without references, use quoting to find its parents
+          direct_quotes = container.message.body.scan(/^> [^>].+/).collect { |q| q.sub(/^> /, '') }
+          # Loop through all containers to find the message with the most
+          # matched quotes. (Can't just look through the existing container's
+          # children, as this may be a reply to a reply that's also missing
+          # its references but hasn't been sorted in yet.)
+          best = 0
+          @containers.each do |message_id, potential_parent|
+            next if potential_parent.empty?
+            next unless potential_parent.n_subject == container.n_subject
+            next if message_id == container.message_id
+            count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
+            if count > best
+              chosen_parent = potential_parent
+              break if count == direct_quotes.size
             end
           end
-          chosen_parent.adopt container
-        # Otherwise, they're either both replies to a missing, unreferenced
-        # message (so make them siblings).
-        # Or they just happened to share the same subject, so... eh, make 'em
-        # siblings.
-        else
-          c = Container.new(existing.message_id + container.message_id)
-          c.adopt existing
-          c.adopt container
-          @containers[c.message_id] = c
-          @subjects[c.n_subject] = c
         end
+        chosen_parent.adopt container
+      # Otherwise, they're either both replies to a missing, unreferenced
+      # message (so make them siblings).
+      # Or they just happened to share the same subject, so... eh, make 'em
+      # siblings.
+      else
+        c = Container.new(existing.message_id + container.message_id)
+        c.adopt existing
+        c.adopt container
+        @containers[c.message_id] = c
+        @subjects[c.n_subject] = c
       end
     end
   end
