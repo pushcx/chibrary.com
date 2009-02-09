@@ -21,8 +21,17 @@ class FetcherTest < Test::Unit::TestCase
     end
   end
 
-  def test_teardown
+  def test_teardown_unstarted
+    # Sometimes teardown gets called because the pop3 connection errored during
+    # setup, so finish would error if it were called.
     f = Fetcher.new(0, 0)
+    nil.expects(:started?).returns(false)
+    f.teardown
+  end
+
+  def test_teardown_started
+    f = Fetcher.new(0, 0)
+    nil.expects(:started?).returns(true)
     nil.expects(:finish)
     f.teardown
   end
