@@ -91,7 +91,7 @@ class Container
   end
 
   def each
-    # yeild this container
+    # yield this container
     yield self
     @children.sort!
     @children.each do |child|
