@@ -8,7 +8,7 @@ rsync -a --delete --exclude=filer_failure/ --exclude=_listlibrary_no_list --excl
 
 
 # zip up old message dirs:
-find listlibrary_archive/ -type d -wholename "*/message/[0-9][0-9][0-9][0-9]/*" -not \( -wholename "*/2009/01*" -o -wholename "*/2009/02*" \) -exec zip -rjTm {}.zip {} \;
+find listlibrary_archive/ -type d -wholename "*/message/[0-9][0-9][0-9][0-9]/*" -not \( -wholename "*/2009/01*" -o -wholename "*/2009/02*" \) -exec zip -rjTmq {}.zip {} \;
 find listlibrary_archive/ -type d -empty -exec rm -r {} \;
 
 
