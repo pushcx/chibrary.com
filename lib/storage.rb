@@ -125,9 +125,9 @@ class ZDir
     full_path = File.join([@path, path])
     if !File.exists? full_path
       # look for if it's a zip:
-      return ZZip.new(full_path) if File.exists?(full_path + ".zip")
+      return ZZip.new(full_path + ".zip") if File.exists?(full_path + ".zip")
       # look for if it's in a zip:
-      zip_path = File.join(full_path.split('/')[1..-1]) + ".zip"
+      zip_path = File.join(full_path.split('/')[0..-2]) + ".zip"
       return ZZip.new(zip_path)[path.split('/').last] if File.exists? zip_path
     end
 
