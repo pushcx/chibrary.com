@@ -24,7 +24,7 @@ class Container
     @children = []
   end
 
-  def to_yaml_properties ; %w{@message_id @key @parent @children} ; end
+  def to_yaml_properties ; %w{@message_id @key @parent @children}.sort! ; end
 
   # container accessors
 
@@ -61,7 +61,8 @@ class Container
   end
 
   def message= message
-    @message_id = message.id
+    raise "Message id #{message.message_id} doesn't match container #{@message_id}" unless message.message_id == @message_id
+    @message_id = message.message_id
     @message    = message
     @key        = message.key
   end
@@ -165,11 +166,6 @@ class Container
     @parent = container
   end
   protected :parent=
-
-  def message= m
-    raise "Message id #{m.message_id} doesn't match container #{@message_id}" unless m.message_id == @message_id
-    @message = m
-  end
 
   # Make this the parent of another container.
   def adopt container
