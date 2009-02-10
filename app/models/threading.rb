@@ -68,7 +68,7 @@ class Container
   end
 
   def to_s
-    (empty? ? "<empty container>" : "#{@message.from} - #{@message.date}") + " - #{@message_id}"
+    (empty? ? "<empty container>" : "#{message.from} - #{message.date}") + " - #{message_id}"
   end
 
   # parentage accessors
