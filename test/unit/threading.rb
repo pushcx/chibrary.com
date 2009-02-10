@@ -695,6 +695,13 @@ class ThreadSetTest < ThreadingTest
     assert_equal regular_reply.message_id, @ts.containers[quoting_reply.message_id].parent.message_id
   end
 
+  def test_plus_month
+    Time.expects(:utc).with('2009', '02').returns(mock(:plus_month => mock('time', :year => 2009, :month => 1)))
+    ts = mock('ThreadSet')
+    ThreadSet.expects(:month).with('slug', 2009, '01').returns(ts)
+    assert_equal ts, @ts.plus_month(-1)
+  end
+
   class FakeMessage
     attr_accessor :message_id, :subject, :references
     def initialize message_id, subject, references ; @message_id = message_id ; @subject = subject ; @references = references ; end

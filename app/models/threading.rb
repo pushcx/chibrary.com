@@ -334,6 +334,11 @@ class ThreadSet
   end
   private :finish
 
+  def plus_month n
+    t = Time.utc(@year, @month).plus_month(n)
+    ThreadSet.month(@slug, t.year, '%02d' % t.month)
+  end
+
   def each
     finish
     @subjects.values.sort.each { |c| yield c }
