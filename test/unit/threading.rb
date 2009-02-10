@@ -705,6 +705,29 @@ class ThreadSetTest < ThreadingTest
     assert_equal regular_reply.message_id, @ts.containers[quoting_reply.message_id].parent.message_id
   end
 
+  def test_retrieve_split_threads_from
+    @ts << Message.new(threaded_message(:root), 'test', '0000root')
+    ts = ThreadSet.new 'slug', '2007', '12'
+    ts << Message.new(threaded_message(:child), 'test', '000child')
+    ts.expects(:store)
+    @ts.send(:retrieve_split_threads_from, ts)
+    assert ts.containers.empty?
+    assert_equal 1, @ts.length
+    assert_equal 2, @ts.containers['root@example.com'].count
+  end
+
+  def test_retrieve_split_threads_from_not_non_replies
+    @ts << Message.new(threaded_message(:root), 'test', '0000root')
+    ts = ThreadSet.new 'slug', '2007', '12'
+    # This message will be recognized as a split thread, but a parent for it
+    # doesn't exist in @ts
+    ts << Message.new(threaded_message(:regular_reply), 'test', '000child')
+    ts.expects(:store)
+    @ts.send(:retrieve_split_threads_from, ts)
+    assert_equal 1, @ts.length
+    assert_equal 1, ts.length
+  end
+
   def test_delete_single
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']

@@ -338,6 +338,20 @@ class ThreadSet
   end
   private :finish
 
+  def retrieve_split_threads_from threadset
+    threadset.each do |thread|
+      next unless thread.likely_split_thread?
+      message_ids = thread.collect { |c| c.message_id }
+      next if (message_ids & @containers.keys).empty?
+
+      threadset.delete thread
+      thread.each { |c| self << c.message unless c.empty? }
+    end
+
+    threadset.store
+  end
+  protected :retrieve_split_threads_from
+
   def plus_month n
     t = Time.utc(@year, @month).plus_month(n)
     ThreadSet.month(@slug, t.year, '%02d' % t.month)
