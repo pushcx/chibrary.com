@@ -23,6 +23,17 @@ class ZipFileTest < Test::Unit::TestCase
     z.expects(:read).yields("--- \n:a: :b\n")
     assert_equal({ :a => :b }, z.contents)
   end
+
+  # zipruby was misdesigned to be case-insensitive; bug was reported and author
+  # claims to have fixed it. This should watch for it reappearing.
+  def test_case
+    archive = Zip::Archive.open '/tmp/test.zip'
+    archive.add_or_replace_buffer('A', 'uppercase')
+    archive.add_or_replace_buffer('a', 'lowercase')
+    archive.commit()
+    assert_equal 'uppercase', archive.fopen('A') { |f| f.contents }
+    assert_equal 'lowercase', archive.fopen('a') { |f| f.contents }
+  end
 end
 
 class FileChangesTest < Test::Unit::TestCase
