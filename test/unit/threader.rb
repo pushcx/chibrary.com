@@ -72,13 +72,8 @@ class ThreaderTest < Test::Unit::TestCase
   def test_cache_work_empty
     slug, year, month = 'example', '2007', '08'
 
-    thread_list = mock('thread_list')
-    thread_list.expects(:store)
-    ThreadList.expects(:new).returns(thread_list)
-
     message_list = ['1@example.com']
-    threadset = mock("threadset")
-    threadset.expects(:collect).returns([])
+    threadset = mock("threadset", :store => true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
@@ -93,16 +88,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-
-    thread = mock("thread")
-    thread.expects(:cache)
-    threadset = mock("threadset")
-    threadset.expects(:collect).yields(thread)
-
-    thread_list = mock('thread_list')
-    thread_list.expects(:add_thread).with(thread)
-    thread_list.expects(:store)
-    ThreadList.expects(:new).returns(thread_list)
+    threadset = mock("threadset", :store => true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
@@ -111,22 +97,7 @@ class ThreaderTest < Test::Unit::TestCase
     Queue.expects(:new).with(:publish).returns(mock('publish_q', :add => nil))
 
     t = Threader.new
-    t.expects(:snippet)
     t.cache_work slug, year, month, message_list, threadset
-  end
-
-  def test_snippet
-    t = Threader.new
-    body = ">The\nfirst\nfive\n\nunquoted\nnonblank\nlines"
-    snippet = {
-      :excerpt => "first five unquoted nonblank lines",
-      :subject => 'subject',
-      :url => '/slug/2009/01/00000000',
-    }
-    thread = mock(:date => Time.at(42), :call_number => '00000000', :n_subject => 'subject', :effective_field => body)
-    $archive.expects(:[]=).with('snippet/homepage/9999999957', snippet)
-    $archive.expects(:[]=).with('snippet/list/slug/9999999957', snippet)
-    t.snippet 'slug', '2009', '01', thread
   end
 
   private

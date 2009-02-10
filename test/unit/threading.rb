@@ -148,6 +148,7 @@ class ContainerTest < ThreadingTest
     c = container_tree
     $archive.expects(:[]).raises(NotFound)
     $archive.expects(:[]=)
+    c.expects(:cache_snippet)
     c.cache
   end
 
@@ -163,7 +164,26 @@ class ContainerTest < ThreadingTest
     c.expects(:to_yaml).returns("yaml")
     $archive.expects(:[]).returns("old yaml")
     $archive.expects(:[]=)
+    c.expects(:cache_snippet)
     c.cache
+  end
+
+  def test_cache_snippet
+    c = Container.new ''
+    body = ">The\nfirst\nfive\n\nunquoted\nnonblank\nlines"
+    snippet = {
+      :excerpt => "first five unquoted nonblank lines",
+      :subject => 'subject',
+      :url => '/slug/2009/02/00000000',
+    }
+    c.expects(:date).times(3).returns(Time.at(1234232107))
+    c.expects(:call_number).returns('00000000')
+    c.expects(:n_subject).returns('subject')
+    c.expects(:effective_field).with(:slug).times(2).returns('slug')
+    c.expects(:effective_field).with(:body).returns(body)
+    $archive.expects(:[]=).with('snippet/homepage/8765767892', snippet)
+    $archive.expects(:[]=).with('snippet/list/slug/8765767892', snippet)
+    c.cache_snippet
   end
 
   def test_orphan
@@ -276,7 +296,7 @@ end
 
 class ThreadSetTest < ThreadingTest
   def setup
-    @ts = ThreadSet.new
+    @ts = ThreadSet.new 'slug', '2009', '02'
 
     addresses = mock('addresses')
     addresses.expects(:[]).at_least(0).returns('example')
@@ -326,7 +346,7 @@ class ThreadSetTest < ThreadingTest
   def test_root_set
     assert_equal [], @ts.send(:root_set) # private method, using .send to test
 
-    @ts = ThreadSet.new
+    @ts = ThreadSet.new 'slug', '2009', '02'
     c1 = container_tree
     c1.each { |c| @ts << c.message unless c.empty? }
     root_set = @ts.send(:root_set)
@@ -375,7 +395,7 @@ class ThreadSetTest < ThreadingTest
     perm = Permutation.for(messages)
     previous = nil
     perm.each do |perm|
-      ts = ThreadSet.new
+      ts = ThreadSet.new 'slug', '2009', '02'
       perm.project.each { |message| ts << message }
       assert_equal previous, ts if previous
       previous = ts

@@ -122,14 +122,14 @@ class Container
   def call_number
     effective_field :call_number or ''
   end
+  def date
+    effective_field :date or Time.now
+  end
   def subject
     effective_field :subject or ''
   end
   def n_subject
     effective_field :n_subject or ''
-  end
-  def date
-    effective_field :date or Time.now
   end
 
   # persistence
@@ -144,6 +144,19 @@ class Container
     rescue NotFound ; end
 
     $archive[key] = yaml
+    cache_snippet
+  end
+
+  def cache_snippet
+    # names are descending time to make it easy to expire old snippets
+    name = 9999999999 - date.utc.to_i
+    snippet = {
+      :url => "/#{effective_field(:slug)}/#{date.year}/#{"%02d" % date.month}/#{call_number}",
+      :subject => n_subject,
+      :excerpt => (effective_field(:body) or "").split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join(" "),
+    }
+    $archive["snippet/homepage/#{name}"] = snippet
+    $archive["snippet/list/#{effective_field(:slug)}/#{name}"] = snippet
   end
 
   # parenting methods
@@ -196,9 +209,10 @@ class ThreadSet
   include Enumerable
 
   attr_accessor :containers
+  attr_reader :slug, :year, :month
 
   def self.month slug, year, month
-    threadset = ThreadSet.new
+    threadset = ThreadSet.new(slug, year, month)
     return threadset unless $archive.has_key? "list/#{slug}/thread/#{year}/#{month}"
     threads = $archive["list/#{slug}/thread/#{year}/#{month}"]
     threads.each do |key|
@@ -208,7 +222,8 @@ class ThreadSet
     threadset
   end
 
-  def initialize
+  def initialize slug, year, month
+    @slug, @year, @month = slug, year, month
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
@@ -327,6 +342,16 @@ class ThreadSet
   def length
     finish
     @subjects.length
+  end
+
+  def store
+    # cache each thread
+    thread_list = ThreadList.new(@slug, @year, @month)
+    each do |thread|
+      thread.cache
+      thread_list.add_thread thread
+    end
+    thread_list.store
   end
 
   def << message
