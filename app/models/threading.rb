@@ -394,6 +394,13 @@ class ThreadSet
     @root_set = nil
   end
 
+  def delete thread
+    thread.each { |c| @containers.delete(c.message_id) }
+    @subjects = {} # clear top-level thread cache
+    @root_set = nil
+  end
+  protected :delete
+
   def dump
     puts
     puts "subjects: "

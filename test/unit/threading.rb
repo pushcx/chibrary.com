@@ -705,6 +705,21 @@ class ThreadSetTest < ThreadingTest
     assert_equal regular_reply.message_id, @ts.containers[quoting_reply.message_id].parent.message_id
   end
 
+  def test_delete_single
+    @ts << Message.new(threaded_message(:root), 'test', '0000root')
+    thread = @ts.containers['root@example.com']
+    @ts.send(:delete, thread)
+    assert @ts.containers.empty?
+  end
+
+  def test_delete_thread
+    @ts << Message.new(threaded_message(:root), 'test', '0000root')
+    @ts << Message.new(threaded_message(:child), 'test', '0000root')
+    thread = @ts.containers['root@example.com']
+    @ts.send(:delete, thread)
+    assert @ts.containers.empty?
+  end
+
   def test_plus_month
     Time.expects(:utc).with('2009', '02').returns(mock(:plus_month => mock('time', :year => 2009, :month => 1)))
     ts = mock('ThreadSet')
