@@ -80,6 +80,16 @@ class ContainerTest < ThreadingTest
     assert !Container.new(Message.new(threaded_message(:root), 'test', '0000root')).empty?
   end
 
+  def test_likely_split_thread?_empty
+    c = Container.new('root@example.com')
+    assert c.likely_split_thread?
+  end
+
+  def test_likely_split_thread?_missing_parent
+    c = Container.new Message.new(threaded_message(:child), 'test', '000child')
+    assert c.likely_split_thread?
+  end
+
   def test_to_s
     str = Container.new('root@example.com').to_s
     assert_match /root@example.com/, str
@@ -226,8 +236,8 @@ class ContainerTest < ThreadingTest
     end
   end
 
-  # adopt calls that would set up a cyclical graph should just be quietly
-  # ignored Because we're parenting based on possibly-malicious and often
+  # Calls to adopt that would set up a cyclical graph should just be quietly
+  # ignored. Because we're parenting based on possibly-malicious and often
   # incompetently-generated references, it's not an exceptional circumstance
   # the threader really cares to know about.
   def test_adopt_not_self

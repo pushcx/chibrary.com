@@ -53,6 +53,10 @@ class Container
     message.nil?
   end
 
+  def likely_split_thread?
+    empty? or message.subject_is_reply?
+  end
+
   def message
     # To save disk, threads do not save full message contents,
     # just lazy load them when needed.
