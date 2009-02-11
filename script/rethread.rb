@@ -14,8 +14,9 @@ ARGV.each do |slug|
   FileUtils.rm_rf "listlibrary_archive/list/#{slug}/message_list/"
   FileUtils.rm_rf "listlibrary_archive/list/#{slug}/thread/"
   FileUtils.rm_rf "listlibrary_archive/list/#{slug}/thread_list/"
-  `find listlibrary_archive/list/#{slug}/message -type d -wholename '*/????/??'`.split("\n").each do |key|
+  `find listlibrary_archive/list/#{slug}/message -type d -wholename '*/????/??' -o -wholename '*/????/??.zip'`.split("\n").each do |key|
     year, month = key.split('/')[-2..-1]
+    month = month[0..1] # strip off any .zip
     @thread_q.add :slug => slug, :year => year, :month => month
   end
 end
