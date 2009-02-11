@@ -66,7 +66,7 @@ class ThreadList
   end
 
   def store
-    $archive[key] = { :threads => @threads, :call_numbers => @call_numbers }
+    $archive[key] = { :threads => @threads, :call_numbers => @call_numbers } unless @call_numbers.empty?
   end
 
   def self.year_counts slug
