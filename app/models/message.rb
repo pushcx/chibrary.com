@@ -14,7 +14,6 @@ class Message
   attr_accessor :overwrite
 
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
-  def self.subject_is_reply? s ; !!(s =~ RE_PATTERN) ; end
   def self.normalize_subject s
     encoded_word(s).gsub(RE_PATTERN, '').strip
   end
@@ -83,6 +82,9 @@ class Message
     @body = Message::charset_convert(charset, @body) if charset
 
     return @body = @body.strip
+  end
+  def subject_is_reply?
+    !!(@subject =~ RE_PATTERN)
   end
 
   # Guess if this message actually starts a new thread instead of replying to parent

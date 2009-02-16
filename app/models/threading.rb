@@ -54,7 +54,7 @@ class Container
   end
 
   def likely_split_thread?
-    empty? or Message.subject_is_reply? message.subject
+    empty? or message.subject_is_reply?
   end
 
   def message

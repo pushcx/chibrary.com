@@ -14,11 +14,15 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_subject_is_reply?
+    m = Message.new message(:good), 'test', '00000000'
     REPLY_SUBJECTS.each do |subject|
-      assert_equal true, Message.subject_is_reply?(subject)
+      m.send(:add_header, "Subject: #{subject}")
+      assert_equal true, m.subject_is_reply?
     end
-    assert_equal false, Message.subject_is_reply?("foo")
-    assert_equal false, Message.subject_is_reply?("re-foo")
+    m.send(:add_header, "Subject: foo")
+    assert_equal false, m.subject_is_reply?
+    m.send(:add_header, "Subject: re-foo")
+    assert_equal false, m.subject_is_reply?
   end
 
   def test_normalize_subject
