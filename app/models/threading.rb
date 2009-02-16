@@ -54,7 +54,7 @@ class Container
   end
 
   def likely_split_thread?
-    empty? or message.subject_is_reply?
+    empty? or Message.subject_is_reply? message.subject
   end
 
   def message
@@ -138,10 +138,12 @@ class Container
 
   # persistence
 
-  def cache
+  def key
     slug = effective_field :slug
     key = "list/#{slug}/thread/#{date.year}/%02d/#{call_number}" % date.month
+  end
 
+  def cache
     yaml = self.to_yaml
     begin
       return if $archive[key].to_yaml.size == yaml.size
@@ -233,6 +235,7 @@ class ThreadSet
     @containers = {} # message_id -> container
     @subjects   = {} # threads: normalized subject -> root container
     @root_set = nil
+    @message_ids = nil
   end
 
   def subjects ; @subjects ; end
@@ -338,17 +341,35 @@ class ThreadSet
   end
   private :finish
 
+  def rejoin_splits
+    # Many threads are split by replies in later months. This is separate from
+    # finish and must be explicitly called to prevent the infinite loops that
+    # would otherwise result as ThreadSets store (which requires a call to
+    # finish) each other.
+
+    # Rejoin any threads from later months
+    (1..6).each do |n|
+      retrieve_split_threads_from plus_month(n)
+    end
+    # And move threads up to earlier months when possible
+    (-6..-1).each do |n|
+      plus_month(n).retrieve_split_threads_from self
+    end
+  end
+
   def retrieve_split_threads_from threadset
+    return if @containers.empty?
     threadset.each do |thread|
       next unless thread.likely_split_thread?
-      message_ids = thread.collect { |c| c.message_id }
-      next if (message_ids & @containers.keys).empty?
+      next unless message_ids.include? thread.message_id
 
-      threadset.delete thread
+      # redirects?
       thread.each { |c| self << c.message unless c.empty? }
+      threadset.delete thread
     end
 
     threadset.store
+    store
   end
   protected :retrieve_split_threads_from
 
@@ -367,7 +388,12 @@ class ThreadSet
     @subjects.length
   end
 
+  def message_ids
+    @message_ids ||= collect { |c| c.collect(&:message_id) }.flatten
+  end
+
   def store
+    finish
     # cache each thread
     thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
@@ -404,19 +430,30 @@ class ThreadSet
     # but once we have all the messages we confirm.
     previous.adopt container if previous
 
-    @subjects = {} # clear top-level thread cache
+    flush_threading
+  end
+
+  def flush_threading
+    # clear everything computed by finish or message_ids
+    @subjects = {}
     @root_set = nil
+    @message_ids = nil
   end
 
   def delete thread
+    $archive.delete(thread.key)
     thread.each { |c| @containers.delete(c.message_id) }
-    @subjects = {} # clear top-level thread cache
-    @root_set = nil
+    flush_threading
   end
   protected :delete
 
+  def to_s
+    "ThreadSet #{@slug}/#{@year}/#{@month}"
+  end
+
   def dump
     puts
+    puts self
     puts "subjects: "
     @subjects.each do |subject, container|
       puts "#{subject}  ->  #{container.message_id}"
@@ -427,5 +464,6 @@ class ThreadSet
       puts container.subject
       container.dump
     end
+    puts
   end
 end

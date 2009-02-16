@@ -709,7 +709,9 @@ class ThreadSetTest < ThreadingTest
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     ts = ThreadSet.new 'slug', '2007', '12'
     ts << Message.new(threaded_message(:child), 'test', '000child')
+    nil.expects(:delete)
     ts.expects(:store)
+    @ts.expects(:store)
     @ts.send(:retrieve_split_threads_from, ts)
     assert ts.containers.empty?
     assert_equal 1, @ts.length
@@ -723,6 +725,7 @@ class ThreadSetTest < ThreadingTest
     # doesn't exist in @ts
     ts << Message.new(threaded_message(:regular_reply), 'test', '000child')
     ts.expects(:store)
+    @ts.expects(:store)
     @ts.send(:retrieve_split_threads_from, ts)
     assert_equal 1, @ts.length
     assert_equal 1, ts.length
@@ -731,6 +734,7 @@ class ThreadSetTest < ThreadingTest
   def test_delete_single
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']
+    $archive.expects(:delete).with(thread.key)
     @ts.send(:delete, thread)
     assert @ts.containers.empty?
   end
@@ -739,6 +743,7 @@ class ThreadSetTest < ThreadingTest
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     @ts << Message.new(threaded_message(:child), 'test', '0000root')
     thread = @ts.containers['root@example.com']
+    $archive.expects(:delete)
     @ts.send(:delete, thread)
     assert @ts.containers.empty?
   end

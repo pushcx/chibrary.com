@@ -73,7 +73,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    threadset = mock("threadset", :store => true)
+    threadset = mock("threadset", :rejoin_splits => true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
@@ -88,7 +88,7 @@ class ThreaderTest < Test::Unit::TestCase
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
-    threadset = mock("threadset", :store => true)
+    threadset = mock("threadset", :rejoin_splits => true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)

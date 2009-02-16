@@ -48,7 +48,7 @@ class Threader
   end
 
   def cache_work slug, year, month, message_list, threadset
-    threadset.store
+    threadset.rejoin_splits # rejoins threads split across months and stores
 
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
