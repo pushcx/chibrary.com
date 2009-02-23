@@ -293,7 +293,7 @@ class ThreadSet
 
       # If they're both dummies, let them share children.
       if container.empty? and existing.empty?
-        container.children.each do |child|
+        container.children.clone.each do |child|
           child.orphan
           existing.adopt child
         end
@@ -327,9 +327,8 @@ class ThreadSet
         end
         chosen_parent.adopt container
       # Otherwise, they're either both replies to a missing, unreferenced
-      # message (so make them siblings).
-      # Or they just happened to share the same subject, so... eh, make 'em
-      # siblings.
+      # message (so make them siblings) or they just happened to share the
+      # same subject, so... eh, make 'em siblings.
       else
         c = Container.new(existing.message_id + container.message_id)
         c.adopt existing
@@ -386,6 +385,15 @@ class ThreadSet
   def length
     finish
     @subjects.length
+  end
+
+  def message_count include_empty=false
+    # collect threads and their containers
+    collect do |thread|
+      thread.collect do |c|
+        c if !c.empty? or include_empty
+      end.compact
+    end.flatten.size
   end
 
   def message_ids
@@ -452,6 +460,7 @@ class ThreadSet
   end
 
   def dump
+    finish
     puts
     puts self
     puts "subjects: "
@@ -460,10 +469,9 @@ class ThreadSet
     end
     puts "threads: "
     each do |container|
-      puts
       puts container.subject
       container.dump
+      puts
     end
-    puts
   end
 end

@@ -5,7 +5,7 @@ require 'threading'
 require 'message'
 
 class ThreadingTest < Test::Unit::TestCase
-  fixtures :threaded_message
+  fixtures [:threaded_message, :rejoin_splits]
 
   def test_dummy ; end
 
@@ -729,6 +729,21 @@ class ThreadSetTest < ThreadingTest
     @ts.send(:retrieve_split_threads_from, ts)
     assert_equal 1, @ts.length
     assert_equal 1, ts.length
+  end
+
+  def test_message_count
+    # was failing to load Message-ID: <BAYC1-PASMTP14295C87CFA7B12CC8A613B4770@CEZ.ICE>
+    ts = ThreadSet.new 'example', '2007', '12'
+    rejoin_splits("2007-12").each do |mail|
+      m = Message.new(mail, 'example', '00000000')
+      ts << m
+    end
+    assert_equal %w{1196188048.22546.1223520349@webmail.messagingengine.com 4742D87E.7020701@casual-tempest.net}, ts.send(:root_set).collect(&:message_id)
+    assert_equal 4, ts.message_count(false)
+    # arguably, this could be 9, but dropping the empty container
+    # 4742D87E.7020701@casual-tempest.net makes as more sense than keeping it,
+    # which is what differentiates between merging 'both dummies' and reparenting
+    assert_equal 8, ts.message_count(true)
   end
 
   def test_delete_single
