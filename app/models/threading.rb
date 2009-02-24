@@ -71,6 +71,10 @@ class Container
     @key        = message.key
   end
 
+  def subject_shorter_than? container
+    return subject.length < container.subject.length
+  end
+
   def to_s
     (empty? ? "<empty container>" : "#{message.from} - #{message.date}") + " - #{message_id}"
   end
@@ -233,9 +237,7 @@ class ThreadSet
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
-    @subjects   = {} # threads: normalized subject -> root container
-    @root_set = nil
-    @message_ids = nil
+    flush_threading
   end
 
   def subjects ; @subjects ; end
@@ -282,7 +284,7 @@ class ThreadSet
       # 1. There is no existing root
       # 2. The existing root isn't empty and this one is
       # 3. The existing root has more re/fwd gunk on it
-      @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or existing.subject.length > container.subject.length
+      @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or container.subject_shorter_than? existing
     end
 
     # Next, move the rest of the same-subject roots under it.
@@ -304,7 +306,7 @@ class ThreadSet
       elsif !container.empty? and existing.empty?
         existing.adopt container
       # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
-      elsif !existing.empty? and existing.subject.length <= container.subject.length
+      elsif !existing.empty? and existing.subject_shorter_than? container
         chosen_parent = existing
         if !container.empty? and container.message.references.empty?
           # It's a reply without references, use quoting to find its parents
@@ -363,6 +365,7 @@ class ThreadSet
       next unless message_ids.include? thread.message_id
 
       # redirects?
+      puts "*** #{self} taking #{threadset}: #{thread.n_subject} ***"
       thread.each { |c| self << c.message unless c.empty? }
       threadset.delete thread
     end
@@ -443,8 +446,8 @@ class ThreadSet
 
   def flush_threading
     # clear everything computed by finish or message_ids
-    @subjects = {}
-    @root_set = nil
+    @subjects    = {} # threads: normalized subject -> root container
+    @root_set    = nil
     @message_ids = nil
   end
 
@@ -462,12 +465,12 @@ class ThreadSet
   def dump
     finish
     puts
-    puts self
-    puts "subjects: "
-    @subjects.each do |subject, container|
-      puts "#{subject}  ->  #{container.message_id}"
-    end
-    puts "threads: "
+    puts "#{self}:"
+    #puts "subjects: "
+    #@subjects.each do |subject, container|
+    #  puts "#{subject}  ->  #{container.message_id}"
+    #end
+    #puts "threads: "
     each do |container|
       puts container.subject
       container.dump
