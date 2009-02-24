@@ -746,6 +746,28 @@ class ThreadSetTest < ThreadingTest
     assert_equal 8, ts.message_count(true)
   end
 
+  def test_rejoin_splits
+    def ts year, month
+      ts = ThreadSet.new 'example', year, month
+      rejoin_splits("#{year}-#{month}").each do |mail|
+        ts << Message.new(mail, 'example', '00000000')
+      end
+      ts.expects(:store).at_least(0)
+      ts
+    end
+    nil.expects(:delete).at_least(0)
+    ts11 = ts '2007', '11'
+    ts12 = ts '2007', '12'
+    ts01 = ts '2008', '01'
+    assert_equal 13, ts11.message_count
+    ts11.send(:retrieve_split_threads_from, ts12)
+    assert_equal 0, ts12.message_count
+    assert_equal 17, ts11.message_count
+    ts11.send(:retrieve_split_threads_from, ts01)
+    assert_equal 0, ts01.message_count # unreleated thread left
+    assert_equal 24, ts11.message_count
+  end
+
   def test_delete_single
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']

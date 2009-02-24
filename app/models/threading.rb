@@ -365,7 +365,6 @@ class ThreadSet
       next unless message_ids.include? thread.message_id
 
       # redirects?
-      puts "*** #{self} taking #{threadset}: #{thread.n_subject} ***"
       thread.each { |c| self << c.message unless c.empty? }
       threadset.delete thread
     end
