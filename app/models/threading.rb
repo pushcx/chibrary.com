@@ -227,7 +227,7 @@ class ThreadSet
     threads = $archive["list/#{slug}/thread/#{year}/#{month}"]
     threads.each do |key|
       thread = threads[key]
-      threadset.containers[thread.message_id] = thread
+      thread.each { |c| threadset.containers[c.message_id] = c }
     end
     threadset
   end
