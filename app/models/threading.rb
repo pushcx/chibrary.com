@@ -140,6 +140,12 @@ class Container
     effective_field :n_subject or ''
   end
 
+  def empty_tree?
+    # a thread of dummy containers is not worth saving
+    each { |container| return false unless container.empty? }
+    return true
+  end
+
   # persistence
 
   def key
@@ -148,6 +154,7 @@ class Container
   end
 
   def cache
+    return if empty_tree?
     yaml = self.to_yaml
     begin
       return if $archive[key].to_yaml.size == yaml.size

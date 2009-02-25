@@ -148,6 +148,7 @@ class ZDir
     if value.is_a? ZDir
       FileUtils.mkdir_p([@path, path].join('/'))
     elsif value.is_a? ZZip or value.is_a? String
+      raise "Bug 2537 has recurred" if [@path, path].join('/').starts_with? 'listlibrary_archive/list/thread'
       File.open([@path, path].join('/'), 'w') do |f|
         f.write(value.to_s.chomp)
       end
