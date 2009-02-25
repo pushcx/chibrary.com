@@ -165,6 +165,8 @@ class Container
   end
 
   def cache_snippet
+    return if n_subject.blank?
+    return if date.utc > Time.now.utc
     # names are descending time to make it easy to expire old snippets
     name = 9999999999 - date.utc.to_i
     snippet = {
