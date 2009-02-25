@@ -20,8 +20,10 @@ $(function() {
   });
   $('ol.thread_list li').mouseover(function(){
     var indent = $(this).attr('indent')
-    if (typeof indent == 'undefined')
-      $(this).attr('indent', $(this).find('span.indent').css('width'));
+    if (typeof indent == 'undefined') {
+      indent = $(this).find('span.indent').css('width')
+      $(this).attr('indent', indent);
+    }
     $(this).parent().css('background-position', indent + ' 0px');
   });
 
