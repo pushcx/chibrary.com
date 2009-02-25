@@ -210,6 +210,12 @@ div.message div.body blockquote {
     cursor: pointer;
   }
 
+div.flag iframe {
+  display: none;
+  height: 1px;
+  width: 1px;
+}
+
 div.ad {
   margin-bottom: 18px;
 }

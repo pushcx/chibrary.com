@@ -40,7 +40,7 @@ $(function() {
   }).each(function(){ if (!$(this).is('.short')) $(this).click(); });
   // after page height changes, get back to named anchor
   if (location.hash) {
-    $(location.hash).ScrollTo(0);
+    window.scrollTo(0, $(location.hash)[0].offsetTop);
     $(location.hash).parent().find('blockquote.closed').each(function(){ $(this).click(); });
   }
 
@@ -139,11 +139,8 @@ $(function() {
   });
 
   // thread view: ajaxify the flag links
-  $("div.message div.header div.flag").css("display", "block").find("a").click(function(){
-    console.log($(this).attr("href"));
-    $(this).css("display", "none");
-    $.get($(this).attr("href"));
-    $(this).after("Thanks");
-    return false;
+  $("div.flag").css("display", "block").find("a").click(function(e){
+    e.preventDefault();
+    $(this).css("display", "none").after('<iframe src="' + $(this).attr("href") + '"></iframe>Thanks');
   });
 });
