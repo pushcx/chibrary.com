@@ -133,14 +133,14 @@ def test_truth ; assert true ; end
 
   def test_each
     z = ZDir.new("/tmp/test")
-    assert_equal ['mail1@example.com', 'mail2@example.com'], z.collect.sort
+    assert_equal ['foo', 'mail1@example.com', 'mail2@example.com'], z.collect.sort
   end
 
   def test_each_recurse
     z = ZDir.new("/tmp/test")
     l = []
     z.each(true) {|f| l << f }
-    assert_equal ['foo/nested@example.com', 'mail1@example.com', 'mail2@example.com'], l.sort
+    assert_equal ['foo', 'foo/nested@example.com', 'mail1@example.com', 'mail2@example.com'], l.sort
   end
 
   def test_first
@@ -171,7 +171,7 @@ def test_truth ; assert true ; end
   def test_delete
     z = ZDir.new("/tmp/test")
     z.delete('mail1@example.com')
-    assert_equal ['mail2@example.com'], z.collect.sort
+    assert_equal ['foo', 'mail2@example.com'], z.collect.sort
   end
   
   def test_delete_path
