@@ -62,7 +62,7 @@ Rails::Initializer.run do |config|
   }
 
   # Save to a dedicated directory instead of cluttering up public/
-  config.action_controller.page_cache.directory = RAILS_ROOT + "/tmp/cache"
+  config.action_controller.page_cache_directory = RAILS_ROOT + '/public/page_cache/'
 
   # Use the database for sessions instead of the cookie-based default,
   # which shouldn't be used to store highly confidential information

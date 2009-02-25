@@ -1,6 +1,18 @@
 # no browsing around
 Options -Indexes
 
+RewriteEngine On
+
+# Remove any www.
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1$1 [R=301,L]
+
+# RewriteRule to pick up cached pages
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f 
+RewriteRule ^/$     /page_cache/index.html [QSA,L]
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f 
+RewriteRule ^/(.*)$ /page_cache/$1.html    [QSA,L]
+
 # performance: etag should not include server id
 FileETag Size MTime
 
