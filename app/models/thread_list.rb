@@ -61,8 +61,7 @@ class ThreadList
 
   def redirect? call_number
     redirect = @call_numbers[call_number]
-    redirect = false if redirect == call_number
-    return redirect
+    return redirect unless redirect == call_number
   end
 
   def store

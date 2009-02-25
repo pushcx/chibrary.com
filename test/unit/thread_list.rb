@@ -110,7 +110,7 @@ class ThreadListTest < Test::Unit::TestCase
 
   def test_redirect_doesnt
     tl = simple_thread_list
-    assert_equal false, tl.redirect?('00000001')
+    assert !tl.redirect?('00000001')
   end
 
   def test_store
