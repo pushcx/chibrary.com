@@ -186,7 +186,8 @@ class ContainerTest < ThreadingTest
       :subject => 'subject',
       :url => '/slug/2009/02/00000000',
     }
-    c.expects(:date).times(3).returns(Time.at(1234232107))
+    c.expects(:n_subject).returns(snippet[:subject])
+    c.expects(:date).times(4).returns(Time.at(1234232107))
     c.expects(:call_number).returns('00000000')
     c.expects(:n_subject).returns('subject')
     c.expects(:effective_field).with(:slug).times(2).returns('slug')
@@ -327,12 +328,13 @@ class ThreadSetTest < ThreadingTest
     ts = mock
     ThreadSet.expects(:new).returns(ts)
 
-    message = mock("message")
-    message.expects(:message_id).times(4).returns("id@example.com")
+    thread = mock("thread")
+    thread.expects(:message_id).times(4).returns("id@example.com")
+    thread.expects(:each).times(4).yields(thread)
 
     threads = mock("threads")
-    threads.expects(:each).multiple_yields(*%w{a b c d})
-    threads.expects(:[]).times(4).returns(message)
+    threads.expects(:each).multiple_yields('a', 'b', 'c', 'd')
+    threads.expects(:[]).times(4).returns(thread)
 
     $archive.expects(:has_key?).with("list/example/thread/2007/08").returns(true)
     $archive.expects(:[]).with("list/example/thread/2007/08").returns(threads)
@@ -768,20 +770,20 @@ class ThreadSetTest < ThreadingTest
     assert_equal 24, ts11.message_count
   end
 
-  def test_delete_single
+  def test_redirect_single
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']
     $archive.expects(:delete).with(thread.key)
-    @ts.send(:delete, thread)
+    @ts.send(:redirect, thread, '2009', '02')
     assert @ts.containers.empty?
   end
 
-  def test_delete_thread
+  def test_redirect_thread
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     @ts << Message.new(threaded_message(:child), 'test', '0000root')
     thread = @ts.containers['root@example.com']
     $archive.expects(:delete)
-    @ts.send(:delete, thread)
+    @ts.send(:redirect, thread, '2009', '02')
     assert @ts.containers.empty?
   end
 

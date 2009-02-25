@@ -22,8 +22,15 @@ class ThreadList
     thread_call_number = thread.call_number
     @threads << { :call_number => thread_call_number, :subject => thread.n_subject, :messages => thread.count }
     thread.each do |container| 
-      next if container.empty?
-      @call_numbers[container.call_number] = thread_call_number
+      next if container.empty? or container.call_number == thread.call_number
+      @call_numbers[container.call_number] = "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}"
+    end
+  end
+
+  def add_redirected_thread call_numbers, year, month
+    call_numbers.each do |call_number|
+      # redirect to the message, which will redirect to its new parent thread
+      @call_numbers[call_number] = "/#{@slug}/#{year}/#{month}/#{call_number}"
     end
   end
 

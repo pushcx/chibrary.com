@@ -246,6 +246,7 @@ class ThreadSet
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
+    @redirected_threads = []
     flush_threading
   end
 
@@ -375,7 +376,7 @@ class ThreadSet
 
       # redirects?
       thread.each { |c| self << c.message unless c.empty? }
-      threadset.delete thread
+      threadset.redirect thread, year, month
     end
 
     threadset.store
@@ -419,6 +420,9 @@ class ThreadSet
       thread.cache
       thread_list.add_thread thread
     end
+    @redirected_threads.each do |redirect|
+      thread_list.add_redirected_thread *redirect
+    end
     thread_list.store
   end
 
@@ -459,12 +463,16 @@ class ThreadSet
     @message_ids = nil
   end
 
-  def delete thread
+  def redirect thread, year, month
+    # note redirection
+    @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
+
+    # remove from this storage
     $archive.delete(thread.key)
     thread.each { |c| @containers.delete(c.message_id) }
     flush_threading
   end
-  protected :delete
+  protected :redirect
 
   def to_s
     "ThreadSet #{@slug}/#{@year}/#{@month}"

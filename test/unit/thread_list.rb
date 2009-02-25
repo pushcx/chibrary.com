@@ -25,13 +25,23 @@ class ThreadListTest < Test::Unit::TestCase
   end
 
   def test_add_thread
-    thread = mock('thread', :call_number => '00000000', :n_subject => 'subject', :count => '1')
-    container = mock('container', :empty? => false, :call_number => '00000000')
-    thread.expects(:each).yields(container)
+    thread = mock('thread', :n_subject => 'subject', :count => '1')
+    thread.expects(:call_number).at_least(0).returns('00000000')
+    thread_root_container = mock('thread_root_container', :empty? => false, :call_number => '00000000')
+    reply_container       = mock('reply_container', :empty? => false)
+    reply_container.expects(:call_number).times(2).returns('00000001')
+    thread.expects(:each).multiple_yields(thread_root_container, reply_container)
     tl = empty_thread_list
     tl.add_thread thread
     assert_equal [{:call_number => "00000000", :messages => "1", :subject => "subject"}], tl.threads
-    assert_equal({'00000000' => '00000000'}, tl.call_numbers)
+    # threads do not get a redirect to themselves - keeps redirect logic minimal
+    assert_equal({'00000001' => '/example/2009/01/00000000'}, tl.call_numbers)
+  end
+
+  def test_redirect_thread
+    tl = empty_thread_list
+    tl.add_redirected_thread ['00000000', '00000001'], '2009', '02'
+    assert_equal({'00000000' => '/example/2009/02/00000000', '00000001' => '/example/2009/02/00000001'}, tl.call_numbers)
   end
 
   # yeah, test_thread_count and test_message_count are shitty, but the code is dead simple
