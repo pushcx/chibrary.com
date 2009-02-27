@@ -372,7 +372,7 @@ class ThreadSet
     return if @containers.empty?
     threadset.each do |thread|
       next unless thread.likely_split_thread?
-      next unless message_ids.include? thread.message_id
+      next unless @containers.keys.include? thread.message_id
 
       # redirects?
       thread.each { |c| self << c.message unless c.empty? }
@@ -406,10 +406,6 @@ class ThreadSet
         c if !c.empty? or include_empty
       end.compact
     end.flatten.size
-  end
-
-  def message_ids
-    @message_ids ||= collect { |c| c.collect(&:message_id) }.flatten
   end
 
   def store
@@ -457,10 +453,9 @@ class ThreadSet
   end
 
   def flush_threading
-    # clear everything computed by finish or message_ids
+    # clear everything computed by finish
     @subjects    = {} # threads: normalized subject -> root container
     @root_set    = nil
-    @message_ids = nil
   end
 
   def redirect thread, year, month
