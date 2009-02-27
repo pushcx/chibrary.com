@@ -216,6 +216,12 @@ div.flag iframe {
   width: 1px;
 }
 
+/* search page */
+
+#page div iframe {
+  height: 1000px;
+}
+
 /* advertising */
 
 div.panel {
