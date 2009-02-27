@@ -766,7 +766,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal 0, ts12.message_count
     assert_equal 17, ts11.message_count
     ts11.send(:retrieve_split_threads_from, ts01)
-    assert_equal 0, ts01.message_count # unreleated thread left
+    assert_equal 0, ts01.message_count
     assert_equal 24, ts11.message_count
   end
 

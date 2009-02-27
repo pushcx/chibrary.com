@@ -317,37 +317,39 @@ class ThreadSet
         existing.adopt container
       # If the existing isn't empty and isn't a reply, make this a child (converse is handled in 3. above)
       elsif !existing.empty? and existing.subject_shorter_than? container
-        chosen_parent = existing
-        if !container.empty? and container.message.references.empty?
-          # It's a reply without references, use quoting to find its parents
-          direct_quotes = container.message.body.scan(/^> [^>].+/).collect { |q| q.sub(/^> /, '') }
-          # Loop through all containers to find the message with the most
-          # matched quotes. (Can't just look through the existing container's
-          # children, as this may be a reply to a reply that's also missing
-          # its references but hasn't been sorted in yet.)
-          best = 0
-          @containers.each do |message_id, potential_parent|
-            next if potential_parent.empty?
-            next unless potential_parent.n_subject == container.n_subject
-            next if message_id == container.message_id
-            count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
-            if count > best
-              chosen_parent = potential_parent
-              break if count == direct_quotes.size
-            end
-          end
-        end
-        chosen_parent.adopt container
+        existing.adopt container
       # Otherwise, they're either both replies to a missing, unreferenced
       # message (so make them siblings) or they just happened to share the
       # same subject, so... eh, make 'em siblings.
       else
-        c = Container.new(existing.message_id + container.message_id)
-        c.adopt existing
-        c.adopt container
-        @containers[c.message_id] = c
-        @subjects[c.n_subject] = c
+        existing.adopt container
       end
+    end
+
+    # find proper parents for messages without references
+    @containers.each do |message_id, container|
+      next if container.empty? or container.root? or !container.message.references.empty?
+
+      chosen_parent = container.parent
+      direct_quotes = container.message.body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
+
+      # Loop through all containers to find the message with the most
+      # matched quotes. (Can't just look through the existing container's
+      # children, as this may be a reply to a reply that's also missing
+      # its references but hasn't been sorted in yet.)
+      best = 0
+      @containers.each do |message_id, potential_parent|
+        next if potential_parent.empty?
+        next unless potential_parent.n_subject == container.n_subject
+        next if message_id == container.message_id or potential_parent.child_of? container
+        count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
+        if count > best
+          chosen_parent = potential_parent
+          break if count == direct_quotes.size
+        end
+      end
+      container.orphan
+      chosen_parent.adopt container
     end
   end
   private :finish
@@ -371,9 +373,12 @@ class ThreadSet
   def retrieve_split_threads_from threadset
     return if @containers.empty?
     finish
+    # @subjects would be cleared as soon as a message is added and the threading is flushed
+    # But we know there won't be any more subjects added, so just cache it
+    subjects = root_set.collect(&:n_subject)
     threadset.each do |thread|
       next unless thread.likely_split_thread?
-      next unless @containers.keys.include? thread.message_id or @subjects.include? thread.n_subject
+      next unless @containers.keys.include? thread.message_id or subjects.include? thread.n_subject
 
       # redirects?
       thread.each { |c| self << c.message unless c.empty? }
