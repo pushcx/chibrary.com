@@ -31,16 +31,17 @@ class ZZip
 
   def initialize path
     @path = path
+    @zip = Zip::Archive.open(@path)
   end
 
   def has_key? path
-    zip { |z| z.locate_name(path) != -1 }
+    @zip.locate_name(path) != -1
   end
 
   def each(recurse=false)
     # recurse is unused, but listed to match ZDir
     files = []
-    zip { |z| z.each { |entry| files << entry.name } }
+    @zip.each { |entry| files << entry.name }
     files.sort!
     files.each { |f| yield f }
   end
@@ -52,30 +53,22 @@ class ZZip
 
   def [] path
     # zip files cannot be nested, don't do ZDir#[]'s check for .zip
-    zip { |z| z.fopen(path) { |f| f.contents } }
+    @zip.fopen(path) { |f| f.contents }
   rescue Zip::Error
     raise NotFound, File.join(@path, path)
   end
 
   def []= path, value
     value = value.to_yaml unless value.is_a? String
-    zip { |z| z.add_or_replace_buffer(path, value) }
+    @zip.add_or_replace_buffer(path, value)
+    @zip.commit
   end
 
   def delete path
-    zip do |z|
-      if (index = z.locate_name(path)) != -1
-        z.fdelete(index)
-      end
+    if (index = @zip.locate_name(path)) != -1
+      @zip.fdelete(index)
+      @zip.commit
     end
-  end
-
-  private
-  def zip
-    zip = Zip::Archive.open(@path)
-    yield zip
-  ensure
-    zip.close
   end
 end 
 
