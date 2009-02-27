@@ -54,7 +54,7 @@ class Container
   end
 
   def likely_split_thread?
-    empty? or message.subject_is_reply?
+    empty? or message.subject_is_reply? or effective_field(:body) =~ /^[>\|] .+/
   end
 
   def message
