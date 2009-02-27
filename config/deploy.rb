@@ -30,4 +30,11 @@ namespace :deploy do
     desc "Task '#{t}' is unneeded with Passenger"
     task t, :roles => :app do ; end
   end
+
+  desc "Clean up old page caches, which can grow quite large"
+  task :clean_up_cache, :roles => :web do
+    run "rm -rf #{previous_release}/public/page_cache"
+  end
+
+  after "deploy:restart", "deploy:clean_up_cache"
 end
