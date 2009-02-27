@@ -216,6 +216,16 @@ div.flag iframe {
   width: 1px;
 }
 
-div.ad {
+/* advertising */
+
+div.panel {
+  display: none;
   margin-bottom: 18px;
 }
+div.jobsyndicate {
+  height: 100px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.jobsyndicate table, .jobsyndicate th, .jobsyndicate td { border: none }

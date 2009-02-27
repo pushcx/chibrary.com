@@ -145,4 +145,13 @@ $(function() {
     e.preventDefault();
     $(this).css("display", "none").after('<iframe src="' + $(this).attr("href") + '"></iframe>Thanks');
   });
+
+  // show ads in production
+  jQuery.each(['google', 'live', 'msn', 'yahoo', 'localhost'], function(i, site) {
+    var re = new RegExp ("http:\/\/[^\/]*" + site + ".*\/", "");
+    if (re.exec(document.referrer)) {
+      $(".panel").show();
+    }
+  });
 });
+

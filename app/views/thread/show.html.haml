@@ -5,7 +5,7 @@
 
 = render :partial => 'thread_list', :locals => { :thread => @thread }
 
--# .ad
+-# .panel
   :plain
     <script type="text/javascript"><!--
     google_ad_client = "pub-3425662504305490";
@@ -21,9 +21,25 @@
   = @thread.collect { |c| container_partial(c) }
 
 %hr 
+
+.panel.jobsyndicate
+  <script type="text/javascript">
+  _JS_AFF_ID = 24;
+  _JS_JOB_COUNT = 2;
+  _JS_FONT_SIZE = 12;
+  _JS_FONT = "Verdana";
+  _JS_HEADER_COLOR = "#000000";
+  _JS_TEXT_COLOR = "#000000";
+  _JS_COMPANY_COLOR = "#0000ff";
+  _JS_AD_ORIENTATION = "2";
+  _JS_JOB_LIST = new Array();
+  _JS_LINK_STYLE = 1;
+  </script>
+  <script type="text/javascript" src="http://jobsyndicate.com/JServ/Generic.js"></script>
+
 = render :partial => 'thread_line', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
 
--# .ad
+-# .panel
   :plain
     <script type="text/javascript"><!--
     google_ad_client = "pub-3425662504305490";
