@@ -359,11 +359,11 @@ class ThreadSet
     # finish) each other.
 
     # Rejoin any threads from later months
-    (1..6).each do |n|
+    (1..4).each do |n|
       retrieve_split_threads_from plus_month(n)
     end
     # And move threads up to earlier months when possible
-    (-6..-1).each do |n|
+    (-4..-1).each do |n|
       plus_month(n).retrieve_split_threads_from self
     end
   end
