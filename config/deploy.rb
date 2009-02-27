@@ -4,6 +4,7 @@ set :application, "listlibrary.net"
 
 set :scm, :git
 set :repository, "harkins@argyle.redirectme.net:~/biz/listlibrary"
+set :repository, "git@github.com:Harkins/listlibrary.git"
 
 set :deploy_to, "/home/listlibrary/listlibrary.net"
 set :deploy_via, :copy
