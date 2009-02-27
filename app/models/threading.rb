@@ -370,9 +370,10 @@ class ThreadSet
 
   def retrieve_split_threads_from threadset
     return if @containers.empty?
+    finish
     threadset.each do |thread|
       next unless thread.likely_split_thread?
-      next unless @containers.keys.include? thread.message_id
+      next unless @containers.keys.include? thread.message_id or @subjects.include? thread.n_subject
 
       # redirects?
       thread.each { |c| self << c.message unless c.empty? }

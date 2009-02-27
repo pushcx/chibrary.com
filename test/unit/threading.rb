@@ -770,6 +770,26 @@ class ThreadSetTest < ThreadingTest
     assert_equal 24, ts11.message_count
   end
 
+  def test_rejoin_splits_on_subject
+    # on archives (eg. scraped mud-dev), there are no In-Reply-To/References headers
+    def ts year, month
+      ts = ThreadSet.new 'example', year, month
+      rejoin_splits("#{year}-#{month}").each do |mail|
+        ts << Message.new(mail, 'example', '00000000')
+      end
+      ts.expects(:store).at_least(0)
+      ts
+    end
+    nil.expects(:delete).at_least(0)
+    ts02 = ts '1997', '02'
+    ts03 = ts '1997', '03'
+    assert_equal 7, ts02.message_count
+    assert_equal 5, ts03.message_count
+    ts02.send(:retrieve_split_threads_from, ts03)
+    assert_equal 11, ts02.message_count
+    assert_equal 1, ts03.message_count
+  end
+
   def test_redirect_single
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']

@@ -1497,4 +1497,877 @@
     thing.
     
     JB
+'1997-02':
+  - |
+    Message-Id: <005k80j_@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: S001GMU@nova.wright.edu
+    Date: Fri, 28 Feb 1997 16:40:04 -0500 (EST)
+    Subject: Re: Quadtrees?
     
+    >> do you know of any good books that I can read up on some of those
+    >algorithms
+    >> specifically the Peano, Hilbert or Morton curves you mentioned?
+    >> 
+    
+    >"The Design and Analysis of Spatial Data Structures" by Samet (Addison
+    >Wesley) is a great primer on this stuff and spatial data structures in
+    >general. However, save 30 bux...
+    
+    >Peano and Morton are two names for the same thing. A space filling curve is
+    >one that can cover all the points in a grid without ever crossing over
+    >itself. Hilbert is kinda odd and computationally a bit nasty to work with,
+    >but Morton is easy.
+    
+    <Alg snipped>
+    
+    thanks!  I'll probably look into the book anyway.  Sounds like something
+    incredibly usefull to have around.  ;)
+    
+    If you want to make up that picture, go ahead.  send it to
+    s001gmu@desire.wright.edu
+    
+    Mime encoding is fine.  if that doesn't work, I'll let you know and we can work
+    something else out.  ;)
+    
+    -Greg
+  - |
+    Message-Id: <005k83dP@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: S001GMU@nova.wright.edu
+    Date: Fri, 28 Feb 1997 15:13:43 -0500 (EST)
+    Subject: Re: Quadtrees?
+    
+    >As far as objects go, their are various point-based structures that come to
+    >mind including the sparse matrix, K-D trees, and point-based quadtrees.
+    >Depending on how fancy you want to be, it's handy not only to ask "is there
+    >an object here?" but it is also handy to look for the nearest object from
+    >here.. let's you do things like bring critters to life only when folks
+    >approach (or leave), also let's you determine a range for how far folks can
+    >hear things that hum, see things that are lit, etc. The classic
+    >implementation is pointer-based, but for large implementations (and we
+    >expect to index several thousand items) there are linear implementations.
+    >Basically you implement a B-Tree and then use some space-filling curve
+    >(Peano, Hilbert et. al.) to index the tree's contents (your objects). The
+    >Peano or Morton curve is particularly nice 'cuz you can do algebra on it
+    >and the code also implicitly tells you the depth and quadrant of the
+    >corresponding pointer-based tree. The B-Tree behavior works well for a mud
+    >cuz usually huge chunks of your world aren't being played... so you just
+    >cache the active nodes/pages of the tree. Insertion and deletion can be
+    >expensive, but there are all sorts of ways to fudge things so you don't
+    >rebuild the tree every time. For rooms (walls etc.) the tree becomes
+    >read-only. Or am I going way overboard here?
+    
+    do you know of any good books that I can read up on some of those algorithms
+    specifically the Peano, Hilbert or Morton curves you mentioned?
+    
+    I'd say, instead of using a read only tree to handle objects that characters
+    can't move (like the walls of a room or something), just attach a weight and
+    structural integrity to the object, where the structural integrity shows how
+    much weight an object can take (counting it's own) before it collapses.  Just
+    set the weight fairly high (a few tons?  :) and the structural integrity to
+    the weight of the object (for fragile objects).  Lifting the object would
+    apply an unballanced force on the object, which for MUD purposes we can
+    probably get away with counting as weight.  That way, if someone did manage to
+    lift the wall, it'd probably fall apart all over them, unless they used some 
+    other means to increase it's structural integrity.  If you felt like it you
+    could actaully calculate the forces involved and get more detail out of it,
+    but for most purposes I think it'd be sufficient to just assume an object with
+    weight = structural integrtiy would fall apart when moved.
+    
+    I think it'd make things much more interesting.  You could do things like have
+    corpses crumble just by being touched (to simulate incredible age), or walls
+    collapse on characters, etc.  
+    
+    we've had discussions before about how to deal with areas where no players
+    happen to be hanging out...  I think we decided it'd depend on how much of a
+    simulation you want your mud to be.  :)
+    
+    -Greg
+  - |
+    "Message-Id: <005k84Xy@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Chris Gray" <cg@ami-cg.GraySage.Edmonton.AB.CA>
+    Date: Fri, 28 Feb 97 06:58:53 MST
+    Subject: Re: Quadtrees?
+
+    :I am wondering why quadtrees would be so great for spatial representation
+    :as it is used in a mud. As you will remember, a quadtree subdivides a
+    :region into 4 subregions and makes quadtrees of those until the subregions
+    :are uniform, so that you only keep information about things that are
+    :different in a region (ok this desc stinks). But in a mud you need to do
+    :lots of spatial relation searches, like all the objects within a range of 3.
+    :Why not use a list of objects that is multi indexed on X and Y values?
+    
+    I'm certainly no expert in this stuff, but it seems to me that quadtrees
+    aren't being advised for individual objects, but for properties, the
+    value of which is needed at every location within the grid. As in the
+    previous example, you could use one quadtree for 'forest-ness', another
+    for 'mountain-ness", etc. This allows you to automatically generate the
+    description/picture/representation of a location in the grid, based on
+    traversing the small quadtree to get the property value.
+    
+    Objects are a different matter. They are each individual, and possibly
+    unique. With objects, the concern is more "what objects are here?". An
+    indexed sparse array of some kind works for that. Another possibility is
+    to have a quadtree that essentially represents "something-is-here-ness",
+    and terminates in pointers to lists of objects as needed. Most locations
+    contain nothing, and so are not explicitly represented in the quadtree.
+    The trouble with this is that it requires that the quadtree go down to
+    the individual location in resolution, whereas for other properties, they
+    can often stop considerably before that point. Also, objects can be moved,
+    resulting in the need to be able to dynamically change the quadtree. I
+    vaguely recall that that is hard to do.
+    
+    My thinking has been to use a 3D sparse array, which can contain objects
+    of differing sizes, hence visibilities. I'm pretty vague on how the details
+    would work, however. :-(
+    
+    --
+    Chris Gray   cg@ami-cg.GraySage.Edmonton.AB.CA
+  - |
+    Message-Id: <005k85gH@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: coder@ibm.net
+    Date: Thu, 27 Feb 97 20:06:36 -0800
+    Subject: Re: Quadtrees?
+    
+    On 28/02/97 at 03:53 AM, Wout Mertens <Wout.Mertens@rug.ac.be> said: >Hi
+    all,
+    
+    >I am wondering why quadtrees would be so great for spatial representation
+    >as it is used in a mud. As you will remember, a quadtree subdivides a
+    >region into 4 subregions and makes quadtrees of those until the
+    >subregions are uniform, so that you only keep information about things
+    >that are different in a region (ok this desc stinks). But in a mud you
+    >need to do lots of spatial relation searches, like all the objects within
+    >a range of 3.
+    >Why not use a list of objects that is multi indexed on X and Y values?
+    
+    Unfortunately I have to go confront the IRS, so I'll have to keep this
+    quick.  I think Quadtrees are a *very* bad way to approach spaces in MUDs
+    as they don't lend themselves to the type of spatial processing that I
+    think MUDs require.  My own temptation would be to go for something close
+    to an R*-Tree approach (see below).
+    
+    The best idea I've come up with so far is two-fold.  One side describes
+    spatial characteristics, and the other side describes object
+    characteristics.  I seperate the two essentially as one defines _how_
+    space changes, and the other defines the behaviour of the contents of that
+    space.
+    
+    The whole idea for spaces is that nodes are only stored where there is a
+    change in characteristic, with the contents of the node indicating _what_
+    changes, and in what direction from the node.  
+    
+    Thus, taking the example of a land which is partly forested, and partly
+    grassy, The only nodes that would be defined are those needed to define
+    the border between them.  In this manner surfaces, boundaries, conditions,
+    topology etc can be defined with a minimum of data.  
+    
+    An old post from the list may illuminate the general area (I think Carter
+    is a member here now?  Hope so -- we wrote good stuff in r.g.m.*).  It
+    actually says more about the stuff above than I have time for now.
+    
+    --<cut>--
+    From: "Chris Lawrence" <clawrenc@xsvr1.cup.hp.com>
+    Date: Thu, 12 Sep 1996 12:36:18 -0700
+    Subject: Re: Rethinking Rooms (Very Long)
+    
+    > From: raz@mushroom.demon.co.uk (Raz)
+    > Newsgroups: rec.games.mud.admin,rec.games.mud.misc,rec.games.mud.diku
+    > Subject: Re: Rethinking Rooms
+    >
+    > [Moved the following quote from the Mob thread into this one]
+    >
+    > It was all I could do to contain my excitement when Orion Henry wrote:
+    
+    BTW I've invited him to join the list and set him subscription data in
+    reply to his request.  If he's not here now, he should be soon.
+    
+    > > I've stuck with repops, but it's quite a bit more subtle.  That is,
+    > > the system looks at an EMPTY area and considers what needs to be
+    > > fixed - doors that should be locked, walls that should be repaired,
+    > > mobs that should be "born" to fill holes in the population.
+    >
+    > Just a part in that paragraph that reminded me of an earlier thing that got
+    > discussed:  It would presumably be nice to 'liven up' the playing
+    > environment, for example by allowing characters to hack paths through
+    > forests, rediscovering lost temples, etc, right?  Well, getting back to the
+    > challenge of auto-generating Spaces, I'm curious as to how these two ideas
+    > could be brought together efficently.
+    
+    This has been tickling the back of my cranium as well.  I like the idea of
+    a stored mutating state for a generated space (or at least that's the way
+    I think of it.)
+    
+    > To elaborate, the forest 'exits' (here the undergrowth blocking passage)
+    > could easily hold values such as resistence to damage and the ammount of
+    > hacking which is necessary to break through it, but this is only easy in
+    > rooms that are predefined.  In the so-called 'virtual spaces' that
+    > information could not be remembered though, because fields for this data
+    > wouldn't exist, and assigning those bytes regardless (in the array which
+    > maps coordinates to defined vnums) would be wasteful in the extreme, as in
+    > this case only forest Spaces would make use of it...
+    
+    Which is probably the reason to explicitly NOT go in this direction. Its
+    wasteful in the extreme.
+    
+    > I have a feeling I haven't explained that very well, but make what you can
+    > of it =)  Anyone have ideas on how a 'living environment' like that could be
+    > supported efficiently?  Perhaps I should say *other* ideas: bearing in mind
+    > Carter T Shock's detailed (and overpowering for a poor pleb like me! ;) )
+    > post regarding world storage.
+    >
+    > Raz
+    
+    I've encluded Carter's post below as reference material.  I suspect that
+    your confusion sources to his references to R-Trees, Quad-Trees and the
+    like as that's what got me.  Both R-Trees and QuadTrees are typically used
+    in relation to image processing, but can be adapted for other uses.  Both
+    actually map very nicely (if somewhat indirectly for QT's) to mapping
+    auto-generated spaces.
+    
+    Possibly some references on the area would help clear up the
+    definitions.
+    
+    >From http://www.cs.cuhk.hk/~drsam/methods.html:
+    - --<cut>--
+    What is R-Tree
+    
+    A R-Tree, proposed by Antonin Guttman[1], is an index structure for point
+    and spatial data at the same time. Insert, delete and search can be
+    intermixed without periodic reorganization. It uses a tuple to represent a
+    spatial data in the database. In order to retrieve the data, each tuple
+    has a unique identifier, tuple-identifier. At the leaf node of a R-Tree,
+    it has index record that can reference the spatial data. The index record
+    is (I, tuple-identifier). I is an n-dimensional rectangle and it is the
+    bounding rectangle of the spatial data indexed. This rectangle is also
+    known as minimal bounding rectangle, MBR. and each entry in
+    tuple-identifier is the upper and lower bounds, [upper, lower], of the
+    rectangle along the
+    dimension. Non-leaf nodes contain entries (I, childnode-pointer) where I
+    is the minimal rectangle bounding all the rectangles in the lower nodes'
+    entries. Childnode-pointer is the pointer to a lower node in the R-Tree.
+    Let M and m<=M/2 be the maximum and minimum number of entries can be
+    filled into one node respectively.
+    
+    Properties of R-Tree
+    
+    A R-Tree satisfies the following properties:
+    
+        A R-Tree is a height balance tree and all leaves are on the same
+        level.
+    
+        Root node has at least two children unless it is the leaf node.
+        Every non-leaf node contains between m and M entries unless it is
+        the root.
+    
+        For each entries (I, childnode-pointer) in a non-leaf node, I is
+        the smallest rectangle that spatially contains all rectangles in
+        its child nodes.
+    
+        Every leaf node contains between m and M index records unless it
+        is the root.
+    
+        For each index record (I, tuple-identifier) in a leaf node, I is
+        the smallest rectangle that spatially contains the n-dimensional
+        data object represented by the indicated tuple.
+    
+    R*-Tree
+    
+    The R-tree is based on a heuristic optimization. The optimization
+    criterion is to minimize the area of each enclosing rectangle in the inner
+    nodes. R*-Tree which incorporates a combined optimization of area, margin
+    and overlap of each bounding rectangle in the inner nodes was proposed in
+    [6]. For slightly higher implementation cost, it outperforms the existing
+    R-Tree variants.
+    
+        Minimizing the area covered by a bounding rectangle should
+        minimize the dead space. This will improve performance since
+        decisions which paths have to be traversed, can be taken on higher
+        level
+    
+        Minimizing the overlap between bounding rectangles decreases the
+        number of paths to be traversed.
+    
+        Minimizing the margin of a bounding rectangle will make the
+        rectangle more quadratic. It is because for fixed area, the object
+        with the smallest margin is the square. Quadratic rectangles can
+        be packed easily and thus building a smaller rectangle.
+    
+    VP-Tree
+    
+    Conventional spatial index structures divide the multi-dimensional vector
+    space into partitions which have approximately the same number of data
+    points as each other. It facilitates in finding the nearest neighbor of a
+    given query point because it is only necessary to touch a small number of
+    partitions. Most partitioning methods are based on absolute coordinate
+    values of the vector space. R-Tree and R*-Tree described before use this
+    type of partitioning method. The structures partitioned in this way are
+    useful for queries based on absolute coordinates, like range queries.
+    However, in general, it does not maintain any distance information, such
+    as distance between points within a partition and the partition's
+    boundaries. Since this information is critical in pruning the search space
+    for
+    nearest-neighbor search, index structures using partitioning methods based
+    on absolute coordinate are thus not so useful for
+    multi-dimensional nearest-neighbor search.
+    
+    Nearest-neighbor search by definition is to find out one point with
+    minimum point-to-point distance from a given query point, so it is natural
+    to use partitioning method based on relative distance rather than absolute
+    coordinate values. Vantage-Point tree, or VP-Tree, method was proposed by
+    Peter N.Yianilos. It uses the partitioning method based on relative
+    distance and aims for handling multi-dimensional nearest neighbor search.
+    
+    As mentioned before, VP-Tree method bases the partitioning on the relative
+    distances among the data points, rather than their absolute coordinate
+    values. It also bases on a particular vantage
+    point. Actually, vantage point is nothing special but a point selected
+    from a vector space, or a set of data points. However, the choice of
+    vantage point plays an important role in the performance of indexing
+    algorithm.
+    
+    - --<cut>--
+    
+    And for QuadTrees:
+    
+    - --<cut>--
+    
+    QUADTREE IMAGES by Bob Glickstein
+    
+    A ``quadtree'' is a means of encoding an image as a tree structure. Each
+    node of the tree has up to four children.  The root node represents the
+    entire image; its children represent the four quadrants of the entire
+    image; their children represent the sixteen subquadrants; the children of
+    those represent the sixty-four sub-subquadrants, and so on.
+    
+    A leaf node corresponds to a single pixel, and is marked with the color of
+    that pixel (in this implementation, black or white only).  If a non-leaf
+    node has two or more children of the same color, then that color is stored
+    in the parent and the children are deleted.  Thus, if an entire quadrant
+    (subquadrant, sub-subquadrant, etc.) of the image is white, that
+    information can be stored in a single quadtree node, and all of the
+    children of that node can be removed.
+    
+    For certain images, this encoding yields enormous savings in storage size. 
+    Such images are typically line drawings or other bitmaps with several
+    areas of solid black or white.  Images with a lot of dithering or
+    stippling, such as scanned images, tend to yield little or no savings in
+    space.
+    
+    An amusing aspect of quadtrees is that they can be displayed according to
+    a depth-first or a breadth-first traversal of the tree.  In a depth-first
+    traversal, first the prodemonant color of the entire image is displayed;
+    then the predominant color of the first quadrant is displayed; then the
+    predominant color of the first subquadrant of the first quadrant, and so
+    on.  The user can watch the quadrants and subquadrants being drawn.  A
+    breadth-first traversal, however, is much more interesting.  Since it
+    displays first the predominant color of the entire image, followed by the
+    predominant colors of the four major quadrants, followed by the
+    predominant colors or the sixteen subquadrants, and so on, the effect is
+    one of a gradually resolving image with finer and finer detail at each
+    step.
+    
+    - --<cut>--
+    
+    Or to look at it another way, R-Trees, VP-Trees, and Quad-Trees provide a
+    tree data structure where walking the tree from the root node down towards
+    the leaves provides finer and finer grained data about the location, with
+    each system providing various optimisations for that progression.  For
+    QT's the progression is exactly that of providing more and more finely
+    grained data.  For R-Trees and the like, the progression is that of
+    detailing more and more accurately what data sets (nodes) define a
+    specific location or area.
+    
+    I've not been able to find a good source for what he describes as "morton
+    codes", tho I have run into the concept before (and don't remember any
+    implementation details or algorithms).  <<Can anyone help here?>>  However
+    I think the concept he describes is fairly clear and understandable.
+    
+    My own thoughts I posted at the time:
+    
+    } Another option, which could be done as an extension of your idea for
+    } the mapping/surface portion, is to avoid the concept of continuous
+    } mapping.  Instead only those specific coordinate points (cells) would
+    } be defined which deliniate changes in pattern in the
+    } surface/map/object.  Additionally a cell could define its linkage, or
+    } lack of linkage, and the character of that linkage, with other
+    } immediately proximate points
+    }
+    } In this way the map would be be a net of defined points and
+    } interpolations between those points.  A sparsely detailed area would
+    } consist of very few defined points and render/access quickly.  A high
+    } detailed area would have far more defined points and could provide a
+    } computational challenge.
+    
+    In a crude sort of way you could consider this derived from fractal
+    compression, or at least the concept of a node which marks a change of
+    characteristic, and having that node also indicate the quality of the
+    changed characteristic when moving in various directions from the node
+    bears some resemblance.  (eg The node says that this the edge of the
+    water.  Everything to the south and down of the node is water, and
+    everything else in every other direction is not water)
+    
+    I believe this could be extended in line with Carter's system to offer a
+    pretty slick system.
+    
+    Consider a system ala:
+    
+      Nodes are only stored if the _location_ of that node indicates a
+        change in character in whatever that node is describing.
+    
+      If the characteristic being described is water, there would be nodes
+        located along the edges of the body of water, but ONLY where the
+        direction of that edge changed direction.  If the character of the
+        water changed within its space (eg colour, waves, etc) nodes would
+        only be present at the locations where the characteristic changed.
+    
+      Thus there would be nodes all around edge of the area where the
+        water changed from blue to green, with only just enough nodes to
+        define the shape of that area.
+    
+      Store the nodes in say an R*-Tree as described above, and finding
+         the the nodes which affect the view of a player located at
+         specific coordinates is just a matter of descending the tree
+         until finding a node which is larger than the player's view, but
+         whose children are smaller than the player's view.  Then just
+         descend from there to define the area.
+    
+    Now add in the concept of having multiple trees, with each tree
+    representing a different characteristic of the "land".  Say one tree could
+    be weather, another could be object locations cross linked with object
+    descriptions/definitions, a third could be light level, another define the
+    surface of the land etc.
+    
+    You could even cross-link the trees to each other to help quickly locate
+    the nodes relevant to a given area.  Heck you could actually just make it
+    one R*-Tree and have each node be one of a variety of types so that as the
+    tree is descended the different types fill in as their unique
+    characteristics change.
+    
+    Thinking about this has gotten me thinking further about the
+    possibilities of a true graphical MUD ala VRML.  I could see definite
+    possibilities for coding an R*-Tree of the VRML descriptions of the
+    various objects in game, and then following an algorithm something like
+    this to draw the image for the end user:
+    
+      Presuming that the structure of VRML supports some concept of detail
+      level, and thus the ability to retrieve only the relevant data about
+      an object at a given detail level (eg you can't see the crags on the
+      mountain in the far distance, but you can when you are close to it):
+    
+      From root of tree, descend tree.
+    
+      For each node, determine the spatial distance of that node from the
+      player.
+    
+      If "close enough", get data from that node at the resolution level
+      comparable for the distance to the node.  ie of the node is close,
+      get highly detailed data.  If farther away, get less detailed.
+    
+      Draw and render as appropriate, rezz'ing in the image.
+    
+    Noting again that I don't know squat about VRML, or if it would lend
+    itself to this at all.
+    
+    None of this of course registers the _change_ to the location because of
+    recent events there (eg hack down the trees).  This could be done by
+    inserting nodes in the R-Tree to define new changes in characterisitic. 
+    Consider the case of two nodes:
+    
+      NodeX<---distance--->NodeY
+    
+    NodeX is defined as light scrub for everything east of it.  NodeY is
+    defined as heavy forest for everything east of it.  (I'm simplifying a lot
+    here, as normally each node would also define its relationship to other
+    proximate nodes).
+    
+    A player happens to be standing somewhere in the light forest, and lights
+    a fire.  There is now a smoke plume, and so a new node is created.
+    
+      NodeX(scrub)<--->NodeZ(smoke)<--->NodeY
+    
+    Later on he walks a bit and hacks out a clearing:
+    
+      NodeX(scrub)<--->NodeZ(smoke)<--->NodeQ(clearing)<--->NodeY
+    
+    After a while the fire he started burns out, leaving a charred area:
+    
+      NodeX(scrub)<--->NodeR(charred)<--->NodeQ(clearing)<--->NodeY
+    
+    Of course in actual fact the structure would be a heck of a lot messier
+    than this, as the smoke plume would have to have boundaries, and would
+    have considerable height.  This it would probably be decribed by say half
+    a dozen nodes sketching out a circle (the base of the plume) and a series
+    of matching nodes describing how the plume ascends thru space.  Similar
+    would be true for the clearning, and ultimately for the charred area when
+    it replaces the smoke.
+    
+    | From: ctso@umiacs.umd.edu (Carter T. Shock)
+    | Newsgroups: rec.games.mud.admin,rec.games.mud.misc,rec.games.mud.diku
+    | Subject: Re: Rethinking Rooms
+    |
+    | In article <840439466.9428.1@mushroom.demon.co.uk>,
+    | Raz <raz@mushroom.demon.co.uk> wrote:
+    | >[Conversation moved from 'Skill-based systems' to here =) ]
+    | >
+    | >representing the whole world on a matrix of 1m x 1m squares... =)
+    | >
+    | [snip]
+    | >
+    | >Yep, plus it's a sod to map, and the values on the axes would get
+    | >astronomical (imaging mapping a world the size of Earth with 1m x 1m
+    | >units... circumference is, what, 35000kms?  Ouch.)
+    | >
+    | [snip]
+    | >Oh, while I remember: my rambling diatribe above doesn't even begin to
+    | >include the joys of the Z axis! =)  It's no problem at all to allow players
+    | >to fly over any of the outdoor locations in the game,
+    |
+    | >From the player's perspective, yeah, it could be a bear to map, but
+    | then maps (and movement) could be more natural. If we're going to
+    | allow the player to sight distant objects, then it is reasonable to
+    | have them map by landmark. (follow the river until you see the
+    | mountains.. etc. perhaps an orienteering skill? :)
+    |
+    | The only other obstacle appears to be disk storage and granularity of
+    | your grid. In short, the 1m x 1m granularity poses no special
+    | problems. You can even go smaller if you want. The trick is to map
+    | only "what's there".
+    |
+    | I'm kind of excited to have stumbled on this topic, as I've started to
+    | build the rudiments of such a toy. The basics go like this:
+    |
+    | Assume for the moment that we've got a 1m x 1m gridding of the
+    | world. We'll talk about how to store it efficiently in a minute.
+    |
+    | Rather than keeping all known information about the world in a single
+    | grid with each cell having lots of attributes, we'll break it up into
+    | several layers. One layer can be a resource map (description of where
+    | ores and other fun raw materials are found). Another can be forest
+    | cover, a third can be water. Each of these can be represented as a
+    | collection of regions. i.e. there is absolutely no reason to go thru
+    | the damned grid and mark every single cell as "water" or "not-water".
+    | You just declare it as a region and throw it into an appropriate
+    | structure (like a region quadtree or an R-Tree). These fancy spatial
+    | data structures can store off the whole world in very little space.
+    |
+    | For buildings and such, store them as polygons in either an R-Tree or
+    | a PMR-Quadtree. Again, no reason to ever store off the explicit cells
+    | in the grid, only those objects that are in the cells.
+    |
+    | Elevation is a bit trickier. If you maintain the previous data
+    | structures in 3-D they can get kinda big, and the average world
+    | doesn't tend to have many discontinuous tall features (not too many 1
+    | meter square, mile high objects floating 100 feet off the ground)
+    |
+    | You can do elevation with additional region maps, one for each step in
+    | elevation. Limit things by saying your people can only fly so high
+    | before the air runs out or dig so deep before they hit magma and fry.
+    |
+    | So, how much space does it take to encode a point in an earth sized
+    | world on a 1m x 1m grid? First things first, cheap and dirty way to do
+    | a round world as a flat representation is to generate a square matrix
+    | and stand it on one corner (like a diamond). Moving from square to
+    | square is trivial except for the edges where you need to wrap the same
+    | "latitude". Again not hard, but you have to do it. Each cell needs a
+    | unique code. The earth is about 40,000km around at the equator.
+    | Let's make it a 40,000km sphere.
+    |
+    | 40,000,000m / (2^32) = .009
+    |
+    | So, if we grid the earth using a long integer, minimum granularity is
+    | what? 9 millimeters?
+    | So, "longitude" and "latitude" are longs.
+    | Altitude...
+    | Make the earth's crust and breatheable atmosphere 20 miles deep/high
+    | ~100K feet
+    | ~33km
+    | 2^15 = 32K
+    |
+    | So, with a vertical granularity of 1 meter, you can do about 40 miles
+    | with a 16 bit short.
+    |
+    |
+    | The final trick is coming up with a way to store this stuff off on
+    | disk such that you can get it back in a hurry. Bonus points if you
+    | come up with location codes for objects (rooms, structures, people)
+    | that result in objects that are spatially close being stored close
+    | together out on the disk.
+    |
+    | Again, trivial. Any space filling curve will do. Morton codes
+    | are easiest. It works like this:
+    |
+    | given an x,y,z location, interleave the bits of the three values
+    | to produce a single key, then sort all objects using that key.
+    |
+    | Example: using just x = 5, y = 3
+    | x = 0101
+    | y = 0011
+    |
+    | y-major code = 00011011
+    | x-major code = 00100111
+    |
+    | The beauty of this is that the code preserves in its most significant
+    | bits the most significant bits of the individual pieces that were used
+    | to make it. It's also nice because you can do range searches. To find
+    | all objects in the list in a 4m x 4m area (assuming a granularity
+    | of 1m) you search the list with a key like: 1001XXXX The key matches
+    | any code with 1001 as the first 4 bits and anything in the last 4
+    | bits. So things like "this sound can be heard for 30 meters" and
+    | "everybody within a mile radius dies" become trivial.
+    |
+    | Sorry about the length, but it really is pretty easy to store a highly
+    | detailed world without using up gobs of space.
+    | 	-Todd
+    | ..
+    | |-------------------------------------------------------------------------|
+    | |      Carter T. Shock          |        University of Maryland           |
+    | |    ctso@umiacs.umd.edu        | Institute for Advanced Computer Studies |
+    | | "Onward through the fog..."   |      #include <std/disclaimer.h>        |
+    --<cut>--
+    
+    --
+    J C Lawrence                               Internet: claw@null.net
+    ----------(*)                              Internet: coder@ibm.net
+    ...Honourary Member of Clan McFud -- Teamer's Avenging Monolith...
+  - |
+    Message-Id: <005k85m6@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Carter T Shock" <ctso@umiacs.umd.edu>
+    Date: Fri, 28 Feb 1997 16:16:53 -0500
+    Subject: Re: Quadtrees?
+    
+    > do you know of any good books that I can read up on some of those
+    algorithms
+    > specifically the Peano, Hilbert or Morton curves you mentioned?
+    > 
+    
+    "The Design and Analysis of Spatial Data Structures" by Samet (Addison
+    Wesley) is a great primer on this stuff and spatial data structures in
+    general. However, save 30 bux...
+    
+    Peano and Morton are two names for the same thing. A space filling curve is
+    one that can cover all the points in a grid without ever crossing over
+    itself. Hilbert is kinda odd and computationally a bit nasty to work with,
+    but Morton is easy.
+    
+    In a nutshell: interleave the bits.
+    
+    Given a coordinate [3,5] represented with 4 bits each you have:
+    X = 0011
+    Y = 0101
+    Morton is: 00011011 or 00100111
+    
+    0 0 1 1
+     0 1 0 1
+    00011011
+    
+    Your choice as to whether to start with the X or Y bit as most significant.
+    Here's the sweet part... because the most significant bits of the code
+    represent the most significant bits of the two coordinates you can use it
+    as a sorting key. Codes that are numerically close are also spatially
+    close. There's also a direct correspondence between the code and
+    quadrants/depth in quadtrees but I'm not swift enough with ASCII graphics
+    to draw it here. I can do a picture and send it via MIME if ya want. Also
+    as mentioned, you can do algebra on them. Need to offset the coordinates by
+    an X,Y? make a code for the offset and add/subtract it in.
+    You can also do range searching by masking off low-order bits. Finally,
+    this is why using B-Tree type stuff works.. the keys in the tree are just
+    the interleaved codes. It's one of those things that once discovered you
+    bonk yourself on the head and say "why didn't I think of that?"
+          -Todd
+  - |
+    Message-Id: <005k864U@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Carter T Shock" <ctso@umiacs.umd.edu>
+    Date: Fri, 28 Feb 1997 11:25:57 -0500
+    Subject: Re: Quadtrees?
+    
+    > previous example, you could use one quadtree for 'forest-ness', another
+    > for 'mountain-ness", etc. This allows you to automatically generate the
+    > description/picture/representation of a location in the grid, based on
+    > traversing the small quadtree to get the property value.
+    
+    exactly
+    
+    > 
+    > Objects are a different matter. They are each individual, and possibly
+    > unique. With objects, the concern is more "what objects are here?". An
+    
+    Two points: 
+    1) Quadtrees are not the be-all and end-all of spatial data structures.
+    Just what came to mind as I wrote.
+    2) Quadtrees come in lots of flavors.
+    
+    The "forest-ness" et. al. would most likely be done as a region quadtree.
+    It just works out that these are handy structures for binary spatial tests.
+    Any region is either forest or it ain't. The particularly nice thing about
+    these structures (versus other representations) is the ability to perform
+    efficient spatial joins. Recall that you can use these puppies for more
+    than simple terrain. If you support clans you can describe a clan's "zone
+    of influence", you can do no magic, lawful, silent, safe, etc. areas. The
+    spatial join property is more of an implemetor's bonus. It lets you ask
+    questions like "show me all of the areas that are forest but no-magic" so
+    you can tune those spots where (ferinstance) druid spells will fail.
+    
+    As far as objects go, their are various point-based structures that come to
+    mind including the sparse matrix, K-D trees, and point-based quadtrees.
+    Depending on how fancy you want to be, it's handy not only to ask "is there
+    an object here?" but it is also handy to look for the nearest object from
+    here.. let's you do things like bring critters to life only when folks
+    approach (or leave), also let's you determine a range for how far folks can
+    hear things that hum, see things that are lit, etc. The classic
+    implementation is pointer-based, but for large implementations (and we
+    expect to index several thousand items) there are linear implementations.
+    Basically you implement a B-Tree and then use some space-filling curve
+    (Peano, Hilbert et. al.) to index the tree's contents (your objects). The
+    Peano or Morton curve is particularly nice 'cuz you can do algebra on it
+    and the code also implicitly tells you the depth and quadrant of the
+    corresponding pointer-based tree. The B-Tree behavior works well for a mud
+    cuz usually huge chunks of your world aren't being played... so you just
+    cache the active nodes/pages of the tree. Insertion and deletion can be
+    expensive, but there are all sorts of ways to fudge things so you don't
+    rebuild the tree every time. For rooms (walls etc.) the tree becomes
+    read-only. Or am I going way overboard here?
+          -Todd
+  - |
+    Message-Id: <005k87t-@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: Wout Mertens <Wout.Mertens@rug.ac.be>
+    Date: Fri, 28 Feb 1997 03:53:46 +0100 (MET)
+    Subject: Quadtrees?
+    
+    Hi all,
+    
+    I am wondering why quadtrees would be so great for spatial representation
+    as it is used in a mud. As you will remember, a quadtree subdivides a
+    region into 4 subregions and makes quadtrees of those until the subregions
+    are uniform, so that you only keep information about things that are
+    different in a region (ok this desc stinks). But in a mud you need to do
+    lots of spatial relation searches, like all the objects within a range of
+    3.
+    Why not use a list of objects that is multi indexed on X and Y values?
+    
+    Wout.
+'1997-03':
+  - |
+    Message-Id: <005k82ke@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Carter T Shock" <ctso@umiacs.umd.edu>
+    Date: Sun, 2 Mar 1997 06:09:56 -0500
+    Subject: Re: Quadtrees?
+    
+    > [Discussion of "B-tree with space-filling curve to index the tree"]
+    > 
+    > Ahm, you've totally lost me here! I know what B-trees are (did one for
+    > a database system I wrote), and I've heard of space-filling curves, but
+    > I can't imagine how a curve can be used to index things. Can you say
+    > some more about this?
+    
+    Lessee... if it's a curve, then there is a function that generates it. For
+    the Morton curve we'll call that function M(x,y). The range and domain of M
+    are both the set of Integers (i.e. the function is not continuous, but is
+    defined for all integral values of x and y). So, if we generate values of
+    M(x,y) for all values of x and y, the result is a series of integers. In
+    this case it's called the Morton series.
+    
+    What I'm getting at is that the set of integer x and y is an infinite,
+    dense matrix of equidistant points in 2 dimensional space. For each of
+    these points there exists a unique value in the Morton series. This value
+    is derived by interleaving the bits of the x and y coordinates as described
+    in previous mail.
+       
+    So.. now we want to index a collection of points in 2 dimensional space
+    (btw, it all works in any number of dimensions you want). Any index
+    (B-Trees included) requires that we have some key for each datum we index.
+    For simplicity's sake, we'll say that the key must have >, <, and ==
+    defined for it. Now, if you wanted to, you could store off both the x and y
+    from your points and derive >, <, and == operators that compared the
+    tuples. Equality is pretty easy, but greater than and less than get a
+    little funky.. is [2,3] greater than or less than [3,2]? But wait! For any
+    point (x,y) there exists some value in the morton series M(x,y). M(x,y) is
+    just an integer and >, <, == are all trivially defined for integers. In
+    short, you use the morton codes for the points to sort the points in your
+    index.
+    
+    You don't have to use a B-Tree.. anything will do, but the B-Tree is
+    attractive for large data sets used with limited core space. Next mail
+    shows how to do a linear quadtree.
+          -Todd
+  - |
+    Message-Id: <005k84IN@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: coder@ibm.net
+    Date: Sun, 02 Mar 97 11:17:25 -0800
+    Subject: Re: Quadtrees?
+    
+    On 28/02/97 at 06:58 AM, cg@ami-cg.GraySage.Edmonton.AB.CA (Chris Gray)
+    said:
+    
+    >My thinking has been to use a 3D sparse array, which can contain objects
+    >of differing sizes, hence visibilities. I'm pretty vague on how the
+    >details would work, however. :-(
+    
+    Sounds a little like an R*-Tree.  I recently reposted an old post from
+    Wout's list with definitions and descriptions of quadtrees etc.  For me
+    the beauty of an R*-Tree is that it allows very easy localised processing. 
+    To find all locally relevant data nodes, just ascend the tree from the
+    current location until you find a rectangle which bounds the requested
+    area.  Another nice point is that multiple "thematic" schema can be easily
+    bound within the same R*-Tree.
+    
+    --
+    J C Lawrence                               Internet: claw@null.net
+    ----------(*)                              Internet: coder@ibm.net
+    ...Honourary Member of Clan McFud -- Teamer's Avenging Monolith...
+  - |
+    Message-Id: <005k85u2@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Chris Gray" <cg@ami-cg.GraySage.Edmonton.AB.CA>
+    Date: Fri, 28 Feb 97 18:51:50 MST
+    Subject: Re: Quadtrees?
+    
+    [Discussion of "B-tree with space-filling curve to index the tree"]
+    
+    Ahm, you've totally lost me here! I know what B-trees are (did one for
+    a database system I wrote), and I've heard of space-filling curves, but
+    I can't imagine how a curve can be used to index things. Can you say
+    some more about this?
+    
+    --
+    Chris Gray   cg@ami-cg.GraySage.Edmonton.AB.CA
+  - |
+    Message-Id: <005k8738@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: coder@ibm.net
+    Date: Sun, 02 Mar 97 21:52:54 -0800
+    Subject: Re: Quadtrees?
+    
+    On 28/02/97 at 04:40 PM, S001GMU@nova.wright.edu said:
+    
+    >Mime encoding is fine.  if that doesn't work, I'll let you know and we
+    >can work something else out.  ;)
+    
+    As has been demonstrated by now, the list will forward simple MIME
+    attachments properly.  There are minor limits however, the most
+    significant of which is that the list software will NOT properly handle
+    any of the multipart MIME business.  (This is not likely to change). 
+    Simple attachments go thru fine tho.  All the other limitations are pretty
+    well based on header lines.  The list software re-writes the entire
+    header, so all extraneous X-* lines are lost for instance. 
+    
+    --
+    J C Lawrence                               Internet: claw@null.net
+    ----------(*)                              Internet: coder@ibm.net
+    ...Honourary Member of Clan McFud -- Teamer's Avenging Monolith...
+  - |
+    Message-Id: <0stayput@generated-message-id.listlibrary.net>
+    X-ListLibrary-Added-Header: Message-Id
+    From: "Testy McTesterson" <test@example.com
+    Date: Sun, 2 Mar 1997 06:09:56 -0500
+    Subject: Re: should stay put
+    
+    This thread, which doesn't have a parent in 1997-02, shouldn't be moved.
