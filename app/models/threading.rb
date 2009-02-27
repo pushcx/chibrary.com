@@ -469,7 +469,7 @@ class ThreadSet
     @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
 
     # remove from this storage
-    $archive.delete(thread.key)
+    $archive.delete(thread.key) unless thread.empty_tree?
     thread.each { |c| @containers.delete(c.message_id) }
     flush_threading
   end
