@@ -431,6 +431,7 @@ class ThreadSet
 
   def store
     finish
+
     # cache each thread
     thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
@@ -441,6 +442,10 @@ class ThreadSet
       thread_list.add_redirected_thread *redirect
     end
     thread_list.store
+
+    # queue the publish
+    @publish_q ||= Queue.new :publish
+    @publish_q.add :slug => @slug, :year => @year, :month => @month
   end
 
   def << message

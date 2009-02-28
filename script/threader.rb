@@ -53,10 +53,6 @@ class Threader
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
     list.cache_message_list year, month, message_list
-
-    # queue the publish
-    @publish_q ||= Queue.new :publish
-    @publish_q.add :slug => slug, :year => year, :month => month
     nil
   end
 end
