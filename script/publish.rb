@@ -10,6 +10,7 @@ class Publisher
 
     @rc = RemoteConnection.new
     Queue.new(:publish).work do |job|
+      puts "#{job[:slug]} #{job[:year]} #{job[:month]}"
       rsync_month job[:slug], job[:year], job[:month]
       rsync_list_snippets job[:slug]
       flush job[:slug], job[:year], job[:month]
