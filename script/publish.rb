@@ -30,7 +30,7 @@ class Publisher
   end
 
   def rsync_month(slug, year, month)
-    %w{messages thread thread_list}.each do |data|
+    %w{message thread thread_list}.each do |data|
       `/usr/bin/rsync -a --delete -e "ssh -C" listlibrary_archive/list/#{slug}/#{data}/#{year}/#{month}* listlibrary@listlibrary.net:~/listlibrary_archive/list/#{slug}/#{data}/#{year}/`
     end
   end
