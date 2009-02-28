@@ -166,16 +166,31 @@ class Container
 
   def cache_snippet
     return if n_subject.blank?
-    return if date.utc > Time.now.utc
+    return if date > Time.now.utc
+    slug = effective_field(:slug)
+
     # names are descending time to make it easy to expire old snippets
     name = 9999999999 - date.utc.to_i
     snippet = {
-      :url => "/#{effective_field(:slug)}/#{date.year}/#{"%02d" % date.month}/#{call_number}",
+      :url => "/#{slug}/#{date.year}/#{"%02d" % date.month}/#{call_number}",
       :subject => n_subject,
       :excerpt => (effective_field(:body) or "").split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join(" "),
     }
+
+    # Don't write snippets if it won't be in top 30... it would be cleaned up,
+    # but loading old archives can exhaust the available inodes.
+    return if last_snippet_key("snippet/list/#{slug}").to_i > name
+    $archive["snippet/list/#{slug}/#{name}"] = snippet
+    return if last_snippet_key("snippet/homepage").to_i > name
     $archive["snippet/homepage/#{name}"] = snippet
-    $archive["snippet/list/#{effective_field(:slug)}/#{name}"] = snippet
+  end
+
+  def last_snippet_key path
+    last_key = 0
+    begin
+      $archive[path].each_with_index { |key, i| last_key = key ; break if i >= 30 }
+    rescue NotFound ; end
+    return last_key
   end
 
   # parenting methods
