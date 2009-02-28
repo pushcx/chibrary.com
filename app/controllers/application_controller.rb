@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
     @year, @month = params[:year], params[:month]
     raise ActionController::RoutingError, "Invalid year" unless @year =~ /^\d{4}$/
     raise ActionController::RoutingError, "Invalid month" unless @month =~ /^\d{2}$/
+    raise ActionController::RoutingError, "Ridiculous month" unless (1..12).include? @month.to_i
   end
 
   def load_list_snippets
