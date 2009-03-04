@@ -1,5 +1,3 @@
-require 'mongrel_cluster/recipes'
-
 set :application, "listlibrary.net"
 
 set :scm, :git
