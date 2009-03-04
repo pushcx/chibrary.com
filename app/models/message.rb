@@ -139,7 +139,7 @@ class Message
   def self.charset_convert charset, text
     begin
       Iconv.conv('utf-8', charset, text)
-    rescue Iconv::InvalidEncoding, Iconv::IllegalSequence
+    rescue Iconv::InvalidEncoding, Iconv::IllegalSequence, Iconv::InvalidCharacter
       text
     end
   end
