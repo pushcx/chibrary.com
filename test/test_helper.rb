@@ -32,7 +32,7 @@ class ActiveSupport::TestCase
   #
   # Note: You'll currently still have to declare fixtures explicitly in integration tests
   # -- they do not yet inherit this setting
-  fixtures :all
+  #fixtures :all
 
   $archive = $cachedhash = nil # avoid accidental real changes
 
@@ -46,5 +46,20 @@ class ActiveSupport::TestCase
     def in_test_mode? ; true ; end
     def log status, message ; message ; end
   end
-
 end
+
+class ActiveSupport::TestCase
+  @@fixtures = {}
+  def self.fixtures list
+    [list].flatten.each do |fixture|
+      self.class_eval do
+        define_method(fixture) do |item|
+          filename = File.join(File.dirname(__FILE__), 'fixtures', "#{fixture.to_s}.yaml")
+          @@fixtures[fixture] ||= YAML::load_file(filename)
+          @@fixtures[fixture][item.to_s]
+        end
+      end
+    end
+  end
+end
+

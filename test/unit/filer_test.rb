@@ -26,7 +26,7 @@ end
 
 
 class FilerTest < ActiveSupport::TestCase
-  fixtures :messages
+  fixtures :message
 
   def setup
     # Many tests would otherwise cause the Filer to print its normal output
@@ -47,7 +47,7 @@ class FilerTest < ActiveSupport::TestCase
     Message.expects(:new).returns(message)
 
     f = Filer.new(0, 0)
-    f.store messages(:good)
+    f.store message(:good)
     assert_equal 1, f.message_count
     assert_equal({ 'example_list' => [[2006, 10]] }, f.mailing_lists)
   end
@@ -59,7 +59,7 @@ class FilerTest < ActiveSupport::TestCase
     $archive.expects(:[]=) # the error store
 
     f = Filer.new(0, 0)
-    f.store messages(:good)
+    f.store message(:good)
     assert_equal 1, f.message_count
     assert_equal({}, f.mailing_lists)
   end
