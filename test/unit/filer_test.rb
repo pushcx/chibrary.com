@@ -25,12 +25,11 @@ class IntegerTest < ActiveSupport::TestCase
 end
 
 
-class FilerTest < Test::Unit::TestCase
+class FilerTest < ActiveSupport::TestCase
   def setup
     # Many tests would otherwise cause the Filer to print its normal output
-    $stdout.expects(:puts).at_least(0)
+    #$stdout.expects(:puts).at_least(0)
   end
-
 
   def test_acquire_unsubclassed
     f = Filer.new(0, 0)
