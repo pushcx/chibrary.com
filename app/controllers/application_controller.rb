@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include HoptoadNotifier::Catcher
   helper :all # include all helpers, all the time
   helper_method :f, :from, :subject
+
   before_filter :title
 
   protect_from_forgery
