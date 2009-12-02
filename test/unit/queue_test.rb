@@ -24,7 +24,7 @@ class JobTest < ActiveSupport::TestCase
   end
 end
 
-class QueueTest < Test::Unit::TestCase
+class QueueTest < ActiveSupport::TestCase
   def test_new_bad_type
     assert_raises(RuntimeError, /unknown job type/) do
       Queue.new :foo

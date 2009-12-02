@@ -35,7 +35,7 @@ class ZipFileTest < ActiveSupport::TestCase
   end
 end
 
-class FileChangesTest < Test::Unit::TestCase
+class FileChangesTest < ActiveSupport::TestCase
   def test_contents
     File.open('/tmp/foo', 'w') do |f|
       f.expects(:seek)
@@ -55,7 +55,7 @@ class FileChangesTest < Test::Unit::TestCase
   end
 end
 
-class ZZipTest < Test::Unit::TestCase
+class ZZipTest < ActiveSupport::TestCase
   def setup
     FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
   end
@@ -108,7 +108,7 @@ class ZZipTest < Test::Unit::TestCase
   end
 end
 
-class ZDirTest < Test::Unit::TestCase
+class ZDirTest < ActiveSupport::TestCase
 def test_truth ; assert true ; end
   def setup
     FileUtils.cp_r('test/fixtures/example_dir', '/tmp/test')
