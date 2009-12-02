@@ -4,7 +4,7 @@ require 'permutation'
 require 'threading'
 require 'message'
 
-class ThreadingTest < Test::Unit::TestCase
+class ThreadingTest < ActiveSupport::TestCase
   fixtures [:threaded_message, :rejoin_splits]
 
   def test_dummy ; end

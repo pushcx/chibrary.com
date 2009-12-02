@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'filer'
 
-class IntegerTest < Test::Unit::TestCase
+class IntegerTest < ActiveSupport::TestCase
   def test_to_base_64
     [
       [0, '00000000'], # base case

@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'queue'
 
-class JobTest < Test::Unit::TestCase
+class JobTest < ActiveSupport::TestCase
   def test_new_bad_type
     assert_raises(RuntimeError, /unknown job type/) do
       Job.new :foo, []

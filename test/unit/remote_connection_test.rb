@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'remote_connection'
 
-class RemoteConnectionTest < Test::Unit::TestCase
+class RemoteConnectionTest < ActiveSupport::TestCase
   def setup
     @ssh = mock("ssh connection")
     @sftp = mock("sftp connection")

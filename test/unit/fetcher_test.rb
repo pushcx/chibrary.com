@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'fetcher'
 
-class FetcherTest < Test::Unit::TestCase
+class FetcherTest < ActiveSupport::TestCase
   def test_setup
     Net::POP3.expects(:new).returns(mock(
       :open_timeout= => nil,

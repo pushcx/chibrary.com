@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'threader'
 require 'message'
 
-class ThreaderTest < Test::Unit::TestCase
+class ThreaderTest < ActiveSupport::TestCase
   fixtures :message
 
   def setup

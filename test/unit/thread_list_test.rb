@@ -7,7 +7,7 @@ class ThreadList
   public :first_thread, :last_thread, :key, :thread_index_of, :bundle_thread
 end
 
-class ThreadListTest < Test::Unit::TestCase
+class ThreadListTest < ActiveSupport::TestCase
   def setup
   end
 

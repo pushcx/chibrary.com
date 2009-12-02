@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'time_'
 
-class TimeTest < Test::Unit::TestCase
+class TimeTest < ActiveSupport::TestCase
   def test_plus_year
     [
       [1,  2008, 9],

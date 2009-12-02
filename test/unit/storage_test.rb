@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'storage'
 
-class ZipFileTest < Test::Unit::TestCase
+class ZipFileTest < ActiveSupport::TestCase
   def setup
     FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
   end

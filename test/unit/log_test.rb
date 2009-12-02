@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'log'
 
-class LoggerHashTest < Test::Unit::TestCase
+class LoggerHashTest < ActiveSupport::TestCase
   def setup
     @log = Log.new 'worker'
   end

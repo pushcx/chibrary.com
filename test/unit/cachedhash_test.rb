@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 require 'cachedhash'
 
-class CachedHashTest < Test::Unit::TestCase
+class CachedHashTest < ActiveSupport::TestCase
 
   def test_find
     ch = CachedHash.new 'unit_test'
