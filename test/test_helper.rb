@@ -33,19 +33,19 @@ class ActiveSupport::TestCase
   # Note: You'll currently still have to declare fixtures explicitly in integration tests
   # -- they do not yet inherit this setting
   #fixtures :all
+end
 
-  $archive = $cachedhash = nil # avoid accidental real changes
+$archive = $cachedhash = nil # avoid accidental real changes
 
-  require 'net/pop'
-  class Net::POP3
-    def initialize server, port ; raise "un-mocked POP3 call" ; end
-  end
+require 'net/pop'
+class Net::POP3
+  def initialize server, port ; raise "un-mocked POP3 call" ; end
+end
 
-  require 'log'
-  class Log
-    def in_test_mode? ; true ; end
-    def log status, message ; message ; end
-  end
+require 'log'
+class Log
+  def in_test_mode? ; true ; end
+  def log status, message ; message ; end
 end
 
 class ActiveSupport::TestCase
