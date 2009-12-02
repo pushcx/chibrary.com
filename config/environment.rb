@@ -29,6 +29,7 @@ Rails::Initializer.run do |config|
   config.gem 'haml'
 
   # testing
+  require 'test/unit' # mocha only patches already loaded testing libraries
   config.gem 'mocha'
   config.gem 'redgreen'
 
