@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'filer'
 
 class IntegerTest < ActiveSupport::TestCase
   def test_to_base_64
@@ -27,8 +26,6 @@ end
 
 
 class FilerTest < Test::Unit::TestCase
-  fixtures :message
-
   def setup
     # Many tests would otherwise cause the Filer to print its normal output
     $stdout.expects(:puts).at_least(0)

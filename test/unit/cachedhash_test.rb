@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'cachedhash'
 
 class CachedHashTest < ActiveSupport::TestCase
 

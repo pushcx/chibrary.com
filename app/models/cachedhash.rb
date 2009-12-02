@@ -1,5 +1,3 @@
-require 'storage'
-
 class CachedHash
   attr_reader :prefix
 

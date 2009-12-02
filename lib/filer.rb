@@ -1,8 +1,6 @@
 require 'yaml'
 require 'storage'
-require 'queue'
 require 'remote_connection'
-require 'message'
 
 class SequenceExhausted < RuntimeError ; end
 

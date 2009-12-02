@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'remote_connection'
 
 class RemoteConnectionTest < ActiveSupport::TestCase
   def setup

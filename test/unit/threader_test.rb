@@ -1,6 +1,6 @@
 require 'test_helper'
-require 'threader'
-require 'message'
+
+require 'script/threader'
 
 class ThreaderTest < ActiveSupport::TestCase
   fixtures :message

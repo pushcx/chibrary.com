@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'list'
 
 class ListTest < ActiveSupport::TestCase
   def setup

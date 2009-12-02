@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'log'
 
 class LoggerHashTest < ActiveSupport::TestCase
   def setup

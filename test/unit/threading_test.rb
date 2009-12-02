@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'permutation'
 
 require 'threading'
-require 'message'
 
 class ThreadingTest < ActiveSupport::TestCase
   fixtures [:threaded_message, :rejoin_splits]

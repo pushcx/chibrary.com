@@ -1,7 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'list'
 
-require 'thread_list'
 class ThreadList
   attr_reader :threads, :call_numbers
   public :first_thread, :last_thread, :key, :thread_index_of, :bundle_thread

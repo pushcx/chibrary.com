@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'queue'
 
 class JobTest < ActiveSupport::TestCase
   def test_new_bad_type

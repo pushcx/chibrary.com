@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'storage'
 
 class ZipFileTest < ActiveSupport::TestCase
   def setup

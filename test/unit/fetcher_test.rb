@@ -1,5 +1,6 @@
 require 'test_helper'
-require 'fetcher'
+
+require 'script/fetcher'
 
 class FetcherTest < ActiveSupport::TestCase
   def test_setup
