@@ -2,7 +2,7 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  include HoptoadNotifier::Catcher
+  #include HoptoadNotifier::Catcher
   helper :all # include all helpers, all the time
   helper_method :f, :from, :subject
 
