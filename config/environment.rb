@@ -29,8 +29,9 @@ Rails::Initializer.run do |config|
   config.gem 'haml'
 
   # testing
-  require 'test/unit' # mocha only patches already loaded testing libraries
-  config.gem 'mocha'
+  require 'test/unit'
+  config.gem "thoughtbot-shoulda", :lib => "shoulda", :source => "http://gems.github.com"
+  config.gem 'mocha' # mocha only patches already loaded testing libraries
   config.gem 'redgreen'
 
   # production monitoring

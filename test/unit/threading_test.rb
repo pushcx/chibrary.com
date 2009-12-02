@@ -196,6 +196,11 @@ class ContainerTest < ThreadingTest
     c.cache_snippet
   end
 
+  should_eventually 'ensure snippet times are reasonable' do
+    # cache_snippet should test to see that timestamps are within the last day
+    # and not in the future
+  end
+
   def test_orphan
     c1 = Container.new Message.new(threaded_message(:root), 'test', '0000root')
     c2 = Container.new Message.new(threaded_message(:child), 'test', '000child')
