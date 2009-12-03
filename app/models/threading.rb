@@ -174,8 +174,8 @@ class Container
       :excerpt => (effective_field(:body) or "").split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join(" "),
     }
 
-    # Don't write snippets if it won't be in top 30... it would be cleaned up,
-    # but loading old archives can exhaust the available inodes.
+    # Don't write snippet if it won't be in top 30. It would be cleaned up,
+    # but loading old archives could exhaust the available inodes.
     return if last_snippet_key("snippet/list/#{slug}").to_i > name
     $archive["snippet/list/#{slug}/#{name}"] = snippet
     return if last_snippet_key("snippet/homepage").to_i > name

@@ -189,16 +189,21 @@ class ContainerTest < ThreadingTest
     c.expects(:date).times(4).returns(Time.at(1234232107))
     c.expects(:call_number).returns('00000000')
     c.expects(:n_subject).returns('subject')
-    c.expects(:effective_field).with(:slug).times(2).returns('slug')
+    c.expects(:effective_field).with(:slug).returns('slug')
     c.expects(:effective_field).with(:body).returns(body)
-    $archive.expects(:[]=).with('snippet/homepage/8765767892', snippet)
+    c.expects(:last_snippet_key).with('snippet/list/slug').returns(0)
     $archive.expects(:[]=).with('snippet/list/slug/8765767892', snippet)
+    c.expects(:last_snippet_key).with('snippet/homepage').returns(0)
+    $archive.expects(:[]=).with('snippet/homepage/8765767892', snippet)
     c.cache_snippet
   end
 
   should_eventually 'ensure snippet times are reasonable' do
     # cache_snippet should test to see that timestamps are within the last day
     # and not in the future
+  end
+
+  should_eventually 'test last_snippet_key' do
   end
 
   def test_orphan
