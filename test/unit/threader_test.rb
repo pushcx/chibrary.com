@@ -79,8 +79,6 @@ class ThreaderTest < ActiveSupport::TestCase
     list.expects(:cache_message_list).with("2007", "08", message_list)
     List.expects(:new).returns(list)
 
-    Queue.expects(:new).with(:publish).returns(mock('publish_q', :add => nil))
-
     Threader.new.cache_work slug, year, month, message_list, threadset
   end
 
@@ -93,8 +91,6 @@ class ThreaderTest < ActiveSupport::TestCase
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
     List.expects(:new).returns(list)
-
-    Queue.expects(:new).with(:publish).returns(mock('publish_q', :add => nil))
 
     t = Threader.new
     t.cache_work slug, year, month, message_list, threadset
