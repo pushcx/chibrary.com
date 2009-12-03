@@ -5,9 +5,6 @@ require 'iconv'
 require 'time'
 require 'md5'
 
-require 'cachedhash'
-require 'storage'
-
 class Message
   attr_reader   :from, :message, :source, :slug, :call_number, :message_id
   attr_reader   :references, :subject, :n_subject, :date, :no_archive, :key

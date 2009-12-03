@@ -1,5 +1,3 @@
-require 'storage'
-require 'cachedhash'
 
 JOB_TYPES = {
   :thread => {

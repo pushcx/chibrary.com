@@ -1,5 +1,3 @@
-require 'storage'
-
 class ThreadList
   attr_reader :slug, :year, :month
 

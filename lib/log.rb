@@ -1,8 +1,6 @@
 require 'net/http'
 require 'uri'
 
-require 'cachedhash'
-
 PASSWD = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb"
 STATUSES = [:begin, :end, :error, :warning, :status]
 

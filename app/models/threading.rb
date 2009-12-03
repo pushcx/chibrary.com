@@ -1,8 +1,5 @@
 # based on http://www.jwz.org/doc/threading.html
 
-require 'storage'
-require 'message'
-
 # Each container holds 0 or 1 messages, so that we can build a thread's tree from
 # References and In-Reply-To headers even before seeing all of the messages.
 class Container
@@ -177,8 +174,8 @@ class Container
       :excerpt => (effective_field(:body) or "").split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join(" "),
     }
 
-    # Don't write snippets if it won't be in top 30... it would be cleaned up,
-    # but loading old archives can exhaust the available inodes.
+    # Don't write snippet if it won't be in top 30. It would be cleaned up,
+    # but loading old archives could exhaust the available inodes.
     return if last_snippet_key("snippet/list/#{slug}").to_i > name
     $archive["snippet/list/#{slug}/#{name}"] = snippet
     return if last_snippet_key("snippet/homepage").to_i > name
