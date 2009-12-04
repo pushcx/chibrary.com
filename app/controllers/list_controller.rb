@@ -10,4 +10,13 @@ class ListController < ApplicationController
   def year_redirect
     redirect_to :action => 'show'
   end
+
+  private
+
+  def load_list_snippets
+    @snippets = []
+    begin
+      $archive["snippet/list/#{@slug}"].each_with_index { |key, i| @snippets << $archive["snippet/list/#{@slug}/#{key}"] ; break if i >= 30 }
+    rescue NotFound ; end
+  end
 end

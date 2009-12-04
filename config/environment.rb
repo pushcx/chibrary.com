@@ -16,15 +16,10 @@ Rails::Initializer.run do |config|
   # -- all .rb files in that directory are automatically loaded.
   # See Rails::Configuration for more options.
 
-  # Skip frameworks you're not going to use. To use Rails without a database
-  # you must remove the Active Record framework.
+  # Skip unused frameworks.
   config.frameworks -= [ :active_resource, :action_mailer ]
 
   # Specify gems that this application depends on. 
-  # They can then be installed with "rake gems:install" on new installations.
-  # config.gem "bj"
-  # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
-  # config.gem "aws-s3", :lib => "aws/s3"
 
   config.gem 'haml'
 
@@ -33,6 +28,7 @@ Rails::Initializer.run do |config|
   config.gem "thoughtbot-shoulda", :lib => "shoulda", :source => "http://gems.github.com"
   config.gem 'mocha' # mocha only patches already loaded testing libraries
   config.gem 'redgreen'
+  config.gem 'factory_girl'
 
   # production monitoring
   config.gem 'json'
