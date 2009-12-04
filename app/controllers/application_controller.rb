@@ -4,7 +4,6 @@
 class ApplicationController < ActionController::Base
   #include HoptoadNotifier::Catcher
   helper :all # include all helpers, all the time
-  helper_method :f, :from, :subject
 
   before_filter :title
 
@@ -46,27 +45,5 @@ class ApplicationController < ActionController::Base
     @slug ||= (request.request_uri or '').split('/')[1]
     load_list_snippets if @slug
     render :template => "error/missing.html.haml", :status => 404
-  end
-
-  # format (hide mail addresses, link URLs) and html-escape a string
-  def f str
-    str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([\w]+)/, '\1@\2...\3') # hide mail addresses
-    str = CGI::escapeHTML(str)
-    str.gsub(/(\w+:\/\/[^\s]+)/m, '<a rel="nofollow" href="\1' + '">\1</a>') # link urls
-  end
-
-  def from from
-    f from
-  end
-
-  def subject o
-    subj = (o.is_a? String) ? o : o.n_subject
-    subj = subj.blank? ? '<i>no subject</i>' : subj
-    if @list and marker = @list['marker']
-      subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
-    else
-      subj = subj.gsub(/\[.*?\]/, '')
-    end
-    return subj
   end
 end
