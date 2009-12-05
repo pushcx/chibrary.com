@@ -84,3 +84,5 @@ require 'pp'
 
 # load all the app's libs, which do not all use constants to get autoloaded
 Dir["#{RAILS_ROOT}/lib/*.rb"].each { |l| require l }
+# load all the models: YAML doesn't trigger the Rails autoloader when it's deserializing objects
+Dir["#{RAILS_ROOT}/app/models/*.rb"].each { |l| require l }
