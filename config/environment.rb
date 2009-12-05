@@ -46,14 +46,6 @@ Rails::Initializer.run do |config|
 
   ENV['GEM_PATH'] = '/home/listlibrary/gems' if ENV['RAILS_ENV'] == 'production'
 
-  # load all the ListLibrary libs
-  Dir.entries('lib').each do |lib|
-    next unless lib =~ /.rb$/
-    require lib
-  end
-  require 'pp'
-  require 'threading'
-
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)
   # config.log_level = :debug
@@ -87,3 +79,8 @@ Rails::Initializer.run do |config|
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
 end
+
+require 'pp'
+
+# load all the app's libs, which do not all use constants to get autoloaded
+Dir["#{RAILS_ROOT}/lib/*.rb"].each { |l| require l }

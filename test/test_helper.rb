@@ -63,3 +63,22 @@ class ActiveSupport::TestCase
   end
 end
 
+class ThreadingTest < ActiveSupport::TestCase
+  fixtures [:threaded_message, :rejoin_splits]
+
+  def test_dummy ; end
+
+  private
+  def container_tree
+    c1 = Container.new Message.new(threaded_message(:root), 'test', '0000root')
+      c2 = Container.new Message.new(threaded_message(:child), 'test', '000child')
+      c1.adopt c2
+        c3 = Container.new Message.new(threaded_message(:grandchild), 'test', 'grndchld')
+        c2.adopt c3
+        c4 = Container.new "missing@example.com"
+        c2.adopt c4
+          c5 = Container.new Message.new(threaded_message(:orphan), 'test', '00orphan')
+          c4.adopt c5
+    c1
+  end
+end
