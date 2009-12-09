@@ -82,3 +82,14 @@ class ThreadingTest < ActiveSupport::TestCase
     c1
   end
 end
+
+def mock_list
+  # mock list object
+  list = mock('list', :slug => 'slug')
+  list.expects(:[]).with('name').at_least(0).returns('Example List')
+  list.expects(:[]).with('homepage').at_least(0).returns(nil)
+  list.expects(:[]).with('description').at_least(0).returns(nil)
+  $archive.expects(:has_key?).with("list/slug").at_least(0).returns(true)
+  List.expects(:new).at_least(1).returns(list)
+  list
+end

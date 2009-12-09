@@ -1,15 +1,9 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class ListControllerTest < ActionController::TestCase
-  context "on GET to /show" do
+  context "on GET to show" do
     setup do
-      # mock list object
-      @list = mock('list', :slug => 'slug')
-      @list.expects(:[]).with('name').times(2).returns('Example List')
-      @list.expects(:[]).with('homepage').returns(nil)
-      @list.expects(:[]).with('description').returns(nil)
-      $archive.expects(:has_key?).returns(true)
-      List.expects(:new).returns(@list)
+      @list = mock_list
 
       # mock snippets
       $archive.expects(:[]).with('snippet/list/slug').returns([])
