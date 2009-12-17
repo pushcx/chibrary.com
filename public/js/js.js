@@ -41,7 +41,7 @@ $(function() {
   // after page height changes, get back to named anchor
   if (location.hash) {
     window.scrollTo(0, $(location.hash)[0].offsetTop);
-    $(location.hash).parent().find('blockquote.closed').each(function(){ $(this).click(); });
+    $(location.hash).parent().find('blockquote.closed').click();
   }
 
   // thread view: hover over thread for parent/child links
