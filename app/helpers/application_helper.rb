@@ -10,17 +10,6 @@ module ApplicationHelper
   def from from
     f from
   end
-
-  def subject o
-    subj = (o.is_a? String) ? o : o.n_subject
-    subj = subj.blank? ? '<i>no subject</i>' : subj
-    if @list and marker = @list['marker']
-      subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
-    else
-      subj = subj.gsub(/\[.*?\]/, '')
-    end
-    return subj
-  end
 end
 
 class String

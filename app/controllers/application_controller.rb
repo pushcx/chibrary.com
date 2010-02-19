@@ -3,12 +3,24 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  helper_method :subject
 
   before_filter :title
 
   protect_from_forgery
 
   private
+
+  def subject o
+    subj = (o.is_a? String) ? o : o.n_subject
+    subj = subj.blank? ? '<i>no subject</i>' : subj
+    if @list and marker = @list['marker']
+      subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
+    else
+      subj = subj.gsub(/\[.*?\]/, '')
+    end
+    return subj
+  end
 
   def title
     @title = "ListLibrary.net - Free Mailing List Archives"

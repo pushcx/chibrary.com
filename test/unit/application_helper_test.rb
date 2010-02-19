@@ -25,11 +25,6 @@ class ApplicationHelperTest < ActionView::TestCase
       end
     end
   end
-
-  should "normalize subjects" do
-    assert_equal 'subject',           subject(mock(:n_subject => 'subject'))
-    assert_equal '<i>no subject</i>', subject(mock(:n_subject => ''))
-  end
 end
 
 class StringTest < ActiveSupport::TestCase
