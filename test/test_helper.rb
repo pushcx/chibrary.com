@@ -85,7 +85,8 @@ end
 
 def mock_list
   # mock list object
-  list = mock('mock_list', :slug => 'slug')
+  list = mock 'mock_list'
+  list.expects('slug').at_least(0).returns('slug')
   list.expects(:[]).with('name').at_least(0).returns('Example List')
   list.expects(:[]).with('homepage').at_least(0).returns(nil)
   list.expects(:[]).with('description').at_least(0).returns(nil)

@@ -7,7 +7,6 @@ class ThreadControllerTest < ActionController::TestCase
     end
 
     should "show messages" do
-
       # save myself from the creeping horror that is testing the entire
       # controller + view of these complicated data structures I'm about to
       # rebuild anyways. Gotta find a way to write view tests.
@@ -24,8 +23,8 @@ class ThreadControllerTest < ActionController::TestCase
     should "raise 404s" do
       # test load_thread
       assert_raises ActionController::RoutingError do
-        @list.expects(:thread_list).returns(mock :message_count => 0)
-        get :show, :slug => @list.slug, :year => '2009', :month => '09'
+        $archive.expects(:[]).times(2).raises NotFound
+        get :show, :slug => @list.slug, :year => '2009', :month => '09', :call_number => '12345678'
       end
     end
   end
