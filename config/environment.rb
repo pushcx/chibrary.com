@@ -22,6 +22,7 @@ Rails::Initializer.run do |config|
   # Specify gems that this application depends on. 
 
   config.gem 'haml'
+  config.gem 'rufus-tokyo', :lib => 'tokyocabinet'
 
   # testing
   require 'test/unit'

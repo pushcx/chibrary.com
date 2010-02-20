@@ -179,3 +179,87 @@ def test_truth ; assert true ; end
     assert_equal [], z['foo'].collect.sort
   end
 end
+
+# Uses the Tokyo Cabinet B-Tree backend
+class CabinetTest < ActiveSupport::TestCase
+  context "creating a cabinet" do
+    setup do
+      @path = '/tmp/test.tcb'
+      File.unlink @path if File.exists? @path
+    end
+
+    teardown do
+      File.unlink @path if File.exists? @path
+    end
+
+    should "create a file" do
+      assert !File.exists?(@path)
+      c = Cabinet.new @path
+      c.has_key? 'foo' # have to interact for it to be created
+      assert File.exists?(@path)
+    end
+  end
+
+  context "working with a cabinet" do
+    setup do
+      @path = "/tmp/test.tcb"
+      FileUtils.cp 'test/fixtures/example.tcb', @path
+      @cabinet = Cabinet.new @path
+    end
+
+    teardown do
+      File.unlink @path if File.exists? @path
+    end
+
+    should "have a key that exists" do
+      assert @cabinet.has_key? 'mail1@example.com'
+    end
+
+    should "not have a key that doesn't exists" do
+      assert !@cabinet.has_key?('nonexistent')
+    end
+
+    should "iterate over keys with each" do
+      assert_equal ['mail1@example.com', 'mail2@example.com'], @cabinet.collect
+    end
+
+    should "return its first key" do
+      assert_equal 'mail1@example.com', @cabinet.first
+    end
+
+    should "return contents" do
+      assert_match /Message body\./, @cabinet['mail1@example.com']
+      assert_match /A reply without a quote/, @cabinet['mail2@example.com']
+    end
+
+    should "raise NotFound" do
+      assert_raises NotFound do
+        @cabinet['nonexistent']
+      end
+    end
+
+    should "assign new content" do
+      @cabinet['mail3@example.com'] = "Testing addition."
+      assert @cabinet.has_key? 'mail3@example.com'
+      assert_equal "Testing addition.", @cabinet['mail3@example.com']
+    end
+
+    should "assign to overwrite" do
+      assert @cabinet.has_key? 'mail1@example.com'
+      @cabinet['mail1@example.com'] = "Testing overwrite."
+      assert_equal "Testing overwrite.", @cabinet['mail1@example.com']
+    end
+
+    should "delete files" do
+      assert @cabinet.has_key? 'mail1@example.com'
+      @cabinet.delete 'mail1@example.com'
+      assert !@cabinet.has_key?('mail1@example.com')
+    end
+
+    should "delete idempotently" do
+      assert !@cabinet.has_key?('nonexistent')
+      @cabinet.delete 'nonexistent'
+      assert !@cabinet.has_key?('nonexistent')
+    end
+  end
+end

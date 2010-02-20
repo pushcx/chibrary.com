@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'tokyocabinet'
 require 'yaml'
 require 'zipruby'
 
@@ -79,6 +80,54 @@ class ZZip
   end
 end 
 
+class Cabinet
+  include TokyoCabinet
+  include Enumerable
+
+  def initialize path
+    @bdb = BDB::new
+    # use defaults, but set bzip and large
+    @bdb.tune(-1, -1, -1, -1 -1, BDB::TLARGE | BDB::TBZIP) or raise "Couldn't tune"
+    @path = path
+  end
+
+  def has_key? path
+    bdb { |bdb| bdb.has_key? path }
+  end
+
+  def each recurse=false
+    # recurse is unused, but listed to match ZDir
+    bdb { |bdb| bdb.each_key { |path| yield path } }
+  end
+
+  def first
+    bdb { |bdb| bdb.each_key { |path| return path } }
+  end
+
+  def [] path
+    raise NotFound unless has_key? path
+    bdb { |bdb| bdb[path] }
+  end
+
+  def []= path, value
+    value = value.to_yaml unless value.is_a? String
+    bdb { |bdb| bdb[path] = value }
+  end
+
+  def delete path
+    bdb { |bdb| bdb.delete path }
+  end
+
+  private
+
+  def bdb
+    @bdb.open(@path, BDB::OWRITER | BDB::OCREAT | BDB::OLCKNB) or raise "Couldn't open"
+    yield @bdb
+  ensure
+    @bdb.close
+  end
+end
+
 class ZDir
   include Enumerable
 
@@ -89,7 +138,11 @@ class ZDir
   def has_key? path
     return self[path.split('/').first].has_key?(path.split('/')[1..-1].join('/')) if path =~ /\//
       
-    File.exists? [@path, path].join('/') or File.exists? [@path, "#{path}.zip"].join('/')
+    [
+      [@path, path].join('/'),
+      [@path, "#{path}.zip"].join('/'),
+      [@path, "#{path}.tcb"].join('/'),
+    ].any? { |f| File.exists? f }
   rescue NotFound, File.join(@path, path)
     false
   end
@@ -102,6 +155,8 @@ class ZDir
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
         ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
+      elsif path =~ /\.tcb$/
+        Cabinet.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       end
     end
   end
@@ -125,9 +180,14 @@ class ZDir
     if !File.exists? full_path
       # look for if it's a zip:
       return ZZip.new(full_path + ".zip") if File.exists?(full_path + ".zip")
+      # look for if it's a cabinet:
+      return ZZip.new(full_path + ".tcb") if File.exists?(full_path + ".tcb")
       # look for if it's in a zip:
       zip_path = File.join(full_path.split('/')[0..-2]) + ".zip"
       return ZZip.new(zip_path)[path.split('/').last] if File.exists? zip_path
+      # look for if it's in a cabinet:
+      cabinet_path = File.join(full_path.split('/')[0..-2]) + ".tcb"
+      return Cabinet.new(cabinet_path)[path.split('/').last] if File.exists? cabinet_path
     end
 
     raise NotFound, full_path unless File.exists? full_path
@@ -140,7 +200,7 @@ class ZDir
 
   def []= path, value
     dir = "#{@path}/#{path}".split('/')[0..-2].join('/')
-    FileUtils.mkdir_p(dir) unless File.exists? "#{dir}.zip"
+    FileUtils.mkdir_p(dir) unless File.exists? "#{dir}.zip" or File.exists? "#{dir}.tcb"
 
     # recurse into zips
     return self[path.split('/').first][path.split('/')[1..-1].join('/')] = value if path =~ /\//
