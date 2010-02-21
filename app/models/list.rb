@@ -1,7 +1,10 @@
+class InvalidSlug < RuntimeError ; end
+
 class List < CachedHash
   attr_reader :slug
 
   def initialize list
+    raise InvalidSlug, "Invalid list slug '#{list}'" unless list =~ /^[a-z0-9\-]+$/ and list.length <= 20
     @slug = list
     super "list/#{list}"
   end

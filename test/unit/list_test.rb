@@ -5,6 +5,18 @@ class ListTest < ActiveSupport::TestCase
     @list = List.new 'slug'
   end
 
+  should "recognize invalid slugs that are too long" do
+    assert_raises InvalidSlug do
+      List.new '01234567890123456789x'
+    end
+  end
+
+  should "recognize invalid slugs with non-alpha characters" do
+    assert_raises InvalidSlug do
+      List.new 'asdf#'
+    end
+  end
+
   def test_slug
     assert_equal 'slug', @list.slug
   end
