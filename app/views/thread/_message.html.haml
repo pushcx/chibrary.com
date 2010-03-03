@@ -7,7 +7,7 @@
         = message.date.strftime("%Y-%m-%d %H:%M:%S")
     .more
       .flag
-        %a{ :href => "http://dynamic.listlibrary.net/flag?list=#{message.slug}&amp;year=#{message.date.year}&amp;month=#{message.date.month}&amp;message=#{message.call_number}", :title => "Flag spam or misfiled mail", :rel => "nofollow" } Flag
+        %a{ :href => flag_link(message), :title => "Flag spam or misfiled mail for human attention", :rel => "nofollow" } Flag
       - if parent
         %a{ :href => "#m-#{parent.call_number.to_base_36}", :title => "Message this one responds to", :class => "in-reply-to" } In Reply To
       - unless children.empty?

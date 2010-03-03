@@ -1,7 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
+
   map.connect 'about',  :controller => 'generic', :action => 'about'
   map.connect '',       :controller => 'generic', :action => 'homepage'
   map.connect 'search', :controller => 'generic', :action => 'search'
+
+  map.resources :flags, :only => [ :create ]
   
   map.connect ':slug',                           :controller => 'list',   :action => 'show'
   map.connect ':slug/:year',                     :controller => 'list',   :action => 'year_redirect'
