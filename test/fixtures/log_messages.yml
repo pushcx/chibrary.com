@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  server: 1
+  pid: 1
+  worker: MyString
+  key: MyString
+  status: MyString
+  message: MyString
+
+two:
+  server: 1
+  pid: 1
+  worker: MyString
+  key: MyString
+  status: MyString
+  message: MyString

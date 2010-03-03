@@ -1,9 +1,6 @@
 require 'net/http'
 require 'uri'
 
-PASSWD = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb"
-STATUSES = [:begin, :end, :error, :warning, :status]
-
 class Log
   attr_reader :worker, :key
 
@@ -39,14 +36,16 @@ class Log
   private
 
   def log status, message
-    response = Net::HTTP.post_form(URI.parse('http://dynamic.listlibrary.net/log.php'), {
-      'passwd'  => PASSWD,
-      'server'  => @@server,
-      'pid'     => Process.pid,
-      'key'     => @key,
-      'worker'  => @worker,
-      'status'  => status,
-      'message' => message,
+    response = Net::HTTP.post_form(URI.parse('http://listlibrary.net/log.php'), {
+      'passwd'  => LOG_PASSWD,
+      'log_message' => {
+        'server'  => @@server,
+        'pid'     => Process.pid,
+        'key'     => @key,
+        'worker'  => @worker,
+        'status'  => status,
+        'message' => message,
+      }
     })
     raise "couldn't log: #{response.body}" unless response.body == '1'
     puts '  ' * @depth + "#{@key}: #{message}"

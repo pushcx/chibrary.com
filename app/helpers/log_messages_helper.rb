@@ -1,0 +1,2 @@
+module LogMessagesHelper
+end

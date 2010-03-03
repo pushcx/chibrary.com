@@ -9,13 +9,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100303182231) do
+ActiveRecord::Schema.define(:version => 20100303205240) do
 
   create_table "flags", :force => true do |t|
     t.string   "slug",        :limit => 20, :default => "", :null => false
     t.integer  "year",                      :default => 0,  :null => false
     t.integer  "month",                     :default => 0,  :null => false
     t.string   "call_number", :limit => 8,  :default => "", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "log_messages", :force => true do |t|
+    t.integer  "server",                   :default => 0,  :null => false
+    t.integer  "pid",                      :default => 0,  :null => false
+    t.string   "worker",     :limit => 20, :default => "", :null => false
+    t.string   "key",        :limit => 20, :default => "", :null => false
+    t.string   "status",     :limit => 10, :default => "", :null => false
+    t.string   "message",                  :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
