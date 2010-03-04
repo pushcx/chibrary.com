@@ -5,21 +5,22 @@ require 'zipruby'
 
 class NotFound < RuntimeError ; end
 
+def de_yamlize content
+  content = YAML::load(content) if content =~ /^--- /
+end
+
 class Zip::File
   def contents
     output = ''
     read { |chunk| output << chunk }
-    return YAML::load(output) if output =~ /^--- /
-    return output
+    de_yamlize output
   end
 end
 
 class File
   def contents
     seek(0)
-    output = read
-    return YAML::load(output) if output =~ /^--- /
-    return output
+    de_yamlize read
   end
 
   def size
@@ -106,7 +107,7 @@ class Cabinet
 
   def [] path
     raise NotFound unless has_key? path
-    bdb { |bdb| bdb[path] }
+    bdb { |bdb| de_yamlize bdb[path] }
   end
 
   def []= path, value
