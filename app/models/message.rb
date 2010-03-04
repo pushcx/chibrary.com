@@ -40,6 +40,10 @@ class Message
     extract_metadata
   end
 
+  def == other
+    other.message == @message and other.source == @source and other.call_number == @call_number
+  end
+
   # public methods
 
   def body
