@@ -6,7 +6,8 @@ require 'zipruby'
 class NotFound < RuntimeError ; end
 
 def de_yamlize content
-  content = YAML::load(content) if content =~ /^--- /
+  content = YAML::load(content) if content[0..3] == '--- '
+  content
 end
 
 class Zip::File
