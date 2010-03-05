@@ -88,7 +88,7 @@ class Cabinet
   def initialize path
     @bdb = BDB::new
     # use defaults, but set bzip and large
-    @bdb.tune(-1, -1, -1, -1 -1, BDB::TLARGE | BDB::TBZIP) or raise "Couldn't tune"
+    @bdb.tune(0, 0, 0, -1, -1, BDB::TLARGE | BDB::TBZIP) or raise "Couldn't tune"
     @path = path
   end
 
