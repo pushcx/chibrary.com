@@ -2,32 +2,33 @@
 require File.dirname(__FILE__) + '/../config/boot'
 require "#{RAILS_ROOT}/config/environment"
 
-`find -L listlibrary_archive/list/ -name "*.zip"`.split.each do |zip_filename|
-  puts zip_filename
-  zip = ZZip.new zip_filename
-  cabinet_filename = zip_filename[0..-5] + '.tcb'
-  File.unlink cabinet_filename if File.exists? cabinet_filename
-  cabinet = Cabinet.new cabinet_filename
+Dir['listlibrary_archive/list/*'].each do |list_path|
+  puts "#{Time.now} #{list_path}"
+  slug = list_path.split('/').last
+  cabinet_path = "listlibrary_archive/cabinet/#{slug}.tcb"
+  next if File.exists? cabinet_path
 
-  # copy
-  zip.each do |path|
-    cabinet[path] = zip[path]
+  if slug != 'linux-kernel'
+  `find -L #{list_path} -name "*.zip"`.each do |zip|
+    `unzip -n -d #{zip[0...zip.rindex('.')]} #{zip}`
+    `rm #{zip}`
+  end
   end
 
-  # confirm
-  raise "different first keys: zip #{zip.first} - cabinet #{cabinet.first}" if zip.first != cabinet.first
-  raise "different key lists"  if zip.collect != cabinet.collect
-  zip.each do |path|
-    unless zip[path] == cabinet[path]
-      puts zip[path].class
-      puts zip[path]
-      puts '-' * 80
-      puts cabinet[path].class
-      puts cabinet[path]
-      raise "mismatch at path #{path}"
+  cabinet = Cabinet.new cabinet_path
+  archive_list_path = list_path.split('/')[1..-1].join('/')
+  i = 0
+  $archive[archive_list_path].each(true) do |path|
+    if (i += 1) % 1000 == 0
+      print '#'
+      $stdout.flush
     end
+    next unless File.file? "#{list_path}/#{path}"
+    archive_path = "list/#{slug}/#{path}"
+    cabinet[path] = $archive[archive_path]
+    raise "crap - #{list_path} #{archive_path} #{cabinet_path}" if cabinet[path] != $archive[archive_path]
   end
-
-  # cleanup
-  #File.unlink zip_filename
+  puts
+  cabinet.close
 end
+puts Time.now
