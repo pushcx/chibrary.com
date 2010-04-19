@@ -123,7 +123,7 @@ class Cabinet
   private
 
   def bdb
-    @bdb.open(@path, BDB::OWRITER | BDB::OCREAT | BDB::OLCKNB) or raise "Couldn't open"
+    @bdb.open(@path, BDB::OWRITER | BDB::OCREAT | BDB::OLCKNB) or raise "Couldn't open: #{@bdb.errmsg @bdb.ecode}"
     yield @bdb
   ensure
     @bdb.close
@@ -183,7 +183,7 @@ class ZDir
       # look for if it's a zip:
       return ZZip.new(full_path + ".zip") if File.exists?(full_path + ".zip")
       # look for if it's a cabinet:
-      return ZZip.new(full_path + ".tcb") if File.exists?(full_path + ".tcb")
+      return Cabinet.new(full_path + ".tcb") if File.exists?(full_path + ".tcb")
       # look for if it's in a zip:
       zip_path = File.join(full_path.split('/')[0..-2]) + ".zip"
       return ZZip.new(zip_path)[path.split('/').last] if File.exists? zip_path
