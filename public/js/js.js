@@ -17,14 +17,13 @@ $(function() {
   // thread_list: show vertical line to pick out siblings
   $('ol.thread_list').mouseout(function(){
     $(this).css('background-position', '-1px 0px');
-  });
-  $('ol.thread_list li').mouseover(function(){
-    var indent = $(this).attr('indent')
+  }).delegate('li', 'mouseover', function(){
+    var li = $(this), indent = li.attr('indent');
     if (typeof indent == 'undefined') {
-      indent = $(this).find('span.indent').css('width')
-      $(this).attr('indent', indent);
+      indent = li.find('span.indent').css('width');
+      li.attr('indent', indent);
     }
-    $(this).parent().css('background-position', indent + ' 0px');
+    li.parent().css('background-position', indent + ' 0px');
   });
 
   // thread view: toggleable blockquotes
