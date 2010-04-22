@@ -87,39 +87,55 @@ class Cabinet
   include TokyoCabinet
   include Enumerable
 
+  @@bdbs = {}
+
   def initialize path
-    @bdb = BDB::new
-    # use defaults, but set bzip and large
-    @bdb.tune(0, 0, 0, -1, -1, BDB::TLARGE | BDB::TBZIP) or raise "Couldn't tune"
     @path = path
+    if @@bdbs.has_key? path
+      @bdb = @@bdbs[path]
+    else
+      @bdb = BDB::new
+      # use defaults, but set bzip and large
+      @bdb.tune(0, 0, 0, -1, -1, BDB::TLARGE | BDB::TBZIP) or raise "Couldn't tune"
+      @@bdbs[path] = @bdb
+      @bdb.open(@path, BDB::OWRITER | BDB::OCREAT | BDB::OLCKNB) or raise "Couldn't open: #{@bdb.errmsg @bdb.ecode}"
+    end
   end
 
   def has_key? path
-    bdb { |bdb| bdb.has_key? path }
+    @bdb.sync
+    @bdb.has_key? path
   end
 
   def each recurse=false
     # recurse is unused, but listed to match ZDir
-    bdb { |bdb| bdb.each_key { |path| yield path } }
+    # This 'keys.each' used to be TC's 'each_key', but that stops yielding
+    # succeeding keys if you delete while iterating, which several scripts do.
+    @bdb.sync
+    @bdb.keys.each { |path| yield path }
   end
 
   def first
-    bdb { |bdb| bdb.each_key { |path| return path } }
+    @bdb.sync
+    @bdb.each_key { |path| return path }
   end
 
   def [] path
     return self if path.blank?
+    @bdb.sync
     raise NotFound unless has_key? path
-    bdb { |bdb| de_yamlize bdb[path] }
+    return de_yamlize(@bdb[path])
   end
 
   def []= path, value
     value = value.to_yaml unless value.is_a? String
-    bdb { |bdb| bdb[path] = value }
+    @bdb[path] = value
+    @bdb.sync
   end
 
   def delete path
-    bdb { |bdb| bdb.delete path }
+    @bdb.delete path
+    @bdb.sync
   end
 
   def close
@@ -127,14 +143,6 @@ class Cabinet
     @@bdbs.delete @path
   end
 
-  private
-
-  def bdb
-    @bdb.open(@path, BDB::OWRITER | BDB::OCREAT | BDB::OLCKNB) or raise "Couldn't open: #{@bdb.errmsg @bdb.ecode}"
-    yield @bdb
-  ensure
-    @bdb.close
-  end
 end
 
 class ZDir
