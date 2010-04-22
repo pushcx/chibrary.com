@@ -54,6 +54,7 @@ class ZZip
   end
 
   def [] path
+    return self if path.blank?
     # zip files cannot be nested, don't do ZDir#[]'s check for .zip
     zip { |z| z.fopen(path) { |f| f.contents } }
   rescue Zip::Error
@@ -107,6 +108,7 @@ class Cabinet
   end
 
   def [] path
+    return self if path.blank?
     raise NotFound unless has_key? path
     bdb { |bdb| de_yamlize bdb[path] }
   end
@@ -118,6 +120,11 @@ class Cabinet
 
   def delete path
     bdb { |bdb| bdb.delete path }
+  end
+
+  def close
+    @bdb.close
+    @@bdbs.delete @path
   end
 
   private
@@ -180,16 +187,15 @@ class ZDir
   def [] path
     full_path = File.join([@path, path])
     if !File.exists? full_path
-      # look for if it's a zip:
-      return ZZip.new(full_path + ".zip") if File.exists?(full_path + ".zip")
-      # look for if it's a cabinet:
-      return Cabinet.new(full_path + ".tcb") if File.exists?(full_path + ".tcb")
-      # look for if it's in a zip:
-      zip_path = File.join(full_path.split('/')[0..-2]) + ".zip"
-      return ZZip.new(zip_path)[path.split('/').last] if File.exists? zip_path
-      # look for if it's in a cabinet:
-      cabinet_path = File.join(full_path.split('/')[0..-2]) + ".tcb"
-      return Cabinet.new(cabinet_path)[path.split('/').last] if File.exists? cabinet_path
+      dirs = full_path.split('/')
+      full_path = dirs.shift
+      while dir = dirs.shift do
+        full_path += "/#{dir}"
+        cabinet_path = full_path + ".tcb"
+        return Cabinet.new(cabinet_path)[dirs.join('/')] if File.exists? cabinet_path
+        zip_path = full_path + ".zip"
+        return ZZip.new(zip_path)[dirs.join('/')] if File.exists? zip_path
+      end
     end
 
     raise NotFound, full_path unless File.exists? full_path

@@ -208,6 +208,7 @@ class CabinetTest < ActiveSupport::TestCase
     end
 
     teardown do
+      @cabinet.close
       File.unlink @path if File.exists? @path
     end
 
