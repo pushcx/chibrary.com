@@ -1,42 +1,45 @@
 require 'test_helper'
 
 class ZipFileTest < ActiveSupport::TestCase
-  def setup
-    FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
-  end
+  context 'a zip file' do
+    setup do
+      FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
+    end
 
-  def teardown
-    File.unlink('/tmp/test.zip') if File.exists? '/tmp/test.zip'
-  end
+    teardown do
+      File.unlink('/tmp/test.zip') if File.exists? '/tmp/test.zip'
+    end
 
-  def test_string
-    archive = Zip::Archive.open '/tmp/test.zip'
-    z = archive.fopen('mail1@example.com')
-    z.expects(:read).yields("a bunch of text")
-    assert_equal "a bunch of text", z.contents
-  end
+    should 'store strings' do
+      archive = Zip::Archive.open '/tmp/test.zip'
+      z = archive.fopen('mail1@example.com')
+      z.expects(:read).yields("a bunch of text")
+      assert_equal "a bunch of text", z.contents
+    end
 
-  def test_yaml
-    archive = Zip::Archive.open '/tmp/test.zip'
-    z = archive.fopen('mail1@example.com')
-    z.expects(:read).yields("--- \n:a: :b\n")
-    assert_equal({ :a => :b }, z.contents)
-  end
+    should 'store yaml for objects' do
+      archive = Zip::Archive.open '/tmp/test.zip'
+      z = archive.fopen('mail1@example.com')
+      z.expects(:read).yields("--- \n:a: :b\n")
+      assert_equal({ :a => :b }, z.contents)
+    end
 
-  # zipruby was misdesigned to be case-insensitive; bug was reported and author
-  # claims to have fixed it. This should watch for it reappearing.
-  def test_case
-    archive = Zip::Archive.open '/tmp/test.zip'
-    archive.add_or_replace_buffer('A', 'uppercase')
-    archive.add_or_replace_buffer('a', 'lowercase')
-    archive.commit()
-    assert_equal 'uppercase', archive.fopen('A') { |f| f.contents }
-    assert_equal 'lowercase', archive.fopen('a') { |f| f.contents }
+    # zipruby was misdesigned to be case-insensitive; bug was reported and author
+    # claims to have fixed it. This should watch for it reappearing.
+    should 'not let ZipRuby bug smash case' do
+      archive = Zip::Archive.open '/tmp/test.zip'
+      archive.add_or_replace_buffer('A', 'uppercase')
+      archive.add_or_replace_buffer('a', 'lowercase')
+      archive.commit()
+      assert_equal 'uppercase', archive.fopen('A') { |f| f.contents }
+      assert_equal 'lowercase', archive.fopen('a') { |f| f.contents }
+    end
+
   end
 end
 
 class FileChangesTest < ActiveSupport::TestCase
-  def test_contents
+  should 'write to files' do
     File.open('/tmp/foo', 'w') do |f|
       f.expects(:seek)
       f.expects(:read).returns("a bunch of text")
@@ -45,7 +48,7 @@ class FileChangesTest < ActiveSupport::TestCase
     File.delete('/tmp/foo')
   end
 
-  def test_size
+  should 'report file sizes' do
     File.open('/tmp/foo', 'w') do |f|
       f.expects(:seek)
       f.expects(:read).returns("--- \n:a: :b\n")
@@ -56,127 +59,119 @@ class FileChangesTest < ActiveSupport::TestCase
 end
 
 class ZZipTest < ActiveSupport::TestCase
-  def setup
-    FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
-  end
+  context 'a zip file' do
+    setup do 
+      FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
+      @z = ZZip.new("/tmp/test.zip")
+    end
 
-  def teardown
-    File.unlink('/tmp/test.zip') if File.exists? '/tmp/test.zip'
-  end
+    teardown do
+      File.unlink('/tmp/test.zip') if File.exists? '/tmp/test.zip'
+    end
 
-  def test_has_key?
-    z = ZZip.new("/tmp/test.zip")
-    assert_equal true,  z.has_key?('mail1@example.com')
-    assert_equal true,  z.has_key?('mail2@example.com')
-    assert_equal false, z.has_key?('mail3@example.com')
-  end
+    should 'find keys that exist' do
+      assert_equal true,  @z.has_key?('mail1@example.com')
+      assert_equal true,  @z.has_key?('mail2@example.com')
+    end
 
-  def test_each
-    z = ZZip.new("/tmp/test.zip")
-    assert_equal ['mail1@example.com', 'mail2@example.com'], z.collect.sort
-  end
+    should 'not find non-existent keys' do
+      assert_equal false, @z.has_key?('mail3@example.com')
+    end
 
-  def test_first
-    z = ZZip.new("/tmp/test.zip")
-    assert_match /mail.@example\.com/, z.first
-  end
+    should 'iterate over keys with each' do
+      assert_equal ['mail1@example.com', 'mail2@example.com'], @z.collect.sort
+    end
 
-  def test_lookup
-    z = ZZip.new("/tmp/test.zip")
-    assert_match /Message body\./, z['mail1@example.com']
-    assert_match /A reply without a quote/, z['mail2@example.com']
-  end
+    should 'return its first key' do
+      assert_match /mail.@example\.com/, @z.first
+    end
 
-  def test_assign_add
-    z = ZZip.new("/tmp/test.zip")
-    z['mail3@example.com'] = "Testing addition."
-    assert z.has_key?('mail3@example.com')
-    assert_equal "Testing addition.", z['mail3@example.com']
-  end
+    should 'load content successfully' do
+      assert_match /Message body\./, @z['mail1@example.com']
+      assert_match /A reply without a quote/, @z['mail2@example.com']
+    end
 
-  def test_assign_overwrite
-    z = ZZip.new("/tmp/test.zip")
-    z['mail1@example.com'] = "Testing overwrite."
-    assert z.has_key?('mail1@example.com')
-    assert_equal "Testing overwrite.", z['mail1@example.com']
-  end
+    should 'add content' do
+      @z['mail3@example.com'] = "Testing addition."
+      assert @z.has_key?('mail3@example.com')
+      assert_equal "Testing addition.", @z['mail3@example.com']
+    end
 
-  def test_delete
-    z = ZZip.new("/tmp/test.zip")
-    z.delete('mail1@example.com')
-    assert_equal ['mail2@example.com'], z.collect.sort
+    should 'overwrite content' do
+      @z['mail1@example.com'] = "Testing overwrite."
+      assert @z.has_key?('mail1@example.com')
+      assert_equal "Testing overwrite.", @z['mail1@example.com']
+    end
+
+    should 'delete content' do
+      @z.delete('mail1@example.com')
+      assert_equal ['mail2@example.com'], @z.collect.sort
+    end
+
   end
 end
 
 class ZDirTest < ActiveSupport::TestCase
-def test_truth ; assert true ; end
-  def setup
-    FileUtils.cp_r('test/fixtures/example_dir', '/tmp/test')
-  end
+  context 'a zdir' do
+    setup do
+      FileUtils.cp_r('test/fixtures/example_dir', '/tmp/test')
+      @z = ZDir.new('/tmp/test')
+    end
 
-  def teardown
-    FileUtils.rm_rf('/tmp/test') if File.exists? '/tmp/test'
-  end
+    teardown do
+      FileUtils.rm_rf('/tmp/test') if File.exists? '/tmp/test'
+    end
 
+    should "RENAME ME: test has key?" do
+      assert @z.has_key?('mail1@example.com')
+      assert_equal false, @z.has_key?('mail3@example.com')
+    end
+    
+    should "RENAME ME: test has key? path" do
+      assert @z.has_key?('foo/nested@example.com')
+    end
 
-  def test_has_key?
-    z = ZDir.new('/tmp/test')
-    assert z.has_key?('mail1@example.com')
-    assert_equal false, z.has_key?('mail3@example.com')
-  end
-  
-  def test_has_key?_path
-    z = ZDir.new('/tmp/test')
-    assert z.has_key?('foo/nested@example.com')
-  end
+    should "RENAME ME: test each" do
+      assert_equal ['foo', 'mail1@example.com', 'mail2@example.com'], @z.collect.sort
+    end
 
-  def test_each
-    z = ZDir.new("/tmp/test")
-    assert_equal ['foo', 'mail1@example.com', 'mail2@example.com'], z.collect.sort
-  end
+    should "RENAME ME: test each recurse" do
+      l = []
+      @z.each(true) {|f| l << f }
+      assert_equal ['foo', 'foo/nested@example.com', 'mail1@example.com', 'mail2@example.com'], l.sort
+    end
 
-  def test_each_recurse
-    z = ZDir.new("/tmp/test")
-    l = []
-    z.each(true) {|f| l << f }
-    assert_equal ['foo', 'foo/nested@example.com', 'mail1@example.com', 'mail2@example.com'], l.sort
-  end
+    should "RENAME ME: test first" do
+      assert_match /foo\/nested@example\.com/, @z.first
+    end
 
-  def test_first
-    z = ZDir.new("/tmp/test")
-    assert_match /foo\/nested@example\.com/, z.first
-  end
+    should "RENAME ME: test lookup" do
+      assert_match /Message body\./, @z['mail1@example.com']
+      assert_match /A reply without a quote/, @z['mail2@example.com']
+    end
 
-  def test_lookup
-    z = ZDir.new("/tmp/test")
-    assert_match /Message body\./, z['mail1@example.com']
-    assert_match /A reply without a quote/, z['mail2@example.com']
-  end
+    should "RENAME ME: test overwrite add" do
+      @z['mail3@example.com'] = "Testing addition."
+      assert @z.has_key?('mail3@example.com')
+      assert_equal "Testing addition.", @z['mail3@example.com']
+    end
 
-  def test_overwrite_add
-    z = ZDir.new("/tmp/test")
-    z['mail3@example.com'] = "Testing addition."
-    assert z.has_key?('mail3@example.com')
-    assert_equal "Testing addition.", z['mail3@example.com']
-  end
+    should "RENAME ME: test assign" do
+      @z['mail1@example.com'] = "Testing overwrite."
+      assert @z.has_key?('mail1@example.com')
+      assert_equal "Testing overwrite.", @z['mail1@example.com']
+    end
 
-  def test_assign
-    z = ZDir.new("/tmp/test")
-    z['mail1@example.com'] = "Testing overwrite."
-    assert z.has_key?('mail1@example.com')
-    assert_equal "Testing overwrite.", z['mail1@example.com']
-  end
+    should "RENAME ME: test delete" do
+      @z.delete('mail1@example.com')
+      assert_equal ['foo', 'mail2@example.com'], @z.collect.sort
+    end
+    
+    should "RENAME ME: test delete path" do
+      @z.delete('foo/nested@example.com')
+      assert_equal [], @z['foo'].collect.sort
+    end
 
-  def test_delete
-    z = ZDir.new("/tmp/test")
-    z.delete('mail1@example.com')
-    assert_equal ['foo', 'mail2@example.com'], z.collect.sort
-  end
-  
-  def test_delete_path
-    z = ZDir.new('/tmp/test')
-    z.delete('foo/nested@example.com')
-    assert_equal [], z['foo'].collect.sort
   end
 end
 
