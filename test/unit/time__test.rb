@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'time_'
 
 class TimeTest < ActiveSupport::TestCase
-  def test_plus_year
+  should 'be able to add and subtract years' do
     [
       [1,  2008, 9],
       [-1, 2006, 9],
@@ -13,7 +13,7 @@ class TimeTest < ActiveSupport::TestCase
     end
   end
 
-  def test_plus_month
+  should 'should be able to add and subtract months' do
     [
       [1,  2007, 10],
       [-1, 2007, 8],
@@ -26,7 +26,7 @@ class TimeTest < ActiveSupport::TestCase
     end
   end
 
-  def test_plus_day
+  should 'should be able to add and subtract days' do
     [
       [1,   2007, 9,  12],
       [-1,  2007, 9,  10],
