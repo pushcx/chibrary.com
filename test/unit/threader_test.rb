@@ -11,13 +11,12 @@ class ThreaderTest < ActiveSupport::TestCase
     Queue.expects(:new).returns(@thread_q)
   end
 
-  def test_run_empty
+  should 'do nothing on an empty queue' do
     @thread_q.expects(:work).returns nil
-    # threader should exit cleanly, doing nothing
     Threader.new.run
   end
 
-  def test_run_removed
+  should 'handle removed messages' do
     t = new_threader
 
     # one message in cache, none in list
@@ -32,7 +31,7 @@ class ThreaderTest < ActiveSupport::TestCase
     t.run
   end
 
-  def test_run_add_message
+  should 'notice added messages' do
     t = new_threader
     list = mock("list")
     list.expects(:cached_message_list).returns(["1@example.com"])
@@ -49,7 +48,7 @@ class ThreaderTest < ActiveSupport::TestCase
     t.run
   end
 
-  def test_run_multiple_jobs
+  should 'run with multiple jobs' do
     t = Threader.new
 
     # two empty jobs
@@ -69,7 +68,7 @@ class ThreaderTest < ActiveSupport::TestCase
     t.run
   end
 
-  def test_cache_work_empty
+  should 'cache nothing when empty' do
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
@@ -82,7 +81,7 @@ class ThreaderTest < ActiveSupport::TestCase
     Threader.new.cache_work slug, year, month, message_list, threadset
   end
 
-  def test_cache_work
+  should 'cache work' do
     slug, year, month = 'example', '2007', '08'
 
     message_list = ['1@example.com']
