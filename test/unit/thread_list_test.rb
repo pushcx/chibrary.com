@@ -6,23 +6,20 @@ class ThreadList
 end
 
 class ThreadListTest < ActiveSupport::TestCase
-  def setup
-  end
-
-  def test_thread_list_new
+  should 'start empty' do
     $archive.expects(:[]).raises(NotFound)
     tl = ThreadList.new 'example', '2009', '01'
     assert_equal [], tl.threads
     assert_equal({}, tl.call_numbers)
   end
 
-  def test_thread_list_load
+  should 'load empty lists' do
     tl = empty_thread_list
     assert_equal [], tl.threads
     assert_equal({}, tl.call_numbers)
   end
 
-  def test_add_thread
+  should 'add threads' do
     thread = mock('thread', :n_subject => 'subject', :count => '1')
     thread.expects(:call_number).at_least(0).returns('00000000')
     thread_root_container = mock('thread_root_container', :empty? => false, :call_number => '00000000')
@@ -36,103 +33,104 @@ class ThreadListTest < ActiveSupport::TestCase
     assert_equal({'00000001' => '/example/2009/01/00000000'}, tl.call_numbers)
   end
 
-  def test_redirect_thread
+  should 'redirect threads' do
     tl = empty_thread_list
     tl.add_redirected_thread ['00000000', '00000001'], '2009', '02'
     assert_equal({'00000000' => '/example/2009/02/00000000', '00000001' => '/example/2009/02/00000001'}, tl.call_numbers)
   end
 
-  # yeah, test_thread_count and test_message_count are shitty, but the code is dead simple
-  def test_thread_count
+  # yeah, these two tests are not comprehensive, but the code is dead simple
+  should 'count threads' do
+    tl = empty_thread_list
+    assert_equal 0, tl.thread_count
+  end
+  should 'count messages' do
     tl = empty_thread_list
     assert_equal 0, tl.thread_count
   end
 
-  def test_message_count
-    tl = empty_thread_list
-    assert_equal 0, tl.thread_count
+  context 'previous/next links' do
+    should 'return nil when no previous thread' do
+      $archive.expects(:[]).raises(NotFound)
+      tl = two_thread_list
+      assert_nil tl.previous_thread('first001')
+    end
+
+    should 'return data for previous thread' do
+      tl = two_thread_list
+      assert_equal({
+        :slug        => "example",
+        :year        => "2009",
+        :month       => "01",
+        :call_number => "first001",
+        :subject     => "first thread",
+      }, tl.previous_thread('second01'))
+    end
+
+    should 'link to thread in previous month' do
+      tl = two_thread_list
+      $archive.expects(:[]).returns({ :threads => [{:call_number => "prev0001", :messages => "1", :subject => "previous thread"}], :call_numbers => ['prev0001'] })
+      assert_equal({
+        :slug        => "example",
+        :year        => 2008,
+        :month       => "12",
+        :call_number => "prev0001",
+        :subject     => "previous thread",
+      }, tl.previous_thread('first001'))
+    end
+
+    should 'return nil when no next thread' do
+      $archive.expects(:[]).raises(NotFound)
+      tl = two_thread_list
+      assert_nil tl.next_thread('second01')
+    end
+
+    should 'return data for next thread' do
+      tl = two_thread_list
+      assert_equal({
+        :slug        => "example",
+        :year        => "2009",
+        :month       => "01",
+        :call_number => "second01",
+        :subject     => "second thread",
+      }, tl.next_thread('first001'))
+    end
+
+    should 'link to thread in next month' do
+      tl = two_thread_list
+      $archive.expects(:[]).returns({ :threads => [{:call_number => "next0001", :messages => "1", :subject => "next thread"}], :call_numbers => ['next0001'] })
+      assert_equal({
+        :slug        => "example",
+        :year        => 2009,
+        :month       => "02",
+        :call_number => "next0001",
+        :subject     => "next thread",
+      }, tl.next_thread('second01'))
+    end
   end
 
-  def test_previous_thread_none
-    $archive.expects(:[]).raises(NotFound)
-    tl = two_thread_list
-    assert_nil tl.previous_thread('first001')
-  end
-
-  def test_previous_thread
-    tl = two_thread_list
-    assert_equal({
-      :slug        => "example",
-      :year        => "2009",
-      :month       => "01",
-      :call_number => "first001",
-      :subject     => "first thread",
-    }, tl.previous_thread('second01'))
-  end
-
-  def test_previous_thread_first
-    tl = two_thread_list
-    $archive.expects(:[]).returns({ :threads => [{:call_number => "prev0001", :messages => "1", :subject => "previous thread"}], :call_numbers => ['prev0001'] })
-    assert_equal({
-      :slug        => "example",
-      :year        => 2008,
-      :month       => "12",
-      :call_number => "prev0001",
-      :subject     => "previous thread",
-    }, tl.previous_thread('first001'))
-  end
-
-  def test_next_thread_none
-    $archive.expects(:[]).raises(NotFound)
-    tl = two_thread_list
-    assert_nil tl.next_thread('second01')
-  end
-
-  def test_next_thread
-    tl = two_thread_list
-    assert_equal({
-      :slug        => "example",
-      :year        => "2009",
-      :month       => "01",
-      :call_number => "second01",
-      :subject     => "second thread",
-    }, tl.next_thread('first001'))
-  end
-
-  def test_next_thread_last
-    tl = two_thread_list
-    $archive.expects(:[]).returns({ :threads => [{:call_number => "next0001", :messages => "1", :subject => "next thread"}], :call_numbers => ['next0001'] })
-    assert_equal({
-      :slug        => "example",
-      :year        => 2009,
-      :month       => "02",
-      :call_number => "next0001",
-      :subject     => "next thread",
-    }, tl.next_thread('second01'))
-  end
-
-  def test_redirect_does
+  should 'redirect to thread parent' do
     tl = simple_thread_list
     assert_equal '00000001', tl.redirect?('00000002')
   end
 
-  def test_redirect_doesnt
+  should 'not redirect a thread parent' do
     tl = simple_thread_list
     assert !tl.redirect?('00000001')
   end
 
-  def test_store
+  should 'store to archive' do
     tl = simple_thread_list
     $archive.expects(:[]=).with(tl.key, { :threads => [{:messages => '2', :call_number => '00000001', :subject => 'subject'}], :call_numbers => {'00000001' => '00000001', '00000002' => '00000001'} })
     tl.store
   end
 
-  def test_year_counts_none
+  should 'not error for a year count with no messages' do
     $archive.expects(:[]).with('list/example/thread_list').raises(NotFound)
     assert_equal [], ThreadList.year_counts('example')
   end
 
-  def test_year_counts
+  should 'count messages for a year' do
     zdir = mock('zdir')
     zdir.expects(:each).yields( '2009/01' )
     $archive.expects(:[]).with('list/example/thread_list').returns(zdir)
@@ -140,24 +138,24 @@ class ThreadListTest < ActiveSupport::TestCase
     assert_equal [["2009", {"01" => { :threads => 1, :messages => 2 }}]], ThreadList.year_counts('example')
   end
 
-  def test_key
+  should 'generate a key based on slug, year, month' do
     assert_equal 'list/example/thread_list/2009/01', simple_thread_list.key
   end
 
-  def test_thread_index_of
+  should 'find the index of threads by call number' do
     assert_equal 0, simple_thread_list.thread_index_of('00000001')
   end
 
-  def test_thread_index_of_error
+  should 'raise an error when asked for the index of a non-existent thread' do
     assert_raises(RuntimeError, /not in ThreadList/) { empty_thread_list.thread_index_of '00000000' }
   end
 
-  def test_bundle_thread_none
+  should 'return nil without threads' do
     tl = empty_thread_list
-    tl.bundle_thread nil, '2009', '01'
+    assert_nil tl.bundle_thread nil, '2009', '01'
   end
 
-  def test_bundle_thread
+  should 'bundle threads to a hash' do
     tl = simple_thread_list
     t = tl.bundle_thread({ :call_number => '00000001', :subject => 'subject' }, '2009', '01')
     assert_equal({
