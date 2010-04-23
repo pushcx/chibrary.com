@@ -1,49 +1,49 @@
 require 'test_helper'
 
 class JobTest < ActiveSupport::TestCase
-  def test_new_bad_type
+  should 'raise errors for new, unknown job types' do
     assert_raises(RuntimeError, /unknown job type/) do
       Job.new :foo, []
     end
   end
 
-  def test_new
+  should 'report its attributes' do
     job = Job.new :import_mailman, { :slug => 'example' }
     assert_equal :import_mailman, job.type
     assert_equal 'example', job.attributes[:slug]
   end
 
-  def test_hash
+  should 'have a slug' do
     job = Job.new :import_mailman, { :slug => 'example' }
     assert_equal 'example', job[:slug]
   end
 
-  def test_key
+  should 'store to a named key' do
     job = Job.new :thread, { :slug => 'example', :year => '2008', :month => '01' }
     assert_equal 'example/2008/01', job.key
   end
 end
 
 class QueueTest < ActiveSupport::TestCase
-  def test_new_bad_type
+  should 'raise errors for new, unknown job types' do
     assert_raises(RuntimeError, /unknown job type/) do
       Queue.new :foo
     end
   end
 
-  def test_new
+  should 'report its attributes' do
     CachedHash.expects(:new)
     queue = Queue.new :import_mailman
     assert_equal :import_mailman, queue.type
   end
 
-  def test_add
+  should 'add to the queue' do
     CachedHash.expects(:new).returns(mock("queue", :[]= => nil))
     queue = Queue.new :import_mailman
     queue.add :slug => 'example'
   end
 
-  def test_work
+  should 'run through queue jobs' do
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
     c_q = mock("queue cachedhash")
@@ -57,7 +57,7 @@ class QueueTest < ActiveSupport::TestCase
     queue.work { |j| assert_equal 'job', j }
   end
 
-  def test_work_none
+  should 'do nothing when the queue is empty' do
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
     c = mock
@@ -66,7 +66,7 @@ class QueueTest < ActiveSupport::TestCase
     assert_equal nil, queue.work { |job| raise "Should not have had a job yielded" }
   end
 
-  def test_work_gone
+  should 'handle jobs that disappear' do
     CachedHash.expects(:new).returns(mock("queue"))
     queue = Queue.new :import_mailman
     c_q = mock("queue cachedhash")
