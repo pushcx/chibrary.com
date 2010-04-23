@@ -13,14 +13,14 @@ class ThreadSetTest < ThreadingTest
     @ts = nil
   end
 
-  def test_month_new
+  should 'load from months without threads' do
     ts = mock
     ThreadSet.expects(:new).returns(ts)
     $archive.expects(:has_key?).with("list/example/thread/2009/01").returns(false)
     assert_equal ts, ThreadSet.month('example', '2009', '01')
   end
 
-  def test_month
+  should 'load from months' do
     ts = mock
     ThreadSet.expects(:new).returns(ts)
 
@@ -39,7 +39,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal ts, ThreadSet.month('example', '2007', '08')
   end
 
-  def test_subjects
+  should 'hash thread subjects -> call number' do
     c1 = container_tree
     c1.each { |c| @ts << c.message unless c.empty? }
     expected_subjects = { "Threaded Message Fixtures" => c1 }
@@ -47,14 +47,14 @@ class ThreadSetTest < ThreadingTest
     assert_equal expected_subjects, @ts.send(:subjects)
   end
 
-  def test_equality
-    # OK, it's just too goddamned ugly to want to test
+  # this is going to be a complex series of tests... but not yet
+  should_eventually 'consider a thread_set with equal contents as =='
+
+  should 'extract an empty array for root set with no threads' do
+    assert_equal [], @ts.send(:root_set) # private method, using .send to test
   end
 
-  def test_root_set
-    assert_equal [], @ts.send(:root_set) # private method, using .send to test
-
-    @ts = ThreadSet.new 'slug', '2009', '02'
+  should 'extract a root set of threads' do
     c1 = container_tree
     c1.each { |c| @ts << c.message unless c.empty? }
     root_set = @ts.send(:root_set)
@@ -63,42 +63,44 @@ class ThreadSetTest < ThreadingTest
     assert_equal root_set, @ts.send(:root_set) # test caching
   end
 
-  def test_append_doesnt_double_store
-    m = Message.new(threaded_message(:root), 'test', '0000root')
-    @ts << m
-    @ts << m
-    assert threads = @ts.collect { |c| c }
-    assert_equal 1, threads.size
-    assert_equal m, threads.first.message
+  context 'appending new messages' do
+    setup do
+      @root = Message.new(threaded_message(:root), 'test', '0000root')
+      @child = Message.new(threaded_message(:child), 'test', '000child')
+    end
+
+    should 'not include a thread twice if appended twice' do
+      @ts << @root
+      @ts << @root
+      assert threads = @ts.collect { |c| c }
+      assert_equal 1, threads.size
+      assert_equal @root, threads.first.message
+    end
+
+    should 'add messages to build a thread' do
+      @ts << @root
+      @ts << @child
+      assert threads = @ts.collect { |c| c }
+      assert_equal 1, threads.size
+      assert_equal @root, threads.first.message
+      assert_equal 1, threads.first.children.size
+      assert_equal @child, threads.first.children.first.message
+    end
+
+    should 'add messages to pre-created container' do
+      @ts << @child
+      @ts << @root
+      assert threads = @ts.collect { |c| c }
+      assert_equal 1, threads.size
+      assert_equal @root, threads.first.message
+      assert_equal 1, threads.first.children.size
+      assert_equal @child, threads.first.children.first.message
+    end
   end
 
-  def test_simple_append
-    m1 = Message.new(threaded_message(:root), 'test', '0000root')
-    m2 = Message.new(threaded_message(:child), 'test', '000child')
-    @ts << m1
-    @ts << m2
-    assert threads = @ts.collect { |c| c }
-    assert_equal 1, threads.size
-    assert_equal m1, threads.first.message
-    assert_equal 1, threads.first.children.size
-    assert_equal m2, threads.first.children.first.message
-  end
-
-  def test_fill_in_empty_container
-    # same as test_simple_append but in different order
-    m1 = Message.new(threaded_message(:root), 'test', '0000root')
-    m2 = Message.new(threaded_message(:child), 'test', '000child')
-    @ts << m2
-    @ts << m1
-    assert threads = @ts.collect { |c| c }
-    assert_equal 1, threads.size
-    assert_equal m1, threads.first.message
-    assert_equal 1, threads.first.children.size
-    assert_equal m2, threads.first.children.first.message
-  end
-
-  def test_permutations
-    # whatever the order of messages from the example container_tree, the output should be the same
+  should 'build a consistent tree of messages' do
+    # Whatever the order of messages from the example container_tree, the output should be the same.
+    # Real-world messages can be ambiguous and order-dependent, but this is a basic structure test.
     messages = [:root, :child, :grandchild, :orphan].collect { |sym| Message.new(threaded_message(sym), 'test', '00000000') }
     perm = Permutation.for(messages)
     previous = nil
@@ -110,7 +112,7 @@ class ThreadSetTest < ThreadingTest
     end
   end
 
-  def test_complex_threading
+  should 'thread a complex tree' do
     messages = YAML::load_file( File.join(File.dirname(__FILE__), '..', 'fixtures', "complex_thread.yaml") )
     messages.each { |m| @ts << Message.new(m, 'test', '00000000') }
 
@@ -393,7 +395,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal expected_parents, found_parents
   end
 
-  def test_threading_by_quotes
+  should 'thread based on quotes' do
     [
       initial_message = Message.new(threaded_message(:initial_message), 'test', '00000000'),
       regular_reply   = Message.new(threaded_message(:regular_reply), 'test', '00000000'),
@@ -403,7 +405,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal regular_reply.message_id, @ts.containers[quoting_reply.message_id].parent.message_id
   end
 
-  def test_retrieve_split_threads_from
+  should 'retrieve split threads from another threadset' do
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     ts = ThreadSet.new 'slug', '2007', '12'
     ts << Message.new(threaded_message(:child), 'test', '000child')
@@ -416,7 +418,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal 2, @ts.containers['root@example.com'].count
   end
 
-  def test_retrieve_split_threads_from_not_non_replies
+  should "not retrieve split threads that don't reply to a thread in the set" do
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     ts = ThreadSet.new 'slug', '2007', '12'
     # This message will be recognized as a split thread, but a parent for it
@@ -429,7 +431,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal 1, ts.length
   end
 
-  def test_message_count
+  should 'count messages' do
     # was failing to load Message-ID: <BAYC1-PASMTP14295C87CFA7B12CC8A613B4770@CEZ.ICE>
     ts = ThreadSet.new 'example', '2007', '12'
     rejoin_splits("2007-12").each do |mail|
@@ -439,12 +441,12 @@ class ThreadSetTest < ThreadingTest
     assert_equal %w{1196188048.22546.1223520349@webmail.messagingengine.com 4742D87E.7020701@casual-tempest.net}, ts.send(:root_set).collect(&:message_id)
     assert_equal 4, ts.message_count(false)
     # arguably, this could be 9, but dropping the empty container
-    # 4742D87E.7020701@casual-tempest.net makes as more sense than keeping it,
+    # 4742D87E.7020701@casual-tempest.net makes more sense than keeping it,
     # which is what differentiates between merging 'both dummies' and reparenting
     assert_equal 8, ts.message_count(true)
   end
 
-  def test_rejoin_splits
+  should 'rejoin split threads' do
     def ts year, month
       ts = ThreadSet.new 'example', year, month
       rejoin_splits("#{year}-#{month}").each do |mail|
@@ -466,7 +468,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal 24, ts11.message_count
   end
 
-  def test_rejoin_splits_on_subject
+  should 'rejoin threads split by subject' do
     # on archives (eg. scraped mud-dev), there are no In-Reply-To/References headers
     def ts year, month
       ts = ThreadSet.new 'example', year, month
@@ -486,7 +488,7 @@ class ThreadSetTest < ThreadingTest
     assert_equal 1, ts03.message_count
   end
 
-  def test_redirect_single
+  should 'remove a redirected thread' do
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     thread = @ts.containers['root@example.com']
     $archive.expects(:delete).with(thread.key)
@@ -494,7 +496,7 @@ class ThreadSetTest < ThreadingTest
     assert @ts.containers.empty?
   end
 
-  def test_redirect_thread
+  should 'redirect multiple threads' do
     @ts << Message.new(threaded_message(:root), 'test', '0000root')
     @ts << Message.new(threaded_message(:child), 'test', '0000root')
     thread = @ts.containers['root@example.com']
@@ -503,7 +505,7 @@ class ThreadSetTest < ThreadingTest
     assert @ts.containers.empty?
   end
 
-  def test_plus_month
+  should 'be able to return the next/previous month' do
     Time.expects(:utc).with('2009', '02').returns(mock(:plus_month => mock('time', :year => 2009, :month => 1)))
     ts = mock('ThreadSet')
     ThreadSet.expects(:month).with('slug', 2009, '01').returns(ts)
@@ -516,7 +518,7 @@ class ThreadSetTest < ThreadingTest
     def date ; Time.now ; end
   end
 
-#  def test_caching
+#  should "RENAME ME: test caching" do
 #    # create a vaguely real-shaped message tree
 #    ts = ThreadSet.new
 #    subjects = %w{foo bar baz quux lamb all makes human continued world}
