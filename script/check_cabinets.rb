@@ -17,4 +17,14 @@ Dir['listlibrary_archive/list/*'].each do |list_path|
   puts "#{count} messages checked"
 
 end
-puts Time.now
+puts "first pass done at " + Time.now
+
+count = 0
+$archive['old_list'].each(true) do |path|
+  cab_file = $archive["list/#{path}"]
+  old_file = $archive["old_list/#{path}"]
+  raise "crap (at #{count}) - #{path} #{cab_file.class} #{old_file.class}\n#{cab_file.to_yaml}\n#{old_file.to_yaml}" if cab_file != old_file
+  count += 1
+end
+puts "#{count} messages checked"
+puts "second pass done at " + Time.now
