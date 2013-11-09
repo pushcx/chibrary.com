@@ -2,6 +2,7 @@ require 'fileutils'
 require 'yaml'
 require 'riak'
 require 'zipruby'
+require 'active_support/core_ext/string'
 
 class NotFound < RuntimeError ; end
 
@@ -237,6 +238,6 @@ class Bucket
   end
 end
 
-$archive    = ZDir.new('listlibrary_archive')
-$cachedhash = ZDir.new('listlibrary_cachedhash')
+$archive    = ZDir.new('archive')
+$cachedhash = ZDir.new('cachedhash')
 $riak = Bucket.new 'archive'

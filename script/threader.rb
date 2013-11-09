@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/../config/boot'
-require "#{RAILS_ROOT}/config/environment"
 
 require 'tempfile'
+
+require_relative '../app/models/queue'
+require_relative '../app/models/list'
+require_relative '../app/models/thread_list'
+require_relative '../app/models/thread_set'
 
 class Threader
   def initialize
