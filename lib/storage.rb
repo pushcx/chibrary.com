@@ -213,7 +213,12 @@ class Bucket
   def [] path
     return self if path.blank?
     raise NotFound unless has_key? path
-    return @bucket[path]
+    hash = @bucket[path].data
+    if hash['class']
+        return Kernel.const_get(hash['class']).deserialize(hash)
+      else
+        return hash
+    end
   end
 
   def []= path, value

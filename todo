@@ -2,7 +2,7 @@ x drop or commit all outstanding changes
 x run check_cabinets and fix any errors
 x write a first riak backend
 x migrate get-theinfo, process-theinfo, theinfo to riak
-  deserialize messages from hash in riak
+x deserialize messages from hash in riak
   run threader
   recode site to use riak
   update site to rails 4

@@ -14,6 +14,10 @@ class Message
     encoded_word(s).gsub(RE_PATTERN, '').strip
   end
 
+  def self.deserialize hash
+    self.new hash['message'], hash['source'], hash['call_number']
+  end
+
   def initialize message, source=nil, call_number=nil
     @source = source
     @call_number = call_number
