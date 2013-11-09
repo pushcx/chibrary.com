@@ -1,14 +1,18 @@
 x drop or commit all outstanding changes
 x run check_cabinets and fix any errors
-  migrate data to riak
+x write a first riak backend
+  migrate get-theinfo, process-theinfo, theinfo to riak
   recode site to use riak
   update site to rails 4
 
+  migrate all lists to riak
+  move jobs into a proper job system
+  move misc data in cachcedhash *someplace else*
   fix lkml messages in 1970, 1976, 2036
-  add riak search with solr
+  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   extract keywords - uncommon words per thread
   use search to show related threads
-  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
+  add riak search with solr
 
   can fetchmail -B -l etc get the mail?
   http://sgi.nu/enron/corpora.php

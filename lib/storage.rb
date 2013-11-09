@@ -239,5 +239,61 @@ class ZDir
   end
 end
 
+class Bucket
+  def initialize bucket, path=''
+    client = Riak::Client.new(:protocol => "pbc", :pb_port => 8087)
+    @bucket = client.bucket(bucket)
+    @base_path = path # and then all queries are relative to this? hrm
+  end
+
+  def has_key? path
+    @bucket.exists? path
+  end
+
+  def each recurse=false
+    # recurse is unused, but listed to match ZDir
+    # TODO: use a SecondaryIndex? Or something; this is non-scalable
+    # need to understand how I'm coping buckets first
+    @bucket.keys.each { |k| yield k }
+    #q = Riak::SecondaryIndex.new @bucket, 'path_bin', ''
+
+    ## SecondaryIndex objects give you access to the keys...
+    #q.keys # => ['cobb.salad', 'wedge.salad', 'buffalo_chicken.wrap', ...]
+
+    ## but can also fetch values for you in parallel.
+    #q.values # => [<RObject {recipes,cobb.salad} ...>, <RObject {recipes,wedge...
+
+    ## They also provide simpler pagination:
+    #q.has_next_page? # => true
+    #q2 = q.next_page   #
+  end
+
+  def first
+    @bucket.keys.each { |k| return k }
+  end
+
+  def [] path
+    return self if path.blank?
+    raise NotFound unless has_key? path
+    return @bucket[path]
+  end
+
+  def []= path, value
+    obj = @bucket.new
+    obj.data = value
+    # TODO - index on list, list/year, list/year-month explicitly?
+    #      - and is that actual y/m or where it got threaded to?
+    # TODO almost certainly an index on thread
+    obj.indexes['path_bin'] << path
+    obj.store
+    obj
+  end
+
+  def delete path
+    @bucket.delete path
+  end
+end
+
 $archive    = ZDir.new('listlibrary_archive')
 $cachedhash = ZDir.new('listlibrary_cachedhash')
+$riak = Bucket.new 'archive'
