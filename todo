@@ -1,9 +1,10 @@
-  drop or commit all outstanding changes
+x drop or commit all outstanding changes
   run check_cabinets and fix any errors
   migrate data to riak
   recode site to use riak
   update site to rails 4
 
+  fix lkml messages in 1970, 1976, 2036
   add riak search with solr
   extract keywords - uncommon words per thread
   use search to show related threads
