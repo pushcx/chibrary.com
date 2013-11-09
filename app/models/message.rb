@@ -3,7 +3,6 @@ require 'rmail'
 require 'base64'
 require 'iconv'
 require 'time'
-require 'md5'
 
 class Message
   attr_reader   :from, :message, :source, :slug, :call_number, :message_id
@@ -129,6 +128,13 @@ class Message
   end
 
   def to_yaml_properties ; %w{@source @call_number @message_id @references @subject @date @from @no_archive @key @slug @message} ; end
+  def to_hash
+    Hash[
+      %w{class source call_number message_id references subject date from no_archive key slug message}.map do |key|
+        [key, self.send(key)]
+      end
+    ]
+  end
 
   # method rather than var so that unserialized Messages don't have to save both
   def n_subject

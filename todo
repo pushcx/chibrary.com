@@ -1,11 +1,16 @@
 x drop or commit all outstanding changes
 x run check_cabinets and fix any errors
 x write a first riak backend
-  migrate get-theinfo, process-theinfo, theinfo to riak
+x migrate get-theinfo, process-theinfo, theinfo to riak
+  deserialize messages from hash in riak
+  run threader
   recode site to use riak
   update site to rails 4
 
+  replace 'iconv' usage with String#encode, per warning
   migrate all lists to riak
+  clean up any messages with metadata edited into headers, ew
+  rekey all call numbers to be base62; drop _ and - in ids
   move jobs into a proper job system
   move misc data in cachcedhash *someplace else*
   fix lkml messages in 1970, 1976, 2036
