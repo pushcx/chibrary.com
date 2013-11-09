@@ -1,0 +1,14 @@
+  drop or commit all outstanding changes
+  run check_cabinets and fix any errors
+  migrate data to riak
+  recode site to use riak
+  update site to rails 4
+
+  add riak search with solr
+  extract keywords - uncommon words per thread
+  use search to show related threads
+  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
+
+  can fetchmail -B -l etc get the mail?
+  http://sgi.nu/enron/corpora.php
+
