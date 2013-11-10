@@ -1,9 +1,9 @@
 %h1.subject= subject(@thread)
 
-= render :partial => 'thread_line', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
-= render :partial => 'previous_next', :locals => { :previous_link => @previous_link, :next_link => @next_link }
+= partial 'thread/_thread_line.html', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
+= partial 'thread/_previous_next.html', :locals => { :previous_link => @previous_link, :next_link => @next_link }
 
-= render :partial => 'thread_list', :locals => { :thread => @thread }
+= partial 'month/_thread_list.html', :locals => { :thread => @thread }
 
 -# .panel
   :plain
@@ -37,7 +37,7 @@
   </script>
   <script type="text/javascript" src="http://jobsyndicate.com/JServ/Generic.js"></script>
 
-= render :partial => 'thread_line', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
+= partial 'thread/_thread_line.html', :locals => { :thread => @thread, :list => @list, :slug => @slug, :year => @year, :month => @month }
 
 -# .panel
   :plain
@@ -50,4 +50,4 @@
     //--></script>
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
-= render :partial => 'previous_next', :locals => { :previous_link => @previous_link, :next_link => @next_link }
+= partial 'thread/_previous_next.html', :locals => { :previous_link => @previous_link, :next_link => @next_link }

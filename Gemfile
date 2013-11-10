@@ -5,6 +5,7 @@ ruby '1.9.3'
 gem 'haml'
 gem 'sinatra'
 gem 'sinatra-contrib'
+gem 'sinatra-partial'
 gem 'thin'
 
 # db

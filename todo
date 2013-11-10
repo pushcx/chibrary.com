@@ -20,6 +20,8 @@ x run threader
   use search to show related threads
   add riak search with solr
   move to ruby 2
+  standardize the to_hash/deserialize mismatch
+  replace 1.8 hash syntax with 1.9
   override sinatra error pages
   restore google analytics
   impose a max-width

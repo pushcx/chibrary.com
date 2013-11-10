@@ -8,7 +8,8 @@ require 'rubygems'
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
 require 'sinatra'
-require "sinatra/reloader" if development?
+require 'sinatra/reloader' if development?
+require 'sinatra/partial'
 
 require 'logger'
 require 'pathname'

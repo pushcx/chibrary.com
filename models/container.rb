@@ -9,35 +9,36 @@ class Container
 
   attr_reader :message_id, :parent, :children
 
-  def initialize message
+  def initialize message, message_key=nil
     if message.is_a? Message
       @message_id = message.message_id
       @message    = message
-      @key        = message.key
+      @message_key        = (message_key || message.key)
     else
       @message_id = message
       @message    = nil
-      @key        = nil
+      @message_key        = message_key
     end
     @parent = nil
     @children = []
   end
 
-  def to_yaml_properties ; %w{@message_id @key @parent @children}.sort! ; end
+  def to_yaml_properties ; %w{@message_id @message_key @parent @children}.sort! ; end
   def to_hash
     {
-      message_id: message_id,
-      key: key,
+      class: 'Container',
+      message_id: @message_id,
+      message_key: @message_key,
       children: children.map(&:to_hash),
     }
   end
 
   def self.deserialize hash
-    c = self.new hash['message_id']
-    c.key = hash['key']
+    container = self.new hash['message_id'], hash['message_key']
     hash['children'].each do |child|
-      adopt Container.deserialize(child)
+      container.adopt Container.deserialize(child)
     end
+    container
   end
 
   # container accessors
@@ -74,15 +75,15 @@ class Container
   def message
     # To save disk, threads do not save full message contents,
     # just lazy load them when needed.
-    @message ||= $riak[@key] if @key
+    @message ||= $riak[@message_key] if @message_key
     @message
   end
 
   def message= message
     raise "Message id #{message.message_id} doesn't match container #{@message_id}" unless message.message_id == @message_id
-    @message_id = message.message_id
-    @message    = message
-    @key        = message.key
+    @message_id  = message.message_id
+    @message     = message
+    @message_key = message.key
   end
 
   def subject_shorter_than? container
@@ -90,7 +91,9 @@ class Container
   end
 
   def to_s
-    (empty? ? "<empty container>" : "#{message.from} - #{message.date}") + " - #{message_id}"
+    return "<empty container>" if empty?
+    return "#{message.from} - #{message.date} - #{message_id}" unless message.nil?
+    return "<container: #{message_id} - #{message_key}>"
   end
 
   # parentage accessors
@@ -169,12 +172,12 @@ class Container
 
   def cache
     return if empty_tree?
-    json = self.to_hash.to_json
+    hash = self.to_hash
     begin
-      return if $riak.sizeof(key) == hash.size
+      return if $riak.sizeof(key) == hash.to_json.size
     rescue NotFound ; end
 
-    $riak[key] = json
+    $riak[key] = hash
     cache_snippet
   end
 

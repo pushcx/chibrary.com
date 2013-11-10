@@ -65,7 +65,7 @@ class Queue
       rescue Exception => e
         queue[key] = job
         in_progress.delete key
-        puts "returning #{key} to queue, caught: #{e.class} #{e}\n" + e.backtrace.join("\n")
+        puts "returning #{key} to queue, caught: #{e.class} #{e.message}\n" + e.backtrace.join("\n")
         return nil # stop execution
       else
         in_progress.delete key
