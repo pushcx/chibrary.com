@@ -18,7 +18,8 @@
 
 .thread
   - @missing_count = 0
-  = @thread.collect { |c| container_partial(c) }
+  - @thread.each do |c|
+    = container_partial c
 
 %hr 
 
