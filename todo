@@ -5,8 +5,8 @@ x migrate get-theinfo, process-theinfo, theinfo to riak
 x deserialize messages from hash in riak
 x queue threader
 x run threader
+  update site to sinatra
   recode site to use riak
-  update site to rails 4
 
   replace 'iconv' usage with String#encode, per warning
   migrate all lists to riak
