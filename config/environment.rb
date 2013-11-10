@@ -19,6 +19,7 @@ APP_NAME = 'chibrary'
 
 # Set up the database
 require 'config/database'
+require 'config/routes'
 
 # bring up the web stack
 require 'web/controllers/application_controller'

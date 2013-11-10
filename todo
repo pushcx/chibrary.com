@@ -20,6 +20,10 @@ x run threader
   use search to show related threads
   add riak search with solr
   move to ruby 2
+  override sinatra error pages
+  restore google analytics
+  impose a max-width
+  check design on tablets and phones
 
   can fetchmail -B -l etc get the mail?
   http://sgi.nu/enron/corpora.php
