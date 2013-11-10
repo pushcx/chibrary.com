@@ -1,3 +1,5 @@
+require_relative 'cached_hash'
+
 class InvalidSlug < RuntimeError ; end
 
 class List < CachedHash

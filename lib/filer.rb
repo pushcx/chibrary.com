@@ -1,6 +1,6 @@
 require 'yaml'
-require 'storage'
-require 'remote_connection'
+require 'lib/storage'
+require 'lib/remote_connection'
 
 class SequenceExhausted < RuntimeError ; end
 

@@ -19,6 +19,7 @@ x run threader
   extract keywords - uncommon words per thread
   use search to show related threads
   add riak search with solr
+  move to ruby 2
 
   can fetchmail -B -l etc get the mail?
   http://sgi.nu/enron/corpora.php

@@ -1,5 +1,5 @@
 class LogMessagesController < ApplicationController
-  before_filter :verify_log_passwd
+  #before_filter :verify_log_passwd
 
   def create
     @log_message = LogMessage.new params[:log_message]

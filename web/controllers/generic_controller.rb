@@ -1,5 +1,4 @@
 class GenericController < ApplicationController
-  caches_page :about, :homepage, :search
 
   def about
   end

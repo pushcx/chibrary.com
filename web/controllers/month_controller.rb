@@ -1,6 +1,5 @@
 class MonthController < ApplicationController
-  before_filter :load_list, :load_month
-  caches_page :show
+  #before_filter :load_list, :load_month
 
   def show
     @title = "#{@list['name'] or @slug} #{@year}-#{@month} archive"

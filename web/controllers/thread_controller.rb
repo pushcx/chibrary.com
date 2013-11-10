@@ -1,6 +1,5 @@
 class ThreadController < ApplicationController
-  before_filter :load_list, :load_month, :load_thread
-  caches_page :show
+  #before_filter :load_list, :load_month, :load_thread
 
   def show
     @title = "#{subject(@thread.subject)} - #{@list['name'] or @slug}"
