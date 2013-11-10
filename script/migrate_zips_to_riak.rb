@@ -4,9 +4,9 @@
 
 require 'json'
 require_relative '../lib/storage.rb'
-require_relative '../app/models/message.rb'
-require_relative '../app/models/queue.rb'
-require_relative '../app/models/cached_hash.rb'
+require_relative '../models/message.rb'
+require_relative '../models/queue.rb'
+require_relative '../models/cached_hash.rb'
 
 thread_queue = Queue.new :thread
 

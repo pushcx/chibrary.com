@@ -1,0 +1,103 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (4.0.1)
+      i18n (~> 0.6, >= 0.6.4)
+      minitest (~> 4.2)
+      multi_json (~> 1.3)
+      thread_safe (~> 0.1)
+      tzinfo (~> 0.3.37)
+    atomic (1.1.14)
+    backports (3.3.5)
+    beefcake (0.3.7)
+    builder (3.2.2)
+    coderay (1.1.0)
+    daemons (1.1.9)
+    eventmachine (1.0.3)
+    haml (4.0.4)
+      tilt
+    hpricot (0.8.6)
+    htmlentities (4.3.1)
+    i18n (0.6.5)
+    innertube (1.0.2)
+    metaclass (0.0.1)
+    method_source (0.8.2)
+    minitest (4.7.5)
+    mocha (0.14.0)
+      metaclass (~> 0.0.1)
+    multi_json (1.8.2)
+    net-sftp (2.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.7.0)
+    permutation (0.1.8)
+    pry (0.9.12.3)
+      coderay (~> 1.0)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    rack (1.5.2)
+    rack-protection (1.5.1)
+      rack
+    rack-test (0.6.2)
+      rack (>= 1.0)
+    rake (10.1.0)
+    redgreen (1.2.2)
+    riak-client (1.4.2)
+      beefcake (~> 0.3.7)
+      builder (>= 2.1.2)
+      i18n (>= 0.4.0)
+      innertube (~> 1.0.2)
+      multi_json (~> 1.0)
+    rmail (1.0.0)
+    shotgun (0.9)
+      rack (>= 1.0)
+    sinatra (1.4.4)
+      rack (~> 1.4)
+      rack-protection (~> 1.4)
+      tilt (~> 1.3, >= 1.3.4)
+    sinatra-contrib (1.4.1)
+      backports (>= 2.0)
+      multi_json
+      rack-protection
+      rack-test
+      sinatra (~> 1.4.0)
+      tilt (~> 1.3)
+    sinatra-partial (0.4.0)
+      sinatra
+    slop (3.4.6)
+    test-unit (2.5.5)
+    thin (1.6.1)
+      daemons (>= 1.0.9)
+      eventmachine (>= 1.0.0)
+      rack (>= 1.0.0)
+    thread_safe (0.1.3)
+      atomic
+    tidy (1.1.2)
+    tilt (1.4.1)
+    tzinfo (0.3.38)
+    zipruby (0.3.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activesupport
+  haml
+  hpricot
+  htmlentities
+  mocha
+  net-sftp
+  net-ssh
+  permutation
+  pry
+  rake
+  redgreen
+  riak-client
+  rmail
+  shotgun
+  sinatra
+  sinatra-contrib
+  sinatra-partial
+  test-unit
+  thin
+  tidy
+  zipruby
