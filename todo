@@ -16,6 +16,7 @@ x get /search
   get /:slug
   get /:slug/:year
 - get /:slug/:year/:call_number
+  search and replace all instances of 'listlibrary'
 
   rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
@@ -36,7 +37,9 @@ x get /search
   restore google analytics
 x impose a max-width
   check design on tablets and phones
+  deploy
+  set up forwarding for listlibrary.net/org to chibrary
 
   can fetchmail -B -l etc get the mail?
-  http://sgi.nu/enron/corpora.php
+  https://www.cs.cmu.edu/~enron/
 
