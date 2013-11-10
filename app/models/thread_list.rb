@@ -5,9 +5,9 @@ class ThreadList
     @slug, @year, @month = slug, year, month
 
     begin
-      data = $archive[key] 
-      @threads      = data[:threads]
-      @call_numbers = data[:call_numbers]
+      data = $riak[key] 
+      @threads      = data['threads']
+      @call_numbers = data['call_numbers']
     rescue NotFound
       @threads      = []
       @call_numbers = {}
@@ -70,12 +70,12 @@ class ThreadList
   end
 
   def store
-    $archive[key] = { :threads => @threads, :call_numbers => @call_numbers } unless @call_numbers.empty?
+    $riak[key] = { :threads => @threads, :call_numbers => @call_numbers } unless @call_numbers.empty?
   end
 
   def self.year_counts slug
     years = {}
-    thread_lists = $archive["list/#{slug}/thread_list"]
+    thread_lists = $riak.list "list/#{slug}/thread_list"
     thread_lists.each(true) do |key|
       next unless key =~ /^\d{4}\/\d{2}$/
       year, month = key.split('/')

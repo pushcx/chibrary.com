@@ -2,10 +2,14 @@
 
 require 'tempfile'
 
+require_relative '../app/models/container'
+require_relative '../app/models/message'
 require_relative '../app/models/queue'
 require_relative '../app/models/list'
 require_relative '../app/models/thread_list'
 require_relative '../app/models/thread_set'
+require_relative '../lib/log'
+require_relative '../lib/time_'
 
 class Threader
   def initialize
@@ -41,7 +45,7 @@ class Threader
 
       # add messages
       added.each do |key|
-        threadset << $archive["list/#{slug}/message/#{year}/#{month}/#{key}"]
+        threadset << $riak[key]#["list/#{slug}/message/#{year}/#{month}/#{key}"]
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?

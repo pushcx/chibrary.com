@@ -11,22 +11,22 @@ class List < CachedHash
 
   def cached_message_list year, month
     begin
-      $archive[month_list_key(year, month)] or []
+      $riak[month_list_key(year, month)] or []
     rescue NotFound
       []
     end
   end
 
   def fresh_message_list year, month
-    $archive["list/#{@slug}/message/#{year}/#{month}"].collect.sort
+    $riak.list "list/#{@slug}/message/#{year}/#{month}"
   end
 
   def cache_message_list year, month, message_list
-    $archive[month_list_key(year, month)] = message_list
+    $riak[month_list_key(year, month)] = message_list
   end
 
   def thread year, month, call_number
-    $archive["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
+    $riak["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
   end
 
   def thread_list year, month

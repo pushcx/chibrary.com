@@ -1,3 +1,4 @@
+require_relative 'cached_hash'
 
 JOB_TYPES = {
   :thread => {
@@ -27,7 +28,7 @@ class Job
   end
 
   def delete
-    $archive.delete["queue/#{key}"]
+    $riak.delete "queue/#{key}"
   end
 end
 
@@ -61,13 +62,13 @@ class Queue
 
       begin
         yield job
-      rescue Exception => e
-        queue[key] = job
-        in_progress.delete key
-        puts "returning #{key} to queue, caught: #{e.class} #{e}\n" + e.backtrace.join("\n")
-        return nil # stop execution
-      else
-        in_progress.delete key
+      #rescue Exception => e
+      #  queue[key] = job
+      #  in_progress.delete key
+      #  puts "returning #{key} to queue, caught: #{e.class} #{e}\n" + e.backtrace.join("\n")
+      #  return nil # stop execution
+      #else
+      #  in_progress.delete key
       end
     end
   end

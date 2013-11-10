@@ -10,8 +10,8 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new(slug, year, month)
-    return threadset unless $archive.has_key? "list/#{slug}/thread/#{year}/#{month}"
-    threads = $archive["list/#{slug}/thread/#{year}/#{month}"]
+    return threadset unless $riak.has_key? "list/#{slug}/thread/#{year}/#{month}"
+    threads = $riak["list/#{slug}/thread/#{year}/#{month}"]
     threads.each do |key|
       thread = threads[key]
       thread.each { |c| threadset.containers[c.message_id] = c }
@@ -198,7 +198,10 @@ class ThreadSet
     # cache each thread
     thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
-      thread.cache
+      # TODO attempting to cache the thread causes an infinite recursion
+      # because a thread is a tree structure where a parent knows its children
+      # and children know their parents. so... skipping for now
+      #thread.cache
       thread_list.add_thread thread
     end
     @redirected_threads.each do |redirect|
@@ -252,7 +255,7 @@ class ThreadSet
     @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
 
     # remove from this storage
-    $archive.delete(thread.key) unless thread.empty_tree?
+    $riak.delete(thread.key) unless thread.empty_tree?
     thread.each { |c| @containers.delete(c.message_id) }
     flush_threading
   end

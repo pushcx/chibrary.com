@@ -1,5 +1,7 @@
 # based on http://www.jwz.org/doc/threading.html
 
+require 'active_support/core_ext/enumerable'
+
 # Each container holds 0 or 1 messages, so that we can build a thread's tree from
 # References and In-Reply-To headers even before seeing all of the messages.
 class Container
@@ -22,6 +24,13 @@ class Container
   end
 
   def to_yaml_properties ; %w{@message_id @key @parent @children}.sort! ; end
+  def to_hash
+    Hash[
+     %w{message_id key children}.map do |key|
+      [key, self.send(key)]
+     end
+    ]
+  end
 
   # container accessors
 
@@ -57,7 +66,7 @@ class Container
   def message
     # To save disk, threads do not save full message contents,
     # just lazy load them when needed.
-    @message ||= $archive[@key] if @key
+    @message ||= $riak[@key] if @key
     @message
   end
 
@@ -152,12 +161,14 @@ class Container
 
   def cache
     return if empty_tree?
-    yaml = self.to_yaml
+    hash = self.to_hash
+    $riak[key] = hash
+    json = self.serialize.to_json
     begin
-      return if $archive[key].to_yaml.size == yaml.size
+      return if $riak[key].to_json.size == json.size
     rescue NotFound ; end
 
-    $archive[key] = yaml
+    $riak[key] = json
     cache_snippet
   end
 
@@ -177,15 +188,15 @@ class Container
     # Don't write snippet if it won't be in top 30. It would be cleaned up,
     # but loading old archives could exhaust the available inodes.
     return if last_snippet_key("snippet/list/#{slug}").to_i > name
-    $archive["snippet/list/#{slug}/#{name}"] = snippet
+    $riak["snippet/list/#{slug}/#{name}"] = snippet
     return if last_snippet_key("snippet/homepage").to_i > name
-    $archive["snippet/homepage/#{name}"] = snippet
+    $riak["snippet/homepage/#{name}"] = snippet
   end
 
   def last_snippet_key path
     last_key = 0
     begin
-      $archive[path].each_with_index { |key, i| last_key = key ; break if i >= 30 }
+      $riak[path].each_with_index { |key, i| last_key = key ; break if i >= 30 }
     rescue NotFound ; end
     return last_key
   end

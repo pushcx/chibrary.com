@@ -36,18 +36,18 @@ class Log
   private
 
   def log status, message
-    response = Net::HTTP.post_form(URI.parse('http://listlibrary.net/log.php'), {
-      'passwd'  => LOG_PASSWD,
-      'log_message' => {
-        'server'  => @@server,
-        'pid'     => Process.pid,
-        'key'     => @key,
-        'worker'  => @worker,
-        'status'  => status,
-        'message' => message,
-      }
-    })
-    raise "couldn't log: #{response.body}" unless response.body == '1'
+    #response = Net::HTTP.post_form(URI.parse('http://listlibrary.net/log.php'), {
+    #  'passwd'  => LOG_PASSWD,
+    #  'log_message' => {
+    #    'server'  => @@server,
+    #    'pid'     => Process.pid,
+    #    'key'     => @key,
+    #    'worker'  => @worker,
+    #    'status'  => status,
+    #    'message' => message,
+    #  }
+    #})
+    #raise "couldn't log: #{response.body}" unless response.body == '1'
     puts '  ' * @depth + "#{@key}: #{message}"
     message
   end

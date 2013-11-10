@@ -1,3 +1,5 @@
+require_relative '../../lib/storage'
+
 class CachedHash
   attr_reader :prefix
 

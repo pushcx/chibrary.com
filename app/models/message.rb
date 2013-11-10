@@ -28,7 +28,7 @@ class Message
     else
       @overwrite = :do
       if message.is_a? String # initialized with a url
-        m = $archive[message]
+        m = $riak[message]
       elsif message.is_a? Message
         m = message
       else
@@ -118,7 +118,7 @@ class Message
 
   def store
     unless @overwrite == :do
-      attempted = $archive.has_key? @key
+      attempted = $riak.has_key? @key
       return self if attempted and @overwrite == :dont
       if @overwrite == :new
         generate_message_id
@@ -127,7 +127,7 @@ class Message
         raise "overwrite attempted for listlibrary_archive #{@key}" if attempted and @overwrite == :error
       end
     end
-    $archive[@key] = self
+    $riak[@key] = self.to_hash
     self
   end
 

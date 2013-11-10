@@ -111,8 +111,6 @@ class ZDir
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
         ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
-      elsif path =~ /\.tcb$/
-        Cabinet.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       end
     end
   end
@@ -138,8 +136,6 @@ class ZDir
       full_path = dirs.shift
       while dir = dirs.shift do
         full_path += "/#{dir}"
-        cabinet_path = full_path + ".tcb"
-        return Cabinet.new(cabinet_path)[dirs.join('/')] if File.exists? cabinet_path
         zip_path = full_path + ".zip"
         return ZZip.new(zip_path)[dirs.join('/')] if File.exists? zip_path
       end
@@ -211,11 +207,15 @@ class Bucket
     @bucket.keys.each { |k| return k }
   end
 
+  def list prefix
+    @bucket.get_index('path_bin', "#{prefix}/ ".."#{prefix}/~").to_a
+  end
+
   def [] path
     return self if path.blank?
-    raise NotFound unless has_key? path
+    raise NotFound, path unless has_key? path
     hash = @bucket[path].data
-    if hash['class']
+    if hash.is_a? Hash and hash['class']
         return Kernel.const_get(hash['class']).deserialize(hash)
       else
         return hash
