@@ -5,9 +5,19 @@ x migrate get-theinfo, process-theinfo, theinfo to riak
 x deserialize messages from hash in riak
 x queue threader
 x run threader
-  update site to sinatra
-  recode site to use riak
+x update site to sinatra
+x recode site to use riak
 
+x get /about
+x get /search
+  get /
+  put /flags
+  put /log
+  get /:slug
+  get /:slug/:year
+- get /:slug/:year/:call_number
+
+  rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew
