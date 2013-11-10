@@ -4,7 +4,7 @@ x write a first riak backend
 x migrate get-theinfo, process-theinfo, theinfo to riak
 x deserialize messages from hash in riak
 x queue threader
-  run threader
+x run threader
   recode site to use riak
   update site to rails 4
 

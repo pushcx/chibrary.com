@@ -198,10 +198,7 @@ class ThreadSet
     # cache each thread
     thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
-      # TODO attempting to cache the thread causes an infinite recursion
-      # because a thread is a tree structure where a parent knows its children
-      # and children know their parents. so... skipping for now
-      #thread.cache
+      thread.cache
       thread_list.add_thread thread
     end
     @redirected_threads.each do |redirect|

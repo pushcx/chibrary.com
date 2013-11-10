@@ -211,6 +211,11 @@ class Bucket
     @bucket.get_index('path_bin', "#{prefix}/ ".."#{prefix}/~").to_a
   end
 
+  def sizeof path
+    return 0 unless has_key? path
+    @bucket[path].raw_data.size
+  end
+
   def [] path
     return self if path.blank?
     raise NotFound, path unless has_key? path

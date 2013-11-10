@@ -20,7 +20,7 @@ Dir['archive/old_list/*'].each do |list_path|
   zdir.each(true) do |key|
     # skip dirs - why did I want that yielded in the first place?
     next unless File.file? "#{list_path}/#{key}"
-    puts key
+    #puts key
     message = zdir[key]
     $riak["list/#{slug}/#{key}"] = message.to_hash
 

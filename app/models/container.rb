@@ -25,11 +25,19 @@ class Container
 
   def to_yaml_properties ; %w{@message_id @key @parent @children}.sort! ; end
   def to_hash
-    Hash[
-     %w{message_id key children}.map do |key|
-      [key, self.send(key)]
-     end
-    ]
+    {
+      message_id: message_id,
+      key: key,
+      children: children.map(&:to_hash),
+    }
+  end
+
+  def self.deserialize hash
+    c = self.new hash['message_id']
+    c.key = hash['key']
+    hash['children'].each do |child|
+      adopt Container.deserialize(child)
+    end
   end
 
   # container accessors
@@ -161,11 +169,9 @@ class Container
 
   def cache
     return if empty_tree?
-    hash = self.to_hash
-    $riak[key] = hash
-    json = self.serialize.to_json
+    json = self.to_hash.to_json
     begin
-      return if $riak[key].to_json.size == json.size
+      return if $riak.sizeof(key) == hash.size
     rescue NotFound ; end
 
     $riak[key] = json
