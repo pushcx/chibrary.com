@@ -34,7 +34,7 @@ x get /search
   replace 1.8 hash syntax with 1.9
   override sinatra error pages
   restore google analytics
-  impose a max-width
+x impose a max-width
   check design on tablets and phones
 
   can fetchmail -B -l etc get the mail?
