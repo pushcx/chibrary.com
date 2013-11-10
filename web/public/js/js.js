@@ -15,9 +15,9 @@ $(function() {
   $('ol.threads ol.thread_list').addClass('closed');
 
   // thread_list: show vertical line to pick out siblings
-  $('ol.thread_list').mouseout(function(){
+  $('ol.thread_list').on('mouseout', function(){
     $(this).css('background-position', '-1px 0px');
-  }).delegate('li', 'mouseover', function(){
+  }).on('mouseover', 'li', function(){
     var li = $(this), indent = li.attr('indent');
     if (typeof indent == 'undefined') {
       indent = li.find('span.indent').css('width');
