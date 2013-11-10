@@ -1,18 +1,18 @@
-class GenericController < ApplicationController
-
-  def about
+get '/' do
+  @lists = []
+  $riak.list('list').each do |slug|
+    @lists << List.new(slug) if $riak.has_key? "list/#{slug}/thread" and not slug =~ /^_/
   end
 
-  def homepage
-    @lists = []
-    $archive['list'].each do |slug|
-      @lists << List.new(slug) if $archive.has_key? "list/#{slug}/thread" and not slug =~ /^_/
-    end
+  @snippets = []
+  #$riak.list('snippet/homepage').each_with_index { |key, i| @snippets << $riak["snippet/homepage/#{key}"] ; break if i >= 30 }
+  haml :'generic/homepage.html'
+end
 
-    @snippets = []
-    $archive['snippet/homepage'].each_with_index { |key, i| @snippets << $archive["snippet/homepage/#{key}"] ; break if i >= 30 }
-  end
+get '/about' do
+  haml :'generic/about.html'
+end
 
-  def search
-  end
+get '/search' do
+  haml :'generic/search.html'
 end
