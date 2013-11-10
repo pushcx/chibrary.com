@@ -15,13 +15,14 @@ require 'pathname'
 
 # Some helper constants for path-centric logic
 APP_ROOT = Pathname.new(__FILE__)
+APP_NAME = 'chibrary'
 
 # Set up the database
 require 'config/database'
 
 # bring up the web stack
 require 'web/controllers/application_controller'
-Dir['web/*/*.rb'].each { |file| require file }
+Dir['web/controllers/*.rb', 'web/helpers/*.rb'].each { |file| require file }
 
 # load all the app's libs, which do not all use constants to get autoloaded
 Dir["lib/*.rb"].each    { |l| require l }
