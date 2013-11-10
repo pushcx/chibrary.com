@@ -15,6 +15,10 @@
 #  map.connect ':slug/:year/:month/:call_number', :controller => 'thread', :action => 'show'
 #end
 
+before do
+  @title = "ListLibrary.net - Free Mailing List Archives"
+end
+
 get '/about' do
   haml :'generic/about.html'
 end
