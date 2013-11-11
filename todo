@@ -10,14 +10,15 @@ x recode site to use riak
 
 x get /about
 x get /search
+- get /:slug/:year/:call_number
+  get /:slug/:year
+  get /:slug
   get /
+  search and replace all instances of 'listlibrary'
   put /flags
   put /log
-  get /:slug
-  get /:slug/:year
-- get /:slug/:year/:call_number
-  search and replace all instances of 'listlibrary'
 
+  update text on about page
   rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
   migrate all lists to riak
