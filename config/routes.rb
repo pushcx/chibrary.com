@@ -8,7 +8,6 @@
 #
 #  map.connect ':slug',                           :controller => 'list',   :action => 'show'
 #  map.connect ':slug/:year',                     :controller => 'list',   :action => 'year_redirect'
-#  map.connect ':slug/:year/:month',              :controller => 'month',  :action => 'show'
 #end
 
 before do
@@ -74,4 +73,26 @@ def thread_previous_next(slug, year, month, call_number)
   end
 
   [previous_link, next_link]
+end
+
+def month_previous_next(slug, year, month)
+  list = List.new(slug)
+
+  p = Time.utc(year, month).plus_month(-1)
+  p_month = "%02d" % p.month
+  if list.thread_list(p.year, p_month).message_count > 0
+    p_link = "<a href=\"/#{slug}/#{p.year}/#{p_month}\">#{p.year}-#{p_month}</a>"
+  else
+    p_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
+  end
+
+  n = Time.utc(year, month).plus_month(1)
+  n_month = "%02d" % n.month
+  if list.thread_list(n.year, n_month).message_count > 0
+    n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}\">#{n.year}-#{n_month}</a>"
+  else
+    n_link = "<a class=\"none\" href=\"/#{slug}\">archive</a>"
+  end
+
+  return [p_link, n_link]
 end

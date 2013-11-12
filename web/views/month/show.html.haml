@@ -12,7 +12,7 @@
       .header
         %span.count= thread.count
         %a.subject{ :href => "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}" }= subject(thread)
-      = render :partial => 'thread_list', :locals => { :thread => thread }
+      = partial :'month/_thread_list.html', :locals => { :thread => thread }
 
 -# .panel
   :plain
@@ -26,4 +26,4 @@
     //--></script>
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
-= render :partial => 'previous_next', :locals => { :previous_link => @previous_link, :next_link => @next_link }
+= partial :'month/_previous_next.html', :locals => { :previous_link => @previous_link, :next_link => @next_link }

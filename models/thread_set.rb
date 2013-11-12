@@ -10,10 +10,9 @@ class ThreadSet
 
   def self.month slug, year, month
     threadset = ThreadSet.new(slug, year, month)
-    return threadset unless $riak.has_key? "list/#{slug}/thread/#{year}/#{month}"
-    threads = $riak["list/#{slug}/thread/#{year}/#{month}"]
+    threads = $riak.list("list/#{slug}/thread/#{year}/#{month}")
     threads.each do |key|
-      thread = threads[key]
+      thread = $riak[key]
       thread.each { |c| threadset.containers[c.message_id] = c }
     end
     threadset
