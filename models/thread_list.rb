@@ -76,9 +76,9 @@ class ThreadList
   def self.year_counts slug
     years = {}
     thread_lists = $riak.list "list/#{slug}/thread_list"
-    thread_lists.each(true) do |key|
-      next unless key =~ /^\d{4}\/\d{2}$/
-      year, month = key.split('/')
+    thread_lists.each do |key|
+      next unless key =~ /\d{4}\/\d{2}$/
+      year, month = key.split('/')[-2..-1]
       thread_list = ThreadList.new slug, year, month
       years[year] ||= {}
       years[year][month] = { :threads => thread_list.thread_count, :messages => thread_list.message_count }

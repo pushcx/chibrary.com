@@ -13,7 +13,7 @@ x get /search
 x get /:slug/:year/:month/:call_number
 x get /:slug/:year/:month
 x get /:slug/:year
-  get /:slug
+x get /:slug
   get /
   search and replace all instances of 'listlibrary'
   search and replace all instances of 'mail' with 'email'
@@ -47,6 +47,7 @@ x impose a max-width
   combine css stylesheets; make print stylesheet
   deploy
   set up forwarding for listlibrary.net/org to chibrary
+  update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
 
   can fetchmail -B -l etc get the mail?
   https://www.cs.cmu.edu/~enron/

@@ -6,7 +6,6 @@
 #  map.resources :flags, :only => [ :create ]
 #  map.resources :log, :only => [ :create ]
 #
-#  map.connect ':slug',                           :controller => 'list',   :action => 'show'
 #end
 
 before do
@@ -94,4 +93,18 @@ def month_previous_next(slug, year, month)
   end
 
   return [p_link, n_link]
+end
+
+def load_list_snippets
+  @snippets = []
+  begin
+    $archive["snippet/list/#{@slug}"].each_with_index { |key, i| @snippets << $archive["snippet/list/#{@slug}/#{key}"] ; break if i >= 30 }
+  rescue NotFound ; end
+end
+
+
+helpers do
+  def h(text)
+    Rack::Utils.escape_html(text)
+  end
 end
