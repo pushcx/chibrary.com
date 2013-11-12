@@ -10,7 +10,8 @@ x recode site to use riak
 
 x get /about
 x get /search
-x get /:slug/:year/:call_number
+x get /:slug/:year/:month/:call_number
+  get /:slug/:year/:month
   get /:slug/:year
   get /:slug
   get /
