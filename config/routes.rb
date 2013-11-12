@@ -7,7 +7,6 @@
 #  map.resources :log, :only => [ :create ]
 #
 #  map.connect ':slug',                           :controller => 'list',   :action => 'show'
-#  map.connect ':slug/:year',                     :controller => 'list',   :action => 'year_redirect'
 #end
 
 before do

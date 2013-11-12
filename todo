@@ -12,7 +12,7 @@ x get /about
 x get /search
 x get /:slug/:year/:month/:call_number
 x get /:slug/:year/:month
-  get /:slug/:year
+x get /:slug/:year
   get /:slug
   get /
   search and replace all instances of 'listlibrary'
