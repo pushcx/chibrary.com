@@ -14,7 +14,7 @@ x get /:slug/:year/:month/:call_number
 x get /:slug/:year/:month
 x get /:slug/:year
 x get /:slug
-  get /
+- get / - missing list of mailing lists
   search and replace all instances of 'listlibrary'
   search and replace all instances of 'mail' with 'email'
   put /flags
