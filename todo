@@ -20,7 +20,7 @@ x get /:slug
   put /flags
   put /log
 
-  download jwz threading doc and put it in doc/
+x download jwz threading doc and put it in doc/
   do Table Data Gateway pattern for riak access
   add precaching metadata to thread_previous_next link maker
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
@@ -48,7 +48,7 @@ x impose a max-width
   deploy
   set up forwarding for listlibrary.net/org to chibrary
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
+  spam filtering
 
   can fetchmail -B -l etc get the mail?
   https://www.cs.cmu.edu/~enron/
-
