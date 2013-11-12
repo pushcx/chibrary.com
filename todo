@@ -38,6 +38,7 @@ x get /search
   restore google analytics
 x impose a max-width
   check design on tablets and phones
+  combine css stylesheets; make print stylesheet
   deploy
   set up forwarding for listlibrary.net/org to chibrary
 
