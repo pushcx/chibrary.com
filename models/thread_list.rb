@@ -98,13 +98,13 @@ class ThreadList
   end
 
   def thread_index_of call_number
-    @threads.each_with_index { |thread, i| return i if thread[:call_number] == call_number }
+    @threads.each_with_index { |thread, i| return i if thread['call_number'] == call_number }
     raise RuntimeError, "Thread #{call_number} not in ThreadList #{@slug}/#{@year}/#{@month}"
   end
 
   def bundle_thread thread, year, month
     # returns the hash of only what the controller needs, or nil if there isn't a next/previous thread
     return nil if thread.nil?
-    return { :slug => @slug, :year => year, :month => month, :call_number => thread[:call_number], :subject => thread[:subject] }
+    return { :slug => @slug, :year => year, :month => month, :call_number => thread['call_number'], :subject => thread['subject'] }
   end
 end

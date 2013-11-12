@@ -9,7 +9,6 @@
 #  map.connect ':slug',                           :controller => 'list',   :action => 'show'
 #  map.connect ':slug/:year',                     :controller => 'list',   :action => 'year_redirect'
 #  map.connect ':slug/:year/:month',              :controller => 'month',  :action => 'show'
-#  map.connect ':slug/:year/:month/:call_number', :controller => 'thread', :action => 'show'
 #end
 
 before do

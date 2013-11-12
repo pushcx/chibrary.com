@@ -10,7 +10,7 @@ x recode site to use riak
 
 x get /about
 x get /search
-- get /:slug/:year/:call_number
+x get /:slug/:year/:call_number
   get /:slug/:year
   get /:slug
   get /
@@ -18,6 +18,9 @@ x get /search
   put /flags
   put /log
 
+  do Table Data Gateway pattern for riak access
+  add precaching metadata to thread_previous_next link maker
+  false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   update text on about page
   rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
