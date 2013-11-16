@@ -21,8 +21,8 @@ APP_NAME = 'chibrary'
 require 'config/routes'
 
 # bring up the web stack
-require 'web/controllers/application_controller'
-Dir['web/controllers/*.rb', 'web/helpers/*.rb'].each { |file| require file }
+require 'web/controller/application_controller'
+Dir['web/controller/*.rb', 'web/helpers/*.rb'].each { |file| require file }
 
 # load all the app's libs, which do not all use constants to get autoloaded
 Dir["lib/*.rb"].each    { |l| require l }

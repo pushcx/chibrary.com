@@ -1,4 +1,4 @@
-class LogMessagesController < ApplicationController
+class LogMessageController < ApplicationController
   #before_filter :verify_log_passwd
 
   def create
