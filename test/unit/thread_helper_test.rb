@@ -23,7 +23,7 @@ class ThreadHelperTest < ActionView::TestCase
   end
 
   should "compress quotes" do
-    filename = File.join(File.dirname(__FILE__), '..', 'fixtures', "quoting.yaml")
+    filename = File.join(File.dirname(__FILE__), '..', 'fixture', "quoting.yaml")
     YAML::load_file(filename).each do |name, quote|
       assert_equal quote['expect'], compress_quotes(f(quote['input'])), "testcase: #{name}"
     end

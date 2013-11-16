@@ -113,7 +113,7 @@ class ThreadSetTest < ThreadingTest
   end
 
   should 'thread a complex tree' do
-    messages = YAML::load_file( File.join(File.dirname(__FILE__), '..', 'fixtures', "complex_thread.yaml") )
+    messages = YAML::load_file( File.join(File.dirname(__FILE__), '..', 'fixture', "complex_thread.yaml") )
     messages.each { |m| @ts << Message.new(m, 'test', '00000000') }
 
     # confirm that no extra threads are created or missed

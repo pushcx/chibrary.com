@@ -3,7 +3,7 @@ require 'test_helper'
 class ZipFileTest < ActiveSupport::TestCase
   context 'a zip file' do
     setup do
-      FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
+      FileUtils.cp('test/fixture/example.zip', '/tmp/test.zip')
     end
 
     teardown do
@@ -61,7 +61,7 @@ end
 class ZZipTest < ActiveSupport::TestCase
   context 'a zip file' do
     setup do 
-      FileUtils.cp('test/fixtures/example.zip', '/tmp/test.zip')
+      FileUtils.cp('test/fixture/example.zip', '/tmp/test.zip')
       @z = ZZip.new("/tmp/test.zip")
     end
 
@@ -114,7 +114,7 @@ end
 class ZDirTest < ActiveSupport::TestCase
   context 'a zdir' do
     setup do
-      FileUtils.cp_r('test/fixtures/example_dir', '/tmp/test')
+      FileUtils.cp_r('test/fixture/example_dir', '/tmp/test')
       @z = ZDir.new('/tmp/test')
     end
 
@@ -198,7 +198,7 @@ class CabinetTest < ActiveSupport::TestCase
   context "working with a cabinet" do
     setup do
       @path = "/tmp/test.tcb"
-      FileUtils.cp 'test/fixtures/example.tcb', @path
+      FileUtils.cp 'test/fixture/example.tcb', @path
       @cabinet = Cabinet.new @path
     end
 
