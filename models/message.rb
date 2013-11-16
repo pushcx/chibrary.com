@@ -1,7 +1,6 @@
 require 'rmail'
 
 require 'base64'
-require 'iconv'
 require 'time'
 
 class Message
@@ -148,11 +147,7 @@ class Message
   private
 
   def self.charset_convert charset, text
-    begin
-      Iconv.conv('utf-8', charset, text)
-    rescue Iconv::InvalidEncoding, Iconv::IllegalSequence, Iconv::InvalidCharacter
-      text
-    end
+    text.encode("UTF-8", :invalid => :replace, :undef => :replace).force_encoding('UTF-8')
   end
 
   def self.encoded_word str

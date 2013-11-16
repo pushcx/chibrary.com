@@ -24,7 +24,7 @@ x download jwz threading doc and put it in doc/
 x rip out all postgres functionality, replace with riak
 x impose a max-width
 x add precaching metadata to month/thread_previous_next link maker
-  replace 'iconv' usage with String#encode, per warning
+x replace 'iconv' usage with String#encode, per warning
   do Table Data Gateway pattern for riak access
   standardize the to_hash/deserialize mismatch
   rekey all call numbers to be base62; drop _ and - in ids
