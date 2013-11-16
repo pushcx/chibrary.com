@@ -2,12 +2,12 @@
 
 require 'tempfile'
 
-require_relative '../models/container'
-require_relative '../models/message'
-require_relative '../models/queue'
-require_relative '../models/list'
-require_relative '../models/thread_list'
-require_relative '../models/thread_set'
+require_relative '../model/container'
+require_relative '../model/message'
+require_relative '../model/queue'
+require_relative '../model/list'
+require_relative '../model/thread_list'
+require_relative '../model/thread_set'
 require_relative '../lib/log'
 require_relative '../lib/time_'
 
