@@ -25,7 +25,7 @@ x download jwz threading doc and put it in doc/
   add precaching metadata to thread_previous_next link maker
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   update text on about page
-  rip out all postgres functionality, replace with riak
+x rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew
