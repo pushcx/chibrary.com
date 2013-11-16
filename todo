@@ -22,11 +22,12 @@ x get /:slug
 
 x download jwz threading doc and put it in doc/
   do Table Data Gateway pattern for riak access
-  add precaching metadata to thread_previous_next link maker
+x add precaching metadata to month/thread_previous_next link maker
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   update text on about page
 x rip out all postgres functionality, replace with riak
   replace 'iconv' usage with String#encode, per warning
+  convert to html5
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew
   rekey all call numbers to be base62; drop _ and - in ids

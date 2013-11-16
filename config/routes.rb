@@ -51,23 +51,24 @@ def load_thread
 end
 
 def thread_previous_next(slug, year, month, call_number)
-  def thread_link thread
-    "<a href=\"/#{thread[:slug]}/#{thread[:year]}/#{thread[:month]}/#{thread[:call_number]}\">#{f(subject(thread[:subject]))}</a>"
+  def thread_link thread, type
+    rel = type ? " rel='#{type} prefetch'" : ''
+    "<a href='/#{thread[:slug]}/#{thread[:year]}/#{thread[:month]}/#{thread[:call_number]}' #{rel}>#{f(subject(thread[:subject]))}</a>"
   end
   thread_list = ThreadList.new(slug, year, month)
 
   if previous_thread = thread_list.previous_thread(call_number)
-    previous_link = "&lt; #{thread_link(previous_thread)}"
+    previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
     previous_link += "<br />#{previous_thread[:year]}-#{previous_thread[:month]}" if previous_thread[:year] != year or previous_thread[:month] != month
   else
-    previous_link = "<a class=\"none\" href=\"/#{slug}\">list</a>"
+    previous_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
   end
 
   if next_thread = thread_list.next_thread(call_number)
-    next_link = "#{thread_link(next_thread)} &gt;"
+    next_link = "#{thread_link(next_thread, :next)} &gt;"
     next_link += "<br />#{next_thread[:year]}-#{next_thread[:month]}" if next_thread[:year] != year or next_thread[:month] != month
   else
-    next_link = "<a class=\"none\" href=\"/#{slug}\">list</a>"
+    next_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
   end
 
   [previous_link, next_link]
@@ -79,17 +80,17 @@ def month_previous_next(slug, year, month)
   p = Time.utc(year, month).plus_month(-1)
   p_month = "%02d" % p.month
   if list.thread_list(p.year, p_month).message_count > 0
-    p_link = "<a href=\"/#{slug}/#{p.year}/#{p_month}\">#{p.year}-#{p_month}</a>"
+    p_link = "<a href='/#{slug}/#{p.year}/#{p_month}' rel='prev'>#{p.year}-#{p_month}</a>"
   else
-    p_link = "<a class=\"none\" href=\"/#{slug}\">list</a>"
+    p_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
   end
 
   n = Time.utc(year, month).plus_month(1)
   n_month = "%02d" % n.month
   if list.thread_list(n.year, n_month).message_count > 0
-    n_link = "<a href=\"/#{slug}/#{n.year}/#{n_month}\">#{n.year}-#{n_month}</a>"
+    n_link = "<a href='/#{slug}/#{n.year}/#{n_month}' rel='next'>#{n.year}-#{n_month}</a>"
   else
-    n_link = "<a class=\"none\" href=\"/#{slug}\">list</a>"
+    n_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
   end
 
   return [p_link, n_link]
