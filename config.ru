@@ -5,7 +5,7 @@ set :app_file, __FILE__
 set :haml, format: :html5, layout: :'layouts/application.html'
 
 configure do
-  set :views, 'web/views'
+  set :views, 'web/view'
   set :public_folder, 'web/public'
 end
 
