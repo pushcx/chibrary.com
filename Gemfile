@@ -28,10 +28,7 @@ gem 'rmail'
 gem 'tidy'
 
 group :test do
-  gem 'test-unit'
-  gem 'mocha'
+  gem 'rspec'
   gem 'permutation'
-  gem 'redgreen'
-  #gem 'rspec'
   gem 'pry'
 end
