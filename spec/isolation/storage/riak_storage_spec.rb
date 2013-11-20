@@ -1,17 +1,56 @@
 require_relative '../../rspec'
 require_relative '../../../model/storage/riak_storage'
 
-stored_riak_client = $riak_client
-$riak_client = FakeStorage.new
-
 describe RiakStorage do
+
   class ExampleStorage
     include RiakStorage
+    def key ; '/key' ; end
+    def to_hash ; {} ; end
   end
 
   it 'gives the storage class a bucket named for the model' do
+    client = double('client')
+    client.should_receive('bucket').with('example').and_return(double('bucket', name: 'example'))
+    ExampleStorage.should_receive(:db_client).and_return(client)
     expect(ExampleStorage.new.bucket.name).to eq('example')
   end
-end
 
-$riak_client = stored_riak_client
+  describe "#store" do
+    let(:list) { List.new('slug', 'name', 'description', 'homepage') }
+    let(:list_storage) { ListStorage.new(list) }
+
+    it "puts it in the bucket" do
+      es = ExampleStorage.new
+      bucket = double('bucket')
+      bucket.should_receive(:[]=).with('/key', {})
+      es.should_receive(:bucket).and_return(bucket)
+      es.store
+    end
+
+  end
+
+  describe 'incomplete user' do
+    class IncompleteStorage
+      include RiakStorage
+      # missing #key, #to_hash
+    end
+
+    it "raises on calls to #key" do
+      expect { IncompleteStorage.new.key }.to raise_error(NotImplementedError)
+    end
+
+    it "raises on calls to #to_hash" do
+      expect { IncompleteStorage.new.to_hash }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#bucket' do
+    it 'delegates to .bucket' do
+      b = double('bucket')
+      ExampleStorage.should_receive(:bucket).and_return(b)
+      expect(ExampleStorage.new.bucket).to eq(b)
+    end
+  end
+
+end
