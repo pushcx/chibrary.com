@@ -25,8 +25,15 @@ x rip out all postgres functionality, replace with riak
 x impose a max-width
 x add precaching metadata to month/thread_previous_next link maker
 x replace 'iconv' usage with String#encode, per warning
-  do Table Data Gateway pattern for riak access
-  standardize the to_hash/deserialize mismatch
+x do Table Data Gateway pattern for riak access
+x standardize the to_hash/deserialize mismatch
+  convert to riak storage:
+x   list
+    container
+    message
+    thread_list
+    thread_set
+    snippet
   rekey all call numbers to be base62; drop _ and - in ids
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew

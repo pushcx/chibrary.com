@@ -1,16 +1,23 @@
-require_relative 'cached_hash'
+require_relative 'thread_list'
 
 class InvalidSlug < RuntimeError ; end
 
-class List < CachedHash
-  attr_reader :slug
+class List
+  attr_reader :slug, :name, :description, :homepage
 
-  def initialize list
+  def initialize list, name=nil, description=nil, homepage=nil
     raise InvalidSlug, "Invalid list slug '#{list}'" unless list =~ /^[a-z0-9\-]+$/ and list.length <= 20
     @slug = list
-    super "list/#{list}"
+    @name = name
+    @description = description
+    @homepage = homepage
   end
 
+  def thread_list year, month
+    ThreadList.new @slug, year, month
+  end
+
+  # all the rest of this needs to move off into MesageList and Thread
   def cached_message_list year, month
     begin
       $riak[month_list_key(year, month)] or []
@@ -29,10 +36,6 @@ class List < CachedHash
 
   def thread year, month, call_number
     $riak["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
-  end
-
-  def thread_list year, month
-    ThreadList.new @slug, year, month
   end
 
   private
