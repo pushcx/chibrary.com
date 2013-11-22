@@ -3,40 +3,6 @@ require 'permutation'
 
 class ContainerTest < ThreadingTest
   context 'a cachedhash' do
-    setup do
-      addresses = mock('addresses')
-      addresses.expects(:[]).at_least(0).returns('example')
-      CachedHash.expects(:new).with('list_address').at_least(0).returns(addresses)
-    end
-
-    should 'export to yaml' do
-      c = Container.new Message.new(threaded_message(:root), 'test', '0000root')
-      assert !c.to_yaml.include?('Message body')
-    end
-
-    should 'cache an uncached container' do
-      c = container_tree
-      $archive.expects(:[]).raises(NotFound)
-      $archive.expects(:[]=)
-      c.expects(:cache_snippet)
-      c.cache
-    end
-
-    should 'not re-cache cached containers' do
-      c = container_tree
-      c.expects(:to_yaml).returns("yaml".to_yaml)
-      $archive.expects(:[]).returns("yaml")
-      c.cache
-    end
-
-    should 're-cache a different cached container' do
-      c = container_tree
-      c.expects(:to_yaml).returns("yaml")
-      $archive.expects(:[]).returns("old yaml")
-      $archive.expects(:[]=)
-      c.expects(:cache_snippet)
-      c.cache
-    end
 
     should 'cache a snippet' do
       c = Container.new ''

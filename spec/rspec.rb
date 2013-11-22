@@ -21,3 +21,16 @@ class FakeStorage
   end
 end
 
+class FakeMessage
+  attr_reader :message_id, :message, :key
+
+  def initialize message_id='id@example.com', message='message', key='key'
+    @message_id = message_id
+    @message = message
+    @key = key
+  end
+
+  def from ; 'from@example.com' ; end
+  def subject_is_reply? ; false ; end
+  def date ; Time.new(2013, 11, 21) ; end
+end

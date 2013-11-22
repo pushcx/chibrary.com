@@ -197,7 +197,7 @@ class ThreadSet
     # cache each thread
     thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
-      thread.cache
+      ContainerStorage.new(thread).store
       thread_list.add_thread thread
     end
     @redirected_threads.each do |redirect|

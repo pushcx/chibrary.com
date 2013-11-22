@@ -29,12 +29,13 @@ x do Table Data Gateway pattern for riak access
 x standardize the to_hash/deserialize mismatch
   convert to riak storage:
 x   list
-    container
+x   container
     message
     thread_list
     thread_set
     snippet
   migrate all tests to rspec
+  can year and month be removed from ContainerStorage keys?
   Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
   migrate all lists to riak
