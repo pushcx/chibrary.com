@@ -7,38 +7,20 @@ require 'active_support/core_ext/enumerable'
 class Container
   include Enumerable
 
-  attr_reader :message_id, :parent, :children
+  attr_reader :message_id, :parent, :children, :message_key
 
   def initialize message, message_key=nil
-    if message.is_a? Message
-      @message_id = message.message_id
-      @message    = message
-      @message_key        = (message_key || message.key)
+    if message.respond_to? :message_id
+      @message_id  = message.message_id
+      @message     = message
+      @message_key = (message_key || message.key)
     else
-      @message_id = message
-      @message    = nil
-      @message_key        = message_key
+      @message_id  = message
+      @message     = nil
+      @message_key = message_key
     end
     @parent = nil
     @children = []
-  end
-
-  def to_yaml_properties ; %w{@message_id @message_key @parent @children}.sort! ; end
-  def to_hash
-    {
-      class: 'Container',
-      message_id: @message_id,
-      message_key: @message_key,
-      children: children.map(&:to_hash),
-    }
-  end
-
-  def self.deserialize hash
-    container = self.new hash['message_id'], hash['message_key']
-    hash['children'].each do |child|
-      container.adopt Container.deserialize(child)
-    end
-    container
   end
 
   # container accessors
@@ -75,11 +57,12 @@ class Container
   def message
     # To save disk, threads do not save full message contents,
     # just lazy load them when needed.
-    @message ||= $riak[@message_key] if @message_key
+    @message ||= $riak[message_key] if message_key
     @message
   end
 
   def message= message
+    raise "Can't assign message #{message.message_id} to non-empty container #{@message_id}" unless empty?
     raise "Message id #{message.message_id} doesn't match container #{@message_id}" unless message.message_id == @message_id
     @message_id  = message.message_id
     @message     = message
@@ -91,8 +74,8 @@ class Container
   end
 
   def to_s
-    return "<empty container>" if empty?
-    return "#{message.from} - #{message.date} - #{message_id}" unless message.nil?
+    return "<container: empty #{message_id}>" if empty?
+    #return "<container: #{message.from} - #{message.date} - #{message_id}>" unless message.nil?
     return "<container: #{message_id} - #{message_key}>"
   end
 
@@ -126,9 +109,10 @@ class Container
     end
   end
 
-  # A thread may have empty containers at its root as containers are created from References.
-  # The effective root is the first container with a # message or with multiple
-  # children (meaning we've seen it referenced from multiple messages).
+  # A thread may have empty containers at its root as containers are created
+  # from References. The effective root is the first container with a message
+  # or with multiple children (meaning we've seen it referenced from multiple
+  # messages).
   def effective_root
     if empty? and @children.size == 1
       @children.first.effective_root
@@ -144,17 +128,20 @@ class Container
     end
     nil
   end
+  def slug
+    effective_field(:slug) or ''
+  end
   def call_number
-    effective_field :call_number or ''
+    effective_field(:call_number) or ''
   end
   def date
-    effective_field :date or Time.now
+    effective_field(:date) or Time.now
   end
   def subject
-    effective_field :subject or ''
+    effective_field(:subject) or ''
   end
   def n_subject
-    effective_field :n_subject or ''
+    effective_field(:n_subject) or ''
   end
 
   def empty_tree?
@@ -165,26 +152,9 @@ class Container
 
   # persistence
 
-  def key
-    slug = effective_field :slug
-    key = "list/#{slug}/thread/#{date.year}/%02d/#{call_number}" % date.month
-  end
-
-  def cache
-    return if empty_tree?
-    hash = self.to_hash
-    begin
-      return if $riak.sizeof(key) == hash.to_json.size
-    rescue NotFound ; end
-
-    $riak[key] = hash
-    cache_snippet
-  end
-
   def cache_snippet
     return if n_subject.blank?
     return if date > Time.now.utc
-    slug = effective_field(:slug)
 
     # names are descending time to make it easy to expire old snippets
     name = 9999999999 - date.utc.to_i

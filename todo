@@ -34,6 +34,8 @@ x   list
     thread_list
     thread_set
     snippet
+  migrate all tests to rspec
+  Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew
