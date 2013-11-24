@@ -5,7 +5,7 @@ module RiakStorage
     base.send :extend, ClassMethods
   end
 
-  def key
+  def extract_key
     raise NotImplementedError
   end
 
@@ -18,10 +18,14 @@ module RiakStorage
   end
 
   def store
-    bucket[key] = to_hash
+    bucket[extract_key] = to_hash
   end
 
   module ClassMethods
+    def build_key
+      raise NotImplementedError
+    end
+
     def bucket
       name = self.name.split('Storage').first.downcase
       @bucket ||= db_client.bucket(name)

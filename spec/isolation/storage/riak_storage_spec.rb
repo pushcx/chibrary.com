@@ -5,7 +5,7 @@ describe RiakStorage do
 
   class ExampleStorage
     include RiakStorage
-    def key ; '/key' ; end
+    def extract_key ; '/key' ; end
     def to_hash ; {} ; end
   end
 
@@ -33,11 +33,15 @@ describe RiakStorage do
   describe 'incomplete user' do
     class IncompleteStorage
       include RiakStorage
-      # missing #key, #to_hash
+      # missing .build_key, #extract_key, #to_hash
     end
 
-    it "raises on calls to #key" do
-      expect { IncompleteStorage.new.key }.to raise_error(NotImplementedError)
+    it "raises on calls to .build_key" do
+      expect { IncompleteStorage.build_key }.to raise_error(NotImplementedError)
+    end
+
+    it "raises on calls to #extract_key" do
+      expect { IncompleteStorage.new.extract_key }.to raise_error(NotImplementedError)
     end
 
     it "raises on calls to #to_hash" do
