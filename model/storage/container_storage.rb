@@ -10,22 +10,17 @@ class ContainerStorage
     @container = container
   end
 
-  def key
-    self.class.key container
+  def extract_key
+    slug = container.slug
+    year = container.date.year
+    month = container.date.month
+    call_number = container.call_number
+
+    "/#{slug}/#{year}/%02d/#{call_number}" % month
   end
 
-  def self.key container, year=nil, month=nil, call_number=nil
-    if container.respond_to? :slug
-      slug = container.slug
-      year = container.date.year
-      month = container.date.month
-      call_number = container.call_number
-    else
-      slug = container
-    end
-
-    # do I need year and month in here?
-    key = "/#{slug}/#{year}/%02d/#{call_number}" % month
+  def self.build_key slug, year, month, call_number
+    "/#{slug}/#{year}/%02d/#{call_number}" % month
   end
 
   def to_hash
@@ -46,12 +41,12 @@ class ContainerStorage
 
   def store
     return if container.empty_tree?
-    bucket[key] = to_hash
+    bucket[extract_key] = to_hash
     container.cache_snippet
   end
 
   def self.find slug, year, month, call_number
-    key = key(slug, year, month, call_number)
+    key = build_key(slug, year, month, call_number)
     hash = bucket[key]
     from_hash(hash)
   end

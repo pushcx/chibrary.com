@@ -5,7 +5,7 @@ describe ListStorage do
   context 'instantiated with a List' do
     it "generates a key based on list" do
       list = List.new :slug
-      expect(ListStorage.new(list).key).to eq('/slug')
+      expect(ListStorage.new(list).extract_key).to eq('/slug')
     end
 
     describe "generating a hash" do
@@ -20,14 +20,9 @@ describe ListStorage do
     end
   end
 
-  describe ".key" do
-    it "generates a key based on slug" do
-      expect(ListStorage.key('slug')).to eq('/slug')
-    end
-
-    it "generates a key based on List slug" do
-      list = List.new :slug
-      expect(ListStorage.key(list)).to eq('/slug')
+  describe ".build_key" do
+    it "builds a key based on slug" do
+      expect(ListStorage.build_key('slug')).to eq('/slug')
     end
   end
 

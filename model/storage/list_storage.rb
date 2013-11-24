@@ -10,12 +10,11 @@ class ListStorage
     @list = list
   end
 
-  def key
-    self.class.key list
+  def extract_key
+    "/#{list.slug}"
   end
 
-  def self.key list
-    slug = list.respond_to?(:slug) ? list.slug : list
+  def self.build_key slug
     "/#{slug}"
   end
 
@@ -33,7 +32,7 @@ class ListStorage
   end
 
   def self.find slug
-    key = key(slug)
+    key = build_key(slug)
     hash = bucket[key]
     from_hash(hash)
   end

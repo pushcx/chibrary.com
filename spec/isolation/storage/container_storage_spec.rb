@@ -8,9 +8,9 @@ end
 
 describe ContainerStorage do
   context 'instantiated with a Container' do
-    it 'generates a key based on the container' do
+    it 'extracts a key based on the container' do
       c = Container.new FakeStorableMessage.new('c@example.com')
-      expect(ContainerStorage.new(c).key).to eq('/slug/2013/11/call0000')
+      expect(ContainerStorage.new(c).extract_key).to eq('/slug/2013/11/call0000')
     end
 
     describe 'generating a hash' do
@@ -26,14 +26,9 @@ describe ContainerStorage do
     end
   end
 
-  describe '.key' do
-    it 'generates a key based on slug, year, month and call_number of container' do
-      c = Container.new FakeStorableMessage.new('c@example.com')
-      expect(ContainerStorage.key(c)).to eq('/slug/2013/11/call0000')
-    end
-
-    it 'generates a key based on slug, year, month and call_number' do
-      expect(ContainerStorage.key('slug', 2013, 9, 'call0000')).to eq('/slug/2013/09/call0000')
+  describe '.build_key' do
+    it 'builds a key based on slug, year, month and call_number' do
+      expect(ContainerStorage.build_key('slug', 2013, 9, 'call0000')).to eq('/slug/2013/09/call0000')
     end
   end
 
