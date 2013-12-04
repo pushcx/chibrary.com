@@ -25,6 +25,20 @@ class MessageId
     end
   end
 
+  def == other
+    other = MessageId.new(other.to_s)
+    return false unless valid? and other.valid?
+    to_s == other.to_s
+  end
+
+  def eql? other
+    self == other
+  end
+
+  def hash
+    to_s.hash
+  end
+
   def inspect
     "#<MessageId:%x '%s'>" % [(object_id << 1), to_s]
   end

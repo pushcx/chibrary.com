@@ -59,10 +59,38 @@ describe MessageId do
     end
   end
 
+  describe '.==' do
+    it 'considers equal based on extracted id, not raw' do
+      expect(MessageId.new('id@example.com')).to eq(MessageId.new('<id@example.com>'))
+    end
+
+    it 'coerces strings to MessageIds to test' do
+      expect(MessageId.new('id@example.com')).to eq('id@example.com')
+    end
+
+    it 'does not consider invalid ids equal to themselves' do
+      expect(MessageId.new('cat')).to_not eq(MessageId.new('cat'))
+    end
+  end
+
+  describe '.hash' do
+    it 'hashes consistently' do
+      expect(MessageId.new('id@example.com').hash).to eq(MessageId.new('id@example.com').hash)
+    end
+
+    it 'uniqs' do
+      # http://stackoverflow.com/questions/20388090/arrayuniq-ignoring-identical-hash-values
+      a = [MessageId.new('id@example.com'), MessageId.new('id@example.com')]
+      a.uniq!
+      expect(a.length).to eq(1)
+    end
+  end
+
   describe '#generate_for' do
     it 'creates based on call number' do
       expect(MessageId.generate_for('0123456789').to_s).to include('0123456789')
     end
+
     it 'raises without a call_number' do
       expect {
         MessageId.generate_for ''
@@ -75,9 +103,11 @@ describe MessageId do
       mid = MessageId.extract_or_generate('id@example.com', 'call')
       expect(mid.to_s).to include('id@example.com')
     end
+
     it 'given an invalid message id, generates from call_number' do
       mid = MessageId.extract_or_generate('srsly cats man', 'call')
       expect(mid.to_s).to include('call')
     end
   end
+
 end
