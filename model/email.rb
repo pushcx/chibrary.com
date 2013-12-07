@@ -131,4 +131,14 @@ class Email
 
     @list = ListAddressStorage.find_list_by_addresses(possible_addresses)
   end
+
+  def == other
+    other.body == body and
+    (other.message_id == message_id or (!other.message_id.valid? and !message_id.valid?)) and
+    other.subject == subject and
+    other.from == from and
+    other.references == references and
+    other.date.to_i == date.to_i and
+    other.no_archive == no_archive
+  end
 end

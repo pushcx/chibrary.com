@@ -210,4 +210,27 @@ describe Email do
       e.list
     end
   end
+
+  describe '.==' do
+    it 'considers same if fields and body match' do
+      fields = {
+        raw:        "\n\nBody",
+        message_id: 'id@example.com',
+        subject:    'Subject',
+        from:       'From',
+        references: ['ref@example.com'],
+        date:       Time.now,
+        no_archive: false,
+      }
+      e1 = Email.new fields
+      e2 = Email.new fields
+      expect(e2).to eq(e1)
+    end
+
+    it 'ignores raw headers differences with explicit fields' do
+      e1 = Email.new raw: "Message-Id: raw1@example.com\n\nBody", message_id: 'id@example.com'
+      e2 = Email.new raw: "Message-Id: raw2@example.com\n\nBody", message_id: 'id@example.com'
+      expect(e2).to eq(e1)
+    end
+  end
 end
