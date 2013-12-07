@@ -1,0 +1,101 @@
+Return-Path: <ruby-talk-admin@ruby-lang.org>
+X-Original-To: archive@listlibrary.net
+Delivered-To: m3497675@swarthymail-mx2.g.dreamhost.com
+Received: from carbon.ruby-lang.org (carbon.ruby-lang.org [221.186.184.68])
+        by swarthymail-mx2.g.dreamhost.com (Postfix) with ESMTP id 9830F823F6
+        for <archive@listlibrary.net>; Wed, 18 Jul 2007 07:35:51 -0700 (PDT)
+Received: from carbon.ruby-lang.org (beryllium.ruby-lang.org [127.0.0.1])
+        by carbon.ruby-lang.org (Postfix) with ESMTP id DFB203C2295F0;
+        Wed, 18 Jul 2007 23:33:37 +0900 (JST)
+Received: from an-out-0708.google.com (an-out-0708.google.com [209.85.132.244])
+        by carbon.ruby-lang.org (Postfix) with ESMTP id DEA8D3C229598
+        for <ruby-talk@ruby-lang.org>; Wed, 18 Jul 2007 23:33:32 +0900 (JST)
+Received: by an-out-0708.google.com with SMTP id d18so45328and
+        for <ruby-talk@ruby-lang.org>; Wed, 18 Jul 2007 07:33:36 -0700 (PDT)
+Received: by 10.100.95.19 with SMTP id s19mr966795anb.1184769216086;
+        Wed, 18 Jul 2007 07:33:36 -0700 (PDT)
+Received: from ?74.78.192.193? ( [74.78.192.193])
+        by mx.google.com with ESMTPS id c38sm1160164anc.2007.07.18.07.33.34
+        (version=TLSv1/SSLv3 cipher=OTHER);
+        Wed, 18 Jul 2007 07:33:35 -0700 (PDT)
+Delivered-To: ruby-talk@ruby-lang.org
+Date: Wed, 18 Jul 2007 23:33:33 +0900
+Posted: Wed, 18 Jul 2007 10:33:38 -0400
+From: "Wayne E. Seguin" <wayneeseguin@gmail.com>
+Reply-To: ruby-talk@ruby-lang.org
+Subject: Re: Validating an Image file is an image file
+To: ruby-talk@ruby-lang.org (ruby-talk ML)
+Message-Id: <7A91D170-E6B3-47DB-9893-B75F0CC94F58@gmail.com>
+In-Reply-To: <E89E4E01-E6BC-48F7-985D-4123321F776D@gmail.com>
+References: <E89E4E01-E6BC-48F7-985D-4123321F776D@gmail.com>
+X-ML-Name: ruby-talk
+X-Mail-Count: 260493
+X-MLServer: fml [fml 4.0.3 release (20011202/4.0.3)]; post only (only members can post)
+X-ML-Info: If you have a question, send e-mail with the body
+        "help" (without quotes) to the address ruby-talk-ctl@ruby-lang.org;
+        help=<mailto:ruby-talk-ctl@ruby-lang.org?body=help>
+X-Mailer: Apple Mail (2.752.3)
+X-Spam-Checker-Version: SpamAssassin 3.1.7 (2006-10-05) on 
+        carbon.ruby-lang.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.8 required=7.0 tests=ARIN,AWL,BAYES_40,
+        CONTENT_TYPE_PRESENT,FAKEDWORD_BACKQUOTE,FAKEDWORD_ZERO,HTML_MESSAGE,
+        MIMEQENC,MULTIPART_ALTERNATIVE,QENCPTR1,QENCPTR2,ROADRUNNER,
+        TOOLONGSTR,X_MAILER_PRESENT autolearn=disabled version=3.1.7
+X-Original-To: ruby-talk@ruby-lang.org
+DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
+        d=gmail.com; s=beta;
+        h=domainkey-signature:received:received:mime-version:in-reply-to:references:content-type:message-id:from:subject:date:to:x-mailer;
+        b=Hjmxy/IY5TZ0VYkJNMOjQOBpbLdhAU4+eKUHb8o3EMeazA5f++f3WVlzc6U3fTwJyD36praRPZ54n9AQqDiXJ6i9cCy6zWbq12ZBT19PDZZcEXx7RIyKqt0I4HnOv/HRXGp2VPc02fzYV5GB0OZAWhahHLI/geHF29YEk1S3U6A=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=beta;
+        h=received:mime-version:in-reply-to:references:content-type:message-id:from:subject:date:to:x-mailer;
+        b=qN4oJf7FGTW7QebMiZ5YoInP8/11+AyWS6JEOL+gRtom2ErP72SkM/znb9tJ/DuzoSEZbbKvrf6B5N2evOCDVGaMi3kVfS/6AIN89U/R5/nF+oMTnccZXCeeCeszTTnZN4ydKcZmJo2QsJyfS4xM5U2Vd2efx4TiwzJOE5vlKA4=
+Mime-Version: 1.0 (Apple Message framework v752.3)
+Content-Type: multipart/alternative; boundary=Apple-Mail-4-303588415
+Precedence: bulk
+Lines: 107
+List-Id: ruby-talk.ruby-lang.org
+List-Software: fml [fml 4.0.3 release (20011202/4.0.3)]
+List-Post: <mailto:ruby-talk@ruby-lang.org>
+List-Owner: <mailto:ruby-talk-admin@ruby-lang.org>
+List-Help: <mailto:ruby-talk-ctl@ruby-lang.org?body=help>
+List-Unsubscribe: <mailto:ruby-talk-ctl@ruby-lang.org?body=unsubscribe>
+
+--Apple-Mail-4-303588415
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset=US-ASCII;
+        delsp=yes;
+        format=flowed
+
+On Jul 18, 2007, at 10:25 , John Joyce wrote:
+> I know how to validate a file based only on the file name dot  
+> extension, but this seems wholly insecure to me.
+> I feel that just testing for .jpg, .png, .jpeg, .gif, etc... is not  
+> enough.
+> Clearly renaming a file to anything at all is easy to do.
+> How can I read into the file and check to see if it is is actually  
+> a file of a given image type? Is there file header info to look for ?
+> Such as a particular byte sequence at a particular location in the  
+> file?
+>
+>
+> John Joyce
+
+Use the unix file command `file #{file_name}`
+
+example:
+
+  > file the.gif
+the.gif: GIF image data, version 89a, 91 x 91
+
+--
+Wayne E. Seguin
+Sr. Systems Architect & Systems Admin
+wayneseguin@gmail.com
+
+
+
+
+--Apple-Mail-4-303588415--

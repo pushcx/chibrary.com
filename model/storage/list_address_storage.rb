@@ -1,3 +1,4 @@
+require_relative '../list'
 require_relative 'list_storage'
 
 class ListAddressStorage
@@ -9,6 +10,15 @@ class ListAddressStorage
     slug = bucket[address]
     ListStorage.find(slug)
   rescue Riak::ProtobuffsFailedRequest
-    nil
+    NullList.new
+  end
+
+  def self.find_list_by_addresses addresses
+    list = NullList.new
+    addresses.each do |address|
+      list = find_list_by_address address
+      return list unless list.null_list?
+    end
+    list
   end
 end

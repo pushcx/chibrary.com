@@ -2,6 +2,15 @@ require_relative 'thread_list'
 
 class InvalidSlug < RuntimeError ; end
 
+class NullList
+  attr_reader :slug, :name, :description, :homepage
+
+  def initialize
+    @slug = '_null_list'
+    @name = 'NillList'
+  end
+end
+
 class List
   attr_reader :slug, :name, :description, :homepage
 

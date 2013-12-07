@@ -1,0 +1,62 @@
+Return-Path: <ruby-talk-admin@ruby-lang.org>
+X-Original-To: archive@listlibrary.net
+Delivered-To: m3497675@swarthymail-mx2.g.dreamhost.com
+Received: from carbon.ruby-lang.org (carbon.ruby-lang.org [221.186.184.68])
+        by swarthymail-mx2.g.dreamhost.com (Postfix) with ESMTP id 1CE4780C48
+        for <archive@listlibrary.net>; Thu, 19 Jul 2007 18:42:02 -0700 (PDT)
+Received: from carbon.ruby-lang.org (beryllium.ruby-lang.org [127.0.0.1])
+        by carbon.ruby-lang.org (Postfix) with ESMTP id 0D38E3C21E301;
+        Fri, 20 Jul 2007 10:41:17 +0900 (JST)
+Received: from mx3.delmonte-phil.com (unknown [203.131.98.8])
+        by carbon.ruby-lang.org (Postfix) with ESMTP id B7CC23C21E2FE
+        for <ruby-talk@ruby-lang.org>; Fri, 20 Jul 2007 10:41:13 +0900 (JST)
+Delivered-To: ruby-talk@ruby-lang.org
+Date: Fri, 20 Jul 2007 10:41:14 +0900
+Posted: Fri, 20 Jul 2007 09:41:25 +0800
+From: =?utf-8?B?UGXDsWEsIEJvdHA=?= <botp@delmonte-phil.com>
+Reply-To: ruby-talk@ruby-lang.org
+Subject: Re: Building ruby with bcc32
+To: ruby-talk@ruby-lang.org (ruby-talk ML)
+Message-Id: <20070720021131.A62A312A55A@mx3.delmonte-phil.com>
+In-Reply-To: <09010e2c76abcf7e66f14edad4593355@ruby-forum.com>
+References: <daa37057fc94f25442543917a1f4b434@ruby-forum.com> <20070713065329.GD96974@demeter.hydra> <7cc07671780a4e19cd5501ae02d1450a@ruby-forum.com> <20070714063146.GG5258@demeter.hydra><46987158.7030202@cesmail.net> <478607939fd9b283542c4e3fde90baa8@ruby-forum.com> <f296d2fe460507e61c10eae3297bccec@ruby-forum.com> <9e3fd2c80707180426x1538bbt4d6019729f7015bf@mail.gmail.com><de9f3bd9967a021f09fcf77e5cf2bc4e@ruby-forum.com> <20070718200301.GC43685@demeter.hydra> <7272c3ef038e86bdf8f3a67c922e1e62@ruby-forum.com> <20070719070448.EA87AE0320@mail.bc9.jp><844a1bdf6093f041be62261fbc7f096c@ruby-forum.com> <20070719080658.BE73AE0336@mail.bc9.jp> <9e429942b64abdbb09f46cd34df3938d@ruby-forum.com> <20070719103949.44F4EE0356@mail.bc9.jp> <09010e2c76abcf7e66f14edad4593355@ruby-forum.com>
+X-ML-Name: ruby-talk
+X-Mail-Count: 260877
+X-MLServer: fml [fml 4.0.3 release (20011202/4.0.3)]; post only (only members can post)
+X-ML-Info: If you have a question, send e-mail with the body
+        "help" (without quotes) to the address ruby-talk-ctl@ruby-lang.org;
+        help=<mailto:ruby-talk-ctl@ruby-lang.org?body=help>
+X-Spam-Checker-Version: SpamAssassin 3.1.7 (2006-10-05) on 
+        carbon.ruby-lang.org
+X-Spam-Level: **
+X-Spam-Status: No, score=2.2 required=7.0 tests=AWL,BAYES_50,
+        CONTENT_TYPE_PRESENT,FORGED_RCVD_HELO,INFOCOM_PH,MIME_BASE64_NO_NAME,
+        THREAD_INDEX,THREAD_TOPIC autolearn=disabled version=3.1.7
+X-Original-To: ruby-talk@ruby-lang.org
+Content-class: urn:content-classes:message
+X-MimeOLE: Produced By Microsoft Exchange V6.5
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Thread-Topic: Building ruby with bcc32
+Thread-Index: AcfKBLxoPiefIYhOSJCIiSgmUYqfTwAaglBQ
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: base64
+Precedence: bulk
+Lines: 8
+List-Id: ruby-talk.ruby-lang.org
+List-Software: fml [fml 4.0.3 release (20011202/4.0.3)]
+List-Post: <mailto:ruby-talk@ruby-lang.org>
+List-Owner: <mailto:ruby-talk-admin@ruby-lang.org>
+List-Help: <mailto:ruby-talk-ctl@ruby-lang.org?body=help>
+List-Unsubscribe: <mailto:ruby-talk-ctl@ruby-lang.org?body=unsubscribe>
+
+RnJvbTogWXVzdWYgQ2VsaWsgW21haWx0bzp5Y2VsaWtAb3l0ZWsuY29tLnRyXSANCiMgQW5kIHR5
+cGVkIHRoZSBjb21tYW5kIGFzIHlvdSBzYWlkIChJIGRvbid0IGV2ZW4ga25vdyB3aGF0IGFsbCBp
+biB0aGUgDQojIGNvbW1hbmQgbGluZSBidXQgaXQgaXMgb2spDQoNCnB1dCB0aG9zZSBpbiBhIGJh
+dGNoIGZpbGUgc28geW91IHdvbnQgbmVlZCB0byByZW1lbWJlciBpdC4gdGhlbiBieSB0aGUgdGlt
+ZSB0aGF0IGEgbmV3IHJlbGVhc2Ugb2YgcnVieSBjb21lcywgYWxsIHlvdSBoYXZlIHRvIGRvIGlz
+IHJ1biB0aGF0LCB0aGVuIG1hZ2ljISwgeW91IGhhdmUgdGhlIGxhdGVzdCBydWJ5IGJ1aWxkLCBk
+YXlzIG9yIGV2ZW4gbW9udGhzIGJlZm9yZSB0aGUgbGF0ZXN0IG9uZS1jbGljayBhcnJpdmVzLi4u
+DQoNCg==

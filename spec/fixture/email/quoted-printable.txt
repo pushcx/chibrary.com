@@ -1,0 +1,85 @@
+Return-Path: <ruby-core-admin@ruby-lang.org>
+X-Original-To: archive@listlibrary.net
+Delivered-To: m3497675@swarthymail-mx2.g.dreamhost.com
+Received: from carbon.ruby-lang.org (carbon.ruby-lang.org [221.186.184.68])
+      by swarthymail-mx2.g.dreamhost.com (Postfix) with ESMTP id 8DAC8814DF
+      for <archive@listlibrary.net>; Tue, 14 Aug 2007 03:26:46 -0700 (PDT)
+Received: from beryllium.ruby-lang.org (beryllium.ruby-lang.org [127.0.0.1])
+      by carbon.ruby-lang.org (Postfix) with ESMTP id 581103C21F75C;
+      Tue, 14 Aug 2007 19:26:31 +0900 (JST)
+Received: from moutng.kundenserver.de (moutng.kundenserver.de [212.227.126.187])
+      by carbon.ruby-lang.org (Postfix) with ESMTP id 422793C21F100
+      for <ruby-core@ruby-lang.org>; Tue, 14 Aug 2007 19:26:21 +0900 (JST)
+Received: from [85.180.51.125] (helo=homer.bertram-scharpf.homelinux.com)
+      by mrelayeu.kundenserver.de (node=mrelayeu4) with ESMTP (Nemesis),
+      id 0ML21M-1IKtav34cq-0007ne; Tue, 14 Aug 2007 12:25:51 +0200
+Received: from bart.bertram-scharpf.homelinux.com ([192.168.1.22])
+      by homer.bertram-scharpf.homelinux.com with esmtp (Exim 4.67)
+      (envelope-from <lists@bertram-scharpf.de>)
+      id 1IKtam-00049z-60; Tue, 14 Aug 2007 12:25:40 +0200
+Received: from bsch by bart.bertram-scharpf.homelinux.com with local (Exim 4.67)
+      (envelope-from <bsch@bart.bertram-scharpf.homelinux.com>)
+      id 1IKtam-0002VY-4D; Tue, 14 Aug 2007 12:25:40 +0200
+Delivered-To: ruby-core@ruby-lang.org
+Date: Tue, 14 Aug 2007 19:26:26 +0900
+Posted: Tue, 14 Aug 2007 12:25:40 +0200
+From: Bertram Scharpf <lists@bertram-scharpf.de>
+Reply-To: ruby-core@ruby-lang.org
+Subject: Re: IO#seek and whence problem
+To: ruby-core@ruby-lang.org
+Cc: daevid@daevid.com
+Message-Id: <20070814102540.GA9586@bart.bertram-scharpf.homelinux.com>
+In-Reply-To: <20070814101715.GA9138@bart.bertram-scharpf.homelinux.com>
+References: <20070814101715.GA9138@bart.bertram-scharpf.homelinux.com>
+X-ML-Name: ruby-core
+X-Mail-Count: 11895
+X-MLServer: fml [fml 4.0.3 release (20011202/4.0.3)]; post only (only members can post)
+X-ML-Info: If you have a question, send e-mail with the body
+      "help" (without quotes) to the address ruby-core-ctl@ruby-lang.org;
+      help=<mailto:ruby-core-ctl@ruby-lang.org?body=help>
+User-Agent: Mutt/1.5.16 (2007-06-09)
+Mail-Followup-To: ruby-core@ruby-lang.org, daevid@daevid.com
+X-Spam-Checker-Version: SpamAssassin 3.1.7 (2006-10-05) on 
+      carbon.ruby-lang.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.2 required=7.0 tests=AWL,BAYES_50,
+      CONTENT_TYPE_PRESENT,EXIM_ERRWARN,FORGED_RCVD_HELO,MIMEQENC,QENCPTR1,
+      QENCPTR2,RIPE_NCC autolearn=disabled version=3.1.7
+X-Original-To: ruby-core@ruby-lang.org
+Content-Disposition: inline
+X-Provags-ID: V01U2FsdGVkX18WZUKZjE6/nIE6PFN3NG2xi5aH4c3yeWGYeGq
+  0bIzyPVOh0HO1+9fgIQeATBV0gk4jKul0TbboqnVXTl5Ah0L0j
+  cQ8f1VsW4ZBKBhZlQ2Qnnom2ci3hn73NPPwZh1usCI=
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Precedence: bulk
+Lines: 20
+List-Id: ruby-core.ruby-lang.org
+List-Software: fml [fml 4.0.3 release (20011202/4.0.3)]
+List-Post: <mailto:ruby-core@ruby-lang.org>
+List-Owner: <mailto:ruby-core-admin@ruby-lang.org>
+List-Help: <mailto:ruby-core-ctl@ruby-lang.org?body=help>
+List-Unsubscribe: <mailto:ruby-core-ctl@ruby-lang.org?body=unsubscribe>
+
+Hi,
+
+Am Dienstag, 14. Aug 2007, 19:17:17 +0900 schrieb Bertram Scharpf:
+> The outer ones are printf statements in the rb_io_seek*
+
+The inner ones of course. Sorry!
+
+By the way: When I say=20
+
+    if false and @io.respond_to? :seek
+
+in `lib/rubygems/package.rb=C2=B4 everything works fine.
+
+Bertram
+
+
+--=20
+Bertram Scharpf
+Stuttgart, Deutschland/Germany
+http://www.bertram-scharpf.de
+
