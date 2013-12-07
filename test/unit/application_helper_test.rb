@@ -26,7 +26,3 @@ class ApplicationHelperTest < ActionView::TestCase
     end
   end
 end
-
-class StringTest < ActiveSupport::TestCase
-  should_eventually "test to_base_36"
-end

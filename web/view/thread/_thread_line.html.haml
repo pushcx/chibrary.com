@@ -3,4 +3,4 @@
   messages in this thread from 
   %a{ :href => "/#{@slug}" }= (list['name'] or slug)
   in
-  %a{ :href => "/#{@slug}/#{year}/#{month}/#t-#{thread.call_number.to_base_36}" }= year.to_s + "-" + month
+  %a{ :href => "/#{@slug}/#{year}/#{month}/#t-#{thread.call_number}" }= year.to_s + "-" + month

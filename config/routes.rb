@@ -43,7 +43,7 @@ def load_thread
   raise ActionController::RoutingError, "Invalid call_number" unless @call_number =~ /^[A-Za-z0-9\-_]{8}$/
   begin
     r = ThreadList.new(@slug, @year, @month).redirect? @call_number
-    redirect_to "#{r}#m-#{@call_number.to_base_36}" and return if r
+    redirect_to "#{r}#m-#{@call_number}" and return if r
     @thread = $riak["list/#{@list.slug}/thread/#{@year}/#{@month}/#{@call_number}"]
   rescue NotFound
     raise ActionController::RoutingError, "Thread not found"
