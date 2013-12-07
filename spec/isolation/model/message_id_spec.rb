@@ -110,4 +110,9 @@ describe MessageId do
     end
   end
 
+  context 'real-world awful things' do
+    it 'does not error on message_ids with Ruby string formatting' do
+      expect(MessageId.new('<id%m%d%s@example.com>').to_s).to eq('id%m%d%s@example.com')
+    end
+  end
 end
