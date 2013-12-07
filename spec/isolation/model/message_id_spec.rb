@@ -99,10 +99,16 @@ describe MessageId do
   end
 
   describe '#extract_or_generate' do
-    it 'given a valid message id, creates from that' do
+    it 'given a valid message id string, creates from that' do
       mid = MessageId.extract_or_generate('id@example.com', 'call')
       expect(mid.to_s).to include('id@example.com')
     end
+
+    it 'given a valid message id object, creates from that' do
+      mid = MessageId.extract_or_generate(MessageId.new('id@example.com'), 'call')
+      expect(mid.to_s).to include('id@example.com')
+    end
+
 
     it 'given an invalid message id, generates from call_number' do
       mid = MessageId.extract_or_generate('srsly cats man', 'call')

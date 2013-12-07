@@ -2,7 +2,7 @@ class MessageId
   attr_reader :raw, :message_id
 
   def initialize raw
-    @raw = raw || ''
+    @raw = (raw || '').to_s
   end
 
   def valid?
@@ -26,7 +26,7 @@ class MessageId
   end
 
   def == other
-    other = MessageId.new(other.to_s)
+    other = MessageId.new(other)
     return false unless valid? and other.valid?
     to_s == other.to_s
   end
