@@ -34,12 +34,16 @@ x   container
     thread_list
     thread_set
     snippet
+x refactor the shit out of message
+  extract a CallNumber, most likely
+  Message: delegate from + n_subject down into email?
   migrate all tests to rspec
+  split Message, Container initializers into two
   can year and month be removed from ContainerStorage keys?
   Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
   migrate all lists to riak
-  clean up any messages with metadata edited into headers, ew
+  clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   update text on about page
   move jobs into a proper job system
