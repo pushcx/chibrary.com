@@ -35,7 +35,7 @@ x   container
     thread_set
     snippet
 x refactor the shit out of message
-  extract a CallNumber, most likely
+x extract a CallNumber, most likely
   Message: delegate from + n_subject down into email?
   migrate all tests to rspec
   split Message, Container initializers into two
