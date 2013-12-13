@@ -1,0 +1,74 @@
+Notes from thinking through how I should store Messages in Riak. What should
+the text key be, and what, if any, secondary indexes should I use?
+
+ways of accessing messages:
+  thread view:
+    root of thread, by call number
+    from thread parent
+    next/previous
+
+  month view:
+    list of all threads this month, will call number
+
+  list:
+    list of years + months, with thread:message counts
+
+  threader:
+    by list + year + month
+    checks previous months to send messages up
+    checks next months to pull messages up
+
+  filer
+    by message id to avoid dupes
+
+
+what if messages were stored by:
+  call number
+    couldn't find by message_id, but I never actually do that
+    be nice to know if a message is in storage, tho
+  message id
+    can't find by call number, which I only do for thread roots
+    be nice to be ablt to do /linux-kernel/12341234 and find it in-thread
+  list + year + month
+    do this constantly for threader
+    could use a 2i for message.date.to_i and then range to find...
+  thread
+    still need other lookup before they're threaded
+    but really useful for the steady state
+
+distinction:
+- year + month is blurry in old code: it starts out being the y+m of the
+  Message, but might change if a thread from a previous month takes the
+  message up.
+- If only tracked the Message's original y+m unaltered, I could list messages
+  on their actual y+m page, linking to the thread where they appeared.
+- In which case threads are /slug/thread/11111111 and messages are
+  /slug/message/22222222 -> /slug/thread/11111111#m-22222222
+- Except if a thread is later decided to be a redir, it wants to -> as well.
+- Do I ever want to present a message in isolation?
+- Well, with <link rel=canonical> and <META NAME="ROBOTS" CONTENT="NOINDEX,
+  FOLLOW">, I could present /slug/m/ and it would tell search engines to
+  mostly ignore it. But humans can have the benefit.
+- Do I want humans linking to individual messages rather than threads? Not
+  really, no. It's always less useful. Only difference is epicly-long
+  discussions, but the point of Chibrary is that context matters.
+
+Limitation: index fields and values may only be ascii characters.
+Limitation: can only search one index at a time
+Limitation: can't update indexes, just rewrite whole object
+
+OK, so URLs:
+  /list
+  /list/d/2013/03
+  /list/t/11111111
+  /list/m/11111111 (optional)
+
+and Riak key:
+  call number
+
+and Riak secondary indexes:
+  base64 message id
+  list/year/month
+  thread call number ? that's basically ThreadList
+  hash of author?
+  

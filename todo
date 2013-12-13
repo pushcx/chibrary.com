@@ -30,15 +30,18 @@ x standardize the to_hash/deserialize mismatch
   convert to riak storage:
 x   list
 x   container
-    message
+x   message
     thread_list
     thread_set
     snippet
+  correct spec syntax; # is instance, :: for class
 x refactor the shit out of message
 x extract a CallNumber, most likely
   Message: delegate from + n_subject down into email?
   migrate all tests to rspec
   split Message, Container initializers into two
+  move Storage.to_hash and .store to class methods; I never keep obj around
+  can models be built so none call back up into the storage layer?
   can year and month be removed from ContainerStorage keys?
   Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
