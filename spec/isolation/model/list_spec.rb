@@ -25,4 +25,17 @@ describe List do
     List.new('slug').thread_list("2008", "01")
   end
 
+  describe '#==' do
+    it 'is equal if fields match' do
+      l1 = List.new('slug', 'name', 'description', 'homepage')
+      l2 = List.new('slug', 'name', 'description', 'homepage')
+      expect(l1).to eq(l2)
+    end
+
+    it 'is not equal in case of difference' do
+      l1 = List.new('slug')
+      l2 = List.new('foo')
+      expect(l1).not_to eq(l2)
+    end
+  end
 end

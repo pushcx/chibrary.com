@@ -14,9 +14,9 @@ end
 class List
   attr_reader :slug, :name, :description, :homepage
 
-  def initialize list, name=nil, description=nil, homepage=nil
-    raise InvalidSlug, "Invalid list slug '#{list}'" unless list =~ /^[a-z0-9\-]+$/ and list.length <= 20
-    @slug = list
+  def initialize slug, name=nil, description=nil, homepage=nil
+    raise InvalidSlug, "Invalid list slug '#{slug}'" unless slug =~ /^[a-z0-9\-]+$/ and slug.length <= 20
+    @slug = slug
     @name = name
     @description = description
     @homepage = homepage
@@ -45,6 +45,15 @@ class List
 
   def thread year, month, call_number
     $riak["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
+  end
+
+  def == other
+    (
+      slug == other.slug and
+      name == other.name and
+      description == other.description and
+      homepage == other.homepage
+    )
   end
 
   private
