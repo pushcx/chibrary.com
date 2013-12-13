@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/storage/email_storage'
 
 describe EmailStorage do
-  describe '.to_hash' do
+  describe '#to_hash' do
     it 'saves fields' do
       email = Email.new({
         raw: "From: <alice@example.com>\n\nBody",
@@ -13,7 +13,7 @@ describe EmailStorage do
     end
   end
 
-  describe '#from_hash' do
+  describe '::from_hash' do
     it 'overrides raw data' do
       email = EmailStorage.from_hash({
         raw: "From: <alice@example.com>\n\nBody",

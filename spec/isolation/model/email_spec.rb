@@ -5,7 +5,7 @@ require_relative '../../../model/email'
 require_relative '../../../model/storage/list_address_storage'
 
 describe Email do
-  describe '#new' do
+  describe '::new' do
     it 'prefers explicitly-set fields to extracted values' do
       e = Email.new({
         raw:  "From: raw@example.com\n\nBody",
@@ -26,32 +26,32 @@ describe Email do
   end
 
   describe 'subject delegation' do
-    it '.subject returns subject.to_s' do
+    it '#subject returns subject.to_s' do
       e = Email.new raw: '', subject: 'Re: Foo'
       expect(e.subject).to eq('Re: Foo')
     end
 
-    it '.n_subject returns subject.normalized' do
+    it '#n_subject returns subject.normalized' do
       e = Email.new raw: '', subject: 'Re: Foo'
       expect(e.n_subject).to eq('Foo')
     end
   end
 
-  describe '.extract_message_id' do
+  describe '#extract_message_id' do
     it 'gets the header' do
       e = Email.new raw: "Message-Id: id@example.com\n\nBody"
       expect(e.message_id).to eq('id@example.com')
     end
   end
 
-  describe '.extract_subject' do
+  describe '#extract_subject' do
     it 'gets the header' do
       e = Email.new raw: "Subject: Foo\n\nBody"
       expect(e.subject).to eq('Foo')
     end
   end
 
-  describe '.extract_from' do
+  describe '#extract_from' do
     it 'gets the header' do
       e = Email.new raw: "From: alice@example.com\n\nBody"
       expect(e.from).to eq('alice@example.com')
@@ -73,7 +73,7 @@ describe Email do
     end
   end
 
-  describe '.extract_references' do
+  describe '#extract_references' do
     it 'pulls from In-Reply-To and References' do
       e = Email.new raw: "In-Reply-To: irt@example.com\nReferences: ref@example.com\n\nBody"
       expect(e.references).to include('irt@example.com')
@@ -103,7 +103,7 @@ describe Email do
     end
   end
 
-  describe '.extract_date' do
+  describe '#extract_date' do
     it 'extracts proper rfc2822 dates' do
       e = Email.new raw: "Date: Tue, 14 Aug 2007 19:26:26 +0900\n\nBody"
       expect(e.date.to_s).to eq('2007-08-14 10:26:26 UTC')
@@ -130,7 +130,7 @@ describe Email do
     end
   end
 
-  describe '.extract_no_archive' do
+  describe '#extract_no_archive' do
     it "defaults false" do
       e = Email.new raw: "\n\nBody"
       expect(e.no_archive).to be_false
@@ -152,7 +152,7 @@ describe Email do
     end
   end
 
-  describe ".extract_body" do
+  describe '#extract_body' do
     it 'reads plain text messages' do
       e = Email.new raw: "\n\nPlain text body."
       expect(e.body).to eq("Plain text body.")
@@ -197,7 +197,7 @@ describe Email do
     end
   end
 
-  describe '.canonicalized_from_email' do
+  describe '#canonicalized_from_email' do
     it 'is the from email address' do
       e = Email.new raw: "From: Alice <alice@example.com>\n\nBody"
       expect(e.canonicalized_from_email).to eq('alice@example.com')
@@ -216,7 +216,7 @@ describe Email do
     # what does it do with invalid/missing from addresses?
   end
 
-  describe '.list' do
+  describe '#list' do
     it 'finds a list' do
       e = Email.new raw: "X-Mailing-List: list@example.com\n\nBody"
       ListAddressStorage.should_receive(:find_list_by_addresses).with(['list@example.com'])
@@ -230,7 +230,7 @@ describe Email do
     end
   end
 
-  describe '.==' do
+  describe '#==' do
     it 'considers same if fields and body match' do
       fields = {
         raw:        "\n\nBody",

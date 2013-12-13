@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/storage/list_address_storage'
 
 describe ListAddressStorage do
-  describe '#find_list_by_address' do
+  describe '::find_list_by_address' do
     it 'finds lists' do
       # This am stubbed to death. Am I even testing anything?
       bucket = double('bucket')

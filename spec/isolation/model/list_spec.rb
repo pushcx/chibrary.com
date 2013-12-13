@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/list'
 
 describe List do
-  describe 'initialization' do
+  describe '::new' do
     it 'raises if a slug is too long' do
       expect { List.new '01234567890123456789x' }.to raise_error(InvalidSlug)
     end
@@ -16,7 +16,7 @@ describe List do
     end
   end
 
-  it 'has a slug' do
+  it '#slug' do
     expect(List.new('slug').slug).to eq('slug')
   end
 

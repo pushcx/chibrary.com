@@ -4,7 +4,7 @@ require_relative '../../../model/container'
 require 'permutation'
 
 describe Container do
-  describe 'initialization' do
+  describe '::new' do
     it 'is empty with just a message id' do
       c = Container.new 'id@example.com'
       expect(c).to be_empty
@@ -18,7 +18,7 @@ describe Container do
     end
   end
 
-  describe 'equality' do
+  describe '#==' do
     it 'considers empty containers with ids equal' do
       c1  = Container.new '1@example.com'
       c1_ = Container.new '1@example.com'

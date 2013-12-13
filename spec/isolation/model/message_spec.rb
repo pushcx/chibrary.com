@@ -3,7 +3,7 @@ require_relative '../../../model/message'
 require_relative '../../../model/list'
 
 describe Message do
-  describe '#new' do
+  describe '::new' do
     it 'raises on invalid call_numbers' do
       expect {
         Message.new nil, 'foo'
@@ -11,14 +11,14 @@ describe Message do
     end
   end
 
-  describe '#from_string' do
+  describe '::from_string' do
     it 'creates emails' do
       m = Message.from_string 'email', 'callnumber'
       expect(m.email).to be_an(Email)
     end
   end
 
-  describe '#from_message' do
+  describe '::from_message' do
     it 'copies fields' do
       m1 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')
       m2 = Message.from_message m1
@@ -29,7 +29,7 @@ describe Message do
     end
   end
 
-  describe '.==' do
+  describe '#==' do
     it 'is the same if the fields are the same' do
       m1 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')
       m2 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')

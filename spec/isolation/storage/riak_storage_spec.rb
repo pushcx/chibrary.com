@@ -36,7 +36,7 @@ describe RiakStorage do
       # missing .build_key, #extract_key, #to_hash
     end
 
-    it "raises on calls to .build_key" do
+    it "raises on calls to ::build_key" do
       expect { IncompleteStorage.build_key }.to raise_error(NotImplementedError)
     end
 

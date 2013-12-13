@@ -4,7 +4,7 @@ require_relative '../../../model/subject'
 describe Subject do
   REPLY_SUBJECTS = ["Re: foo", "RE: foo", "RE[9]: foo", "re(9): foo", "re:foo", "re: Re: foo", "fwd: foo", "Fwd: foo", "Fwd[14]: foo", "Re: Fwd: RE: fwd(3): foo", "fw: foo"]
 
-  describe '.reply?' do
+  describe '#reply?' do
     it 'sees reply subjects as replies' do
       REPLY_SUBJECTS.each do |str|
         subject = Subject.new str
@@ -25,7 +25,7 @@ describe Subject do
     end
   end
 
-  describe '.normalized' do
+  describe '#normalized' do
     it 'removes reply/fwd indicators' do
       REPLY_SUBJECTS.each do |str|
         expect(Subject.new(str).normalized).to eq('foo')
@@ -45,7 +45,7 @@ describe Subject do
     end
   end
 
-  describe '.to_s' do
+  describe '#to_s' do
     it 'passes through original subjects' do
       expect(Subject.new('Re: foo').to_s).to eq('Re: foo')
     end

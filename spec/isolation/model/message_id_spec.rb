@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/message_id'
 
 describe MessageId do
-  describe '.valid?' do
+  describe '#valid?' do
     it 'is valid if well-formatted' do
       expect(MessageId.new('<valid@example.com>')).to be_valid
     end
@@ -25,7 +25,7 @@ describe MessageId do
     end
   end
 
-  describe '.has_id?' do
+  describe '#has_id?' do
     it 'does with and without angle brackets' do
       expect(MessageId.new '<with@example.com>').to have_id
       expect(MessageId.new 'without@example.com').to have_id
@@ -41,7 +41,7 @@ describe MessageId do
     end
   end
 
-  describe '.to_s' do
+  describe '#to_s' do
     it 'returns the extracted id' do
       expect(MessageId.new('<id@example.com>').to_s).to eq('id@example.com')
     end
@@ -52,14 +52,14 @@ describe MessageId do
     end
   end
 
-  describe '.inspect' do
-    it 'includes the .to_s' do
+  describe '#inspect' do
+    it 'includes the #to_s' do
       expect(MessageId.new('id@example.com').inspect).to include('id@example.com')
       expect(MessageId.new('cats rule').inspect).to include('invalid')
     end
   end
 
-  describe '.==' do
+  describe '#==' do
     it 'considers equal based on extracted id, not raw' do
       expect(MessageId.new('id@example.com')).to eq(MessageId.new('<id@example.com>'))
     end
@@ -73,7 +73,7 @@ describe MessageId do
     end
   end
 
-  describe '.hash' do
+  describe '#hash' do
     it 'hashes consistently' do
       expect(MessageId.new('id@example.com').hash).to eq(MessageId.new('id@example.com').hash)
     end
@@ -86,7 +86,7 @@ describe MessageId do
     end
   end
 
-  describe '#generate_for' do
+  describe '::generate_for' do
     it 'creates based on call number' do
       expect(MessageId.generate_for('0123456789').to_s).to include('0123456789')
     end
@@ -98,7 +98,7 @@ describe MessageId do
     end
   end
 
-  describe '#extract_or_generate' do
+  describe '::extract_or_generate' do
     it 'given a valid message id string, creates from that' do
       mid = MessageId.extract_or_generate('id@example.com', 'call')
       expect(mid.to_s).to include('id@example.com')

@@ -20,13 +20,13 @@ describe ListStorage do
     end
   end
 
-  describe ".build_key" do
+  describe "::build_key" do
     it "builds a key based on slug" do
       expect(ListStorage.build_key('slug')).to eq('/slug')
     end
   end
 
-  describe ".from_hash" do
+  describe "::from_hash" do
     it "creates Lists" do
       list = ListStorage.from_hash({
         slug: 'slug',
@@ -47,7 +47,7 @@ describe ListStorage do
     end
   end
 
-  describe ".find" do
+  describe "::find" do
     it "instantiates a list from the bucket" do
       bucket = double('bucket')
       bucket.should_receive(:[]).with('/slug').and_return({

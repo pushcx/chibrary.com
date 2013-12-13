@@ -21,13 +21,13 @@ describe ContainerStorage do
     end
   end
 
-  describe '.build_key' do
+  describe '::build_key' do
     it 'builds a key based on slug, year, month and call_number' do
       expect(ContainerStorage.build_key('slug', 2013, 9, 'callnumber')).to eq('/slug/2013/09/callnumber')
     end
   end
 
-  describe '.from_hash' do
+  describe '::from_hash' do
     it 'creates Containers' do
       container = ContainerStorage.from_hash({
         message_id: 'c@example.com',
@@ -39,7 +39,7 @@ describe ContainerStorage do
     end
   end
 
-  describe '.find' do
+  describe '::find' do
     it 'instantiates a Container from the bucket' do
       bucket = double('bucket')
       bucket.should_receive(:[]).with('/slug/2013/11/callnumber').and_return({

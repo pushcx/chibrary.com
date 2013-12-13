@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/call_number'
 
 describe CallNumber do
-  describe '#new' do
+  describe '::new' do
     it 'can be initialized with a string' do
       expect(CallNumber.new('asdf12ASDF')).to be_valid
     end
@@ -12,7 +12,7 @@ describe CallNumber do
     end
   end
 
-  describe 'valid?' do
+  describe '#valid?' do
     it 'is with 10 alphanumberic characters' do
       expect(CallNumber.new('asdf12ASDF')).to be_valid
     end
@@ -32,7 +32,7 @@ describe CallNumber do
     end
   end
 
-  describe '.==' do
+  describe '#==' do
     it 'considers same strings equal' do
       expect(CallNumber.new('asdf12ASDF')).to eq(CallNumber.new('asdf12ASDF'))
     end
