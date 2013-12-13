@@ -116,6 +116,14 @@ class Email
     @body ||= extract_body
   end
 
+  def canonicalized_from_email
+    email = header['From'].split(/[^\w@\+\.\-_]/).select { |s| s =~ /@/ }.first
+    parts = email.split('@')
+    parts.first.gsub!(/\./, '') if email[-10..-1] == '@gmail.com'
+    parts.first.gsub!(/\+.*/, '')
+    parts.join('@')
+  end
+
   def list
     header_addresses = %w{
       X-Mailing-List List-Id X-ML-Name

@@ -197,6 +197,25 @@ describe Email do
     end
   end
 
+  describe '.canonicalized_from_email' do
+    it 'is the from email address' do
+      e = Email.new raw: "From: Alice <alice@example.com>\n\nBody"
+      expect(e.canonicalized_from_email).to eq('alice@example.com')
+    end
+
+    it 'removes . from gmail addresses' do
+      e = Email.new raw: "From: Alice <ali.c.e@gmail.com>\n\nBody"
+      expect(e.canonicalized_from_email).to eq('alice@gmail.com')
+    end
+
+    it 'removes things right of a plus sign' do
+      e = Email.new raw: "From: Alice <alice+lists@example.com>\n\nBody"
+      expect(e.canonicalized_from_email).to eq('alice@example.com')
+    end
+
+    # what does it do with invalid/missing from addresses?
+  end
+
   describe '.list' do
     it 'finds a list' do
       e = Email.new raw: "X-Mailing-List: list@example.com\n\nBody"
