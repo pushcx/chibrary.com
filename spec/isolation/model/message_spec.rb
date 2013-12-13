@@ -13,14 +13,14 @@ describe Message do
 
   describe '#from_string' do
     it 'creates emails' do
-      m = Message.from_string 'email', 'callnumb'
+      m = Message.from_string 'email', 'callnumber'
       expect(m.email).to be_an(Email)
     end
   end
 
   describe '#from_message' do
     it 'copies fields' do
-      m1 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
+      m1 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')
       m2 = Message.from_message m1
       expect(m2.email.body).to eq(m1.email.body)
       expect(m2.call_number).to eq(m1.call_number)
@@ -31,8 +31,8 @@ describe Message do
 
   describe '.==' do
     it 'is the same if the fields are the same' do
-      m1 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
-      m2 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
+      m1 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')
+      m2 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')
       expect(m2).to eq(m1)
     end
   end

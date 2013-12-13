@@ -5,7 +5,7 @@ describe ContainerStorage do
   context 'instantiated with a Container' do
     it 'extracts a key based on the container' do
       c = Container.new FakeStorableMessage.new('c@example.com')
-      expect(ContainerStorage.new(c).extract_key).to eq('/slug/2013/11/call0000')
+      expect(ContainerStorage.new(c).extract_key).to eq('/slug/2013/11/callnumber')
     end
 
     describe 'generating a hash' do
@@ -23,7 +23,7 @@ describe ContainerStorage do
 
   describe '.build_key' do
     it 'builds a key based on slug, year, month and call_number' do
-      expect(ContainerStorage.build_key('slug', 2013, 9, 'call0000')).to eq('/slug/2013/09/call0000')
+      expect(ContainerStorage.build_key('slug', 2013, 9, 'callnumber')).to eq('/slug/2013/09/callnumber')
     end
   end
 
@@ -42,13 +42,13 @@ describe ContainerStorage do
   describe '.find' do
     it 'instantiates a Container from the bucket' do
       bucket = double('bucket')
-      bucket.should_receive(:[]).with('/slug/2013/11/call0000').and_return({
+      bucket.should_receive(:[]).with('/slug/2013/11/callnumber').and_return({
         message_id: 'c@example.com',
         message_key: 'key',
         children: [],
       })
       ContainerStorage.should_receive(:bucket).and_return(bucket)
-      container = ContainerStorage.find('slug', 2013, 11, 'call0000')
+      container = ContainerStorage.find('slug', 2013, 11, 'callnumber')
       expect(container).to be_a(Container)
       expect(container.message_id).to eq('c@example.com')
     end
