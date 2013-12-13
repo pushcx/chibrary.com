@@ -1,4 +1,5 @@
 require 'rspec'
+require 'ostruct'
 require_relative '../model/storage/riak_storage'
 
 RSpec.configure do |config|
@@ -24,13 +25,18 @@ end
 class FakeMessage
   attr_reader :message_id, :message, :key
 
-  def initialize message_id='id@example.com', message='message', key='key'
+  def initialize message_id='id@example.com'
     @message_id = message_id
-    @message = message
-    @key = key
   end
 
+  def list ; OpenStruct.new(slug: 'slug') ; end
   def from ; 'from@example.com' ; end
   def subject_is_reply? ; false ; end
   def date ; Time.new(2013, 11, 21) ; end
+  def email ; 'email' ; end
+end
+
+class FakeStorableMessage < FakeMessage
+  def source ; 'source' ; end
+  def call_number ; 'callnumber' ; end
 end

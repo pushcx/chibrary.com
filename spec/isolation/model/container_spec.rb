@@ -274,6 +274,20 @@ describe Container do
     end
   end
 
+  describe '#slug' do
+    it 'fetches the list slug' do
+      c = Container.new FakeMessage.new('c@example.com')
+      expect(c.slug).to eq('slug')
+    end
+
+    it 'falls back to empty string' do
+      fm = FakeMessage.new('c@example.com')
+      def fm.list ; nil ; end
+      c = Container.new fm
+      expect(c.slug).to eq('')
+    end
+  end
+
   describe '#orphan' do
     it 'breaks parent/child relationships' do
       c1 = Container.new 'c1@example.com'

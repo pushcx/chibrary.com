@@ -129,7 +129,9 @@ class Container
     nil
   end
   def slug
-    effective_field(:slug) or ''
+    list = effective_field(:list)
+    return list.slug if list
+    ''
   end
   def call_number
     effective_field(:call_number) or ''

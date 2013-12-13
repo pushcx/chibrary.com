@@ -10,7 +10,7 @@ class Message
     @email = email
     @call_number = call_number
     @source = source
-    @list = nil
+    @list = list
 
     raise ArgumentError, "call_number '#{call_number}' is invalid string" unless call_number.instance_of? String and call_number.length == 8
     @message_id = MessageId.extract_or_generate(email.message_id, call_number)

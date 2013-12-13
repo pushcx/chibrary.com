@@ -1,11 +1,6 @@
 require_relative '../../rspec'
 require_relative '../../../model/storage/container_storage'
 
-class FakeStorableMessage < FakeMessage
-  def slug ; 'slug' ; end
-  def call_number ; 'call0000' ; end
-end
-
 describe ContainerStorage do
   context 'instantiated with a Container' do
     it 'extracts a key based on the container' do
