@@ -14,6 +14,14 @@ class CallNumber
     to_s == other.to_s
   end
 
+  def eql? other
+    self == other
+  end
+
+  def hash
+    to_s.hash
+  end
+
   def to_s
     slug
   end

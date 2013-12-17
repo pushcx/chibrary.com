@@ -41,4 +41,17 @@ describe CallNumber do
       expect(CallNumber.new('asdf12asdf')).to_not eq(CallNumber.new('asdf12ASDF'))
     end
   end
+
+  describe '#hash' do
+    it 'hashes consistently' do
+      expect(CallNumber.new('callnumber').hash).to eq(CallNumber.new('callnumber').hash)
+    end
+
+    it 'uniqs' do
+      # http://stackoverflow.com/questions/20388090/arrayuniq-ignoring-identical-hash-values
+      a = [CallNumber.new('callnumber'), CallNumber.new('callnumber')]
+      a.uniq!
+      expect(a.length).to eq(1)
+    end
+  end
 end
