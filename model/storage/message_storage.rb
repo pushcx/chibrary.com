@@ -26,7 +26,7 @@ class MessageStorage
   def to_hash
     {
       source:      message.source,
-      call_number: message.call_number,
+      call_number: message.call_number.to_s,
       message_id:  message.message_id,
       list_slug:   message.list.slug,
       email:       EmailStorage.new(message.email).to_hash,
