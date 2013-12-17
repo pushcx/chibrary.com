@@ -17,9 +17,6 @@ describe RiakStorage do
   end
 
   describe "#store" do
-    let(:list) { List.new('slug', 'name', 'description', 'homepage') }
-    let(:list_storage) { ListStorage.new(list) }
-
     it "puts it in the bucket" do
       es = ExampleStorage.new
       bucket = double('bucket')
