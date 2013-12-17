@@ -72,3 +72,12 @@ and Riak secondary indexes:
   thread call number ? that's basically ThreadList
   hash of author?
   
+
+2012-12-13
+
+You know, storing under call numbers, pretty much all the overwrite
+functionality is worthless. Call numbers should be unique already. I always
+want to overwrite, because a second write is always an upate.
+
+Really, this functionality is about checking if a given message_id is used. I
+need to update the filers.

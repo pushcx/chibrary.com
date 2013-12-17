@@ -1,0 +1,34 @@
+2013-12-13
+
+What are ThreadLists even *for*?
+
+Well, I store messages under their call numbers (formerly message IDs) and
+when you load a month page you want to see all the threads - info that
+includes subjects, authors, and dates for all the threads started in that
+month.
+
+It seems to just be an index - a workaround for the fact that I couldn't
+quickly fetch many. The Riak 2i may solve that.
+
+Though I don't want to load full Emails when I only need author, date,
+subject, and call_number.
+
+It also includes redirect information, so folks trying a call number that's
+been reparented end up in the right thread.
+
+Should this just be a cache method or two on MessageStorage?
+
+The next/previous thread stuff is complex enough. But I guess ThreadList
+is going to get pretty thin as most everything moves to ThreadListStorage.
+
+Do I need some kind of thread by date index? (I am reimplementing so much
+basic database functionality.)
+
+--
+
+After working with this code a few hours, I think ThreadList really just needs
+to be a map of the ThreadSet data structure, replacing Messages with Summary
+versions that only include call_number, n_subject, and date. The whole
+Container tree is the structure, and it works with Messages or Summaries.
+
+
