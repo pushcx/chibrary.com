@@ -31,13 +31,15 @@ x standardize the to_hash/deserialize mismatch
 x   list
 x   container
 x   message
+    summary
     thread_list
     thread_set
-    snippet
+    snippet (maybe from summary?)
 x correct spec syntax; # is instance, :: for class
 x refactor the shit out of message
 x extract a CallNumber, most likely
 x split out Container data structure from MessageContainer
+  ContainerStorage -> MessageContainerStorage and MessageSummaryContainerStorage
   Message: delegate from + n_subject down into email?
   migrate all tests to rspec
   split Message, Container initializers into two
