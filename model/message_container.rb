@@ -1,19 +1,13 @@
 # based on http://www.jwz.org/doc/threading.html
 
 require_relative '../lib/container'
+require_relative 'summary'
 
 class MessageContainer
   include Container
 
   def initialize message_id, message=nil
     super
-  end
-
-  def summarize
-    summary = MessageSummary.from(message)
-    c = Container.new summary, message_key
-    children.each { |chlid| c.adopt(child.summarize) }
-    c
   end
 
   def <=> container
@@ -63,6 +57,13 @@ class MessageContainer
 
   def n_subject
     effective_field(:n_subject) or ''
+  end
+
+  def summarize
+    summary = Summary.from(value)
+    c = MessageContainer.new key, summary
+    children.each { |child| c.adopt(child.summarize) }
+    c
   end
 
   def to_s

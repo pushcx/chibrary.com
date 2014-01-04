@@ -7,6 +7,8 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.alias_example_to :expect_it
+
   config.before(:each) do
     module RiakStorage::ClassMethods
       def db_client
@@ -14,6 +16,12 @@ RSpec.configure do |config|
       end
     end
   end
+end
+
+# http://stackoverflow.com/questions/12260534/using-implicit-subject-with-expect-in-rspec-2-11
+RSpec::Core::MemoizedHelpers.module_eval do
+  alias to should
+  alias to_not should_not
 end
 
 class FakeStorage

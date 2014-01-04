@@ -12,7 +12,7 @@ class Summary
   end
 
   def self.from message
-    return nil if message.nil # for empty containers
+    return nil if message.nil? # for empty containers
     new(message.call_number, message.n_subject, message.date)
   end
 end
