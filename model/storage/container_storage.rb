@@ -1,8 +1,12 @@
 require_relative 'riak_storage'
-require_relative '../container'
+require_relative '../../lib/container'
 
-class ContainerStorage
+module ContainerStorage
   include RiakStorage
+
+  def self.included(base)
+    base.send :extend, ClassMethods
+  end
 
   attr_reader :container
 
@@ -10,6 +14,8 @@ class ContainerStorage
     @container = container
   end
 
+  # WARN: extract_key and build_key are not generic; they only will work for
+  # MessageContainerStorage and SummaryContainerStorage
   def extract_key
     slug = container.slug
     year = container.date.year
@@ -19,35 +25,49 @@ class ContainerStorage
     "/#{slug}/#{year}/%02d/#{call_number}" % month
   end
 
-  def self.build_key slug, year, month, call_number
-    "/#{slug}/#{year}/%02d/#{call_number}" % month
+  def value_to_hash
+    raise NotImplementedError
   end
 
   def to_hash
     {
-      message_id:  container.message_id,
-      message_key: container.message_key,
-      children:    container.children.map { |c| ContainerStorage.new(c).to_hash },
+      key:      container.key,
+      value:    value_to_hash,
+      children: container.children.map { |c| self.class.new(c).to_hash },
     }
-  end
-
-  def self.from_hash h
-    container = Container.new h[:message_id], h[:message_key]
-    h[:children].each do |child|
-      container.adopt Container.deserialize(child)
-    end
-    container
   end
 
   def store
     return if container.empty_tree?
     bucket[extract_key] = to_hash
-    container.cache_snippet
+    #container.cache_snippet
   end
 
-  def self.find slug, year, month, call_number
-    key = build_key(slug, year, month, call_number)
-    hash = bucket[key]
-    from_hash(hash)
+  module ClassMethods
+    def build_key slug, year, month, call_number
+      "/#{slug}/#{year}/%02d/#{call_number}" % month
+    end
+
+    def value_from_hash h
+      raise NotImplementedError
+    end
+
+    def container_class
+      raise NotImplementedError
+    end
+
+    def from_hash h
+      container = container_class.new h[:key], value_from_hash(h[:value])
+      h[:children].each do |child|
+        container.adopt self.from_hash(child)
+      end
+      container
+    end
+
+    def find slug, year, month, call_number
+      key = build_key(slug, year, month, call_number)
+      hash = bucket[key]
+      from_hash(hash)
+    end
   end
 end

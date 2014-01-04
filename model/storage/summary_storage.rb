@@ -2,7 +2,7 @@ require 'time'
 
 require_relative '../summary'
 
-# Does not import RiakStorage completely confirm to the Storage interface
+# Does not import RiakStorage completely or confirm to the Storage interface
 # because Summaries are never loaded individually, only via
 # SummaryContainerStorage.
 class SummaryStorage
