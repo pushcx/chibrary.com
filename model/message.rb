@@ -1,10 +1,14 @@
 require 'forwardable'
 
+require_relative 'call_number'
 require_relative 'email'
 
 class Message
   attr_accessor :email, :call_number, :source, :list
   attr_reader :message_id
+
+  extend Forwardable
+  def_delegators :@email, :n_subject, :date
 
   def initialize email, call_number, source=nil, list=nil
     @email = email

@@ -11,6 +11,15 @@ describe Message do
     end
   end
 
+  describe 'delegates to email for fields' do
+    let(:now) { Time.now }
+    let(:email) { OpenStruct.new(n_subject: 'foo', date: now) }
+    let(:message) { Message.new(email, 'callnumber') }
+
+    it { expect(message.n_subject).to eq('foo') }
+    it { expect(message.date).to eq(now) }
+  end
+
   describe '::from_string' do
     it 'creates emails' do
       m = Message.from_string 'email', 'callnumber'
