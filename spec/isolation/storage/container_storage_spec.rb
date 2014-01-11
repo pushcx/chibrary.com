@@ -97,4 +97,32 @@ describe TContainerStorage do
       expect(container.key).to eq('callnumber')
     end
   end
+
+  describe '::month' do
+    it 'loads all threads in the month' do
+      bucket = double('bucket')
+      bucket.should_receive(:get_index).and_return(['callnumbr1', 'callnumbr2'])
+      bucket.should_receive(:[]).with('callnumbr1').and_return({
+        key: 'callnumbr1',
+        value: { message: 'first message' },
+        children: [],
+      })
+      bucket.should_receive(:[]).with('callnumbr2').and_return({
+        key: 'callnumbr2',
+        value: { message: 'second message' },
+        children: [],
+      })
+      UnHashesValuesContainerStorage.stub(:bucket).and_return(bucket)
+      threads = UnHashesValuesContainerStorage.month('slug', 2014, 1)
+      expect(threads[0].key).to eq('callnumbr1')
+      expect(threads[1].key).to eq('callnumbr2')
+    end
+
+    it 'returns an empty array for a month with nothing' do
+      bucket = double('bucket')
+      bucket.should_receive(:get_index).and_return([])
+      TContainerStorage.stub(:bucket).and_return(bucket)
+      expect(TContainerStorage.month('slug', 2014, 1)).to eq([])
+    end
+  end
 end

@@ -64,5 +64,9 @@ module ContainerStorage
       hash = bucket[call_number]
       from_hash(hash)
     end
+
+    def month slug, year, month
+      bucket.get_index('month_bin', build_month_key(slug, year, month)).map { |call| find(call) }
+    end
   end
 end

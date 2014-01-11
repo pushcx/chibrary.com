@@ -8,16 +8,6 @@ class ThreadSet
   attr_accessor :containers
   attr_reader :slug, :year, :month
 
-  def self.month slug, year, month
-    threadset = ThreadSet.new(slug, year, month)
-    threads = $riak.list("list/#{slug}/thread/#{year}/#{month}")
-    threads.each do |key|
-      thread = $riak[key]
-      thread.each { |c| threadset.containers[c.message_id] = c }
-    end
-    threadset
-  end
-
   def initialize slug, year, month
     @slug, @year, @month = slug, year, month
     # @containers holds all containers, not just root-level containers
@@ -189,22 +179,6 @@ class ThreadSet
         c if !c.empty? or include_empty
       end.compact
     end.flatten.size
-  end
-
-  def store
-    finish
-
-    # cache each thread
-    #thread_list = ThreadList.new(@slug, @year, @month)
-    each do |thread|
-      SummaryContainerStorage.new(thread).store
-      # store n/p links
-      # store redirect table
-      # store thread/message counts
-    end
-    @redirected_threads.each do |redirect|
-      # store redirect table
-    end
   end
 
   def << message
