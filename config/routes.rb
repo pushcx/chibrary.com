@@ -42,9 +42,10 @@ def load_thread
   @call_number = params[:call_number]
   raise ActionController::RoutingError, "Invalid call_number" unless @call_number =~ /^[A-Za-z0-9\-_]{8}$/
   begin
-    r = ThreadList.new(@slug, @year, @month).redirect? @call_number
-    redirect_to "#{r}#m-#{@call_number}" and return if r
-    @thread = $riak["list/#{@list.slug}/thread/#{@year}/#{@month}/#{@call_number}"]
+    # redirects are pending on Threader caching them into a new model
+    #r = ThreadList.new(@slug, @year, @month).redirect? @call_number
+    #redirect_to "#{r}#m-#{@call_number}" and return if r
+    @thread = MessageContainerStorage.find(@list.slug, year, month, call_number)
   rescue NotFound
     raise ActionController::RoutingError, "Thread not found"
   end
@@ -55,21 +56,21 @@ def thread_previous_next(slug, year, month, call_number)
     rel = type ? " rel='#{type} prefetch'" : ''
     "<a href='/#{thread[:slug]}/#{thread[:year]}/#{thread[:month]}/#{thread[:call_number]}' #{rel}>#{f(subject(thread[:subject]))}</a>"
   end
-  thread_list = ThreadList.new(slug, year, month)
+  #thread_list = ThreadList.new(slug, year, month)
 
-  if previous_thread = thread_list.previous_thread(call_number)
-    previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
-    previous_link += "<br />#{previous_thread[:year]}-#{previous_thread[:month]}" if previous_thread[:year] != year or previous_thread[:month] != month
-  else
+  #if previous_thread = thread_list.previous_thread(call_number)
+  #  previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
+  #  previous_link += "<br />#{previous_thread[:year]}-#{previous_thread[:month]}" if previous_thread[:year] != year or previous_thread[:month] != month
+  #else
     previous_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
-  end
+  #end
 
-  if next_thread = thread_list.next_thread(call_number)
-    next_link = "#{thread_link(next_thread, :next)} &gt;"
-    next_link += "<br />#{next_thread[:year]}-#{next_thread[:month]}" if next_thread[:year] != year or next_thread[:month] != month
-  else
+  #if next_thread = thread_list.next_thread(call_number)
+  #  next_link = "#{thread_link(next_thread, :next)} &gt;"
+  #  next_link += "<br />#{next_thread[:year]}-#{next_thread[:month]}" if next_thread[:year] != year or next_thread[:month] != month
+  #else
     next_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
-  end
+  #end
 
   [previous_link, next_link]
 end

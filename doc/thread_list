@@ -31,4 +31,64 @@ to be a map of the ThreadSet data structure, replacing Messages with Summary
 versions that only include call_number, n_subject, and date. The whole
 Container tree is the structure, and it works with Messages or Summaries.
 
+--
 
+2013-01-04
+
+After a vacation, I've finished rebuilding Containers to be agnostic about
+their contents, a pure data type. The MessageContainer is used to hold both
+Messages and Summaries in its Containers.
+
+The two are used in quite different situations: a Container tree full of
+Messages is used by the Threader, but not persisted (though I seem to have
+forgotten this and implemented a MessageContainerStorage anyways - I guess
+it's useful if I decide it's worth the disk space to have faster access to
+them, but YAGNI now). A Container tree full of Summaries is persisted and used
+to display the thread page.
+
+Things ThreadList still does:
+- redirects
+- thread and message counts on year pages
+- thread and message count on month pages
+
+I could just make some tiny objects for per-month counts and a redirect list
+(message -> thread root). Both are known and must be written by the Threader
+when it has the full month's worth of Messages in memory.
+
+Yeah. I can't squeeze counts into Containers, I don't want to load even just a
+set of SummaryContainers (eg one per thread) into RAM for counting (to say
+nothing of the time of asking the DB for each in turn). They need a model.
+
+Redirects could use 2i index by having a key 'parent_of_bin' that has an array
+of all the child messages' CallNumbers. I wouldn't even have to load the
+SummaryContainer tree, just run the search and parse the key I get back. This
+works, but feels awfully clever and database-specific, as opposed to
+serializing a simple hash under slug/year/month and doing one fetch by key.
+
+Yeah. I'll do redirect hash and count model. I can do the 2i redirects if and
+when it's a neccessary performance win.
+
+--
+
+2013-01-07
+
+Back after sickness. Adding two models still feels right, but I'm punting on
+it until I need it for visible functionality. It's been too long since I've
+seen the site working. Added to the todo and moving on.
+
+...
+Argh, ThreadList was *also* used for determining next/previous links.
+
+Maybe I do want Summary to be an entire month of metadata rather than a single
+thread. Then it could fill all these roles again, though it's more data than
+any indivitual page wants.
+
+  - next/previous links
+  - redirects
+  - thread and message counts on year pages
+  - thread and message count on month pages
+
+---
+2014-01-10
+
+Individual objects.

@@ -1,5 +1,3 @@
-require_relative 'thread_list'
-
 class InvalidSlug < RuntimeError ; end
 
 class NullList
@@ -20,10 +18,6 @@ class List
     @name = name
     @description = description
     @homepage = homepage
-  end
-
-  def thread_list year, month
-    ThreadList.new @slug, year, month
   end
 
   # all the rest of this needs to move off into MesageList and Thread

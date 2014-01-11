@@ -195,19 +195,16 @@ class ThreadSet
     finish
 
     # cache each thread
-    thread_list = ThreadList.new(@slug, @year, @month)
+    #thread_list = ThreadList.new(@slug, @year, @month)
     each do |thread|
-      ContainerStorage.new(thread).store
-      thread_list.add_thread thread
+      SummaryContainerStorage.new(thread).store
+      # store n/p links
+      # store redirect table
+      # store thread/message counts
     end
     @redirected_threads.each do |redirect|
-      thread_list.add_redirected_thread *redirect
+      # store redirect table
     end
-    thread_list.store
-
-    # queue the publish
-    @publish_q ||= Queue.new :publish
-    @publish_q.add :slug => @slug, :year => @year, :month => @month
   end
 
   def << message

@@ -20,11 +20,6 @@ describe List do
     expect(List.new('slug').slug).to eq('slug')
   end
 
-  it 'instantiates thread lists' do
-    ThreadList.should_receive(:new).with('slug', '2008', '01')
-    List.new('slug').thread_list("2008", "01")
-  end
-
   describe '#==' do
     it 'is equal if fields match' do
       l1 = List.new('slug', 'name', 'description', 'homepage')
