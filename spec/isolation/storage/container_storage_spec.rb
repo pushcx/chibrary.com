@@ -16,9 +16,9 @@ describe TContainerStorage do
       def call_number ; 'callnumber' ; end
     end
 
-    it 'extracts a key based on the container' do
+    it 'extracts a month key based on the container' do
       c = MessageLikeContainer.new
-      expect(TContainerStorage.new(c).extract_key).to eq('/slug/2014/01/callnumber')
+      expect(TContainerStorage.new(c).extract_month_key).to eq('slug/2014/01')
     end
 
     describe '#to_hash' do
@@ -59,9 +59,9 @@ describe TContainerStorage do
     end
   end
 
-  describe '::build_key' do
+  describe '::build_month_key' do
     it 'builds a key based on slug, year, month and call_number' do
-      expect(TContainerStorage.build_key('slug', 2013, 9, 'callnumber')).to eq('/slug/2013/09/callnumber')
+      expect(TContainerStorage.build_month_key('slug', 2013, 9)).to eq('slug/2013/09')
     end
   end
 
@@ -86,13 +86,13 @@ describe TContainerStorage do
   describe '::find' do
     it 'instantiates a Container from the bucket' do
       bucket = double('bucket')
-      bucket.should_receive(:[]).with('/slug/2013/11/callnumber').and_return({
+      bucket.should_receive(:[]).with('callnumber').and_return({
         key: 'callnumber',
         value: { message: 'totes fake' },
         children: [],
       })
       UnHashesValuesContainerStorage.should_receive(:bucket).and_return(bucket)
-      container = UnHashesValuesContainerStorage.find('slug', 2013, 11, 'callnumber')
+      container = UnHashesValuesContainerStorage.find('callnumber')
       expect(container).to be_a(FakeContainer)
       expect(container.key).to eq('callnumber')
     end

@@ -14,15 +14,8 @@ module ContainerStorage
     @container = container
   end
 
-  # WARN: extract_key and build_key are not generic; they only will work for
-  # MessageContainerStorage and SummaryContainerStorage
-  def extract_key
-    slug = container.slug
-    year = container.date.year
-    month = container.date.month
-    call_number = container.call_number
-
-    "/#{slug}/#{year}/%02d/#{call_number}" % month
+  def extract_month_key
+    self.class.build_month_key(container.slug, container.date.year, container.date.month)
   end
 
   def value_to_hash
@@ -39,13 +32,16 @@ module ContainerStorage
 
   def store
     return if container.empty_tree?
-    bucket[extract_key] = to_hash
+    obj = bucket.new
+    obj.key = container.call_number
+    obj.data = to_hash
+    obj.indexes['month_bin'] << extract_month_key
     #container.cache_snippet
   end
 
   module ClassMethods
-    def build_key slug, year, month, call_number
-      "/#{slug}/#{year}/%02d/#{call_number}" % month
+    def build_month_key slug, year, month
+      "#{slug}/#{year}/%02d" % month
     end
 
     def value_from_hash h
@@ -64,9 +60,8 @@ module ContainerStorage
       container
     end
 
-    def find slug, year, month, call_number
-      key = build_key(slug, year, month, call_number)
-      hash = bucket[key]
+    def find call_number
+      hash = bucket[call_number]
       from_hash(hash)
     end
   end

@@ -49,7 +49,7 @@ x Message: delegate from + n_subject down into email?
 x split Message, Container initializers into two
   move Storage.to_hash and .store to class methods; I never keep obj around
   can models be built so none call back up into the storage layer?
-  can year and month be removed from ContainerStorage keys?
+x can year and month be removed from ContainerStorage keys? - yes, w index
   Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
   remove overwrite from MessageStorage, look up message ids instead
