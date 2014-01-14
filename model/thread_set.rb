@@ -5,7 +5,7 @@
 class ThreadSet
   include Enumerable
 
-  attr_accessor :containers
+  attr_accessor :containers, :subjects, :redirected_threads
   attr_reader :slug, :year, :month
 
   def initialize slug, year, month
@@ -13,17 +13,15 @@ class ThreadSet
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
+    @subjects = []
     @redirected_threads = []
     flush_threading
   end
 
-  def subjects ; @subjects ; end
-  protected :subjects
-
   def == threadset
-    return false if @subjects.keys - threadset.subjects.keys != []
-    return false if threadset.subjects.keys - @subjects.keys != []
-    @subjects.each do |subject, container|
+    return false if subjects.keys - threadset.subjects.keys != []
+    return false if threadset.subjects.keys - subjects.keys != []
+    subjects.each do |subject, container|
       return false if container != threadset.subjects[subject]
     end
     return false if @containers.keys - threadset.containers.keys != []
@@ -43,7 +41,7 @@ class ThreadSet
   # finish the threading and yield each root container (thread) in turn
   def finish
     # build the cache if necessary
-    return unless @subjects.empty?
+    return unless subjects.empty?
 
     # First, break parenting for messages that are lazy thread creation
     @containers.values.each do |container|
@@ -56,18 +54,18 @@ class ThreadSet
     # Next, pick the likeliest thread roots.
     root_set.each do |container| # 5.4.B
       subject = container.n_subject
-      existing = @subjects.fetch(subject, nil)
+      existing = subjects.fetch(subject, nil)
       # This is more likely the thread root if...
       # 1. There is no existing root
       # 2. The existing root isn't empty and this one is
       # 3. The existing root has more re/fwd gunk on it
-      @subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or container.subject_shorter_than? existing
+      subjects[subject] = container if !existing or (!existing.empty? and container.empty?) or container.subject_shorter_than? existing
     end
 
     # Next, move the rest of the same-subject roots under it.
     root_set.each do |container| # 5.4.C
       subject = container.n_subject
-      existing = @subjects.fetch(subject, nil)
+      existing = subjects.fetch(subject, nil)
       next if !existing or existing == container
 
       # If they're both dummies, let them share children.
@@ -140,7 +138,7 @@ class ThreadSet
   def retrieve_split_threads_from threadset
     return if @containers.empty?
     finish
-    # @subjects would be cleared as soon as a message is added and the threading is flushed
+    # subjects would be cleared as soon as a message is added and the threading is flushed
     # But we know there won't be any more subjects added, so just cache it
     subjects = root_set.collect(&:n_subject)
     threadset.each do |thread|
@@ -164,12 +162,12 @@ class ThreadSet
 
   def each
     finish
-    @subjects.values.sort.each { |c| yield c }
+    subjects.values.sort.each { |c| yield c }
   end
 
   def length
     finish
-    @subjects.length
+    subjects.length
   end
 
   def message_count include_empty=false
@@ -213,8 +211,8 @@ class ThreadSet
 
   def flush_threading
     # clear everything computed by finish
-    @subjects    = {} # threads: normalized subject -> root container
-    @root_set    = nil
+    subjects    = {} # threads: normalized subject -> root container
+    @root_set   = nil
   end
 
   def redirect thread, year, month
@@ -237,7 +235,7 @@ class ThreadSet
     puts
     puts "#{self}:"
     #puts "subjects: "
-    #@subjects.each do |subject, container|
+    #subjects.each do |subject, container|
     #  puts "#{subject}  ->  #{container.message_id}"
     #end
     #puts "threads: "
