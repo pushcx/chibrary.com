@@ -15,9 +15,9 @@ class ThreadSetStorage
     thread_set.finish
     each do |thread|
       SummaryContainerStorage.new(thread).store
-      # store n/p links
       # store thread/message counts
     end
+    TimeSortStorage.new(TimeSort.from(thread_set)).store
     @redirected_threads.each do |redirect|
       # store redirect table
     end

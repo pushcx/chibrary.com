@@ -49,3 +49,13 @@ class FakeStorableMessage < FakeMessage
   def source ; 'source' ; end
   def call_number ; 'callnumber' ; end
 end
+
+FakeThreadSet = Struct.new(:root_set) do
+  def slug ; 'slug' ; end
+  def date ; Time.new(2014, 12) ; end
+end
+FakeThreadLink = Struct.new(:call_number, :n_subject)
+def fake_thread_set call_numbers
+  FakeThreadSet.new call_numbers.map { |c| FakeThreadLink.new(c, "subject #{c}") }
+end
+
