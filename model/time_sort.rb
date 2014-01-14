@@ -1,3 +1,5 @@
+require_relative 'thread_link'
+
 class TimeSort
   attr_reader :slug, :year, :month
   attr_reader :threads
