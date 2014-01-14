@@ -101,12 +101,12 @@ $(function() {
       case 110: // n, next thread
         var n = $("div.previous_next:first .next a");
         if (n.size() == 1)
-          window.location = "http://listlibrary.net" + n.attr("href");
+          window.location = "http://chibrary.com" + n.attr("href");
         break;
       case 112: // p, previous thread
         var p = $("div.previous_next:first .previous a");
         if (p.size() == 1)
-          window.location = "http://listlibrary.net" + p.attr("href");
+          window.location = "http://chibrary.com" + p.attr("href");
         break;
       case 113: // q, toggle quotes in message
         var current = current_message();

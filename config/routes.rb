@@ -9,7 +9,7 @@
 #end
 
 before do
-  @title = "ListLibrary.net - Free Mailing List Archives"
+  @title = "Chibrary - Free Mailing List Archives"
 end
 
 def subject o

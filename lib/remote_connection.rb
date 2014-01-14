@@ -13,9 +13,9 @@ end
 class RemoteConnection
   def initialize
     @ssh = Net::SSH.start(
-      "listlibrary.net",
-      "listlibrary", {
-        :keys => [File.join(File.dirname(__FILE__), "listlibrary_id_dsa")],
+      "chibrary.com",
+      "chibrary", {
+        :keys => [File.join(File.dirname(__FILE__), "chibrary_id_dsa")],
         :compression => 'zlib',
         :compression_level => 9,
         :paranoid => :very,
@@ -43,13 +43,13 @@ class RemoteConnection
       @sftp.write(handle, contents)
       @sftp.fsetstat(handle, :permissions => 0644)
     end
-    command("/bin/mkdir -p /home/listlibrary/listlibrary.net/#{path}")
-    command("/bin/mv /home/listlibrary/#{tmpname} /home/listlibrary/listlibrary.net/#{path}/#{filename}")
+    command("/bin/mkdir -p /home/chibrary/chibrary.com/#{path}")
+    command("/bin/mv /home/chibrary/#{tmpname} /home/chibrary/chibrary.com/#{path}/#{filename}")
   end
 
   def remove filename
     return if filename.empty?
-    @sftp.remove! "/home/listlibrary/#{filename}"
+    @sftp.remove! "/home/chibrary/#{filename}"
   rescue Net::SFTP::Exception => e
     raise unless e.code == Net::SFTP::Constants::StatusCodes::FX_NO_SUCH_FILE
   end
@@ -57,12 +57,12 @@ class RemoteConnection
   def rmdir dir
     return unless @sftp.exists? dir
     # loop and remove files
-    @sftp.dir.foreach("/home/listlibrary/#{dir}") { |f|
+    @sftp.dir.foreach("/home/chibrary/#{dir}") { |f|
       next if %w{. ..}.include? f.name
       remove "#{dir}/#{f.name}"
     }
     begin
-      @sftp.rmdir! "/home/listlibrary/#{dir}"
+      @sftp.rmdir! "/home/chibrary/#{dir}"
     rescue Net::SFTP::Exception => e
       raise unless e.code == Net::SFTP::Constants::StatusCodes::FX_NO_SUCH_FILE
     end

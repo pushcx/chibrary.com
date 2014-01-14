@@ -15,7 +15,7 @@ x get /:slug/:year/:month
 x get /:slug/:year
 x get /:slug
 - get / - missing list of mailing lists
-  search and replace all instances of 'listlibrary'
+x search and replace all instances of 'listlibrary'
   search and replace all instances of 'mail' with 'email'
   put /flags
   put /log
@@ -74,6 +74,8 @@ x can year and month be removed from ContainerStorage keys? - yes, w index
   minify css and js
   forward listlibrary.net/org to chibrary
   deploy
+  check that google search works with new domain
+  fix google analytics logging to only be included in prod
 
   https://www.cs.cmu.edu/~enron/
   spam filtering

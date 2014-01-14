@@ -36,7 +36,7 @@ class Log
   private
 
   def log status, message
-    #response = Net::HTTP.post_form(URI.parse('http://listlibrary.net/log.php'), {
+    #response = Net::HTTP.post_form(URI.parse('http://chibrary.com/log.php'), {
     #  'passwd'  => LOG_PASSWD,
     #  'log_message' => {
     #    'server'  => @@server,

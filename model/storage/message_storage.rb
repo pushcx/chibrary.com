@@ -43,7 +43,7 @@ class MessageStorage
   def guard_against_error_overwrite key
     if overwrite == Overwrite::ERROR
       exists = bucket.has_key? key
-      raise MessageOverwriteError, "overwrite attempted for listlibrary_archive #{@key}" if exists
+      raise MessageOverwriteError, "overwrite attempted for chibrary_archive #{@key}" if exists
     end
   end
 
