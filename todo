@@ -16,7 +16,7 @@ x get /:slug/:year
 x get /:slug
 - get / - missing list of mailing lists
 x search and replace all instances of 'listlibrary'
-  search and replace all instances of 'mail' with 'email'
+x search and replace all instances of 'mail' with 'email'
   put /flags
   put /log
 

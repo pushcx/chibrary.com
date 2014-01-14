@@ -1,4 +1,4 @@
-# format (hide mail addresses, link URLs) and html-escape a string
+# format (hide email addresses, link URLs) and html-escape a string
 def f str
   str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([\w]+)/, '\1@\2...\3') # hide mail addresses
   str = CGI::escapeHTML(str)
