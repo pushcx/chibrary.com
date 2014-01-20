@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require_relative '../../../web/helper/application_helper'
 
-class ApplicationHelperTest < ActionView::TestCase
-  context 'f' do
-    should 'format email addresses and links' do
+describe 'App Helper' do
+  describe 'f' do
+    it 'formats email addresses and links' do
       [
         ['a user@a.com a',               'a user@a.com a'],
         ['a user@hp.com a',              'a user@hp...com a'],
@@ -21,7 +21,7 @@ class ApplicationHelperTest < ActionView::TestCase
 
         ['http://user:pass@ff.com/foo',  '<a rel="nofollow" href="http://user:pass@ff...com/foo">http://user:pass@ff...com/foo</a>'],
       ].each do |original, cleaned|
-        assert_equal cleaned, f(original)
+        expect(f(original)).to eq(cleaned)
       end
     end
   end
