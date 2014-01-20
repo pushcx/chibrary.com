@@ -8,6 +8,9 @@
 #
 #end
 
+require_relative '../model/storage/time_sort_storage'
+require_relative '../model/storage/message_container_storage'
+
 before do
   @title = "Chibrary - Free Mailing List Archives"
 end
@@ -36,19 +39,6 @@ def load_month
   raise ActionController::RoutingError, "Invalid year" unless @year =~ /^\d{4}$/
   raise ActionController::RoutingError, "Invalid month" unless @month =~ /^\d{2}$/
   raise ActionController::RoutingError, "Ridiculous month" unless (1..12).include? @month.to_i
-end
-
-def load_thread
-  @call_number = params[:call_number]
-  raise ActionController::RoutingError, "Invalid call_number" unless @call_number =~ /^[A-Za-z0-9\-_]{8}$/
-  begin
-    # redirects are pending on Threader caching them into a new model
-    #r = ThreadList.new(@slug, @year, @month).redirect? @call_number
-    #redirect_to "#{r}#m-#{@call_number}" and return if r
-    @thread = MessageContainerStorage.find(@list.slug, year, month, call_number)
-  rescue NotFound
-    raise ActionController::RoutingError, "Thread not found"
-  end
 end
 
 def thread_previous_next(slug, year, month, call_number)

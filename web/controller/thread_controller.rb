@@ -1,7 +1,23 @@
+require_relative '../../model/call_number'
+
+def load_thread(call_number)
+  begin
+    # redirects are pending on Threader caching them into a new model
+    #r = ThreadList.new(@slug, @year, @month).redirect? @call_number
+    #redirect_to "#{r}#m-#{@call_number}" and return if r
+    @thread = MessageContainerStorage.find(call_number)
+  rescue NotFound
+    raise ArgumentError, "Thread not found"
+  end
+end
+
 get  '/:slug/:year/:month/:call_number' do
+  call_number = CallNumber.new(params[:call_number])
+  raise ArgumentError, "Invalid Call Number" unless call_number.valid?
+
   load_list
   load_month
-  load_thread
+  load_thread(call_number)
 
   @title = "#{subject(@thread.subject)} - #{@list['name'] or @slug}"
   @previous_link, @next_link = thread_previous_next(@slug, @year, @month, @call_number)
