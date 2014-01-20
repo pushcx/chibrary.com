@@ -216,6 +216,42 @@ describe Email do
     # what does it do with invalid/missing from addresses?
   end
 
+  describe '#likely_thread_creation_from?' do
+    def thread_creation_email from='from@example.com', subject='subject', references=[], body=''
+      Email.new from: from, subject: subject, references: references, raw: "\n\n#{body}"
+    end
+
+    it 'is if someone replies to start a new thread' do
+      p = Email.new subject: 'Subject', raw: "\n\n"
+      r = Email.new subject: 'Different', raw: "\n\n"
+      expect(r.likely_thread_creation_from? p).to be_true
+    end
+
+    it 'is not if a straightforward reply' do
+      p = Email.new from: 'a@example.com', subject: 'Subject', raw: "\n\n"
+      r = Email.new from: 'b@example.com', subject: 'Re: Subject', raw: "\n\n"
+      expect(r.likely_thread_creation_from? p).to be_false
+    end
+
+    it 'is not if they quoted the parent' do
+      p = Email.new subject: 'Foo', raw: "\n\n"
+      r = Email.new subject: 'Bar', raw: "\n\n> a\n> b\n> c"
+      expect(r.likely_thread_creation_from? p).to be_false
+    end
+
+    it 'is if there are few words in common' do
+      p = Email.new subject: 'Foo', raw: "\n\nqwerty asdfgh zxcvbn wertyu sdfghj xcvbnm ertyui"
+      r = Email.new subject: 'Bar', raw: "\n\ntext on a totally different topic"
+      expect(r.likely_thread_creation_from? p).to be_true
+    end
+
+    it 'is not if there are many words in common' do
+      p = Email.new subject: 'Foo', raw: "\n\nqwerty asdfgh zxcvbn wertyu sdfghj xcvbnm ertyui"
+      r = Email.new subject: 'Bar', raw: "\n\nqwerty asdfgh zxcvbn wertyu sdfghj xcvbnm ertyui"
+      expect(r.likely_thread_creation_from? p).to be_false
+    end
+  end
+
   describe '#list' do
     it 'finds a list' do
       e = Email.new raw: "X-Mailing-List: list@example.com\n\nBody"

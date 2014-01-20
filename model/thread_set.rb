@@ -47,7 +47,7 @@ class ThreadSet
     @containers.values.each do |container|
       # skip where there's not enough info to judge
       next if container.empty? or container.orphan? or container.parent.empty?
-      container.orphan if container.message.likely_lazy_reply_to? container.parent.message
+      container.orphan if container.message.email.likely_thread_creation_from? container.parent.message.email
     end
 
     @root_set = nil

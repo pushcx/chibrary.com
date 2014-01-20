@@ -124,6 +124,35 @@ class Email
     parts.join('@')
   end
 
+  # Guess if this message actually starts a new thread instead of replying to parent
+  # maybe this huge thing should be its own class
+  def likely_thread_creation_from? parent
+    return false if n_subject == parent.n_subject # didn't change subject, almost certainly a reply
+
+    score = -1 # generally, messages are not lazy replies
+    score += 1 if references.empty? or !references.include?(parent.message_id)
+    quoted_line_count = body.scan(/^> .+/).count
+    score -= quoted_line_count
+    score += 1 if quoted_line_count == 0
+
+    def top_long_words str, amount=10
+      counts = Hash.new { 0 }
+      str.downcase.split(/\s+/).each { |word| counts[word] += 1 if word.length > 5 }
+      counts.sort_by { |word, count| count }.reverse[0..amount].map { |i| i[0] }
+    end
+
+    # lots of points for matching words in subject and to/from
+    similar = 0
+    similar += (top_long_words(subject.to_s) & top_long_words(parent.subject.to_s)).count * 2
+    similar += (top_long_words(header['To']) & top_long_words(header['From'])).count * 2
+    similar += (top_long_words(body) & top_long_words(parent.body, 20)).count
+
+    score -= 1 if similar > 6
+    score -= 1 if similar > 10
+
+    return score > 0
+  end
+
   def list
     header_addresses = %w{
       X-Mailing-List List-Id X-ML-Name
