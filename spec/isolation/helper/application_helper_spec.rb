@@ -1,3 +1,4 @@
+require_relative '../../rspec'
 require_relative '../../../web/helper/application_helper'
 
 describe 'App Helper' do
