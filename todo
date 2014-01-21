@@ -51,6 +51,7 @@ x ThreadSet: cache list of thread roots in order for n/p links
   ThreadSet: cache monthly message/thread counts
 x split Message, Container initializers into two
   move Storage.to_hash and .store to class methods; I never keep obj around
+  can ThreadHelper#remove_footer *not* call the storage layer? ugh
   can models be built so none call back up into the storage layer?
 x can year and month be removed from ContainerStorage keys? - yes, w index
   Container.likely_split_thread? should ask Message about quoting, not regex
