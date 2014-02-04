@@ -56,6 +56,8 @@ class Threader
 
   def cache_work slug, year, month, message_list, threadset
     threadset.rejoin_splits # rejoins threads split across months and stores
+    # TODO store all the threadsets involved - maybe I need a joiner class to
+    # take care of keeping track of all these threadsets
 
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug

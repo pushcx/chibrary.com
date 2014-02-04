@@ -8,10 +8,9 @@ require_relative 'message_id'
 
 class Email
   attr_reader :raw, :header
-  attr_reader :from, :message_id, :references, :date, :no_archive
+  attr_reader :from, :message_id, :references, :date, :no_archive, :subject
 
   extend Forwardable
-  def_delegator :@subject, :to_s, :subject
   def_delegator :@subject, :normalized, :n_subject
 
   def initialize fields

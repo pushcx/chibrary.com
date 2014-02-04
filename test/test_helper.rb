@@ -36,8 +36,6 @@ end
 class ThreadingTest < ActiveSupport::TestCase
   fixtures [:threaded_message, :rejoin_splits]
 
-  def test_dummy ; end
-
   private
   def container_tree
     c1 = Container.new Message.new(threaded_message(:root), 'test', '0000root')

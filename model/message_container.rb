@@ -19,19 +19,22 @@ class MessageContainer
     # threaded). A message with a malicious References header should not be
     # able to reparent other messages willy-nilly, but we do trust a message
     # to report its own parent.
-    return unless container.orphan? or (!container.empty? and container.value.references.last == value.message_id)
+    return unless container.orphan? or (!container.empty? and container.value.references.last == message_id)
     super
   end
 
   def likely_split_thread?
-    empty? or message.subject_is_reply? or effective_field(:body) =~ /^[>\|] .+/
+    empty? or message.subject.reply? or effective_field(:body) =~ /^[>\|] .+/
   end
 
   def value= message
-    raise "Message id #{message.message_id} doesn't match container #{key}" unless message.message_id == key
+    raise "Message id #{message.message_id} doesn't match container #{key}" unless message.message_id == message_id
     super
   end
+
   alias :message= :value=
+  alias :message  :value
+  alias :message_id :key
 
   def subject_shorter_than? container
     return subject.length < container.subject.length

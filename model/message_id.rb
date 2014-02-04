@@ -35,6 +35,10 @@ class MessageId
     self == other
   end
 
+  def encoding
+    to_s.encoding
+  end
+
   def hash
     to_s.hash
   end

@@ -95,6 +95,26 @@ describe MessageContainer do
     end
   end
 
+  describe 'aliasing' do
+    it 'aliases #message_id to #key' do
+      mc = MessageContainer.new 'foo@example.com'
+      expect(mc.message_id).to eq('foo@example.com')
+    end
+
+    it 'aliases #message to #value' do
+      message = FakeMessage.new('fake@example.com')
+      mc = MessageContainer.new 'fake@example.com', message
+      expect(mc.message).to eq(message)
+    end
+
+    it 'aliases #message= to #value=' do
+      message = FakeMessage.new('fake@example.com')
+      mc = MessageContainer.new 'fake@example.com'
+      mc.message = message
+      expect(mc.value).to eq(message)
+    end
+  end
+
   describe '#message=' do
     it 'rejects messages with different ids' do
       c = MessageContainer.new 'container@example.com'

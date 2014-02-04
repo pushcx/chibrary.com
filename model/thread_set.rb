@@ -1,3 +1,4 @@
+require_relative 'message_container'
 # based on http://www.jwz.org/doc/threading.html
 
 # A ThreadSet holds the threads (container trees) and does the work of sorting
@@ -13,7 +14,7 @@ class ThreadSet
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
-    @subjects = []
+    @subjects = {}
     @redirected_threads = []
     flush_threading
   end
@@ -47,7 +48,7 @@ class ThreadSet
     @containers.values.each do |container|
       # skip where there's not enough info to judge
       next if container.empty? or container.orphan? or container.parent.empty?
-      container.orphan if container.message.email.likely_thread_creation_from? container.parent.message.email
+      container.orphan if container.message.likely_thread_creation_from? container.parent.message.email
     end
 
     @root_set = nil
@@ -107,7 +108,7 @@ class ThreadSet
         next if potential_parent.empty?
         next unless potential_parent.n_subject == container.n_subject
         next if message_id == container.message_id or potential_parent.child_of? container
-        count = direct_quotes.collect { |q| 1 if potential_parent.message.body.include? q }.compact.sum
+        count = direct_quotes.collect { |q| (potential_parent.message.body.include? q) ? 1 : 0 }.inject(0, &:+)
         if count > best
           chosen_parent = potential_parent
           break if count == direct_quotes.size
@@ -118,6 +119,11 @@ class ThreadSet
     end
   end
   private :finish
+
+  def plus_month n
+    t = Time.utc(year, month).plus_month(n)
+    ThreadSet.month(slug, t.year, '%02d' % t.month)
+  end
 
   def rejoin_splits
     # Many threads are split by replies in later months. This is separate from
@@ -149,16 +155,8 @@ class ThreadSet
       thread.each { |c| self << c.message unless c.empty? }
       threadset.redirect thread, year, month
     end
-
-    threadset.store
-    store
   end
   protected :retrieve_split_threads_from
-
-  def plus_month n
-    t = Time.utc(@year, @month).plus_month(n)
-    ThreadSet.month(@slug, t.year, '%02d' % t.month)
-  end
 
   def each
     finish
@@ -185,7 +183,7 @@ class ThreadSet
       return unless container.empty? # message already stored; done
       container.message = message
     else
-      container = Container.new(message)
+      container = MessageContainer.new(message.message_id, message)
       @containers[message.message_id] = container
     end
 
@@ -196,7 +194,7 @@ class ThreadSet
       if @containers.has_key? message_id
         child = @containers[message_id]
       else
-        child = Container.new(message_id)
+        child = MessageContainer.new(message_id)
         @containers[message_id] = child
       end
       previous.adopt child if previous
@@ -211,18 +209,18 @@ class ThreadSet
 
   def flush_threading
     # clear everything computed by finish
-    subjects    = {} # threads: normalized subject -> root container
+    @subjects    = {} # threads: normalized subject -> root container
     @root_set   = nil
   end
 
   def redirect thread, year, month
-    # note redirection
-    @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
-
-    # remove from this storage
-    $riak.delete(thread.key) unless thread.empty_tree?
-    thread.each { |c| @containers.delete(c.message_id) }
-    flush_threading
+#    # note redirection
+#    @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
+#
+#    # remove from this storage
+#    $riak.delete(thread.key) unless thread.empty_tree?
+#    thread.each { |c| @containers.delete(c.message_id) }
+#    flush_threading
   end
   protected :redirect
 

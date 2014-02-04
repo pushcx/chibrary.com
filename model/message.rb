@@ -8,7 +8,7 @@ class Message
   attr_reader :message_id
 
   extend Forwardable
-  def_delegators :@email, :n_subject, :date
+  def_delegators :@email, :subject, :n_subject, :date, :likely_thread_creation_from?, :references, :body
 
   def initialize email, call_number, source=nil, list=nil
     @email = email
@@ -18,6 +18,10 @@ class Message
 
     raise ArgumentError, "call_number '#{call_number}' is invalid" unless @call_number.valid?
     @message_id = MessageId.extract_or_generate(email.message_id, call_number)
+  end
+
+  def to_s
+    "<Message(#{call_number}) #{message_id}>"
   end
 
   def self.from_string str, call_number, source=nil, list=nil
