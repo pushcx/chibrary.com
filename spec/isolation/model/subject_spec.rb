@@ -54,4 +54,18 @@ describe Subject do
       expect(Subject.new('').to_s).to eq('')
     end
   end
+
+  describe '#==' do
+    it 'considers equivalent subjects ==' do
+      expect(Subject.new('a')).to eq(Subject.new('a'))
+    end
+
+    it 'considers equivalent strings ==' do
+      expect(Subject.new('a')).to eq('a')
+    end
+
+    it 'does not normalize in the comparison' do
+      expect(Subject.new('a')).to_not eq('Re: a')
+    end
+  end
 end

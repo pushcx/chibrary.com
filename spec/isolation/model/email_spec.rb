@@ -26,9 +26,9 @@ describe Email do
   end
 
   describe 'subject delegation' do
-    it '#subject returns subject.to_s' do
+    it '#subject returns subject object' do
       e = Email.new raw: '', subject: 'Re: Foo'
-      expect(e.subject).to eq('Re: Foo')
+      expect(e.subject).to eq(Subject.new('Re: Foo'))
     end
 
     it '#n_subject returns subject.normalized' do
