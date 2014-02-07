@@ -1,3 +1,4 @@
+require_relative '../lib/time_'
 require_relative 'message_container'
 # based on http://www.jwz.org/doc/threading.html
 
@@ -122,7 +123,7 @@ class ThreadSet
 
   def plus_month n
     t = Time.utc(year, month).plus_month(n)
-    ThreadSet.month(slug, t.year, '%02d' % t.month)
+    ThreadSet.new(slug, t.year, t.month)
   end
 
   def rejoin_splits
@@ -169,12 +170,14 @@ class ThreadSet
   end
 
   def message_count include_empty=false
+    count = 0
     # collect threads and their containers
-    collect do |thread|
-      thread.collect do |c|
-        c if !c.empty? or include_empty
-      end.compact
-    end.flatten.size
+    each do |thread|
+      thread.each do |c|
+        count += 1 if !c.empty? or include_empty
+      end
+    end
+    count
   end
 
   def << message

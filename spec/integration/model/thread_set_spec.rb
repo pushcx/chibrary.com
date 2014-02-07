@@ -59,14 +59,14 @@ describe ThreadSet do
     end
 
     it "does not retrieve split threads that don't reply to a thread in the set" do
-      #@ts << Message.new(threaded_message(:root), 'test', '0000root')
-      #ts = ThreadSet.new 'slug', '2007', '12'
-      ## This message will be recognized as a split thread, but a parent for it
-      ## doesn't exist in @ts
-      #ts << Message.new(threaded_message(:regular_reply), 'test', '000child')
-      #@ts.send(:retrieve_split_threads_from, ts)
-      #assert_equal 1, @ts.length
-      #assert_equal 1, ts.length
+      ts << parent
+      other = ThreadSet.new 'slug', '2007', '12'
+      # This message will be recognized as a split thread, but a parent for it
+      # doesn't exist in ts
+      other << Message.from_string("Message-Id: orphan@example.com\nIn-Reply-To: missing@example.com\nSubject: Bar\n\nbar", 'callnumber')
+      ts.send(:retrieve_split_threads_from, other)
+      expect(ts.length).to eq(1)
+      expect(other.length).to eq(1)
     end
   end
 end

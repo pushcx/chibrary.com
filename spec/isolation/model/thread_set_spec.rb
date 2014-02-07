@@ -4,6 +4,7 @@ require_relative '../../../model/thread_set'
 require 'permutation'
 
 ThreadableMessage = Struct.new(:message_id, :subject, :references) do
+  def body ; '' ; end
   def n_subject ; subject ; end
   def date ; Time.now ; end
   def likely_thread_creation_from?(email) ; false ; end
@@ -92,6 +93,44 @@ describe ThreadSet do
       expect(root_set.length).to eq(2)
       expect(root_set.map(&:message)).to eq([m1, m3])
       expect(ts.send(:root_set)).to eq(root_set)
+    end
+  end
+
+  describe '#message_count' do
+    it 'counts the messages' do
+      ts << ThreadableMessage.new('m1@example.com', 'Foo', [])
+        ts << ThreadableMessage.new('m2@example.com', 'Foo', ['m1@example.com'])
+      ts << ThreadableMessage.new('orphan@example.com', 'Foo', ['missing@example.com'])
+      expect(ts.message_count).to eq(3)
+    end
+
+    it 'can include number of empty containers' do
+      ts << ThreadableMessage.new('orphan@example.com', 'Foo', ['missing@example.com'])
+      expect(ts.message_count(true)).to eq(2)
+    end
+  end
+
+  describe '#==' do
+    pending
+  end
+
+  describe '#plus_month' do
+    it 'gets ThreadSet for next month' do
+      ts = ThreadSet.new('slug', 2013, 11).plus_month(1)
+      expect(ts.year).to eq(2013)
+      expect(ts.month).to eq(12)
+    end
+
+    it 'gets ThreadSet for next month over year boundaries' do
+      ts = ThreadSet.new('slug', 2013, 12).plus_month(1)
+      expect(ts.year).to eq(2014)
+      expect(ts.month).to eq(1)
+    end
+
+    it 'gets ThreadSet for previous month' do
+      ts = ThreadSet.new('slug', 2013, 12).plus_month(-1)
+      expect(ts.year).to eq(2013)
+      expect(ts.month).to eq(11)
     end
   end
 end
