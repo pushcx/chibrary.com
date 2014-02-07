@@ -20,7 +20,7 @@ describe MessageContainer do
     it 'considers a message with quoting likely split' do
       class FakeQuotingMessage < FakeMessage
         def subject_is_reply? ; false ; end
-        def body ; "> foo\n\noh i totes agree" ; end
+        def body_quotes? ; true ; end
       end
 
       c = MessageContainer.new FakeQuotingMessage.new

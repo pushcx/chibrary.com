@@ -38,6 +38,18 @@ describe Message do
     end
   end
 
+  describe '#body_quotes?' do
+    it 'does when there are quoted lines' do
+      m = Message.from_string "\n\n> body\ntext", 'callnumber'
+      expect(m.body_quotes?).to be_true
+    end
+
+    it 'does not when there are no quoted liens' do
+      m = Message.from_string "\n\nbody\ntext", 'callnumber'
+      expect(m.body_quotes?).to be_false
+    end
+  end
+
   describe '#==' do
     it 'is the same if the fields are the same' do
       m1 = Message.from_string "\n\nBody", 'callnumber', 'source', List.new('list')

@@ -32,6 +32,10 @@ class Message
     Message.new m.email, m.call_number, m.source, m.list
   end
 
+  def body_quotes?
+    body =~ /^[>\|] .+/
+  end
+
   def == o
     o.email == email and o.source == source and o.call_number == call_number and o.message_id == message_id
   end

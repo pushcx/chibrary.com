@@ -51,16 +51,17 @@ x ThreadSet: cache list of thread roots in order for n/p links
   ThreadSet: cache monthly message/thread counts
 x split Message, Container initializers into two
   move Storage.to_hash and .store to class methods; I never keep obj around
+  split Storage and Retrievage into separate objects?
   can ThreadHelper#remove_footer *not* call the storage layer? ugh
   can models be built so none call back up into the storage layer?
 x can year and month be removed from ContainerStorage keys? - yes, w index
-  Container.likely_split_thread? should ask Message about quoting, not regex
+x Container.likely_split_thread? should ask Message about quoting, not regex
   rekey all call numbers to be base62; drop _ and - in ids
   remove overwrite from MessageStorage, look up message ids instead
   migrate all lists to riak
   clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
-  update text on about page
+x update text on about page
   move jobs into a proper job system
   move misc data in cachcedhash *someplace else*
   fix lkml messages in 1970, 1976, 2036

@@ -24,7 +24,7 @@ class MessageContainer
   end
 
   def likely_split_thread?
-    empty? or message.subject.reply? or effective_field(:body) =~ /^[>\|] .+/
+    empty? or message.subject.reply? or message.body_quotes?
   end
 
   def value= message
