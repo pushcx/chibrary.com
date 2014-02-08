@@ -5,7 +5,7 @@ describe MessageStorage do
   context 'instantiated with a Message' do
     it '#extract_key' do
       m = FakeStorableMessage.new
-      expect(MessageStorage.new(m).extract_key).to eq('/callnumber')
+      expect(MessageStorage.new(m).extract_key).to eq('callnumber')
     end
 
     describe '#to_hash' do
@@ -116,7 +116,7 @@ describe MessageStorage do
   end
 
   it '::build_key builds based on call number' do
-    expect(MessageStorage.build_key('callnumber')).to eq('/callnumber')
+    expect(MessageStorage.build_key('callnumber')).to eq('callnumber')
   end
 
   it '::from_hash instantiates messages and emails' do

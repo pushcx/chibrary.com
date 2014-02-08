@@ -11,11 +11,11 @@ class ListStorage
   end
 
   def extract_key
-    "/#{list.slug}"
+    "#{list.slug}"
   end
 
   def self.build_key slug
-    "/#{slug}"
+    "#{slug}"
   end
 
   def to_hash

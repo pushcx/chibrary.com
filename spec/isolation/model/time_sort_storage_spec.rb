@@ -33,7 +33,7 @@ describe TimeSortStorage do
   describe "::find" do
     it "instantiates a list from the bucket" do
       bucket = double('bucket')
-      bucket.should_receive(:[]).with('/slug').and_return({
+      bucket.should_receive(:[]).with('slug').and_return({
         slug: 'slug',
         name: 'name',
       })

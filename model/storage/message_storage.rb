@@ -21,7 +21,7 @@ class MessageStorage
   end
 
   def extract_key
-    "/#{message.call_number}"
+    "#{message.call_number.to_s}"
   end
 
   def to_hash
@@ -65,7 +65,7 @@ class MessageStorage
   end
 
   def self.build_key call_number
-    "/#{call_number}"
+    call_number.to_s
   end
 
   def self.from_hash hash
