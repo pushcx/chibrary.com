@@ -59,6 +59,7 @@ x split Message, Container initializers into two
   can models be built so none call back up into the storage layer?
 x can year and month be removed from ContainerStorage keys? - yes, w index
 x Container.likely_split_thread? should ask Message about quoting, not regex
+  rename web/controller to something better-suited
   rekey all call numbers to be base62; drop _ and - in ids
   remove overwrite from MessageStorage, look up message ids instead
   migrate all lists to riak

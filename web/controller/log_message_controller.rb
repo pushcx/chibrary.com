@@ -1,4 +1,4 @@
-class LogMessageController < ApplicationController
+#class LogMessageController < ApplicationController
   #before_filter :verify_log_passwd
 
   def create
@@ -13,4 +13,4 @@ class LogMessageController < ApplicationController
   def verify_log_passwd
     redirect_to root_path and return false unless params[:passwd] != LOG_PASSWD
   end
-end
+#end
