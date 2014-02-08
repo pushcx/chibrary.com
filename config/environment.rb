@@ -21,3 +21,14 @@ Dir["lib/**/*.rb", 'model/**/*.rb'].each { |l| require l }
 
 # finally, bring up the web stack
 Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
+
+before do
+  @title = "Chibrary - Free Mailing List Archives"
+end
+
+helpers do
+  def h(text)
+    Rack::Utils.escape_html(text)
+  end
+end
+

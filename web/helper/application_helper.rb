@@ -1,14 +1,3 @@
-# sinatra global - no better place for this right now
-before do
-  @title = "Chibrary - Free Mailing List Archives"
-end
-
-helpers do
-  def h(text)
-    Rack::Utils.escape_html(text)
-  end
-end
-
 # format (hide email addresses, link URLs) and html-escape a string
 def f str
   str.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([\w]+)/, '\1@\2...\3') # hide mail addresses
