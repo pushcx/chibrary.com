@@ -9,9 +9,8 @@ gem 'sinatra-partial'
 gem 'thin'
 
 # db
-#gem 'activerecord'
 gem 'riak-client'
-#gem 'pg'
+gem 'sidekiq'
 gem 'zipruby' # will be good to get rid of this
 
 # glue

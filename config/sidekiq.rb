@@ -6,18 +6,13 @@ $LOAD_PATH << File.expand_path('../../', __FILE__)
 require 'rubygems'
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
-require 'sinatra'
-require 'sinatra/reloader' if development?
-require 'sinatra/partial'
-
-require 'logger'
-require 'pathname'
-
-# Some helper constants for path-centric logic
-APP_ROOT = Pathname.new(__FILE__)
-APP_NAME = 'chibrary'
+Sidekiq.configure_server do |config|
+  config.redis = { :url => 'redis://redis.example.com:6379/0', :namespace => 'sidekiq' }
+end
+Sidekiq.configure_client do |config|
+  config.redis = { :url => 'redis://redis.example.com:6379/0', :namespace => 'sidekiq', :size => 1 }
+end
 
 Dir["lib/**/*.rb", 'model/**/*.rb'].each { |l| require l }
 
-# finally, bring up the web stack
-Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
+Dir["worker/**/*.rb"].each { |l| require l }

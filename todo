@@ -41,7 +41,7 @@ x   timesort
     thread/message counts
 x   sweep for any direct use of storage globals
 x remove leading / from any keys
-  replace the queue system
+x replace the queue system
   rename to_hash/from_hash to serialize/deserialize
 x correct spec syntax; # is instance, :: for class
 x refactor the shit out of message
