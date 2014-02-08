@@ -28,8 +28,9 @@ end
 
 def load_list
   @slug = params[:slug]
-  raise ActionController::RoutingError, "Unknown list" unless $archive.has_key? "list/#{@slug}"
-  @list = List.new(@slug)
+  @list = ListStorage.find(@slug)
+rescue NotFound
+  raise ActionController::RoutingError, "Unknown list"
 rescue InvalidSlug
   raise ActionController::RoutingError, "Invalid list slug"
 end
@@ -85,14 +86,6 @@ def month_previous_next(slug, year, month)
 
   return [p_link, n_link]
 end
-
-def load_list_snippets
-  @snippets = []
-  begin
-    $archive["snippet/list/#{@slug}"].each_with_index { |key, i| @snippets << $archive["snippet/list/#{@slug}/#{key}"] ; break if i >= 30 }
-  rescue NotFound ; end
-end
-
 
 helpers do
   def h(text)

@@ -1,6 +1,7 @@
 get '/:slug/?' do
   load_list
-  load_list_snippets
+  @snippets = []
+  #load_list_snippets
 
   @title = "#{@list['name'] or @slug} archive"
   @year_counts = ThreadList.year_counts @slug

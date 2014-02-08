@@ -39,7 +39,7 @@ x   call_number_list
 x   timesort
     redirect table
     thread/message counts
-    sweep for any direct use of storage globals
+x   sweep for any direct use of storage globals
 x remove leading / from any keys
   rename to_hash/from_hash to serialize/deserialize
 x correct spec syntax; # is instance, :: for class
