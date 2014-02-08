@@ -14,7 +14,7 @@ class List
 
   def initialize slug, name=nil, description=nil, homepage=nil, footer=nil
     raise InvalidSlug, "Invalid list slug '#{slug}'" unless slug =~ /^[a-z0-9\-]+$/ and slug.length <= 20
-    @slug = slug
+    @slug = slug.to_s
     @name = name
     @description = description
     @homepage = homepage
