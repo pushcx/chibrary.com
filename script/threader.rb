@@ -44,8 +44,8 @@ class Threader
       end
 
       # add messages
-      added.each do |key|
-        threadset << $riak[key]#["list/#{slug}/message/#{year}/#{month}/#{key}"]
+      added.each do |call_number|
+        threadset << MessageStorage.find call_number
       end
 
       cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
