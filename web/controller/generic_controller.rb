@@ -1,11 +1,8 @@
 get '/' do
-  @lists = []
-  $riak.list('list').each do |slug|
-    @lists << List.new(slug) if $riak.has_key? "list/#{slug}/thread" and not slug =~ /^_/
-  end
+  @lists = ListStorage.all
 
   @snippets = []
-  $riak.list('snippet/homepage').each_with_index { |key, i| @snippets << $riak[key] ; break if i >= 30 }
+  #$riak.list('snippet/homepage').each_with_index { |key, i| @snippets << $riak[key] ; break if i >= 30 }
 
   haml :'generic/homepage.html'
 end

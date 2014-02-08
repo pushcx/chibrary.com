@@ -22,6 +22,11 @@ module RiakStorage
   end
 
   module ClassMethods
+    def all
+      # slow
+      db_client.list_keys(bucket).map { |key| find(key) }
+    end
+
     def build_key
       raise NotImplementedError
     end
