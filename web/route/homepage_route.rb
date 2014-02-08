@@ -6,11 +6,3 @@ get '/' do
 
   haml :'generic/homepage.html'
 end
-
-get '/about' do
-  haml :'generic/about.html'
-end
-
-get '/search' do
-  haml :'generic/search.html'
-end

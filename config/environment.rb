@@ -18,15 +18,14 @@ require 'pathname'
 APP_ROOT = Pathname.new(__FILE__)
 APP_NAME = 'chibrary'
 
-require 'config/routes'
-
-# bring up the web stack
-Dir['web/controller/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
-
 # load all the app's libs, which do not all use constants to get autoloaded
 Dir["lib/**/*.rb"].each    { |l| require l }
+
 # load all the models: YAML doesn't trigger the Rails autoloader when it's deserializing objects
 Dir["model/**/*.rb"].each { |l| require l }
+
+# finally, bring up the web stack
+Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
 
 LOG_PASSWD = "r'sxs2l_}jnwrlyoxclz\\iivzmlykCnvkdhuonhemk+Rah6nrn\"%qbvqt/lb"
 LOG_STATUSES = [:begin, :end, :error, :warning, :status]

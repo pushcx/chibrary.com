@@ -1,5 +1,3 @@
-require_relative '../../model/call_number'
-
 def load_thread(call_number)
   begin
     # redirects are pending on Threader caching them into a new model
