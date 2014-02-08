@@ -17,10 +17,11 @@ class SummaryStorage
       call_number: summary.call_number.to_s,
       n_subject:   summary.n_subject,
       date:        summary.date.rfc2822,
+      blurb:       summary.blurb,
     }
   end
 
   def from_hash h
-    Summary.new h[:call_number], h[:n_subject], h[:date]
+    Summary.new h[:call_number], h[:n_subject], h[:date], h[:blurb]
   end
 end
