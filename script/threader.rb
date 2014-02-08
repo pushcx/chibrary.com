@@ -24,8 +24,8 @@ class Threader
       slug, year, month = job[:slug], job[:year], job[:month]
       list = List.new slug
 
-      cached_message_list = list.cached_message_list year, month
-      fresh_message_list  = list.fresh_message_list year, month
+      cached_message_list = CallNumberListStorage.find list, year, month
+      fresh_message_list  = MessageStorage.call_number_list list, year, month
 
       if cached_message_list == fresh_message_list
         job_log.status "nothing to do"
@@ -61,7 +61,7 @@ class Threader
 
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
-    list.cache_message_list year, month, message_list
+    CallNumberListStorage.new(list, year, month, message_list).store
     nil
   end
 end

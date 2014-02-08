@@ -1,4 +1,5 @@
 require 'base64'
+require_relative '../call_number'
 require_relative '../message'
 
 class MessageOverwriteError < StandardError ; end
@@ -73,5 +74,9 @@ class MessageStorage
 
   def self.find call_number
     from_hash(bucket[build_key(call_number)])
+  end
+
+  def self.call_number_list list, year, month
+    bucket.get_index('lmy_bin', "#{list.slug}/#{year}/%02d" % month).map { |k| CallNumber.new k }
   end
 end

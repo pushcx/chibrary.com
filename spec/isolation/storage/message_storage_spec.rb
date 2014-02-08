@@ -131,4 +131,12 @@ describe MessageStorage do
     expect(message.source).to eq('source')
     expect(message.list).to eq(List.new('slug'))
   end
+
+  it '::message_list' do
+    bucket = double('bucket')
+    bucket.should_receive(:get_index).with('lmy_bin', 'slug/2014/01').and_return(['callnumber'])
+    MessageStorage.stub(:bucket).and_return(bucket)
+    list = MessageStorage.call_number_list(List.new('slug'), 2014, 1)
+    expect(list).to eq([CallNumber.new('callnumber')])
+  end
 end

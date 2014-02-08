@@ -21,27 +21,6 @@ class List
     @footer = footer
   end
 
-  # all the rest of this needs to move off into MesageList and Thread
-  def cached_message_list year, month
-    begin
-      $riak[month_list_key(year, month)] or []
-    rescue NotFound
-      []
-    end
-  end
-
-  def fresh_message_list year, month
-    $riak.list "list/#{@slug}/message/#{year}/#{month}"
-  end
-
-  def cache_message_list year, month, message_list
-    $riak[month_list_key(year, month)] = message_list
-  end
-
-  def thread year, month, call_number
-    $riak["list/#{@slug}/thread/#{year}/#{month}/#{call_number}"]
-  end
-
   def == other
     (
       slug == other.slug and
@@ -49,11 +28,5 @@ class List
       description == other.description and
       homepage == other.homepage
     )
-  end
-
-  private
-
-  def month_list_key year, month
-    "list/#{@slug}/message_list/#{year}/#{month}"
   end
 end

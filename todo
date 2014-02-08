@@ -35,10 +35,13 @@ x   summary
 x   thread_list
 x   thread_set
     snippet (maybe from summary?)
+x   call_number_list
 x   timesort
     redirect table
     thread/message counts
     sweep for any direct use of storage globals
+  remove leading / from any keys
+  rename to_hash/from_hash to serialize/deserialize
 x correct spec syntax; # is instance, :: for class
 x refactor the shit out of message
 x extract a CallNumber, most likely
