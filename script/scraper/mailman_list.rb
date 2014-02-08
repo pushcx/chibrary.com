@@ -15,13 +15,14 @@ class ScrapeMailmanList
       slug = gets.chomp
       slug = job[:slug] if slug.empty?
       slug = slug.downcase
-      while $cachedhash.has_key? "list/#{slug}" and $cachedhash["list/#{slug}/homepage"] != homepage
+      while list = ListStorage.find(slug) and list.homepage != homepage
         print "Slug #{slug} taken, enter new: "
         slug = gets.chomp.downcase
       end
 
-      $cachedhash["list/#{slug}/name"] = name unless name.empty?
-      $cachedhash["list/#{slug}/homepage"] = homepage
+      list.name = name unless name.empty?
+      list.homepage = homepage
+      ListStorage.new(list).store
 
       Hpricot(open(homepage)).search("//a").each do |a|
         puts "#{a} #{a.inner_html =~ /archive/i}"

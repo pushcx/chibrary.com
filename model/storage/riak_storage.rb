@@ -31,6 +31,10 @@ module RiakStorage
       @bucket ||= db_client.bucket(name)
     end
 
+    def exists? key
+      bucket.exists? key
+    end
+
     def db_client
       $riak_client ||= Riak::Client.new(:protocol => "pbc", :pb_port => 8087)
     end
