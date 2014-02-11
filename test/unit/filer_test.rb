@@ -1,30 +1,5 @@
 require 'test_helper'
 
-class IntegerTest < ActiveSupport::TestCase
-  should 'convert integers to base 64' do
-    [
-      [0, '00000000'], # base case
-      [1, '00000001'], # add one
-      [10, '0000000a'], # first lowercase letter
-      [36, '0000000A'], # first uppercase letter
-      [62, '0000000_'], # first _
-      [63, '0000000-'], # last character: -
-      [64, '00000010'], # second digit
-      [2 ** 48 - 1, '--------'], # last number
-    ].each do |from, to|
-      assert_equal to, from.to_base_64
-    end
-
-    assert_raises(RuntimeError, "Unexpectedly large int converted") do
-      (2 ** 48).to_base_64
-    end
-    assert_raises(RuntimeError, "No negative numbers") do
-      (-1).to_base_64
-    end
-  end
-end
-
-
 class FilerTest < ActiveSupport::TestCase
   fixtures :message
 

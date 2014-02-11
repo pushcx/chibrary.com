@@ -1,6 +1,7 @@
 require 'rspec'
 require 'ostruct'
 require_relative '../model/storage/riak_storage'
+require_relative '../model/storage/redis_storage'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
@@ -15,6 +16,12 @@ RSpec.configure do |config|
         FakeStorage.new
       end
     end
+
+    module RedisStorage
+      def db_client
+        FakeStorage.new
+      end
+    end
   end
 end
 
@@ -25,7 +32,7 @@ RSpec::Core::MemoizedHelpers.module_eval do
 end
 
 class FakeStorage
-  def bucket *args
+  def method_missing *args
     raise RuntimeError, "accidentally called a real storage method in test"
   end
 end

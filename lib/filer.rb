@@ -3,23 +3,6 @@ require_relative 'remote_connection'
 
 class SequenceExhausted < RuntimeError ; end
 
-class Integer
-  def to_base_62
-    raise "No negative numbers" if self < 0
-
-    chars = (0..9).to_a + ('a'..'z').to_a + ('A'..'Z').to_a
-    str = ""
-    current = self
-
-    while current != 0
-      str = chars[current % 62].to_s + str
-      current = current / 62
-    end
-    raise "Unexpectedly large int converted" if str.length > 8
-    ("%8s" % str).tr(' ', '0')
-  end
-end
-
 class Filer
   attr_reader :server, :sequence, :message_count
   attr_accessor :mailing_lists, :sequences
@@ -39,11 +22,7 @@ class Filer
   end
 
   def call_number
-    # call numbers are 48 binary digits. First 8 are 0 for future
-    # expansion. Next 4 are server id. Next 16 # are process id.
-    # Last 20 are an incremeting sequence ID.
-    raise SequenceExhausted, "sequence for server #{@server}, pid #{Process.pid} exhausted" if @sequence >= 2 ** 20
-    ("%04b%016b%020b" % [@server, Process.pid, @sequence]).to_i(2).to_base_62
+    CallNumberGenerator.next!
   end
 
   # Stubs for subclasses to override:

@@ -46,6 +46,7 @@ x replace the queue system
 x correct spec syntax; # is instance, :: for class
 x refactor the shit out of message
 x extract a CallNumber, most likely
+x extract call number generator
 x split out Container data structure from MessageContainer
 x ContainerStorage -> MessageContainerStorage and MessageSummaryContainerStorage
 x Message: delegate from + n_subject down into email?
@@ -84,6 +85,7 @@ x update text on about page
   deploy
   check that google search works with new domain
   fix google analytics logging to only be included in prod
+  update CallNumberGenerator so two import scripts won't collide constantly
 
   https://www.cs.cmu.edu/~enron/
   spam filtering
