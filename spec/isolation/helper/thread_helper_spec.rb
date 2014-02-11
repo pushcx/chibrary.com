@@ -8,16 +8,15 @@ describe 'Thread Helper' do
     self.should_receive(:remove_footer).and_return("body text")
     self.should_receive(:f).and_return("body text")
     self.should_receive(:compress_quotes).and_return("body text")
-    message_body(double(slug: 'example', body: "body text"))
+    message_body(double(slug: 'example', body: "body text", list: 'list'))
   end
 
-  xit "#remove_footer" do
+  it "#remove_footer" do
     body   = "body text\n"
     footer = "\n---\nmailing list footer"
-    List.should_receive(:new).and_return(double(:[] => footer))
 
-    str = remove_footer(body + footer, 'slug')
-    assert_equal body.strip, str
+    str = remove_footer(body + footer, double('list', footer: footer))
+    expect(str).to eq(body.strip)
   end
 
   it "#compress_quotes" do
@@ -38,13 +37,13 @@ describe 'Thread Helper' do
     end
 
     it "renders missing messages" do
-      empty_container = double(empty?: true)
+      empty_container = double('empty_container', empty?: true)
       self.should_receive(:partial).with('thread/_message_missing.html')
       container_partial(empty_container)
     end
 
     it "renders no_archive messages" do
-      no_archive_container = double(empty?: false, message: double(no_archive: true))
+      no_archive_container = double('no_archive container', empty?: false, message: double(no_archive: true))
       self.should_receive(:partial).with('thread/_message_no_archive.html')
       container_partial(no_archive_container)
     end

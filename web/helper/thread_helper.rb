@@ -1,21 +1,20 @@
 def message_body m
   str = m.body.strip!
-  str = remove_footer(str, m.slug)
+  str = remove_footer(str, m.list)
   str = f(str)
   str = compress_quotes(str)
   str.gsub!(/([A-Z]{3,})/, '<span class="caps">\1</span>')
   str
 end
 
-def remove_footer str, slug
-  list = ListStorage.find(slug)
-
+def remove_footer str, list
   # remove footer
   if footer = list.footer and         # the list has a footer
       i = str.rindex(footer) and      # and it's here
       i + footer.length == str.length # and it's at the end
     str = str[0..(i - 1)]
   end
+  str.strip!
 end
 
 def compress_quotes str
