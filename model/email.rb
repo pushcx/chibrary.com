@@ -152,7 +152,7 @@ class Email
     return score > 0
   end
 
-  def list
+  def possible_list_addresses
     header_addresses = %w{
       X-Mailing-List List-Id X-ML-Name
       List-Post List-Owner List-Help X-MLServer X-ML-Info
@@ -164,8 +164,6 @@ class Email
     possible_addresses = header_addresses.map do |raw|
       raw.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }
     end.flatten!
-
-    @list = ListAddressStorage.find_list_by_addresses(possible_addresses)
   end
 
   def == other

@@ -252,17 +252,15 @@ describe Email do
     end
   end
 
-  describe '#list' do
-    it 'finds a list' do
+  describe '#possible_list_addresses' do
+    it 'finds an address' do
       e = Email.new raw: "X-Mailing-List: list@example.com\n\nBody"
-      ListAddressStorage.should_receive(:find_list_by_addresses).with(['list@example.com'])
-      e.list
+      expect(e.possible_list_addresses).to eq(['list@example.com'])
     end
 
     it 'checks many headers to look up lists' do
       e = Email.new raw: "X-Mailing-List: 1@example.com\nList-Id: 2@example.com\n\nBody"
-      ListAddressStorage.should_receive(:find_list_by_addresses).with(['1@example.com', '2@example.com'])
-      e.list
+      expect(e.possible_list_addresses).to eq(['1@example.com', '2@example.com'])
     end
   end
 

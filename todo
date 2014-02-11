@@ -58,15 +58,15 @@ x split Message, Container initializers into two
   move Storage.to_hash and .store to class methods; I never keep obj around
   split Storage and Retrievage into separate objects?
   can ThreadHelper#remove_footer *not* call the storage layer? ugh
-  can models be built so none call back up into the storage layer?
+x can models be built so none call back up into the storage layer?
 x can year and month be removed from ContainerStorage keys? - yes, w index
 x Container.likely_split_thread? should ask Message about quoting, not regex
 x rename web/controller to something better-suited
 x rekey all call numbers to be base62; drop _ and - in ids
   remove overwrite from MessageStorage, look up message ids instead
+  clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all lists to riak
   add instantclick.io to pjax page loads
-  clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
   move jobs into a proper job system
