@@ -25,12 +25,10 @@ module CallNumberGenerator
         r.set('call_number', current)
       end
       # return it on success
-      return current if success
+      redis.unwatch and return current if success
       # random wait on failure to 
       sleep 0.1 + rand
     end
-  ensure
-    redis.unwatch
   end
 
   def self.to_base_62 i

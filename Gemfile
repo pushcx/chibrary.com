@@ -9,6 +9,7 @@ gem 'sinatra-partial'
 gem 'thin'
 
 # db
+gem 'redis'
 gem 'riak-client'
 gem 'sidekiq'
 gem 'zipruby' # will be good to get rid of this

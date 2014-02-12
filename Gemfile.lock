@@ -107,6 +107,7 @@ DEPENDENCIES
   permutation
   pry
   rake
+  redis
   riak-client
   rmail
   rspec
