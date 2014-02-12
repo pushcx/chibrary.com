@@ -18,15 +18,15 @@ module ContainerStorage
     self.class.build_month_key(container.slug, container.date.year, container.date.month)
   end
 
-  def value_to_hash
+  def serialize_value
     raise NotImplementedError
   end
 
-  def to_hash
+  def serialize
     {
       key:      container.key,
-      value:    value_to_hash,
-      children: container.children.map { |c| self.class.new(c).to_hash },
+      value:    serialize_value,
+      children: container.children.map { |c| self.class.new(c).serialize },
     }
   end
 
@@ -34,7 +34,7 @@ module ContainerStorage
     return if container.empty_tree?
     obj = bucket.new
     obj.key = container.call_number
-    obj.data = to_hash
+    obj.data = serialize
     obj.indexes['month_bin'] << extract_month_key
     #container.cache_snippet
   end
@@ -44,7 +44,7 @@ module ContainerStorage
       "#{slug}/#{year}/%02d" % month
     end
 
-    def value_from_hash h
+    def deserialize_value h
       raise NotImplementedError
     end
 
@@ -52,17 +52,17 @@ module ContainerStorage
       raise NotImplementedError
     end
 
-    def from_hash h
-      container = container_class.new h[:key], value_from_hash(h[:value])
+    def deserialize h
+      container = container_class.new h[:key], deserialize_value(h[:value])
       h[:children].each do |child|
-        container.adopt self.from_hash(child)
+        container.adopt self.deserialize(child)
       end
       container
     end
 
     def find call_number
       hash = bucket[call_number]
-      from_hash(hash)
+      deserialize(hash)
     end
 
     def month slug, year, month

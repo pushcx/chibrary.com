@@ -1,5 +1,8 @@
 require_relative '../../rspec'
+require_relative '../../../model/list'
 require_relative '../../../model/storage/message_storage'
+
+class EmailStorage ; end
 
 describe MessageStorage do
   context 'instantiated with a Message' do
@@ -8,11 +11,11 @@ describe MessageStorage do
       expect(MessageStorage.new(m).extract_key).to eq('callnumber')
     end
 
-    describe '#to_hash' do
+    describe '#serialize' do
       let(:m) { FakeStorableMessage.new }
       let(:message_storage) { MessageStorage.new(m) }
-      before { EmailStorage.should_receive(:new).and_return(double('email_storage', to_hash: {})) }
-      subject { message_storage.to_hash }
+      before { EmailStorage.should_receive(:new).and_return(double('email_storage', serialize: {})) }
+      subject { message_storage.serialize }
 
       it { expect(subject[:source]).to eq('source') }
       it { expect(subject[:call_number]).to eq('callnumber') }
@@ -77,10 +80,10 @@ describe MessageStorage do
       end
       let(:m)  { FakeStorableMessage.new }
       let(:ms) { MessageStorage.new(m, MessageStorage::Overwrite::DO) }
-      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'lmy_bin' => [], 'from_hash_bin' => [] }) }
+      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'lmy_bin' => [], 'deserialize_bin' => [] }) }
       before do
         ms.stub(:bucket).and_return(double('bucket', new: riak_object))
-        EmailStorage.stub(:new).and_return({})
+        EmailStorage.stub(:new).and_return(double('EmailStorage', serialize: {}))
       end
 
       it 'stores a message' do
@@ -100,7 +103,7 @@ describe MessageStorage do
 
       it 'indexes the author email' do
         ms.store
-        expect(riak_object.indexes['from_hash_bin']).to eq([Base64.strict_encode64('from@example.com')])
+        expect(riak_object.indexes['deserialize_bin']).to eq([Base64.strict_encode64('from@example.com')])
       end
     end
 
@@ -119,9 +122,9 @@ describe MessageStorage do
     expect(MessageStorage.build_key('callnumber')).to eq('callnumber')
   end
 
-  it '::from_hash instantiates messages and emails' do
-    EmailStorage.should_receive(:from_hash).with('email').and_return(double('email', message_id: 'id@example.com'))
-    message = MessageStorage.from_hash({
+  it '::deserialize instantiates messages and emails' do
+    EmailStorage.should_receive(:deserialize).with('email').and_return(double('email', message_id: 'id@example.com'))
+    message = MessageStorage.deserialize({
       email: 'email',
       call_number: 'callnumber',
       source: 'source',

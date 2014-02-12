@@ -24,13 +24,13 @@ class MessageStorage
     "#{message.call_number.to_s}"
   end
 
-  def to_hash
+  def serialize
     {
       source:      message.source,
       call_number: message.call_number.to_s,
       message_id:  message.message_id,
       list_slug:   message.list.slug,
-      email:       EmailStorage.new(message.email).to_hash,
+      email:       EmailStorage.new(message.email).serialize,
     }
   end
 
@@ -55,10 +55,10 @@ class MessageStorage
 
     obj = bucket.new
     obj.key = key
-    obj.data = to_hash
+    obj.data = serialize
     obj.indexes['id_hash_bin']   << Base64.strict_encode64(message.message_id)
     obj.indexes['lmy_bin']       << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
-    obj.indexes['from_hash_bin'] << Base64.strict_encode64(message.email.canonicalized_from_email)
+    obj.indexes['deserialize_bin'] << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 
     message
@@ -68,12 +68,12 @@ class MessageStorage
     call_number.to_s
   end
 
-  def self.from_hash hash
-    Message.new EmailStorage.from_hash(hash[:email]), hash[:call_number], hash[:source], List.new(hash[:list_slug])
+  def self.deserialize hash
+    Message.new EmailStorage.deserialize(hash[:email]), hash[:call_number], hash[:source], List.new(hash[:list_slug])
   end
 
   def self.find call_number
-    from_hash(bucket[build_key(call_number)])
+    deserialize(bucket[build_key(call_number)])
   end
 
   def self.call_number_list list, year, month

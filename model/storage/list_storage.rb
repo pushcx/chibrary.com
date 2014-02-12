@@ -18,7 +18,7 @@ class ListStorage
     slug
   end
 
-  def to_hash
+  def serialize
     {
       slug:        list.slug,
       name:        list.name,
@@ -27,13 +27,13 @@ class ListStorage
     }
   end
 
-  def self.from_hash h
+  def self.deserialize h
     List.new h[:slug], h[:name], h[:description], h[:homepage]
   end
 
   def self.find slug
     key = build_key(slug)
     hash = bucket[key]
-    from_hash(hash)
+    deserialize(hash)
   end
 end

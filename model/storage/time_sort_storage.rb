@@ -14,7 +14,7 @@ class TimeSortStorage
     self.class.build_key time_sort.slug, time_sort.year, time_sort.month
   end
 
-  def to_hash
+  def serialize
     # it's an array of hashes, but reusing the name saves me writing a new
     # #store
     time_sort.threads.map { |tl| Hash[ tl.each_pair.to_a ] }

@@ -9,7 +9,7 @@ module RiakStorage
     raise NotImplementedError
   end
 
-  def to_hash
+  def serialize
     raise NotImplementedError
   end
 
@@ -18,7 +18,7 @@ module RiakStorage
   end
 
   def store
-    bucket[extract_key] = to_hash
+    bucket[extract_key] = serialize
   end
 
   module ClassMethods

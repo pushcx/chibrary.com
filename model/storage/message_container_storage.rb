@@ -4,12 +4,12 @@ require_relative 'message_storage'
 class MessageContainerStorage
   include ContainerStorage
 
-  def value_to_hash
-    MessageStorage.new(container.value).to_hash
+  def serialize_value
+    MessageStorage.new(container.value).serialize
   end
 
-  def self.value_from_hash h
-    MessageStorage.from_hash h
+  def self.deserialize_value h
+    MessageStorage.deserialize h
   end
 
   def self.container_class

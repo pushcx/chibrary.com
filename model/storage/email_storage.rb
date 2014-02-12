@@ -9,7 +9,7 @@ class EmailStorage
     @email = email
   end
 
-  def to_hash
+  def serialize
     {
       raw:        email.raw,
       # These specific fields are archived because they may be edited by code
@@ -24,7 +24,7 @@ class EmailStorage
     }
   end
 
-  def self.from_hash hash
+  def self.deserialize hash
     Email.new hash
   end
 end

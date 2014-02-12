@@ -11,7 +11,7 @@ describe ListStorage do
     describe "generating a hash" do
       let(:list) { List.new('slug', 'name', 'description', 'homepage') }
       let(:list_storage) { ListStorage.new(list) }
-      subject { list_storage.to_hash }
+      subject { list_storage.serialize }
 
       it { expect(subject[:slug]).to eq('slug') }
       it { expect(subject[:homepage]).to eq('homepage') }
@@ -26,9 +26,9 @@ describe ListStorage do
     end
   end
 
-  describe "::from_hash" do
+  describe "::deserialize" do
     it "creates Lists" do
-      list = ListStorage.from_hash({
+      list = ListStorage.deserialize({
         slug: 'slug',
         name: 'name',
         description: 'description',
@@ -41,7 +41,7 @@ describe ListStorage do
     end
 
     it "doesn't error on incomplete hashes" do
-      list = ListStorage.from_hash({ slug: 'slug' })
+      list = ListStorage.deserialize({ slug: 'slug' })
       expect(list.slug).to eq('slug')
       expect(list.homepage).to be_nil
     end

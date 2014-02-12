@@ -11,7 +11,7 @@ describe TimeSortStorage do
     describe "generating a hash" do
       let(:ts) { ts = TimeSort.new 'slug', 2014, 1, fake_thread_set(['one', 'two']) }
       let(:time_sort_storage) { TimeSortStorage.new(ts) }
-      subject { time_sort_storage.to_hash }
+      subject { time_sort_storage.serialize }
 
       it { expect(subject.count).to eq(2) }
       it { expect(subject.first).to eq({

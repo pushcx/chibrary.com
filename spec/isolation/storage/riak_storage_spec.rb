@@ -6,7 +6,7 @@ describe RiakStorage do
   class ExampleStorage
     include RiakStorage
     def extract_key ; '/key' ; end
-    def to_hash ; {} ; end
+    def serialize ; {} ; end
   end
 
   it 'gives the storage class a bucket named for the model' do
@@ -30,7 +30,7 @@ describe RiakStorage do
   describe 'incomplete user' do
     class IncompleteStorage
       include RiakStorage
-      # missing .build_key, #extract_key, #to_hash
+      # missing .build_key, #extract_key, #serialize
     end
 
     it "raises on calls to ::build_key" do
@@ -41,8 +41,8 @@ describe RiakStorage do
       expect { IncompleteStorage.new.extract_key }.to raise_error(NotImplementedError)
     end
 
-    it "raises on calls to #to_hash" do
-      expect { IncompleteStorage.new.to_hash }.to raise_error(NotImplementedError)
+    it "raises on calls to #serialize" do
+      expect { IncompleteStorage.new.serialize }.to raise_error(NotImplementedError)
     end
   end
 

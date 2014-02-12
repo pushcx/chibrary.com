@@ -16,15 +16,15 @@ class CallNumberListStorage
     "#{list.slug}/#{year}/#{month}"
   end
 
-  def to_hash
+  def serialize
     call_numbers.map { |cn| cn.to_s }
   end
 
-  def self.from_hash h
+  def self.deserialize h
     h.map { |str| CallNumber.new str }
   end
 
   def self.find list, year, month
-    from_hash bucket["#{list.slug}/#{year}/#{month}"]
+    deserialize bucket["#{list.slug}/#{year}/#{month}"]
   end
 end

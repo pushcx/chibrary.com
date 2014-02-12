@@ -12,7 +12,7 @@ class SummaryStorage
     @summary = summary
   end
 
-  def to_hash
+  def serialize
     {
       call_number: summary.call_number.to_s,
       n_subject:   summary.n_subject,
@@ -21,7 +21,7 @@ class SummaryStorage
     }
   end
 
-  def from_hash h
+  def deserialize h
     Summary.new h[:call_number], h[:n_subject], h[:date], h[:blurb]
   end
 end

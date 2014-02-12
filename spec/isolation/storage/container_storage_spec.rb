@@ -21,15 +21,15 @@ describe TContainerStorage do
       expect(TContainerStorage.new(c).extract_month_key).to eq('slug/2014/01')
     end
 
-    describe '#to_hash' do
+    describe '#serialize' do
       class HashesValuesContainerStorage
         include ContainerStorage
-        def value_to_hash ; { value: 'value' } ; end
+        def serialize_value ; { value: 'value' } ; end
       end
       let(:c2) { FakeContainer.new 'c2key', 'c2@example.com', [] }
       let(:c1) { FakeContainer.new 'c1key', 'c1@example.com', [c2] }
       let(:container_storage) { HashesValuesContainerStorage.new(c1) }
-      subject { container_storage.to_hash }
+      subject { container_storage.serialize }
 
       it { expect(subject[:key]).to eq('c1key') }
       it { expect(subject[:value]).to eq({ value: 'value' }) }
@@ -46,15 +46,15 @@ describe TContainerStorage do
   end
 
   describe 'incomplete user' do
-    it 'raises on calls to #value_to_hash' do
+    it 'raises on calls to #serialize_value' do
       expect {
-        TContainerStorage.new(nil).value_to_hash
+        TContainerStorage.new(nil).serialize_value
       }.to raise_error(NotImplementedError)
     end
 
-    it 'raises on calls to ::value_from_hash' do
+    it 'raises on calls to ::deserialize_value' do
       expect {
-        TContainerStorage.value_from_hash(nil)
+        TContainerStorage.deserialize_value(nil)
       }.to raise_error(NotImplementedError)
     end
   end
@@ -67,13 +67,13 @@ describe TContainerStorage do
 
   class UnHashesValuesContainerStorage
     include ContainerStorage
-    def self.value_from_hash(h) ; FakeContainer.new 'callnumber', 'value' ; end
+    def self.deserialize_value(h) ; FakeContainer.new 'callnumber', 'value' ; end
     def self.container_class ; FakeContainer ; end
   end
 
-  describe '::from_hash' do
+  describe '::deserialize' do
     it 'creates Containers' do
-      container = UnHashesValuesContainerStorage.from_hash({
+      container = UnHashesValuesContainerStorage.deserialize({
         key: 'callnumber',
         value: {},
         children: [],
