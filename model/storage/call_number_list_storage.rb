@@ -1,3 +1,4 @@
+require_relative 'riak_storage'
 require_relative '../call_number'
 
 class CallNumberListStorage

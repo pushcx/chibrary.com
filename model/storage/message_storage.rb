@@ -1,4 +1,5 @@
 require 'base64'
+require_relative 'riak_storage'
 require_relative '../call_number'
 require_relative '../message'
 
