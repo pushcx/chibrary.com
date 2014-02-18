@@ -2,6 +2,7 @@ require 'base64'
 require_relative 'riak_storage'
 require_relative '../call_number'
 require_relative '../message'
+require_relative 'email_storage'
 
 class MessageOverwriteError < StandardError ; end
 
@@ -37,14 +38,14 @@ class MessageStorage
 
   def dont_overwrite_if_already_stored key
     if overwrite == Overwrite::DONT
-      return bucket.has_key? key
+      return bucket.exists? key
     end
     false
   end
 
   def guard_against_error_overwrite key
     if overwrite == Overwrite::ERROR
-      exists = bucket.has_key? key
+      exists = bucket.exists? key
       raise MessageOverwriteError, "overwrite attempted for chibrary_archive #{@key}" if exists
     end
   end
@@ -57,8 +58,8 @@ class MessageStorage
     obj = bucket.new
     obj.key = key
     obj.data = serialize
-    obj.indexes['id_hash_bin']   << Base64.strict_encode64(message.message_id)
-    obj.indexes['lmy_bin']       << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
+    obj.indexes['id_hash_bin']     << Base64.strict_encode64(message.message_id.to_s)
+    obj.indexes['lmy_bin']         << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
     obj.indexes['deserialize_bin'] << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 

@@ -28,14 +28,14 @@ describe MessageStorage do
       it 'returns true if message is stored' do
         m = FakeStorableMessage.new
         ms = MessageStorage.new(m, MessageStorage::Overwrite::DONT)
-        ms.stub(:bucket).and_return(double('bucket', has_key?: true))
+        ms.stub(:bucket).and_return(double('bucket', exists?: true))
         expect(ms.dont_overwrite_if_already_stored('key')).to eq(true)
       end
 
       it 'returns false if message is not stored' do
         m = FakeStorableMessage.new
         ms = MessageStorage.new(m, MessageStorage::Overwrite::DONT)
-        ms.stub(:bucket).and_return(double('bucket', has_key?: false))
+        ms.stub(:bucket).and_return(double('bucket', exists?: false))
         expect(ms.dont_overwrite_if_already_stored('key')).to eq(false)
       end
 
@@ -51,7 +51,7 @@ describe MessageStorage do
         m = FakeStorableMessage.new
         expect  {
           ms = MessageStorage.new(m, MessageStorage::Overwrite::ERROR)
-          ms.stub(:bucket).and_return(double('bucket', has_key?: true))
+          ms.stub(:bucket).and_return(double('bucket', exists?: true))
           ms.guard_against_error_overwrite 'key'
         }.to raise_error(MessageOverwriteError)
       end
@@ -60,7 +60,7 @@ describe MessageStorage do
         m = FakeStorableMessage.new
         expect  {
           ms = MessageStorage.new(m, MessageStorage::Overwrite::ERROR)
-          ms.stub(:bucket).and_return(double('bucket', has_key?: false))
+          ms.stub(:bucket).and_return(double('bucket', exists?: false))
           ms.guard_against_error_overwrite 'key'
         }.not_to raise_error
       end
@@ -110,7 +110,7 @@ describe MessageStorage do
     it 'does not overwrite when instructed not to' do
       m = FakeStorableMessage.new
       ms = MessageStorage.new(m, MessageStorage::Overwrite::DONT)
-      bucket = double('bucket', has_key?: true)
+      bucket = double('bucket', exists?: true)
       bucket.should_not_receive(:new)
       ms.stub(:bucket).and_return(bucket)
       ms.store
