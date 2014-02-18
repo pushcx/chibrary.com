@@ -116,7 +116,14 @@ class Email
   end
 
   def canonicalized_from_email
-    email = header['From'].split(/[^\w@\+\.\-_]/).select { |s| s =~ /@/ }.first
+    from = header['From']
+    if !from.include?('@') and from.include?(' at ')
+      from.gsub!(' at ', '@')
+    end
+    if !from.include?('@')
+      return 'no.email.address@chibrary.com'
+    end
+    email = from.split(/[^\w@\+\.\-_]/).select { |s| s.include? '@' }.first
     parts = email.split('@')
     parts.first.gsub!(/\./, '') if email[-10..-1] == '@gmail.com'
     parts.first.gsub!(/\+.*/, '')

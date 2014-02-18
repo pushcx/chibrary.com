@@ -86,6 +86,7 @@ x update text on about page
   check that google search works with new domain
   fix google analytics logging to only be included in prod
   update CallNumberGenerator so two import scripts won't collide constantly
+  check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
 
   https://www.cs.cmu.edu/~enron/
   spam filtering

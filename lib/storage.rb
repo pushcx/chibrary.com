@@ -3,26 +3,37 @@ require 'yaml'
 require 'riak'
 require 'zipruby'
 require 'active_support/core_ext/string'
+require_relative 'string_'
 
 class NotFound < RuntimeError ; end
 
 def de_yamlize content
+  # don't deserialize to Message class, which little-resembles the Message
+  # class from when these objects were yamlized
+  content = content.to_utf8 'ascii-8bit'
+  content.gsub!(/[^\n]/, "")
+  content.gsub!(/^--- !ruby\/object:Message *\n/, "--- \n") if content[0..4] == '--- !'
   content = YAML::load(content) if content[0..3] == '--- '
   content
 end
 
 class Zip::File
   def contents
-    output = ''
-    read { |chunk| output << chunk }
-    de_yamlize output
+    de_yamlize raw_contents
+  end
+  def raw_contents
+    #output = ''
+    read# { |chunk| output << chunk }
   end
 end
 
 class File
   def contents
+    de_yamlize raw_contents
+  end
+  def raw_contents
     seek(0)
-    de_yamlize read
+    read
   end
 
   def size
@@ -44,7 +55,7 @@ class ZZip
   def each(recurse=false)
     # recurse is unused, but listed to match ZDir
     files = []
-    zip { |z| z.each { |entry| files << entry.name } }
+    zip { |z| z.each { |entry| files << entry.name unless entry.name.ends_with? '/' } }
     files.sort!
     files.each { |f| yield f }
   end
@@ -52,6 +63,14 @@ class ZZip
   def first
     each { |path| return path }
     nil
+  end
+
+  def raw path
+    return self if path.blank?
+    # zip files cannot be nested, don't do ZDir#[]'s check for .zip
+    zip { |z| z.fopen(path) { |f| f.raw_contents } }
+  rescue Zip::Error
+    raise NotFound, File.join(@path, path)
   end
 
   def [] path
@@ -106,11 +125,11 @@ class ZDir
   def each(recurse=false)
     Dir.entries(@path).sort.each do |path|
       next if %w{. ..}.include? path
-      yield path
+      yield path if File.file? File.join(@path, path) and not path =~ /\.zip$/
       if File.directory? File.join(@path, path)
         ZDir.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
       elsif path =~ /\.zip$/
-        ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path, p) } if recurse
+        ZZip.new([@path, path].join('/')).each(recurse) { |p| yield File.join(path.gsub('.zip', ''), p) } if recurse
       end
     end
   end
@@ -127,6 +146,26 @@ class ZDir
       return path unless object.is_a? ZDir or object.is_a? ZZip
     end
     nil
+  end
+
+  def raw path
+    full_path = File.join([@path, path])
+    if !File.exists? full_path
+      dirs = full_path.split('/')
+      full_path = dirs.shift
+      while dir = dirs.shift do
+        full_path += "/#{dir}"
+        zip_path = full_path + ".zip"
+        return ZZip.new(zip_path).raw(dirs.join('/')) if File.exists? zip_path
+      end
+    end
+
+    raise NotFound, full_path unless File.exists? full_path
+
+    return ZDir.new(full_path)                if File.directory? full_path
+    return File.open(full_path, 'r').raw_contents if File.file? full_path
+
+    raise "ZDir(#{@path}) doesn't know what to do with [#{path}]"
   end
 
   def [] path
@@ -174,75 +213,5 @@ class ZDir
   end
 end
 
-class Bucket
-  def initialize bucket, path=''
-    client = Riak::Client.new(:protocol => "pbc", :pb_port => 8087)
-    @bucket = client.bucket(bucket)
-    @base_path = path # and then all queries are relative to this? hrm
-  end
-
-  def has_key? path
-    @bucket.exists? path
-  end
-
-  def each recurse=false
-    # recurse is unused, but listed to match ZDir
-    # TODO: use a SecondaryIndex? Or something; this is non-scalable
-    # need to understand how I'm coping buckets first
-    @bucket.keys.each { |k| yield k }
-    #q = Riak::SecondaryIndex.new @bucket, 'path_bin', ''
-
-    ## SecondaryIndex objects give you access to the keys...
-    #q.keys # => ['cobb.salad', 'wedge.salad', 'buffalo_chicken.wrap', ...]
-
-    ## but can also fetch values for you in parallel.
-    #q.values # => [<RObject {recipes,cobb.salad} ...>, <RObject {recipes,wedge...
-
-    ## They also provide simpler pagination:
-    #q.has_next_page? # => true
-    #q2 = q.next_page   #
-  end
-
-  def first
-    @bucket.keys.each { |k| return k }
-  end
-
-  def list prefix
-    @bucket.get_index('path_bin', "#{prefix}/ ".."#{prefix}/~").to_a
-  end
-
-  def sizeof path
-    return 0 unless has_key? path
-    @bucket[path].raw_data.size
-  end
-
-  def [] path
-    return self if path.blank?
-    raise NotFound, path unless has_key? path
-    hash = @bucket[path].data
-    if hash.is_a? Hash and hash['class']
-        return Kernel.const_get(hash['class']).deserialize(hash)
-      else
-        return hash
-    end
-  end
-
-  def []= path, value
-    obj = @bucket.new path
-    obj.data = value
-    # TODO - index on list, list/year, list/year-month explicitly?
-    #      - and is that actual y/m or where it got threaded to?
-    # TODO almost certainly an index on thread
-    obj.indexes['path_bin'] << path
-    obj.store
-    obj
-  end
-
-  def delete path
-    @bucket.delete path
-  end
-end
-
 $archive    = ZDir.new('archive')
 $cachedhash = ZDir.new('cachedhash')
-$riak = Bucket.new 'archive'
