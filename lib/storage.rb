@@ -13,6 +13,7 @@ def de_yamlize content
   content = content.to_utf8 'ascii-8bit'
   content.gsub!(/[^\n]/, "")
   content.gsub!(/^--- !ruby\/object:Message *\n/, "--- \n") if content[0..4] == '--- !'
+  content.gsub!(/^subject: `(.*)$/, 'subject: "`\1"') if content.include? "subject: `"
   content = YAML::load(content) if content[0..3] == '--- '
   content
 end
