@@ -22,15 +22,16 @@ begin
   at = nil
   raw = nil
   foo = false
+  i = 0
   zdir.each(true) do |key|
     # skip dirs - why did I want that yielded in the first place?
     #next unless File.file? "#{list_path}/#{key}"
-    foo = true if key.include? 'linux-kernel/'
+    i += 1
+    foo = true if key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
     puts key
 
     at = key
-    raw = zdir.raw key
     stored_message = zdir[key]
 
     if stored_message.is_a? String
@@ -43,14 +44,15 @@ begin
       slug = stored_message['slug']
     end
 
-    call_number = CallNumberGenerator.next!
+    #call_number = CallNumberGenerator.next!
+    call_number = 'x' + i.to_s.rjust(9, '0')
     message = Message.from_string(
       str,
       call_number,
       source,
       List.new(slug)
     )
-    # TODO replace message id if it's listlibrary
+    # TODO replace message id if it's @generated-message-id.listlibrary.net
     # TODO remove any listlibrary added headers - there's some in chipy
 
     # just exercising the message rather than actually storing it
@@ -68,7 +70,8 @@ begin
 
 end
 rescue Exception => e
-  puts at
+  puts i, at
+  raw = zdir.raw at
   File.write('fail', raw)
   raise e
 end
