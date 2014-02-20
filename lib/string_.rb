@@ -1,3 +1,5 @@
+require 'net/imap' # yes really
+
 class String
   def decoded
     self.gsub(/=\?[^\?]+\?[^\?]+\?[^\?]+\?=/) do |encoded|
@@ -14,6 +16,14 @@ class String
   end
 
   def to_utf8 charset
+    case charset
+    when 'ks_c_5601-1987'
+      charset = 'CP949'
+    when 'unknown-8bit'
+      charset = 'ascii-8bit'
+    when 'UTF-7'
+      return Net::IMAP.decode_utf7(self)
+    end
     self.encode("UTF-8", charset, :invalid => :replace, :undef => :replace).force_encoding('UTF-8')
   end
 end
