@@ -117,13 +117,21 @@ class Email
 
   def canonicalized_from_email
     from = header['From']
+
+    # if there is no @, try for a censored email
     if !from.include?('@') and from.include?(' at ')
       from.gsub!(' at ', '@')
     end
     if !from.include?('@')
       return 'no.email.address@chibrary.com'
     end
-    email = from.split(/[^\w@\+\.\-_]/).select { |s| s.include? '@' }.first
+
+    # try for a properly-formatted "User <a@example.com>" but take anything
+    if match = from.match(/<(.*@.*)>/)
+      email = match.captures.first
+    else
+      email = from.split(/[^\w@\+\.\-_]/).select { |s| s.include? '@' }.first
+    end
     parts = email.split('@')
     parts.first.gsub!(/\./, '') if email[-10..-1] == '@gmail.com'
     parts.first.gsub!(/\+.*/, '')
