@@ -23,6 +23,8 @@ class String
       charset = 'ascii-8bit'
     when 'UTF-7'
       return Net::IMAP.decode_utf7(self)
+    when 'utf8'
+      charset = 'UTF-8'
     end
     self.encode("UTF-8", charset, :invalid => :replace, :undef => :replace).force_encoding('UTF-8')
   end
