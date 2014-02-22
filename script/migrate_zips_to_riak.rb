@@ -27,9 +27,11 @@ begin
     # skip dirs - why did I want that yielded in the first place?
     #next unless File.file? "#{list_path}/#{key}"
     i += 1
-    foo = true if key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
+    foo = true if i == 417593 #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
-    puts key
+    print "\n#{i} " if i % 1000 == 0
+    print '.'
+    #puts key
 
     at = key
     stored_message = zdir[key]
@@ -70,6 +72,7 @@ begin
 
 end
 rescue Exception => e
+  puts
   puts i, at
   raw = zdir.raw at
   File.write('fail', raw)
