@@ -13,9 +13,11 @@ def de_yamlize content
   content = content.to_utf8 'ascii-8bit'
   content.gsub!(/[^\n]/, "")
   content.gsub!(/^--- !ruby\/object:Message *\n/, "--- \n") if content[0..4] == '--- !'
-  content.gsub!(/^subject: `(.*)$/, 'subject: "`\1"') if content.include? "subject: `"
+  content.gsub!(/^subject: .*\n/, '')
   content = YAML::load(content) if content[0..3] == '--- '
   content
+rescue Psych::SyntaxError # fuck everything about loading those subjects that YAML has smashed
+  YAML::load(content.match(/^message: .*/m).to_s)
 end
 
 class Zip::File
