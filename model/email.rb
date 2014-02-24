@@ -133,8 +133,10 @@ class Email
       email = from.split(/[^\w@\+\.\-_]/).select { |s| s.include? '@' }.first
     end
     parts = email.split('@')
-    parts.first.gsub!(/\./, '') if email[-10..-1] == '@gmail.com'
-    parts.first.gsub!(/\+.*/, '')
+    unless parts.first.nil?
+      parts.first.gsub!(/\./, '') if email[-10..-1] == '@gmail.com'
+      parts.first.gsub!(/\+.*/, '')
+    end
     parts.join('@')
   end
 

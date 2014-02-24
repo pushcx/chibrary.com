@@ -25,6 +25,10 @@ class String
       return Net::IMAP.decode_utf7(self)
     when 'utf8'
       charset = 'UTF-8'
+    when 'x-mac-thai'
+      charset = 'macthai'
+    when 'x-user-defined'
+      charset = 'ISO-8859-1' # just one message by one jerk
     end
     self.encode("UTF-8", charset, :invalid => :replace, :undef => :replace).force_encoding('UTF-8')
   end
