@@ -1,0 +1,51 @@
+Problem:
+
+Call numbers are totally synthetic, so I can't tell if I'm duplicating an
+Email when I import. This was a risk when I was originally importing
+linux-kernel, and I think I solved it with hand-checking.
+
+Am I going and looking for a problem?
+
+A little bit, yeah. I don't really need to maintain multiple copies of emails,
+do I? Is it OK to just hash some identifying info so I can avoid duplicates on
+insert, or do I want to be sort of a meta-archive, where users can see the
+diffferent archives I imported?
+
+Does anyone really care? Do I? In general, what's the different between two
+copies of the same email? Some different routing in the headers? The content
+should be identical, unless one of the copies has been screwed up (corruption,
+character encoding, etc.), in which case I don't want it anyways.
+
+
+So yeah, let's not store multiple Emails per Message. Minimal value, lots of
+complication.
+
+But: rather than generate a synthetic Call Number, requiring a coordination
+point between multiple workers, I can hash one out of an Email and catch
+duplicates that way.
+
+So, hash ids. I do have an 'id_hash_bin' on message_storage now. I think
+'source' should move into Email (even though they're just stored as a subhash
+of Messages now). The id_hash_bin index has to stay on Messages unless I
+change my mind and start storing emails separately.
+
+What goes into an id hash? Message id, if I have one, is good, except I have
+previously scraped terrible archives with no message id an then gotten a good
+archive with them.
+
+I could store two hashes - one on message id, if any, and then one based on
+fields I'm sure to have (from, date, subject). Check for a message id
+collision, check for a hash collision. Though I'd really like to only have to
+do one check...
+
+Could have two MessageStorage classes with different behavior, depending on
+what I'm importing, because I know if emails are high or low quality.
+
+I want Call Numbers to be stable regardless of whether I replace a low-quality
+email with a high-quality one, so they need to be a (from date subject) hash
+that I can manually overwrite.
+
+Huh. I *do* have two hashes now. I key a Message under its Call Number and
+have the id_hash_bin index. I guess I'm OK with that. :) So really, what I
+want is to update overwrite to check both key and id_hash_bin, drop
+CallNumberGenerator, and hash out CallNumbers from email.

@@ -58,9 +58,9 @@ class MessageStorage
     obj = bucket.new
     obj.key = key
     obj.data = serialize
-    obj.indexes['id_hash_bin']     << Base64.strict_encode64(message.message_id.to_s)
-    obj.indexes['lmy_bin']         << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
-    obj.indexes['author_bin'] << Base64.strict_encode64(message.email.canonicalized_from_email)
+    obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s)
+    obj.indexes['lmy_bin']     << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
+    obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 
     message

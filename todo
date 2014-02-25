@@ -63,15 +63,17 @@ x can year and month be removed from ContainerStorage keys? - yes, w index
 x Container.likely_split_thread? should ask Message about quoting, not regex
 x rename web/controller to something better-suited
 x rekey all call numbers to be base62; drop _ and - in ids
-  remove overwrite from MessageStorage, look up message ids instead
+x remove overwrite from MessageStorage, look up message ids instead
+  replace CallNumberGenerator with Call Numbers hashed from Email
+  have MessageStorage overwrite check both key and id_hash_bin
   clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all lists to riak
   add instantclick.io to pjax page loads
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
-  move jobs into a proper job system
+x move jobs into a proper job system
   move misc data in cachcedhash *someplace else*
-  fix lkml messages in 1970, 1976, 2036
+  fix lkml messages in 1970, 1976, 1980, 1986, 1990?, 2036
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
   replace 1.8 hash syntax with 1.9
