@@ -1,13 +1,13 @@
 
 class CallNumber
-  attr_reader :slug
+  attr_reader :str
 
-  def initialize slug
-    @slug = (slug || '').to_s
+  def initialize str
+    @str = (str || '').to_s
   end
 
   def valid?
-    slug =~ /\A[a-zA-Z0-9]{10}\Z/
+    str =~ /\A[a-zA-Z0-9]{10}\Z/
   end
 
   def == other
@@ -23,7 +23,7 @@ class CallNumber
   end
 
   def to_s
-    slug
+    str
   end
 
   def self.generate
