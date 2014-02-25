@@ -80,7 +80,7 @@ describe MessageStorage do
       end
       let(:m)  { FakeStorableMessage.new }
       let(:ms) { MessageStorage.new(m, MessageStorage::Overwrite::DO) }
-      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'lmy_bin' => [], 'deserialize_bin' => [] }) }
+      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'lmy_bin' => [], 'author_bin' => [] }) }
       before do
         ms.stub(:bucket).and_return(double('bucket', new: riak_object))
         EmailStorage.stub(:new).and_return(double('EmailStorage', serialize: {}))
@@ -103,7 +103,7 @@ describe MessageStorage do
 
       it 'indexes the author email' do
         ms.store
-        expect(riak_object.indexes['deserialize_bin']).to eq([Base64.strict_encode64('from@example.com')])
+        expect(riak_object.indexes['author_bin']).to eq([Base64.strict_encode64('from@example.com')])
       end
     end
 
