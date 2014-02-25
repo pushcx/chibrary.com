@@ -12,6 +12,10 @@ require_relative '../model/storage/message_storage.rb'
 
 #thread_queue = Queue.new :thread
 
+start = ARGV.shift
+raise "need start number" if start.nil?
+start = start.to_i
+
 #Dir['archive/old_list/*'].each do |list_path|
 #  next unless list_path.include? 'theinfo' or list_path.include? 'linux-kernel'
 #  puts "#{Time.now} #{list_path}"
@@ -27,7 +31,7 @@ begin
     # skip dirs - why did I want that yielded in the first place?
     #next unless File.file? "#{list_path}/#{key}"
     i += 1
-    foo = true if i == 417593 #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
+    foo = true if i == start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
     print "\n#{i} " if i % 1000 == 0
     print '.'
@@ -43,7 +47,7 @@ begin
     else
       str = stored_message['message'].to_utf8 'ascii-8bit'
       source = stored_message['source']
-      slug = stored_message['slug']
+      slug = key.split('/').first
     end
 
     #call_number = CallNumberGenerator.next!

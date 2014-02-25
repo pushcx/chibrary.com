@@ -77,6 +77,7 @@ x update text on about page
   replace 1.8 hash syntax with 1.9
   override sinatra error pages
   restore google analytics
+  re-import ruby-dev
   convert to html5
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
