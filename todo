@@ -72,7 +72,7 @@ x rewrite CallNumberGenerator to waste fewer bits
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
 x move jobs into a proper job system
-  move misc data in cachcedhash *someplace else*
+x move misc data in cachcedhash *someplace else*
   Email.date should parse Received headers first; fallback to Date from MUA
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
