@@ -9,6 +9,7 @@ GEM
       tzinfo (~> 0.3.37)
     atomic (1.1.14)
     backports (3.3.5)
+    base62 (1.0.0)
     beefcake (0.3.7)
     builder (3.2.2)
     celluloid (0.14.1)
@@ -99,6 +100,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
+  base62
   haml
   hpricot
   htmlentities

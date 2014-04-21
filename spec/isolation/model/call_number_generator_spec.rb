@@ -1,31 +1,74 @@
 require_relative '../../rspec'
 require_relative '../../../model/call_number_generator'
 
+class CNGTestRunIdGenerator
+  def run_id
+    1
+  end
+
+  def next! ; end
+end
+
+class CNGTestSequenceIdGenerator
+  def consume_sequence_id!
+    2
+  end
+end
+
 describe CallNumberGenerator do
-  describe '::to_base_62' do
-    it 'converts integers to base 62' do
-      [
-        [0,  '0000000000'], # base case
-        [1,  '0000000001'], # add one
-        [10, '000000000a'], # first lowercase letter
-        [36, '000000000A'], # first uppercase letter
-        [62, '0000000010'], # second digit
-        [63, '0000000011'], # second digit + 1
-        [62 ** 10 - 1, 'ZZZZZZZZZZ'], # last number
-      ].each do |from, to|
-        expect(CallNumberGenerator.to_base_62 from).to eq(to)
-      end
+  def spec_cng
+    CallNumberGenerator.new CNGTestRunIdGenerator.new, CNGTestSequenceIdGenerator.new
+  end
+
+  describe "#next!" do
+    it "combines IDS" do
+      cng = spec_cng
+      cng.should_receive(:format_ids_to_call).with(0, 1, 2)
+      cng.next!
+    end
+  end
+
+  describe "#version" do
+    it "doesn't change without someone thinking about this" do
+      expect(spec_cng.version).to eq(0)
+    end
+  end
+
+  describe "#consume_sequence_id!" do
+    it "consumes a sequence id" do
+      sig = double('SequenceIdGenerator')
+      sig.should_receive(:consume_sequence_id!).and_return(3)
+      cng = CallNumberGenerator.new CNGTestRunIdGenerator.new, sig
+      expect(cng.consume_sequence_id!).to eq(3)
     end
 
-    it 'does not convert negative numbers' do
-      expect {
-        CallNumberGenerator.to_base_62 -1
-      }.to raise_error(RuntimeError, /No negative numbers/)
+  end
+
+  describe "#format_ids_to_call" do
+    it "combines and shuffles ids" do
+      expect(spec_cng.format_ids_to_call(0, 99, 345)).to eq('D7Jo0CQ4')
     end
-    it 'does not convert numbers too large for call numbers' do
-      expect {
-        CallNumberGenerator.to_base_62 62 ** 10
-      }.to raise_error(RuntimeError, /Too-large int converted/)
+  end
+
+  describe "#combine" do
+    it "creates a string of bits" do
+      expect(spec_cng.combine(0, 99, 345)).to eq('00000000000000000000000000110001100000101011001')
+    end
+  end
+
+  describe "#stable_bitstring_shuffle" do
+    it "shuffles bitstrings stably" do
+      expect(spec_cng.stable_bitstring_shuffle('00000000000000000000000000110001100000101011001')).to eq('01010100000010000000100000110000000001010000000')
+      expect(spec_cng.stable_bitstring_shuffle('00000000000000000000000000110001100000101011001')).to eq('01010100000010000000100000110000000001010000000')
+    end
+
+    it "depends on a seeded RNG that doesn't change" do
+      cng = spec_cng
+      expect(cng.stable_bitstring_shuffle('0123456789abcdefgh')).to eq('0d5164e2f98chgb7a3')
+      expect(cng.stable_bitstring_shuffle('abcdefgh0123456789')).to eq('a5fbge6c7104983h2d')
+      expect(cng.stable_bitstring_shuffle('asdfoihjaewnrfglka')).to eq('afishogdlearaknjwf')
+      expect(cng.stable_bitstring_shuffle('984jtv43loiv8tnseo')).to eq('9tv84tn4sol8oev3ij')
     end
   end
 end
+

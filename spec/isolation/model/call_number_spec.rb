@@ -2,7 +2,7 @@ require_relative '../../rspec'
 require_relative '../../../model/call_number'
 
 describe CallNumber do
-  describe '::new' do
+  describe '#initialize' do
     it 'can be initialized with a string' do
       expect(CallNumber.new('asdf12ASDF')).to be_valid
     end

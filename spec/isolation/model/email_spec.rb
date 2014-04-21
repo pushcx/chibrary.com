@@ -262,6 +262,56 @@ describe Email do
       e = Email.new raw: "X-Mailing-List: 1@example.com\nList-Id: 2@example.com\n\nBody"
       expect(e.possible_list_addresses).to eq(['1@example.com', '2@example.com'])
     end
+
+    it 'always returns an array' do
+      e = Email.new raw: "\n\nBody"
+      expect(e.possible_list_addresses).to be_a(Array)
+    end
+  end
+
+  describe '#mid_hash' do
+    it 'is nil if missing MessageId' do
+      e = Email.new raw: "\n\nBody"
+      expect(e.mid_hash).to eq(nil)
+    end
+
+    it 'is stable based on MessageId' do
+      e1 = Email.new raw: "Message-Id: 1@example.com\n\nBody"
+      e2 = Email.new raw: "Message-Id: 1@example.com\n\nBody"
+      expect(e1.mid_hash).to eq(e2.mid_hash)
+    end
+
+    it 'is sensitive to changes in MessageId' do
+      e1 = Email.new raw: "Message-Id: 1@example.com\n\nBody"
+      e2 = Email.new raw: "Message-Id: 2@example.com\n\nBody"
+      expect(e1.mid_hash).not_to eq(e2.mid_hash)
+    end
+  end
+
+  describe '#vitals_hash' do
+    it 'is stable' do
+      e1 = Email.new raw: "Date: Tue, 14 Aug 2007 19:26:26 +0900\nFrom: user@example.com\nSubject: Foo\n\nBody"
+      e2 = Email.new raw: "Date: Tue, 14 Aug 2007 19:26:26 +0900\nFrom: user@example.com\nSubject: Foo\n\nBody"
+      expect(e1.vitals_hash).to eq(e2.vitals_hash)
+    end
+
+    it 'is sensitive to changes in date' do
+      e1 = Email.new raw: "Date: Tue, 14 Aug 2007 19:26:26 +0900\n\nBody"
+      e2 = Email.new raw: "Date: Wed, 15 Aug 2007 19:26:26 +0900\n\nBody"
+      expect(e1.vitals_hash).not_to eq(e2.vitals_hash)
+    end
+
+    it 'is sensitive to changes in from' do
+      e1 = Email.new raw: "From: alice@example.com\n\nBody"
+      e2 = Email.new raw: "From: bob@example.com\n\nBody"
+      expect(e1.vitals_hash).not_to eq(e2.vitals_hash)
+    end
+
+    it 'is sensitive to changes in subject' do
+      e1 = Email.new raw: "Subject: Foo\n\nBody"
+      e2 = Email.new raw: "Subject: Bar\n\nBody"
+      expect(e1.vitals_hash).not_to eq(e2.vitals_hash)
+    end
   end
 
   describe '#==' do

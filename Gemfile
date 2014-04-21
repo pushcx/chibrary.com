@@ -20,6 +20,7 @@ gem 'rake'
 gem 'shotgun'
 
 # work
+gem 'base62'
 gem 'hpricot'
 gem 'htmlentities'
 gem 'net-sftp'

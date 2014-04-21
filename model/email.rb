@@ -1,4 +1,6 @@
+require 'base62'
 require 'base64'
+require 'digest/sha2'
 require 'rmail'
 require 'time'
 
@@ -180,7 +182,34 @@ class Email
 
     possible_addresses = header_addresses.map do |raw|
       raw.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }
-    end.flatten!
+    end.flatten
+  end
+
+  def mid_hash
+    raise 'No CHIBRARY_SALT in environment' unless ENV['CHIBRARY_SALT']
+
+    #puts message_id.to_yaml
+    return nil unless message_id.valid?
+
+    value = [
+      ENV['CHIBRARY_SALT'],
+      message_id.to_s,
+    ].join('')
+    Digest::SHA2.hexdigest(value).to_i(16).base62_encode
+  end
+
+  def vitals_hash
+    raise 'No CHIBRARY_SALT in environment' unless ENV['CHIBRARY_SALT']
+
+    value = [
+      ENV['CHIBRARY_SALT'],
+      # an archive could break this by...
+      date.strftime("%Y-%m-%d %H:%M"), # ...dropping TZ info or time
+      from, # ...censoring email addresses
+      n_subject, #...or truncating the subject
+    ].join('')
+
+    Digest::SHA2.hexdigest(value).to_i(16).base62_encode
   end
 
   def == other

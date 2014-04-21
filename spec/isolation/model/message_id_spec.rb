@@ -7,6 +7,10 @@ describe MessageId do
       expect(MessageId.new('<valid@example.com>')).to be_valid
     end
 
+    it 'is valid even without angle brackets' do
+      expect(MessageId.new 'without@example.com').to be_valid
+    end
+
     it 'is invalid if nil' do
       expect(MessageId.new nil).to_not be_valid
     end

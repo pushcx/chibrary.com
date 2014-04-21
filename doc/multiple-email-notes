@@ -43,9 +43,89 @@ what I'm importing, because I know if emails are high or low quality.
 
 I want Call Numbers to be stable regardless of whether I replace a low-quality
 email with a high-quality one, so they need to be a (from date subject) hash
-that I can manually overwrite.
+that I can manually overwrite. And I won't be replacing high-quality with
+low-quality, so I *can* hash off Message-Id if I have it and fall back to
+f/d/s.
 
 Huh. I *do* have two hashes now. I key a Message under its Call Number and
 have the id_hash_bin index. I guess I'm OK with that. :) So really, what I
 want is to update overwrite to check both key and id_hash_bin, drop
 CallNumberGenerator, and hash out CallNumbers from email.
+
+
+Coming back to this problem after two weeks away.
+
+Problems:
+- messages with no message id
+- scraping overlapping bad archives with no message ids
+- threader loads all messages, so it can heuristically find parents
+- stable URLs to messages
+- don't let people smash other messages
+- old call number generator is stable + unique but arbitrary + a lock
+- how long do I want call numbers/hashes to be?
+- do I want to keep slug, year, month in url?
+
+URL pondering: how editable do I want them to be? Being able to chop off month
+and year is nice, but is it worth 8 characters all the time?
+/l/linux-kernel or /list/linux-kernel
+
+thread options:
+/list/linux-kernel/2014/03/AT7AWL8YDVzJaA5vvY63jKLQoUTZqUszP9KY6HrTkD8 (some truncation?
+/t/AT7AWL8YDVzJaA5vvY63jKLQoUTZqUszP9KY6HrTkD8 (full hash)
+/m/AT7AWL8YDVzJaA5vvY63jKLQoUTZqUszP9KY6HrTkD8 (and 301 to /t? or present?)
+
+SHA256 is way, way too many bits. Aside from an unweildy URL, I could put the
+Unix timestamp (31b, Time.at(2 ** 31) says 2038) of when I imported the
+message in the first 32b (6 b62 chars; Time.at(62 ** 6) is 3769) and then
+spend two more 62b characters on an incrementing counter - thus I could import
+3,844 messages per second indefinitely and never have a collision. Of course,
+I could then only import from a single process - so maybe I spend a few bits
+from those characters on some kind of process id and regenerate that on
+collision.
+
+This brings me back to synthetic call numbers - but does it matter? As long as
+they're of reasonable length and can't be trivially spidered, I have to treat
+my IDs as black boxes anyways because I can't know if they'll be based on the
+mid or vitals. So if there is no pure function for "I saw this random email,
+what's its URL/call number?" I have to do a db lookup anyways.
+
+So what's the right way to generate call numbers? I could just do the "assume
+single process" and punt on the multiprocess detection and collision until the
+site has grown significantly. As long as I leave the bits, that's fine.
+
+6 characters for timestamp, 2 for increment, one for room to grow? The
+difference between an 8 and 9 character id is 3 trillion vs 218 trillion
+(though I can't use that at all efficiently). So really, if I set aside a
+couple bits (say, 3?) to tag my id scheme I can change my mind 7 times and be
+fine.
+
+Thinking in bits:
+  base62 characters, Math.log2(62 ** n).floor:
+    6   35
+    7   41
+    8   47
+    9   53
+    10  59
+
+  ids:
+    3 for id scheme
+    33 for timestamp (Time.at(2 ** 33) = 2242)
+    3 for process id?
+    8 for incrementing (256/s is < 4ms per msg)
+   = 47 bits, fits in 8 b62 characters
+
+PUzzled it out in a long blog post:
+http://push.cx/2014/distributed-id-generation-and-bit-packing-chibrary
+
+So:
+Something generates run ids. Something gets run ids. Something deals with
+sequence exhaustion.
+
+Approach:
+- Secondary index with id hash
+- Secondary index with vitals (fds) hash
+- On regular import, flag messages that dupe either hash for human attention
+- On replacement/overlap import, check fds hash
+- RunIdGenerator gets unique run id
+- SequenceIdGenerator gets unique sequence number and raises on exhaustion
+- CallNumberGenerator manages these two things

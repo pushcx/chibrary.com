@@ -1,48 +1,57 @@
+require 'base62'
+
+require_relative 'run_id_generator'
+require_relative 'sequence_id_generator'
 require_relative 'call_number'
-require_relative 'storage/redis_storage'
 
-module CallNumberGenerator
-  def self.next!
-    raw = redis_next_call_number!
-    call = to_base_62 raw
-    CallNumber.new call
+# This should probably have a bitstring class broken out of it, but I don't
+# expect to need to reuse those parts or change this algorithm anytime soon.
+
+class CallNumberGenerator
+  attr_reader :rig, :sig
+
+  SHUFFLE_SEED = 1234
+
+  def initialize rig=RunIdGenerator.new, sig=SequenceIdGenerator.new
+    @rig = rig
+    @sig = sig
   end
 
-  def self.redis_next_call_number!
-    redis = RedisStorage.db_client
-    loop do
-      # clear any watch
-      redis.unwatch
-      # watch 'call_number' and fail the 'multi' call if it is modified
-      # by another process
-      redis.watch 'call_number'
-      # grab the latest value
-      last = redis.get('call_number').to_i
-      # take the next one
-      current = last + 1
-      # try to commit the update
-      success = redis.multi do |r|
-        r.set('call_number', current)
-      end
-      # return it on success
-      redis.unwatch and return current if success
-      # random wait on failure to 
-      sleep 0.1 + rand
-    end
+  def next!
+    v = version
+    # consume_sequence_id! may cause run_id to advance
+    s = consume_sequence_id!
+    r = rig.run_id
+    CallNumber.new format_ids_to_call(v, r, s)
   end
 
-  def self.to_base_62 i
-    raise "No negative numbers" if i < 0
+  def version
+    0
+  end
 
-    chars = (0..9).to_a + ('a'..'z').to_a + ('A'..'Z').to_a
-    str = ""
-    current = i
+  def consume_sequence_id!
+    sig.consume_sequence_id!
+  rescue SequenceIdExhaustion
+    sequence_exhausted!
+    sig.consume_sequence_id!
+  end
 
-    while current != 0
-      str = chars[current % 62].to_s + str
-      current = current / 62
-    end
-    raise "Too-large int converted (#{i} -> #{str})" if str.length > 10
-    ("%10s" % str).tr(' ', '0')
+  def sequence_exhausted!
+    @rig.next!
+    @sig.reset!
+  end
+
+  def format_ids_to_call v, r, s
+    bitstring = combine(v, r, s)
+    shuffled = stable_bitstring_shuffle bitstring
+    shuffled.to_i(2).base62_encode
+  end
+
+  def combine v, r, s
+    "%03b%030b%014b" % [v, r, s]
+  end
+
+  def stable_bitstring_shuffle bitstring
+    bitstring.split('').shuffle(random: Random.new(SHUFFLE_SEED)).join('')
   end
 end

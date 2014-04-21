@@ -1,4 +1,3 @@
-
 class CallNumber
   attr_reader :str
 
@@ -24,9 +23,5 @@ class CallNumber
 
   def to_s
     str
-  end
-
-  def self.generate
-
   end
 end
