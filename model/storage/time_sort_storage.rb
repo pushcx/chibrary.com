@@ -1,5 +1,6 @@
 require_relative 'riak_storage'
 require_relative '../time_sort'
+require_relative 'thread_link_storage'
 
 class TimeSortStorage
   include RiakStorage
@@ -15,9 +16,7 @@ class TimeSortStorage
   end
 
   def serialize
-    # it's an array of hashes, but reusing the name saves me writing a new
-    # #store
-    time_sort.threads.map { |tl| Hash[ tl.each_pair.to_a ] }
+    time_sort.threads.map { |tl| ThreadLinkStorage.new(tl).serialize }
   end
 
   def self.build_key slug, year, month

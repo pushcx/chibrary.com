@@ -4,17 +4,11 @@ class TimeSort
   attr_reader :slug, :year, :month
   attr_reader :threads
 
-  def initialize slug, year, month, thread_set=nil
-    @slug = slug
-    @year = year.to_i
-    @month = month.to_i
-    if thread_set
-      @threads = thread_set.root_set.map { |t|
-        ThreadLink.new(slug, year, month, t.call_number, t.n_subject)
-      }
-    else
-      thread_set = []
-    end
+  def initialize slug, year, month, threads=[]
+    @slug, @year, @month = slug, year.to_i, month.to_i
+    @threads = threads.map { |t|
+      ThreadLink.new(slug, year, month, t[:call_number], t[:subject])
+    }
   end
 
   def previous_link call_number
@@ -34,7 +28,7 @@ class TimeSort
       thread_set.slug,
       thread_set.date.year,
       thread_set.date.month,
-      thread_set
+      thread_set.root_set.map { |t| { call_number: t.call_number, subject: t.n_subject } }
     )
   end
 end

@@ -61,7 +61,9 @@ FakeThreadSet = Struct.new(:root_set) do
   def slug ; 'slug' ; end
   def date ; Time.new(2014, 12) ; end
 end
-FakeThreadLink = Struct.new(:call_number, :n_subject)
+FakeThreadLink = Struct.new(:call_number, :subject) do
+  def n_subject ; subject ; end
+end
 def fake_thread_set call_numbers
   FakeThreadSet.new call_numbers.map { |c| FakeThreadLink.new(c, "subject #{c}") }
 end
