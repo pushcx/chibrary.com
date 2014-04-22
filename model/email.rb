@@ -188,7 +188,6 @@ class Email
   def mid_hash
     raise 'No CHIBRARY_SALT in environment' unless ENV['CHIBRARY_SALT']
 
-    #puts message_id.to_yaml
     return nil unless message_id.valid?
 
     value = [
