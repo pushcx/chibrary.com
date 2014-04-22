@@ -1,6 +1,7 @@
 require 'base62'
 require 'base64'
 require 'digest/sha2'
+require 'forwardable'
 require 'rmail'
 require 'time'
 

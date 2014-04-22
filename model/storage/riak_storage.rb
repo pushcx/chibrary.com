@@ -1,5 +1,7 @@
 require 'riak'
 
+class NotFound < ArgumentError ; end
+
 module RiakStorage
   def self.included(base)
     base.send :extend, ClassMethods
@@ -33,7 +35,7 @@ module RiakStorage
 
     def bucket
       name = self.name.split('Storage').first.downcase
-      @bucket ||= db_client.bucket(name)
+      @bucket ||= RiakBucket.new db_client.bucket(name)
     end
 
     def exists? key

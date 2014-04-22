@@ -10,7 +10,7 @@ class ListAddressStorage
   def self.find_list_by_address address
     slug = bucket[address]
     ListStorage.find(slug)
-  rescue Riak::ProtobuffsFailedRequest
+  rescue NotFound
     NullList.new
   end
 
