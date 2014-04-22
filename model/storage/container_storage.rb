@@ -5,6 +5,7 @@ module ContainerStorage
   include RiakStorage
 
   def self.included(base)
+    base.send :extend, RiakStorage::ClassMethods
     base.send :extend, ClassMethods
   end
 
