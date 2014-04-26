@@ -48,17 +48,31 @@ class Threader
         threadset << MessageStorage.find call_number
       end
 
-      cache_work(slug, year, month, fresh_message_list, threadset) unless removed.empty? and added.empty?
+      return if removed.empty? and added.empty?
+
+      # Many threads are split by replies in later months. This rejoins them.
+      threadset.prior_months.each do |t|
+        # Rejoin any threads from later months
+        ts = ThreadSetStorage.month(threadset.slug, t.year, t.month)
+        ts.retrieve_split_threads_from threadset
+        ThreadSetStorage.new(ts).store
+      end
+      threadset.following_months.each do |t|
+        # And move threads up to earlier months when possible
+        ts = ThreadSetStorage.month(threadset.slug, t.year, t.month)
+        threadset.retrieve_split_threads_from ts
+        ThreadSetStorage.new(ts).store
+      end
+      ThreadSetStorage.new(threadset).store
+
+      cache_work(slug, year, month, fresh_message_list, threadset)
+
       end # job_log
     end # work loop
     end # threader_log
   end
 
   def cache_work slug, year, month, message_list, threadset
-    threadset.rejoin_splits # rejoins threads split across months and stores
-    # TODO store all the threadsets involved - maybe I need a joiner class to
-    # take care of keeping track of all these threadsets
-
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
     CallNumberListStorage.new(list, year, month, message_list).store

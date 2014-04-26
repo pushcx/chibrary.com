@@ -37,7 +37,7 @@ x   thread_set
 x   snippet (maybe from summary?)
 x   call_number_list
 x   timesort
-    redirect table
+x   redirect table
     thread/message counts
 x   sweep for any direct use of storage globals
 x remove leading / from any keys
@@ -52,11 +52,9 @@ x ContainerStorage -> MessageContainerStorage and MessageSummaryContainerStorage
 x Message: delegate from + n_subject down into email?
   migrate all tests to rspec
 x ThreadSet: cache list of thread roots in order for n/p links
-  ThreadSet: cache redirects (message -> thread root)
+x ThreadSet: cache redirects (message -> thread root)
   ThreadSet: cache monthly message/thread counts
 x split Message, Container initializers into two
-  move Storage.to_hash and .store to class methods; I never keep obj around
-  split Storage and Retrievage into separate objects?
 x can ThreadHelper#remove_footer *not* call the storage layer? ugh
 x can models be built so none call back up into the storage layer?
 x can year and month be removed from ContainerStorage keys? - yes, w index
@@ -74,7 +72,6 @@ x update text on about page
 x move jobs into a proper job system
 x move misc data in cachcedhash *someplace else*
   Email.date should parse Received headers first; fallback to Date from MUA
-  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
   replace 1.8 hash syntax with 1.9
   override sinatra error pages
@@ -84,13 +81,23 @@ x move misc data in cachcedhash *someplace else*
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js
+  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   forward listlibrary.net/org to chibrary
   deploy
   check that google search works with new domain
   fix google analytics logging to only be included in prod
-  update CallNumberGenerator so two import scripts won't collide constantly
+x update CallNumberGenerator so two import scripts won't collide constantly
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
 
+Possible refactorings:
+  Use tcrayford/Values in place of Struct
+  Use ice_nine to make sure my objects are immutable
+    module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
+  Use hamstergem/hamster in ThreadSet and other collections
+  move Storage.serialize and .store to class methods?; I never keep obj around
+  split Storage and Retrievage into separate objects?
+
+Feature ideas:
   https://www.cs.cmu.edu/~enron/
   spam filtering
   add riak search with solr

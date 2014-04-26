@@ -1,13 +1,15 @@
 require_relative '../lib/time_'
 require_relative 'message_container'
-# based on http://www.jwz.org/doc/threading.html
+require_relative 'redirect_map'
 
 # A ThreadSet holds the threads (container trees) and does the work of sorting
 # messages into container trees.
+# Main algorithm based on http://www.jwz.org/doc/threading.html
+
 class ThreadSet
   include Enumerable
 
-  attr_accessor :containers, :subjects, :redirected_threads
+  attr_accessor :containers, :subjects, :redirect_map
   attr_reader :slug, :year, :month
 
   def initialize slug, year, month
@@ -16,7 +18,7 @@ class ThreadSet
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
     @subjects = {}
-    @redirected_threads = []
+    @redirect_map = RedirectMap.new @slug, @year, @month
     flush_threading
   end
 
@@ -122,24 +124,15 @@ class ThreadSet
   private :finish
 
   def plus_month n
-    t = Time.utc(year, month).plus_month(n)
-    ThreadSet.new(slug, t.year, t.month)
+    Time.utc(year, month).plus_month(n)
   end
 
-  def rejoin_splits
-    # Many threads are split by replies in later months. This is separate from
-    # finish and must be explicitly called to prevent the infinite loops that
-    # would otherwise result as ThreadSets store (which requires a call to
-    # finish) each other.
+  def prior_months
+    (1..4).each { |n| yield plus_month(n) }
+  end
 
-    # Rejoin any threads from later months
-    (1..4).each do |n|
-      retrieve_split_threads_from plus_month(n)
-    end
-    # And move threads up to earlier months when possible
-    (-4..-1).each do |n|
-      plus_month(n).retrieve_split_threads_from self
-    end
+  def following_months
+    (1..4).each { |n| yield plus_month(-n) }
   end
 
   def retrieve_split_threads_from threadset
@@ -217,13 +210,9 @@ class ThreadSet
   end
 
   def redirect thread, year, month
-#    # note redirection
-#    @redirected_threads << [thread.collect(&:call_number).uniq, year, month]
-#
-#    # remove from this storage
-#    $riak.delete(thread.key) unless thread.empty_tree?
-#    thread.each { |c| @containers.delete(c.message_id) }
-#    flush_threading
+    @redirect_map.redirect thread.collect(&:call_number), year, month
+    thread.each { |c| @containers.delete(c.message_id) }
+    flush_threading
   end
   protected :redirect
 

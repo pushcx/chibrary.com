@@ -1,8 +1,7 @@
 def load_thread(call_number)
   begin
-    # redirects are pending on Threader caching them into a new model
-    #r = ThreadList.new(@slug, @year, @month).redirect? @call_number
-    #redirect_to "#{r}#m-#{@call_number}" and return if r
+    r = RedirectMapStorage.find(@slug, @year, @month).redirect? @call_number
+    redirect_to "#{r}#m-#{@call_number}" and return if r
     @thread = MessageContainerStorage.find(call_number)
   rescue NotFound
     raise ArgumentError, "Thread not found"

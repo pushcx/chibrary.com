@@ -18,9 +18,7 @@ class ThreadSetStorage
       # store thread/message counts
     end
     TimeSortStorage.new(TimeSort.from(thread_set)).store
-    @redirected_threads.each do |redirect|
-      # store redirect table
-    end
+    RedirectMapStorage.new(thread_set.redirect_map).store
   end
 
   def self.month slug, year, month
