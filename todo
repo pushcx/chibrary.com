@@ -8,18 +8,6 @@ x run threader
 x update site to sinatra
 x recode site to use riak
 
- get /about
- get /search
- get /:slug/:year/:month/:call_number
- get /:slug/:year/:month
- get /:slug/:year
- get /:slug
- get /
- search and replace all instances of 'listlibrary'
- search and replace all instances of 'mail' with 'email'
- put /flags
- put /log
-
 x download jwz threading doc and put it in doc/
 x rip out all postgres functionality, replace with riak
 x impose a max-width
@@ -83,11 +71,21 @@ x move misc data in cachcedhash *someplace else*
   minify css and js
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   forward listlibrary.net/org to chibrary
+  search and replace all instances of 'listlibrary'
+  search and replace all instances of 'mail' with 'email'
+  get /about
+  get /search
+  get /:slug/:year/:month/:call_number
+  get /:slug/:year/:month
+  get /:slug/:year
+  get /:slug
+  get /
   deploy
   check that google search works with new domain
   fix google analytics logging to only be included in prod
 x update CallNumberGenerator so two import scripts won't collide constantly
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
+  announce
 
 Possible refactorings:
   Use tcrayford/Values in place of Struct
