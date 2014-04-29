@@ -21,6 +21,10 @@ class List
     @footer = footer
   end
 
+  def title_name
+    name || slug
+  end
+
   def == other
     (
       slug == other.slug and

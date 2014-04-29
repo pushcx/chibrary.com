@@ -3,7 +3,7 @@ get '/:slug/?' do
   @snippets = []
   #load_list_snippets
 
-  @title = "#{@list['name'] or @slug} archive"
+  @title = "#{@list.title_name} archive"
   @years_of_month_counts = MonthCountStorage.years_of_month_counts @slug
 
   haml :'list/show.html'
