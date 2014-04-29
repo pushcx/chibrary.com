@@ -61,6 +61,7 @@ x update text on about page
 x move jobs into a proper job system
 x move misc data in cachcedhash *someplace else*
   Email.date should parse Received headers first; fallback to Date from MUA
+  clean up tests along the lines of Metz's magic tricks
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
   replace 1.8 hash syntax with 1.9
   override sinatra error pages
