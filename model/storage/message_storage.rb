@@ -59,7 +59,7 @@ class MessageStorage
     obj.key = key
     obj.data = serialize
     obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s)
-    obj.indexes['lmy_bin']     << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
+    obj.indexes['sym_bin']     << "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
     obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 
@@ -79,6 +79,6 @@ class MessageStorage
   end
 
   def self.call_number_list list, year, month
-    bucket.get_index('lmy_bin', "#{list.slug}/#{year}/%02d" % month).map { |k| CallNumber.new k }
+    bucket.get_index('sym_bin', "#{list.slug}/#{year}/%02d" % month).map { |k| CallNumber.new k }
   end
 end

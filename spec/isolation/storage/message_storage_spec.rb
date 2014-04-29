@@ -80,7 +80,7 @@ describe MessageStorage do
       end
       let(:m)  { FakeStorableMessage.new }
       let(:ms) { MessageStorage.new(m, MessageStorage::Overwrite::DO) }
-      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'lmy_bin' => [], 'author_bin' => [] }) }
+      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'sym_bin' => [], 'author_bin' => [] }) }
       before do
         ms.stub(:bucket).and_return(double('bucket', new: riak_object))
         EmailStorage.stub(:new).and_return(double('EmailStorage', serialize: {}))
@@ -98,7 +98,7 @@ describe MessageStorage do
 
       it 'indexes the list/month/year' do
         ms.store
-        expect(riak_object.indexes['lmy_bin']).to eq(['slug/2013/11'])
+        expect(riak_object.indexes['sym_bin']).to eq(['slug/2013/11'])
       end
 
       it 'indexes the author email' do
@@ -137,7 +137,7 @@ describe MessageStorage do
 
   it '::message_list' do
     bucket = double('bucket')
-    bucket.should_receive(:get_index).with('lmy_bin', 'slug/2014/01').and_return(['callnumber'])
+    bucket.should_receive(:get_index).with('sym_bin', 'slug/2014/01').and_return(['callnumber'])
     MessageStorage.stub(:bucket).and_return(bucket)
     list = MessageStorage.call_number_list(List.new('slug'), 2014, 1)
     expect(list).to eq([CallNumber.new('callnumber')])
