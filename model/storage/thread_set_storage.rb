@@ -15,8 +15,8 @@ class ThreadSetStorage
     thread_set.finish
     each do |thread|
       SummaryContainerStorage.new(thread).store
-      # store thread/message counts
     end
+    ThreadCountStorage.new(MonthCount.for(thread_set)).store
     TimeSortStorage.new(TimeSort.from(thread_set)).store
     RedirectMapStorage.new(thread_set.redirect_map).store
   end

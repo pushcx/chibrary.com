@@ -162,6 +162,11 @@ class ThreadSet
     subjects.length
   end
 
+  def thread_count
+    finish
+    subjects.values.count
+  end
+
   def message_count include_empty=false
     count = 0
     # collect threads and their containers

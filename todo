@@ -15,7 +15,7 @@ x add precaching metadata to month/thread_previous_next link maker
 x replace 'iconv' usage with String#encode, per warning
 x do Table Data Gateway pattern for riak access
 x standardize the to_hash/deserialize mismatch
-  convert to riak storage:
+x convert to riak storage:
 x   list
 x   container
 x   message
@@ -26,7 +26,7 @@ x   snippet (maybe from summary?)
 x   call_number_list
 x   timesort
 x   redirect table
-    thread/message counts
+x   thread/message counts
 x   sweep for any direct use of storage globals
 x remove leading / from any keys
 x replace the queue system
@@ -41,7 +41,7 @@ x Message: delegate from + n_subject down into email?
   migrate all tests to rspec
 x ThreadSet: cache list of thread roots in order for n/p links
 x ThreadSet: cache redirects (message -> thread root)
-  ThreadSet: cache monthly message/thread counts
+x ThreadSet: cache monthly message/thread counts
 x split Message, Container initializers into two
 x can ThreadHelper#remove_footer *not* call the storage layer? ugh
 x can models be built so none call back up into the storage layer?
@@ -88,6 +88,12 @@ x update CallNumberGenerator so two import scripts won't collide constantly
   announce
 
 Possible refactorings:
+  store MonthCount in Redis
+  Rename *Storage to Repo
+  Rename *Generator to service/
+  Create procedure/ for driving scripts?
+  Move immutable objects to value/
+  Some models to collection/
   Use tcrayford/Values in place of Struct
   Use ice_nine to make sure my objects are immutable
     module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
