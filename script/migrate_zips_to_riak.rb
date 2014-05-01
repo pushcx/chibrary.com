@@ -12,6 +12,20 @@ require_relative '../model/storage/message_storage.rb'
 
 #thread_queue = Queue.new :thread
 
+def remove_listlibrary_headers str
+  # Lots of messages have Message-Id headers added;
+  # Date headers were added to 3 in ruby-list, 2 in chipy
+  # 3 messages in ruby-list have Date headers added
+  # 2 messages in chipy have Date headers added
+  while str =~ /^  X-ListLibrary-Added-Header: (.*)$/
+    header = $1 # Thanks, Perl
+    header.sub!('\n','') # yes, remove a literal \n that yaml didn't parse
+    str.sub!(/^  #{header}: .*\n/, '')
+    str.sub!(/^  X-ListLibrary-Added-Header: .*\n/, '')
+  end
+  str
+end
+
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
@@ -49,6 +63,7 @@ begin
       source = stored_message['source']
       slug = key.split('/').first
     end
+    str = remove_listlibrary_headers(str)
 
     #call_number = CallNumberGenerator.next!
     call_number = 'x' + i.to_s.rjust(9, '0')
