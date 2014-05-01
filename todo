@@ -54,14 +54,13 @@ x rewrite CallNumberGenerator to waste fewer bits
 x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all tests to rspec
   Sy and Sym objects to encapsulate Slug, Year, + Month
+  Email.date should parse Received headers first; fallback to Date from MUA
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
-  add instantclick.io to pjax page loads
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
 x move jobs into a proper job system
 x move misc data in cachcedhash *someplace else*
-  Email.date should parse Received headers first; fallback to Date from MUA
   clean up tests along the lines of Metz's magic tricks
   update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
   replace 1.8 hash syntax with 1.9
@@ -74,8 +73,8 @@ x move misc data in cachcedhash *someplace else*
   minify css and js
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   forward listlibrary.net/org to chibrary
-  search and replace all instances of 'listlibrary'
-  search and replace all instances of 'mail' with 'email'
+x search and replace all instances of 'listlibrary'
+x search and replace all instances of 'mail' with 'email'
   get /about
   get /search
   get /:slug/:year/:month/:call_number
@@ -105,6 +104,7 @@ Possible refactorings:
   split Storage and Retrievage into separate objects?
 
 Feature ideas:
+  add instantclick.io to pjax page loads
   https://www.cs.cmu.edu/~enron/
   spam filtering
   add riak search with solr
