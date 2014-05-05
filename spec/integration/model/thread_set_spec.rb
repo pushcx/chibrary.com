@@ -1,9 +1,32 @@
 require_relative '../../rspec'
+require_relative '../../../model/sym'
 require_relative '../../../model/thread_set'
 require_relative '../../../model/message'
 
 describe ThreadSet do
-  let(:ts) { ThreadSet.new 'slug', 2014, 1 }
+  let(:ts) { ThreadSet.new Sym.new('slug', 2014, 1) }
+
+  describe '#prior and following_months' do
+    it 'gets syms for the following four months' do
+      ts = ThreadSet.new Sym.new('slug', 2013, 11)
+      expect(ts.following_months).to eq([
+        Sym.new('slug', 2013, 12),
+        Sym.new('slug', 2014,  1),
+        Sym.new('slug', 2014,  2),
+        Sym.new('slug', 2014,  3),
+      ])
+    end
+
+    it 'gets syms for the prior four months' do
+      ts = ThreadSet.new Sym.new('slug', 2013, 11)
+      expect(ts.prior_months).to eq([
+        Sym.new('slug', 2013, 10),
+        Sym.new('slug', 2013,  9),
+        Sym.new('slug', 2013,  8),
+        Sym.new('slug', 2013,  7),
+      ])
+    end
+  end
 
   context 'a complex, real-world set of threads' do
     let(:complex) { YAML::load_file( File.join(File.dirname(__FILE__), '..', '..', 'fixture', "complex_thread.yaml") ) }
@@ -50,7 +73,7 @@ describe ThreadSet do
 
     it 'retrieves split threads from another threadset' do
       ts << parent
-      other = ThreadSet.new 'slug', 2007, 12
+      other = ThreadSet.new Sym.new('slug', 2007, 12)
       other << child
       ts.send(:retrieve_split_threads_from, other)
       expect(other.containers.empty?)
@@ -60,7 +83,7 @@ describe ThreadSet do
 
     it "does not retrieve split threads that don't reply to a thread in the set" do
       ts << parent
-      other = ThreadSet.new 'slug', '2007', '12'
+      other = ThreadSet.new Sym.new('slug', '2007', '12')
       # This message will be recognized as a split thread, but a parent for it
       # doesn't exist in ts
       other << Message.from_string("Message-Id: orphan@example.com\nIn-Reply-To: missing@example.com\nSubject: Bar\n\nbar", 'callnumber')

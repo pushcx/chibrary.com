@@ -53,8 +53,9 @@ x rewrite CallNumberGenerator to waste fewer bits
   have MessageStorage overwrite check both key and id_hash_bin
 x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all tests to rspec
-  Sy and Sym objects to encapsulate Slug, Year, + Month
+x Sy and Sym objects to encapsulate Slug, Year, + Month
   Email.date should parse Received headers first; fallback to Date from MUA
+  update month_next_previous for current storage
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
@@ -99,6 +100,7 @@ Possible refactorings:
   Use tcrayford/Values in place of Struct
   Use ice_nine to make sure my objects are immutable
     module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
+  Slug value
   Use hamstergem/hamster in ThreadSet and other collections
   move Storage.serialize and .store to class methods?; I never keep obj around
   split Storage and Retrievage into separate objects?

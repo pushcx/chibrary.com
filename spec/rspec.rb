@@ -1,5 +1,6 @@
 require 'rspec'
 require 'ostruct'
+require_relative '../model/sym'
 require_relative '../model/storage/riak_storage'
 require_relative '../model/storage/redis_storage'
 
@@ -58,8 +59,7 @@ class FakeStorableMessage < FakeMessage
 end
 
 FakeThreadSet = Struct.new(:root_set) do
-  def slug ; 'slug' ; end
-  def date ; Time.new(2014, 12) ; end
+  def sym ; Sym.new('slug', 2014, 12) ; end
 end
 FakeThreadLink = Struct.new(:call_number, :subject) do
   def n_subject ; subject ; end
@@ -68,3 +68,8 @@ def fake_thread_set call_numbers
   FakeThreadSet.new call_numbers.map { |c| FakeThreadLink.new(c, "subject #{c}") }
 end
 
+def sym_collaborator
+  sym = double('sym')
+  sym.should_receive(:to_key)
+  sym
+end

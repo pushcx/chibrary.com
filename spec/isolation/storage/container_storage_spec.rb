@@ -60,8 +60,8 @@ describe TContainerStorage do
   end
 
   describe '::build_month_key' do
-    it 'builds a key based on slug, year, month and call_number' do
-      expect(TContainerStorage.build_month_key('slug', 2013, 9)).to eq('slug/2013/09')
+    it 'delegates key building to the sym' do
+      TContainerStorage.build_month_key(sym_collaborator)
     end
   end
 
@@ -113,7 +113,7 @@ describe TContainerStorage do
         children: [],
       })
       UnHashesValuesContainerStorage.stub(:bucket).and_return(bucket)
-      threads = UnHashesValuesContainerStorage.month('slug', 2014, 1)
+      threads = UnHashesValuesContainerStorage.month(Sym.new('slug', 2014, 1))
       expect(threads[0].key).to eq('callnumbr1')
       expect(threads[1].key).to eq('callnumbr2')
     end
@@ -122,7 +122,7 @@ describe TContainerStorage do
       bucket = double('bucket')
       bucket.should_receive(:get_index).and_return([])
       TContainerStorage.stub(:bucket).and_return(bucket)
-      expect(TContainerStorage.month('slug', 2014, 1)).to eq([])
+      expect(TContainerStorage.month(Sym.new('slug', 2014, 1))).to eq([])
     end
   end
 end

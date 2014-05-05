@@ -21,11 +21,11 @@ class Threader
     log.block "threader" do |threader_log|
     @thread_q.work do |job|
       threader_log.block job.key do |job_log|
-      slug, year, month = job[:slug], job[:year], job[:month]
+      sym = job.sym
       list = List.new slug
 
-      cached_message_list = CallNumberListStorage.find list, year, month
-      fresh_message_list  = MessageStorage.call_number_list list, year, month
+      cached_message_list = CallNumberListStorage.find sym
+      fresh_message_list  = MessageStorage.call_number_list sym
 
       if cached_message_list == fresh_message_list
         job_log.status "nothing to do"
@@ -38,7 +38,7 @@ class Threader
         threadset = ThreadSet.new
         added = fresh_message_list
       else
-        threadset = ThreadSet.month(slug, year, month)
+        threadset = ThreadSet.month(sym)
         added = fresh_message_list - cached_message_list 
         job_log.status "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
       end
@@ -51,31 +51,31 @@ class Threader
       return if removed.empty? and added.empty?
 
       # Many threads are split by replies in later months. This rejoins them.
-      threadset.prior_months.each do |t|
+      threadset.prior_months.each do |s|
         # Rejoin any threads from later months
-        ts = ThreadSetStorage.month(threadset.slug, t.year, t.month)
+        ts = ThreadSetStorage.month(s)
         ts.retrieve_split_threads_from threadset
         ThreadSetStorage.new(ts).store
       end
-      threadset.following_months.each do |t|
+      threadset.following_months.each do |s|
         # And move threads up to earlier months when possible
-        ts = ThreadSetStorage.month(threadset.slug, t.year, t.month)
+        ts = ThreadSetStorage.month(s)
         threadset.retrieve_split_threads_from ts
         ThreadSetStorage.new(ts).store
       end
       ThreadSetStorage.new(threadset).store
 
-      cache_work(slug, year, month, fresh_message_list, threadset)
+      cache_work(sym, fresh_message_list)
 
       end # job_log
     end # work loop
     end # threader_log
   end
 
-  def cache_work slug, year, month, message_list, threadset
+  def cache_work sym, message_list
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
-    CallNumberListStorage.new(list, year, month, message_list).store
+    CallNumberListStorage.new(sym, message_list).store
     nil
   end
 end

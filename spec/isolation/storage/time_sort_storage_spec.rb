@@ -3,9 +3,9 @@ require_relative '../../../model/storage/time_sort_storage'
 
 describe TimeSortStorage do
   context 'instantiated with a TimeSort' do
-    it "generates a key based on slug, year, and month" do
-      ts = TimeSort.new 'slug', 2014, 1
-      expect(TimeSortStorage.new(ts).extract_key).to eq('slug/2014/01')
+    it "generates a key based on sym" do
+      ts = TimeSort.new sym_collaborator
+      TimeSortStorage.new(ts).extract_key
     end
 
     describe "generating a hash" do
@@ -22,13 +22,14 @@ describe TimeSortStorage do
   end
 
   describe "::build_key" do
-    it "builds a key based on slug" do
-      expect(TimeSortStorage.build_key('slug', 2014, 1)).to eq('slug/2014/01')
+    it "delegates building a key to sym" do
+      TimeSortStorage.build_key(sym_collaborator)
     end
   end
 
   describe "::find" do
     it "instantiates a TimeSort from the bucket" do
+      sym = Sym.new('slug', 2014, 4)
       bucket = double('bucket')
       bucket.should_receive(:[]).with('slug/2014/04').and_return([
         {
@@ -37,14 +38,12 @@ describe TimeSortStorage do
         },
       ])
       TimeSortStorage.should_receive(:bucket).and_return(bucket)
-      ts = TimeSortStorage.find('slug', 2014, 4)
+      ts = TimeSortStorage.find(sym)
       expect(ts).to be_a(TimeSort)
-      expect(ts.slug).to eq('slug')
-      expect(ts.year).to eq(2014)
-      expect(ts.month).to eq(4)
+      expect(ts.sym).to eq(sym)
       expect(ts.threads.count).to eq(1)
       tl = ts.threads.first
-      expect(tl.slug).to eq('slug')
+      expect(tl.sym).to eq(sym)
       expect(tl.call_number).to eq('aaaaaaaa')
       expect(tl.subject).to eq('subject one')
     end

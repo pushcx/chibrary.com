@@ -1,4 +1,5 @@
 require_relative '../../rspec'
+require_relative '../../../model/sym'
 require_relative '../../../model/thread_set'
 
 require 'permutation'
@@ -12,7 +13,7 @@ ThreadableMessage = Struct.new(:message_id, :subject, :references) do
 end
 
 describe ThreadSet do
-  let(:ts) { ThreadSet.new 'slug', 2014, 1 }
+  let(:ts) { ThreadSet.new Sym.new('slug', 2014, 1) }
 
 #  it 'hashes thread subjects -> call number' do
 #    c = Container.new
@@ -71,7 +72,7 @@ describe ThreadSet do
       perm = Permutation.for(messages)
       previous = nil
       perm.each do |perm|
-        ts = ThreadSet.new 'slug', 2009, 2
+        ts = ThreadSet.new Sym.new('slug', 2009, 2)
         perm.project.each { |message| ts << message }
         expect(ts).to eq(previous) if previous
         previous = ts
@@ -112,25 +113,5 @@ describe ThreadSet do
 
   describe '#==' do
     pending
-  end
-
-  describe '#plus_month' do
-    it 'gets ThreadSet for next month' do
-      ts = ThreadSet.new('slug', 2013, 11).plus_month(1)
-      expect(ts.year).to eq(2013)
-      expect(ts.month).to eq(12)
-    end
-
-    it 'gets ThreadSet for next month over year boundaries' do
-      ts = ThreadSet.new('slug', 2013, 12).plus_month(1)
-      expect(ts.year).to eq(2014)
-      expect(ts.month).to eq(1)
-    end
-
-    it 'gets ThreadSet for previous month' do
-      ts = ThreadSet.new('slug', 2013, 12).plus_month(-1)
-      expect(ts.year).to eq(2013)
-      expect(ts.month).to eq(11)
-    end
   end
 end

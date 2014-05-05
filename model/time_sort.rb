@@ -1,13 +1,12 @@
 require_relative 'thread_link'
 
 class TimeSort
-  attr_reader :slug, :year, :month
-  attr_reader :threads
+  attr_reader :sym, :threads
 
-  def initialize slug, year, month, threads=[]
-    @slug, @year, @month = slug, year.to_i, month.to_i
+  def initialize sym, threads=[]
+    @sym = sym
     @threads = threads.map { |t|
-      ThreadLink.new(slug, year, month, t[:call_number], t[:subject])
+      ThreadLink.new(sym, t[:call_number], t[:subject])
     }
   end
 
@@ -25,9 +24,7 @@ class TimeSort
 
   def self.from thread_set
     new(
-      thread_set.slug,
-      thread_set.date.year,
-      thread_set.date.month,
+      thread_set.sym,
       thread_set.root_set.map { |t| { call_number: t.call_number, subject: t.n_subject } }
     )
   end

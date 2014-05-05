@@ -11,23 +11,23 @@ class RedirectMapStorage
   end
 
   def extract_key
-    self.class.build_key redirect_map.slug, redirect_map.year, redirect_map.month
+    self.class.build_key redirect_map.sym
   end
 
   def serialize
     redirect_map.redirects
   end
 
-  def self.build_key slug, year, month
-    "#{slug}/#{year}/%02d" % month
+  def self.build_key sym
+    sym.to_key
   end
 
-  def self.find slug, year, month
-    key = build_key(slug, year, month)
+  def self.find sym
+    key = build_key(sym)
     redirects = bucket[key]
-    RedirectMap.new slug, year, month, redirects
+    RedirectMap.new sym, redirects
   rescue NotFound
-    RedirectMap.new slug, year, month
+    RedirectMap.new sym
   end
 
 end

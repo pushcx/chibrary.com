@@ -21,9 +21,9 @@ class ThreadSetStorage
     RedirectMapStorage.new(thread_set.redirect_map).store
   end
 
-  def self.month slug, year, month
-    threadset = ThreadSet.new(slug, year, month)
-    MessageContainerStorage.month(slug, year, month).each do |thread|
+  def self.month sym
+    threadset = ThreadSet.new(sym)
+    MessageContainerStorage.month(sym).each do |thread|
       thread.each { |c| threadset.containers[c.message_id] = c }
     end
     threadset

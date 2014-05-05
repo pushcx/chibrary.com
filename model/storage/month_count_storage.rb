@@ -11,7 +11,7 @@ class MonthCountStorage
   end
 
   def extract_key
-    self.class.build_key month_count.slug, month_count.year, month_count.month
+    self.class.build_key month_count.sym
   end
 
   def serialize
@@ -26,19 +26,19 @@ class MonthCountStorage
     obj.key = extract_key
     obj.data = serialize
     obj.indexes['slug_bin'] << thread_count.slug
-    obj.indexes['sy_bin'] << "#{thread_count.slug}/#{thread_count.year}" % thread_count.month
+    obj.indexes['sy_bin'] << thread_count.sym.to_sy.to_key
   end
 
-  def self.build_key slug, year, month
-    "#{slug}/#{year}/%02d" % month
+  def self.build_key sym
+    sym.to_key
   end
 
-  def self.find slug, year, month
-    key = build_key(slug, year, month)
+  def self.find sym
+    key = build_key(sym)
     hash = bucket[key]
-    MonthCount.new slug, year, month, hash[:thread_count], hash[:message_count]
+    MonthCount.new sym, hash[:thread_count], hash[:message_count]
   rescue NotFound
-    MonthCount.new slug, year, month
+    MonthCount.new sym
   end
 
   def self.years_of_month_counts slug

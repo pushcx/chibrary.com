@@ -16,7 +16,7 @@ module ContainerStorage
   end
 
   def extract_month_key
-    self.class.build_month_key(container.slug, container.date.year, container.date.month)
+    self.class.build_month_key(Sym.from_container(container))
   end
 
   def serialize_value
@@ -41,8 +41,8 @@ module ContainerStorage
   end
 
   module ClassMethods
-    def build_month_key slug, year, month
-      "#{slug}/#{year}/%02d" % month
+    def build_month_key sym
+      sym.to_key
     end
 
     def deserialize_value h
@@ -66,8 +66,8 @@ module ContainerStorage
       deserialize(hash)
     end
 
-    def month slug, year, month
-      bucket.get_index('month_bin', build_month_key(slug, year, month)).map { |call| find(call) }
+    def month sym
+      bucket.get_index('month_bin', build_month_key(sym)).map { |call| find(call) }
     end
   end
 end

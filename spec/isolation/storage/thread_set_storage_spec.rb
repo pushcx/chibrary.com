@@ -16,7 +16,7 @@ describe ThreadSetStorage do
       [FakeTSContainer.new('callnumbr1', '1@example.com', {}, [])],
       [FakeTSContainer.new('callnumbr2', '2@example.com', {}, [])],
     ])
-    thread_set = ThreadSetStorage.month('slug', 2014, 1)
+    thread_set = ThreadSetStorage.month(Sym.new('slug', 2014, 1))
     expect(thread_set.containers.count).to eq(2)
   end
 end

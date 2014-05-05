@@ -1,5 +1,5 @@
-ThreadLink = Struct.new(:slug, :year, :month, :call_number, :subject) do
+ThreadLink = Struct.new(:sym, :call_number, :subject) do
   def href
-    "/#{slug}/#{year}/%02d/#{call_number}" % month
+    "/#{sym.to_key}/#{call_number}"
   end
 end

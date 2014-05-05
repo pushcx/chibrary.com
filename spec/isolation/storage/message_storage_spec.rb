@@ -1,5 +1,6 @@
 require_relative '../../rspec'
 require_relative '../../../model/list'
+require_relative '../../../model/sym'
 require_relative '../../../model/storage/message_storage'
 
 class EmailStorage ; end
@@ -139,7 +140,7 @@ describe MessageStorage do
     bucket = double('bucket')
     bucket.should_receive(:get_index).with('sym_bin', 'slug/2014/01').and_return(['callnumber'])
     MessageStorage.stub(:bucket).and_return(bucket)
-    list = MessageStorage.call_number_list(List.new('slug'), 2014, 1)
+    list = MessageStorage.call_number_list(Sym.new('slug', 2014, 1))
     expect(list).to eq([CallNumber.new('callnumber')])
   end
 end

@@ -69,7 +69,7 @@ class ThreaderTest < ActiveSupport::TestCase
   end
 
   should 'cache nothing when empty' do
-    slug, year, month = 'example', '2007', '08'
+    sym = Sym.new('example', '2007', '08')
 
     message_list = ['1@example.com']
     threadset = mock("threadset", :rejoin_splits => true)
@@ -78,11 +78,11 @@ class ThreaderTest < ActiveSupport::TestCase
     list.expects(:cache_message_list).with("2007", "08", message_list)
     List.expects(:new).returns(list)
 
-    Threader.new.cache_work slug, year, month, message_list, threadset
+    Threader.new.cache_work sym, message_list, threadset
   end
 
   should 'cache work' do
-    slug, year, month = 'example', '2007', '08'
+    sym = Sym.new('example', '2007', '08')
 
     message_list = ['1@example.com']
     threadset = mock("threadset", :rejoin_splits => true)
@@ -92,7 +92,7 @@ class ThreaderTest < ActiveSupport::TestCase
     List.expects(:new).returns(list)
 
     t = Threader.new
-    t.cache_work slug, year, month, message_list, threadset
+    t.cache_work sym, message_list
   end
 
   private

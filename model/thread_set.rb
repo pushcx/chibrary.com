@@ -9,16 +9,15 @@ require_relative 'redirect_map'
 class ThreadSet
   include Enumerable
 
-  attr_accessor :containers, :subjects, :redirect_map
-  attr_reader :slug, :year, :month
+  attr_accessor :sym, :containers, :subjects, :redirect_map
 
-  def initialize slug, year, month
-    @slug, @year, @month = slug, year, month
+  def initialize sym
+    @sym = sym
     # @containers holds all containers, not just root-level containers
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
     @subjects = {}
-    @redirect_map = RedirectMap.new @slug, @year, @month
+    @redirect_map = RedirectMap.new sym
     flush_threading
   end
 
@@ -123,16 +122,12 @@ class ThreadSet
   end
   private :finish
 
-  def plus_month n
-    Time.utc(year, month).plus_month(n)
-  end
-
   def prior_months
-    (1..4).each { |n| yield plus_month(n) }
+    (1..4).map { |n| sym.plus_month(-n) }
   end
 
   def following_months
-    (1..4).each { |n| yield plus_month(-n) }
+    (1..4).map { |n| sym.plus_month(n) }
   end
 
   def retrieve_split_threads_from threadset
@@ -147,7 +142,7 @@ class ThreadSet
 
       # redirects?
       thread.each { |c| self << c.message unless c.empty? }
-      threadset.redirect thread, year, month
+      threadset.redirect thread, sym.year, sym.month
     end
   end
   protected :retrieve_split_threads_from
@@ -222,7 +217,7 @@ class ThreadSet
   protected :redirect
 
   def to_s
-    "ThreadSet #{@slug}/#{@year}/#{@month}"
+    "ThreadSet #{sym.to_key}"
   end
 
   def dump
