@@ -67,8 +67,6 @@ x Rename *Generator to service/
 x Move immutable objects to value/
 x Use tcrayford/Values in place of Struct
 x Use ice_nine to make sure my objects are immutable
-  Models to entities/
-  Slug value
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
   run and test threader
@@ -101,6 +99,8 @@ x Use ice_nine to make sure my objects are immutable
   announce
 
 Possible refactorings:
+  Models to entities/
+  Slug value
   Create procedure/ for driving scripts?
   store MonthCount in Redis
   Some models to aggregate/?
