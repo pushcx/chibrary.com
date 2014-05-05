@@ -51,14 +51,15 @@ x rekey all call numbers to be base62; drop _ and - in ids
 x remove overwrite from MessageStorage, look up message ids instead
 x rewrite CallNumberGenerator to waste fewer bits
 x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
-  migrate all tests to rspec
 x Sy and Sym objects to encapsulate Slug, Year, + Month
   Email.date should parse Received headers first; fallback to Date from MUA
 x clean up ActionController mentions
 x update month_next_previous for current storage
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
-  run threader
+  run and test threader
+  test filer
+  test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
 x move jobs into a proper job system
@@ -84,6 +85,7 @@ x search and replace all instances of 'mail' with 'email'
   get /:slug/:year
   get /:slug
   get /
+  migrate functional tests to rspec
   deploy
   check that google search works with new domain
   fix google analytics logging to only be included in prod
