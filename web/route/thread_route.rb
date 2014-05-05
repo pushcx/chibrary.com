@@ -2,9 +2,9 @@ require_relative '../../value/sym'
 
 def load_thread(call_number)
   begin
-    r = RedirectMapStorage.find(Sym.new(@slug, @year, @month)).redirect? @call_number
+    r = RedirectMapRepo.find(Sym.new(@slug, @year, @month)).redirect? @call_number
     redirect_to "#{r}#m-#{@call_number}" and return if r
-    @thread = MessageContainerStorage.find(call_number)
+    @thread = MessageContainerRepo.find(call_number)
   rescue NotFound
     raise ArgumentError, "Thread not found"
   end

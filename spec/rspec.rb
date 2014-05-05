@@ -2,8 +2,8 @@ require 'rspec'
 require 'ostruct'
 require_relative '../value/message_id'
 require_relative '../value/sym'
-require_relative '../model/storage/riak_storage'
-require_relative '../model/storage/redis_storage'
+require_relative '../repo/riak_repo'
+require_relative '../repo/redis_repo'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
@@ -13,15 +13,15 @@ RSpec.configure do |config|
   config.alias_example_to :expect_it
 
   config.before(:each) do
-    module RiakStorage::ClassMethods
+    module RiakRepo::ClassMethods
       def db_client
-        FakeStorage.new
+        FakeRepo.new
       end
     end
 
-    module RedisStorage
+    module RedisRepo
       def db_client
-        FakeStorage.new
+        FakeRepo.new
       end
     end
   end
@@ -47,7 +47,7 @@ class CNGTestSequenceIdGenerator
   end
 end
 
-class FakeStorage
+class FakeRepo
   def method_missing *args
     raise RuntimeError, "accidentally called a real storage method in test"
   end

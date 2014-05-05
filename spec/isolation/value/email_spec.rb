@@ -2,7 +2,7 @@
 
 require_relative '../../rspec'
 require_relative '../../../value/email'
-require_relative '../../../model/storage/list_address_storage'
+require_relative '../../../repo/list_address_repo'
 
 describe Email do
   describe '::new' do

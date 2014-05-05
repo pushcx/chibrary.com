@@ -15,14 +15,14 @@ class ScrapeMailmanList
       slug = gets.chomp
       slug = job[:slug] if slug.empty?
       slug = slug.downcase
-      while list = ListStorage.find(slug) and list.homepage != homepage
+      while list = ListRepo.find(slug) and list.homepage != homepage
         print "Slug #{slug} taken, enter new: "
         slug = gets.chomp.downcase
       end
 
       list.name = name unless name.empty?
       list.homepage = homepage
-      ListStorage.new(list).store
+      ListRepo.new(list).store
 
       Hpricot(open(homepage)).search("//a").each do |a|
         puts "#{a} #{a.inner_html =~ /archive/i}"

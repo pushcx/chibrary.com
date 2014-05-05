@@ -24,8 +24,8 @@ class Threader
       sym = job.sym
       list = List.new slug
 
-      cached_message_list = CallNumberListStorage.find sym
-      fresh_message_list  = MessageStorage.call_number_list sym
+      cached_message_list = CallNumberListRepo.find sym
+      fresh_message_list  = MessageRepo.call_number_list sym
 
       if cached_message_list == fresh_message_list
         job_log.status "nothing to do"
@@ -45,7 +45,7 @@ class Threader
 
       # add messages
       added.each do |call_number|
-        threadset << MessageStorage.find call_number
+        threadset << MessageRepo.find call_number
       end
 
       return if removed.empty? and added.empty?
@@ -53,17 +53,17 @@ class Threader
       # Many threads are split by replies in later months. This rejoins them.
       threadset.prior_months.each do |s|
         # Rejoin any threads from later months
-        ts = ThreadSetStorage.month(s)
+        ts = ThreadSetRepo.month(s)
         ts.retrieve_split_threads_from threadset
-        ThreadSetStorage.new(ts).store
+        ThreadSetRepo.new(ts).store
       end
       threadset.following_months.each do |s|
         # And move threads up to earlier months when possible
-        ts = ThreadSetStorage.month(s)
+        ts = ThreadSetRepo.month(s)
         threadset.retrieve_split_threads_from ts
-        ThreadSetStorage.new(ts).store
+        ThreadSetRepo.new(ts).store
       end
-      ThreadSetStorage.new(threadset).store
+      ThreadSetRepo.new(threadset).store
 
       cache_work(sym, fresh_message_list)
 
@@ -75,7 +75,7 @@ class Threader
   def cache_work sym, message_list
     # cache the message_list (for Threader) and thread_list (for Renderer)
     list = List.new slug
-    CallNumberListStorage.new(sym, message_list).store
+    CallNumberListRepo.new(sym, message_list).store
     nil
   end
 end

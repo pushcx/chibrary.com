@@ -1,4 +1,4 @@
-require_relative 'storage/redis_storage'
+require_relative '../repo/redis_repo'
 
 class RunIdGenerator
   def run_id
@@ -10,7 +10,7 @@ class RunIdGenerator
   end
 
   def redis_next_run_id!
-    redis = RedisStorage.db_client
+    redis = RedisRepo.db_client
     loop do
       # clear any watch
       redis.unwatch

@@ -22,7 +22,7 @@ end
 
 def load_list
   @slug = params[:slug]
-  @list = ListStorage.find(@slug)
+  @list = ListRepo.find(@slug)
 rescue NotFound
   raise Sinatra::NotFound, "Unknown list"
 rescue InvalidSlug
@@ -42,14 +42,14 @@ def thread_previous_next(sym, call_number)
     "<a href='#{thread.href}' #{rel}>#{f(subject(thread.subject))}</a>"
   end
 
-  if previous_thread = TimeSortStorage.previous_link(sym, call_number)
+  if previous_thread = TimeSortRepo.previous_link(sym, call_number)
     previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
     previous_link += "<br />#{previous_thread.year}-#{previous_thread.month}" unless sym.same_time_as? previous_thread
   else
     previous_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
   end
 
-  if next_thread = TimeSortStorage.previous_link(sym, call_number)
+  if next_thread = TimeSortRepo.previous_link(sym, call_number)
     next_link = "#{thread_link(next_thread, :next)} &gt;"
     next_link += "<br />#{next_thread.year}-#{next_thread.month}" if sym.same_time_as? next_thread
   else

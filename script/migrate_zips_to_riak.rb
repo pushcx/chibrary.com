@@ -8,7 +8,7 @@ require_relative '../lib/storage.rb'
 require_relative '../model/call_number_generator.rb'
 require_relative '../model/list.rb'
 require_relative '../model/message.rb'
-require_relative '../model/storage/message_storage.rb'
+require_relative '../model/storage/message_repo.rb'
 
 #thread_queue = Queue.new :thread
 
@@ -77,13 +77,13 @@ begin
     # TODO remove any listlibrary added headers - there's some in chipy
 
     # just exercising the message rather than actually storing it
-    ms = MessageStorage.new(message, MessageStorage::Overwrite::DO)
+    ms = MessageRepo.new(message, MessageRepo::Overwrite::DO)
     ms.extract_key
     ms.serialize
     Base64.strict_encode64(message.message_id.to_s)
     "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
     Base64.strict_encode64(message.email.canonicalized_from_email)
-    #MessageStorage.new(message, MessageStorage::Overwrite::DO).store
+    #MessageRepo.new(message, MessageRepo::Overwrite::DO).store
 
     # queue threader for this list
 #    thread_queue.add :slug =>slug, :year => message.date.year, :month => "%02d" % message.date.month
