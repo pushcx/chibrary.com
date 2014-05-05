@@ -24,16 +24,16 @@ def load_list
   @slug = params[:slug]
   @list = ListStorage.find(@slug)
 rescue NotFound
-  raise ActionController::RoutingError, "Unknown list"
+  raise Sinatra::NotFound, "Unknown list"
 rescue InvalidSlug
-  raise ActionController::RoutingError, "Invalid list slug"
+  raise Sinatra::NotFound, "Invalid list slug"
 end
 
 def load_month
   @year, @month = params[:year], params[:month]
-  raise ActionController::RoutingError, "Invalid year" unless @year =~ /^\d{4}$/
-  raise ActionController::RoutingError, "Invalid month" unless @month =~ /^\d{2}$/
-  raise ActionController::RoutingError, "Ridiculous month" unless (1..12).include? @month.to_i
+  raise Sinatra::NotFound, "Invalid year" unless @year =~ /^\d{4}$/
+  raise Sinatra::NotFound, "Invalid month" unless @month =~ /^\d{2}$/
+  raise Sinatra::NotFound, "Ridiculous month" unless (1..12).include? @month.to_i
 end
 
 def thread_previous_next(sym, call_number)

@@ -55,7 +55,7 @@ x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all tests to rspec
 x Sy and Sym objects to encapsulate Slug, Year, + Month
   Email.date should parse Received headers first; fallback to Date from MUA
-  clean up ActionController mentions
+x clean up ActionController mentions
 x update month_next_previous for current storage
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
