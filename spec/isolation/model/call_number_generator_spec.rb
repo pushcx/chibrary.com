@@ -1,20 +1,6 @@
 require_relative '../../rspec'
 require_relative '../../../model/call_number_generator'
 
-class CNGTestRunIdGenerator
-  def run_id
-    1
-  end
-
-  def next! ; end
-end
-
-class CNGTestSequenceIdGenerator
-  def consume_sequence_id!
-    2
-  end
-end
-
 describe CallNumberGenerator do
   def spec_cng
     CallNumberGenerator.new CNGTestRunIdGenerator.new, CNGTestSequenceIdGenerator.new

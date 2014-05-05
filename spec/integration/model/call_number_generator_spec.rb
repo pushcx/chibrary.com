@@ -1,5 +1,4 @@
 require_relative '../../rspec'
-require_relative '../../isolation/model/call_number_generator_spec'
 require_relative '../../../model/sequence_id_generator'
 require_relative '../../../model/call_number_generator'
 

@@ -33,6 +33,20 @@ RSpec::Core::MemoizedHelpers.module_eval do
   alias to_not should_not
 end
 
+class CNGTestRunIdGenerator
+  def run_id
+    1
+  end
+
+  def next! ; end
+end
+
+class CNGTestSequenceIdGenerator
+  def consume_sequence_id!
+    2
+  end
+end
+
 class FakeStorage
   def method_missing *args
     raise RuntimeError, "accidentally called a real storage method in test"
