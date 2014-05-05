@@ -46,7 +46,7 @@ class MessageStorage
   def guard_against_error_overwrite key
     if overwrite == Overwrite::ERROR
       exists = bucket.exists? key
-      raise MessageOverwriteError, "overwrite attempted for chibrary_archive #{@key}" if exists
+      raise MessageOverwriteError, "overwrite attempted for Message #{@key}" if exists
     end
   end
 
@@ -58,7 +58,7 @@ class MessageStorage
     obj = bucket.new
     obj.key = key
     obj.data = serialize
-    obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s)
+    obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
     obj.indexes['sym_bin']     << Sym.from_message(message).to_key
     obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store

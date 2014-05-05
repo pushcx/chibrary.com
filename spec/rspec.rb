@@ -1,5 +1,6 @@
 require 'rspec'
 require 'ostruct'
+require_relative '../model/message_id'
 require_relative '../model/sym'
 require_relative '../model/storage/riak_storage'
 require_relative '../model/storage/redis_storage'
@@ -42,7 +43,7 @@ class FakeMessage
   attr_reader :message_id, :message, :key
 
   def initialize message_id='id@example.com'
-    @message_id = message_id
+    @message_id = MessageId.new(message_id)
   end
 
   def list ; OpenStruct.new(slug: 'slug') ; end
