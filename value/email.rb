@@ -22,7 +22,7 @@ class Email
 
   def initialize fields
     @raw        = fields[:raw]
-    @header     = Headers.new raw.split(/\n\r?\n/).first
+    @header     = Headers.new raw
     @message_id = MessageId.new(fields[:message_id] || extract_message_id)
     @subject    = Subject.new(fields[:subject] || extract_subject)
     @from       = fields[:from]       || extract_from
@@ -52,6 +52,26 @@ class Email
   end
 
   def extract_date
+    # Received headers are prepended, so we can take the first value there
+    # and fall back to Date
+    (header.all('Received') << header['Date']).
+      map { |s| s.gsub(/\n */m, ' ').
+      split(';') }.flatten.each do |raw|
+        begin
+          date = Time.rfc2822(raw).utc
+          return date
+        rescue ArgumentError
+          begin
+            # if it didn't manage an rfc date, hope for iso date. This is nice
+            # when Emails have to be reconstructed from an archive.
+            date = Time.parse(raw + " UTC").utc
+          rescue ArgumentError
+            # If it's completely fucked, well, now is as good at time as any.
+            date = Time.now.utc
+          end
+        end
+    end
+
     raw = header['Date']
     begin
       date = Time.rfc2822(raw).utc

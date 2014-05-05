@@ -128,6 +128,11 @@ describe Email do
       e = Email.new raw: "Date: cat o'clock\n\nBody"
       expect(e.date.to_i).to be_within(1).of(Time.now.utc.to_i)
     end
+
+    it 'extracts from received headers first' do
+      e = Email.new raw: "Received: Tue, 05 May 2014 19:26:26 +0900\\nDate: Tue, 14 Aug 2007 19:26:26 +0900\n\nBody"
+      expect(e.date.to_s).to eq('2014-05-05 10:26:26 UTC')
+    end
   end
 
   describe '#extract_no_archive' do

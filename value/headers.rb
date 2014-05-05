@@ -1,18 +1,19 @@
+require 'rmail'
+
 require_relative '../lib/core_ext/ice_nine_'
 
 class Headers
   prepend IceNine::DeepFreeze
 
-  attr_reader :text
-
   def initialize text
-    @text = text || ''
+    @rmail = RMail::Parser.read(text)
   end
 
   def [] header
-    match = /^#{header}:\s*(.*?)^\S/mi.match(text + "\n.")
-    return '' if match.nil?
-    # takes the first in case of duplicates
-    match.captures.shift.sub(/(\s)+/, ' ').sub(/\n[ \t]+/m, " ").strip
+    @rmail.header.fetch(header, '')
+  end
+
+  def all header
+    @rmail.header.fetch_all(header)
   end
 end
