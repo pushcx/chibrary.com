@@ -4,9 +4,9 @@ Chibrary
 TODO what it does
 
 Install instructions
-  Bundle
-  Riak
-  Redis
+* Install Riak 1.4.8
+* Install Redis 2.4.15
+* Run `bundle install` to install the gems
 
 Influences:
   Sandi Metz: Practical Object-Oriented Design in Ruby, Magic Tricks of Testing
