@@ -65,7 +65,6 @@ x update to Ruby 2.1 - https://github.com/sup-heliotrope/sup/issues/22
 x Rename *Storage to Repo
 x Rename *Generator to service/
 x Move immutable objects to value/
-  Some models to collection/
   Use tcrayford/Values in place of Struct
 x Use ice_nine to make sure my objects are immutable
   Models to entities/
