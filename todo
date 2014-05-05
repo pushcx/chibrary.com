@@ -67,22 +67,17 @@ x Rename *Generator to service/
 x Move immutable objects to value/
 x Use tcrayford/Values in place of Struct
 x Use ice_nine to make sure my objects are immutable
-  migrate all lists to riak
-  retrieve messages from archive/old_list/_listlibrary_no_list
-  run and test threader
+  replace 1.8 hash syntax with 1.9
+  clean up tests along the lines of Metz's magic tricks
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
-  replace 1.8 hash syntax with 1.9
-  clean up tests along the lines of Metz's magic tricks
   override sinatra error pages
   restore google analytics
-  re-import ruby-dev
   convert to html5
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js
-  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   forward listlibrary.net/org to chibrary
   get /about
   get /search
@@ -91,8 +86,13 @@ x Use ice_nine to make sure my objects are immutable
   get /:slug/:year
   get /:slug
   get /
+  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   migrate functional tests to rspec
+  migrate all lists to riak
+  retrieve messages from archive/old_list/_listlibrary_no_list
+  run and test threader
   deploy
+  re-import ruby-dev
   check that google search works with new domain
   fix google analytics logging to only be included in prod
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
