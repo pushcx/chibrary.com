@@ -45,7 +45,7 @@ begin
     # skip dirs - why did I want that yielded in the first place?
     #next unless File.file? "#{list_path}/#{key}"
     i += 1
-    foo = true if i == start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
+    foo = true if i >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
     print "\n#{i} " if i % 1000 == 0
     print '.'
@@ -63,6 +63,7 @@ begin
       source = stored_message['source']
       slug = key.split('/').first
     end
+    next unless %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}.include? slug
     str = remove_listlibrary_headers(str)
 
     #call_number = CallNumberService.next!
