@@ -1,6 +1,6 @@
 class SequenceIdExhaustion < RangeError ; end
 
-class SequenceIdGenerator
+class SequenceIdService
   # has 14 bits allocated to it in the CallNumber
   MAX_SEQUENCE_ID = 2 ** 14 - 1
 

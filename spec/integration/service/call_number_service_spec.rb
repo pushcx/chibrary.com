@@ -1,11 +1,11 @@
 require_relative '../../rspec'
-require_relative '../../../model/sequence_id_generator'
-require_relative '../../../model/call_number_generator'
+require_relative '../../../service/sequence_id_service'
+require_relative '../../../service/call_number_service'
 
-describe CallNumberGenerator do
+describe CallNumberService do
   describe "#consume_sequence_id!" do
     it "recognizes when a sequence is exhausted" do
-      sig = double('SequenceIdGenerator')
+      sig = double('SequenceIdService')
       calls = 0
       sig.stub(:consume_sequence_id!).and_return do
         calls += 1
@@ -14,18 +14,18 @@ describe CallNumberGenerator do
         0
       end
       sig.should_receive(:reset!)
-      cng = CallNumberGenerator.new CNGTestRunIdGenerator.new, sig
+      cng = CallNumberService.new CNGTestRunIdService.new, sig
       expect(cng.consume_sequence_id!).to eq(0)
     end
   end
 
   describe "#sequence_exhausted!" do
     it "advances run_id and resets sequence_id" do
-      rig = RunIdGenerator.new
+      rig = RunIdService.new
       rig.should_receive(:next!)
-      sig = SequenceIdGenerator.new
+      sig = SequenceIdService.new
       sig.should_receive(:reset!)
-      cng = CallNumberGenerator.new rig, sig
+      cng = CallNumberService.new rig, sig
       cng.sequence_exhausted!
     end
   end

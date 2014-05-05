@@ -33,7 +33,7 @@ RSpec::Core::MemoizedHelpers.module_eval do
   alias to_not should_not
 end
 
-class CNGTestRunIdGenerator
+class CNGTestRunIdService
   def run_id
     1
   end
@@ -41,7 +41,7 @@ class CNGTestRunIdGenerator
   def next! ; end
 end
 
-class CNGTestSequenceIdGenerator
+class CNGTestSequenceIdService
   def consume_sequence_id!
     2
   end

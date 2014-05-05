@@ -5,7 +5,7 @@
 require 'yaml'
 require 'json'
 require_relative '../lib/storage.rb'
-require_relative '../model/call_number_generator.rb'
+require_relative '../service/call_number_service.rb'
 require_relative '../model/list.rb'
 require_relative '../model/message.rb'
 require_relative '../model/storage/message_repo.rb'
@@ -65,7 +65,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    #call_number = CallNumberGenerator.next!
+    #call_number = CallNumberService.next!
     call_number = 'x' + i.to_s.rjust(9, '0')
     message = Message.from_string(
       str,

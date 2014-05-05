@@ -1,18 +1,18 @@
 require 'base62'
 
-require_relative 'run_id_generator'
-require_relative 'sequence_id_generator'
+require_relative 'run_id_service'
+require_relative 'sequence_id_service'
 require_relative '../value/call_number'
 
 # This should probably have a bitstring class broken out of it, but I don't
 # expect to need to reuse those parts or change this algorithm anytime soon.
 
-class CallNumberGenerator
+class CallNumberService
   attr_reader :rig, :sig
 
   SHUFFLE_TABLE = [41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28]
 
-  def initialize rig=RunIdGenerator.new, sig=SequenceIdGenerator.new
+  def initialize rig=RunIdService.new, sig=SequenceIdService.new
     @rig = rig
     @sig = sig
   end

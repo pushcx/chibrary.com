@@ -63,7 +63,7 @@ x update CallNumberGenerator so two import scripts won't collide constantly
 x update to Ruby 2.1 - https://github.com/sup-heliotrope/sup/issues/22
   Email.date should parse Received headers first; fallback to Date from MUA
 x Rename *Storage to Repo
-  Rename *Generator to service/
+x Rename *Generator to service/
 x Move immutable objects to value/
   Some models to collection/
   Use tcrayford/Values in place of Struct

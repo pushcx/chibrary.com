@@ -1,6 +1,6 @@
 require_relative '../repo/redis_repo'
 
-class RunIdGenerator
+class RunIdService
   def run_id
     @run_id ||= next!
   end

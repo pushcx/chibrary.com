@@ -1,9 +1,9 @@
 require_relative '../../rspec'
-require_relative '../../../model/call_number_generator'
+require_relative '../../../service/call_number_service'
 
-describe CallNumberGenerator do
+describe CallNumberService do
   def spec_cng
-    CallNumberGenerator.new CNGTestRunIdGenerator.new, CNGTestSequenceIdGenerator.new
+    CallNumberService.new CNGTestRunIdService.new, CNGTestSequenceIdService.new
   end
 
   describe "#next!" do
@@ -22,9 +22,9 @@ describe CallNumberGenerator do
 
   describe "#consume_sequence_id!" do
     it "consumes a sequence id" do
-      sig = double('SequenceIdGenerator')
+      sig = double('SequenceIdService')
       sig.should_receive(:consume_sequence_id!).and_return(3)
-      cng = CallNumberGenerator.new CNGTestRunIdGenerator.new, sig
+      cng = CallNumberService.new CNGTestRunIdService.new, sig
       expect(cng.consume_sequence_id!).to eq(3)
     end
 
@@ -63,7 +63,7 @@ describe CallNumberGenerator do
       # length. Nothing else needs to be changed because a longer call number
       # will never dupe a shorter one.
       expect(CALL_NUMBER_BITS).to eq(47)
-      expect(CallNumberGenerator::SHUFFLE_TABLE).to eq([41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28])
+      expect(CallNumberService::SHUFFLE_TABLE).to eq([41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28])
     end
   end
 end

@@ -22,7 +22,7 @@ class Filer
   end
 
   def call_number
-    CallNumberGenerator.next!
+    CallNumberService.next!
   end
 
   # Stubs for subclasses to override:
