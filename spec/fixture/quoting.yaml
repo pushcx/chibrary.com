@@ -53,8 +53,8 @@ single headered quote:
   expect: |-
     </pre><blockquote><pre>Bob Barker wrote:
     &gt; Some quoted text.
-    &gt; That's several lines.
-    &gt; long, isn't it.
+    &gt; That&#39;s several lines.
+    &gt; long, isn&#39;t it.
     &gt; Just keeps going.</pre></blockquote><pre>
     Actual reply.
 single unheadered quote:
@@ -67,8 +67,8 @@ single unheadered quote:
     Actual reply.
   expect: |-
     </pre><blockquote><pre>&gt; Some quoted text.
-    &gt; That's several lines.
-    &gt; long, isn't it.
+    &gt; That&#39;s several lines.
+    &gt; long, isn&#39;t it.
     &gt; Just keeps going.</pre></blockquote><pre>
     Actual reply.
 two quotes with break:
@@ -83,8 +83,8 @@ two quotes with break:
     Actual reply.
   expect: |-
     </pre><blockquote><pre>&gt; Some quoted text.
-    &gt; That's several lines.
-    &gt; long, isn't it.
+    &gt; That&#39;s several lines.
+    &gt; long, isn&#39;t it.
 
     &gt; Just keeps going.
     &gt; And going.</pre></blockquote><pre>
@@ -118,7 +118,7 @@ multiple quotes:
     &gt; quote
     &gt; here</pre></blockquote><pre>
     More reply.
-trim blank leading andtrailing:
+trim blank leading and trailing:
   input: |
     > 
     > several lines
@@ -129,7 +129,7 @@ trim blank leading andtrailing:
     Actual reply.
   expect: |-
     </pre><blockquote class="short"><pre>&gt; several lines
-    &gt; long, isn't it.</pre></blockquote><pre>
+    &gt; long, isn&#39;t it.</pre></blockquote><pre>
     Actual reply.
 basic outlook quoting:
   input: |
@@ -206,7 +206,7 @@ quoted-printable bug from http://listlibrary.net/ruby-talk/2007/07/011NY2_a#m011
 
     --=20
     I always knew that one day Smalltalk would replace Java.
-    I just didn't know it would be called Ruby
+    I just didn&#39;t know it would be called Ruby
     -- Kent Beck
 PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW:
   input: |
@@ -254,7 +254,7 @@ PGP sig is not quote http://listlibrary.net/ruby-core/2007/07/011NY2OW#m011NY2OW
     &gt;&gt; Matz plans to import gem into Ruby 1.9.  Does anyone has any
     &gt; RubyGems is still missing one key feature, the ability to handle
     &gt; platform-specific gems.  There may be a few other minor features that
-    &gt; are missing, but I don't think RubyGems is ready for inclusion until then.</pre></blockquote><pre>
+    &gt; are missing, but I don&#39;t think RubyGems is ready for inclusion until then.</pre></blockquote><pre>
     Are you and RubyGems maintainers negative to include RubyGems in
     ruby/1.9.1 ?
 

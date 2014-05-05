@@ -52,7 +52,7 @@ GEM
       i18n (>= 0.4.0)
       innertube (~> 1.0.2)
       multi_json (~> 1.0)
-    rmail (1.0.0)
+    rmail-sup (1.0.1)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -111,7 +111,7 @@ DEPENDENCIES
   rake
   redis
   riak-client
-  rmail
+  rmail-sup
   rspec
   shotgun
   sidekiq

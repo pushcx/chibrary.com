@@ -1,3 +1,5 @@
+CALL_NUMBER_BITS = 47
+
 class CallNumber
   attr_reader :str
 

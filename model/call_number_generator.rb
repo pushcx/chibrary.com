@@ -10,7 +10,7 @@ require_relative 'call_number'
 class CallNumberGenerator
   attr_reader :rig, :sig
 
-  SHUFFLE_SEED = 1234
+  SHUFFLE_TABLE = [41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28]
 
   def initialize rig=RunIdGenerator.new, sig=SequenceIdGenerator.new
     @rig = rig
@@ -52,6 +52,7 @@ class CallNumberGenerator
   end
 
   def stable_bitstring_shuffle bitstring
-    bitstring.split('').shuffle(random: Random.new(SHUFFLE_SEED)).join('')
+    raise ArgumentError, "Wrong length bitstring" unless bitstring.length == CALL_NUMBER_BITS
+    (0..CALL_NUMBER_BITS-1).map { |i| bitstring[SHUFFLE_TABLE[i]] }.join('')
   end
 end

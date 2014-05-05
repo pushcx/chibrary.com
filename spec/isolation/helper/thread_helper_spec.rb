@@ -20,8 +20,7 @@ describe 'Thread Helper' do
   end
 
   it "#compress_quotes" do
-    filename = File.join(File.dirname(__FILE__), '..', '..', 'fixture', "quoting.yaml")
-    YAML::load_file(filename).each do |name, quote|
+    YAML::load_file('spec/fixture/quoting.yaml').each do |name, quote|
       expect(compress_quotes(f(quote['input']))).to eq(quote['expect']), "Testcase: #{name}"
     end
   end

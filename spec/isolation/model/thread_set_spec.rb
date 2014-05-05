@@ -1,8 +1,8 @@
+require 'more_math/permutation'
+
 require_relative '../../rspec'
 require_relative '../../../model/sym'
 require_relative '../../../model/thread_set'
-
-require 'permutation'
 
 ThreadableMessage = Struct.new(:message_id, :subject, :references) do
   def body ; '' ; end
@@ -69,7 +69,7 @@ describe ThreadSet do
             ThreadableMessage.new('grandchild@example.com', 'Foo', ['root@example.com', 'child@example.com']),
         ThreadableMessage.new('orphan@example.com', 'Foo', ['missing@example.com']),
       ]
-      perm = Permutation.for(messages)
+      perm = MoreMath::Permutation.for(messages)
       previous = nil
       perm.each do |perm|
         ts = ThreadSet.new Sym.new('slug', 2009, 2)

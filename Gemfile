@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '1.9.3'
+ruby '2.1.1'
 
 # web
 gem 'haml'
@@ -25,11 +25,11 @@ gem 'hpricot'
 gem 'htmlentities'
 gem 'net-sftp'
 gem 'net-ssh'
-gem 'rmail'
+gem 'rmail-sup' # sup forked for Ruby 2+
 gem 'tidy'
 
 group :test do
+  gem 'more_math'
   gem 'rspec'
-  gem 'permutation'
   gem 'pry'
 end
