@@ -1,4 +1,4 @@
-require_relative '../../model/sym'
+require_relative '../../value/sym'
 
 get '/:slug/:year/:month/?' do
   load_list

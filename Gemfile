@@ -19,6 +19,9 @@ gem 'activesupport'
 gem 'rake'
 gem 'shotgun'
 
+# infrastructure
+gem 'ice_nine'
+
 # work
 gem 'base62'
 gem 'hpricot'

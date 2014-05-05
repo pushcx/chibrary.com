@@ -1,7 +1,7 @@
 require 'rspec'
 require 'ostruct'
-require_relative '../model/message_id'
-require_relative '../model/sym'
+require_relative '../value/message_id'
+require_relative '../value/sym'
 require_relative '../model/storage/riak_storage'
 require_relative '../model/storage/redis_storage'
 

@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/headers'
+require_relative '../../../value/headers'
 
 describe Headers do
   it 'looks up headers' do

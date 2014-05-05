@@ -1,4 +1,8 @@
+require_relative '../lib/core_ext/ice_nine_'
+
 class MessageId
+  prepend IceNine::DeepFreeze
+
   attr_reader :raw, :message_id
 
   def initialize raw

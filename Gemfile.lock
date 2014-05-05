@@ -24,6 +24,7 @@ GEM
     hpricot (0.8.6)
     htmlentities (4.3.1)
     i18n (0.6.5)
+    ice_nine (0.11.0)
     innertube (1.0.2)
     json (1.8.1)
     method_source (0.8.2)
@@ -104,6 +105,7 @@ DEPENDENCIES
   haml
   hpricot
   htmlentities
+  ice_nine
   net-sftp
   net-ssh
   permutation

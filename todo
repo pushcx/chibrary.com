@@ -64,11 +64,11 @@ x update to Ruby 2.1 - https://github.com/sup-heliotrope/sup/issues/22
   Email.date should parse Received headers first; fallback to Date from MUA
   Rename *Storage to Repo
   Rename *Generator to service/
-  Move immutable objects to value/
+x Move immutable objects to value/
   Some models to collection/
   Use tcrayford/Values in place of Struct
-  Use ice_nine to make sure my objects are immutable
-    module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
+x Use ice_nine to make sure my objects are immutable
+  Models to entities/
   Slug value
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
@@ -104,6 +104,7 @@ x update to Ruby 2.1 - https://github.com/sup-heliotrope/sup/issues/22
 Possible refactorings:
   Create procedure/ for driving scripts?
   store MonthCount in Redis
+  Some models to aggregate/?
   Use hamstergem/hamster in ThreadSet and other collections
   move Storage.serialize and .store to class methods?; I never keep obj around
   split Storage and Retrievage into separate objects?

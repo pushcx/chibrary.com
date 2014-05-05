@@ -1,7 +1,7 @@
 require 'forwardable'
 
-require_relative 'call_number'
-require_relative 'email'
+require_relative '../value/call_number'
+require_relative '../value/email'
 
 class Message
   attr_accessor :email, :call_number, :source, :list

@@ -1,5 +1,5 @@
 require_relative 'riak_storage'
-require_relative '../call_number'
+require_relative '../../value/call_number'
 
 class CallNumberListStorage
   include RiakStorage

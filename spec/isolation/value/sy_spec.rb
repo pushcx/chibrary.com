@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/sy'
+require_relative '../../../value/sy'
 
 describe Sy do
   describe '#initialize' do

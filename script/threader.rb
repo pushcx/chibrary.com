@@ -9,7 +9,7 @@ require_relative '../model/list'
 require_relative '../model/thread_list'
 require_relative '../model/thread_set'
 require_relative '../lib/log'
-require_relative '../lib/time_'
+require_relative '../lib/core_ext/time_'
 
 class Threader
   def initialize

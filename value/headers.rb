@@ -1,4 +1,8 @@
+require_relative '../lib/core_ext/ice_nine_'
+
 class Headers
+  prepend IceNine::DeepFreeze
+
   attr_reader :text
 
   def initialize text

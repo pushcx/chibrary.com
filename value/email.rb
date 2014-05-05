@@ -8,8 +8,12 @@ require 'time'
 require_relative 'headers'
 require_relative 'subject'
 require_relative 'message_id'
+require_relative '../lib/core_ext/ice_nine_'
+
 
 class Email
+  prepend IceNine::DeepFreeze
+
   attr_reader :raw, :header
   attr_reader :from, :message_id, :references, :date, :no_archive, :subject
 

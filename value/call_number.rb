@@ -1,6 +1,10 @@
+require_relative '../lib/core_ext/ice_nine_'
+
 CALL_NUMBER_BITS = 47
 
 class CallNumber
+  prepend IceNine::DeepFreeze
+
   attr_reader :str
 
   def initialize str

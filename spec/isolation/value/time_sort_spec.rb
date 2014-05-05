@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/time_sort'
+require_relative '../../../value/time_sort'
 
 describe TimeSort do
   describe '#previous' do

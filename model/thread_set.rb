@@ -1,4 +1,4 @@
-require_relative '../lib/time_'
+require_relative '../lib/core_ext/time_'
 require_relative 'message_container'
 require_relative 'redirect_map'
 

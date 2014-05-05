@@ -1,6 +1,6 @@
 require_relative '../../rspec'
-require_relative '../../../model/sym'
-require_relative '../../../model/thread_link'
+require_relative '../../../value/sym'
+require_relative '../../../value/thread_link'
 
 describe ThreadLink do
   it 'generates hrefs' do

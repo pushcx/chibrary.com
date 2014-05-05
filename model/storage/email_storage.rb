@@ -1,4 +1,4 @@
-require_relative '../email'
+require_relative '../../value/email'
 
 # Does not include RiakStorage or support the same API because emails are only
 # persisted in Messages.

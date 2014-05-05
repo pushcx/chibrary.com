@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/sym'
+require_relative '../../../value/sym'
 require_relative '../../../model/storage/redirect_map_storage'
 
 describe RedirectMapStorage do

@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/sum_count'
+require_relative '../../../value/sum_count'
 
 SCTestMonthCount = Struct.new(:thread_count, :message_count)
 

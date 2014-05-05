@@ -1,4 +1,8 @@
+require_relative '../lib/core_ext/ice_nine_'
+
 class MonthCount
+  prepend IceNine::DeepFreeze
+
   attr_reader :sym, :thread_count, :message_count
 
   def initialize sym, thread_count=0, message_count=0

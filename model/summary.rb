@@ -1,4 +1,4 @@
-require_relative 'call_number'
+require_relative '../value/call_number'
 
 class Summary
   attr_reader :call_number, :n_subject, :date, :blurb

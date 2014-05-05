@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../lib/time_'
+require_relative '../../../lib/core_ext/time_'
 
 describe Time do
   let(:base_time) { Time.utc(2007, 9, 11) }

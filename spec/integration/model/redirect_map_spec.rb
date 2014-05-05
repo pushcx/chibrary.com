@@ -1,6 +1,6 @@
 require_relative '../../rspec'
-require_relative '../../../model/call_number'
-require_relative '../../../model/sym'
+require_relative '../../../value/call_number'
+require_relative '../../../value/sym'
 require_relative '../../../model/redirect_map'
 
 describe RedirectMap do

@@ -1,6 +1,9 @@
 require_relative 'thread_link'
+require_relative '../lib/core_ext/ice_nine_'
 
 class TimeSort
+  prepend IceNine::DeepFreeze
+
   attr_reader :sym, :threads
 
   def initialize sym, threads=[]

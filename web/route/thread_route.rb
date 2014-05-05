@@ -1,4 +1,4 @@
-require_relative '../../model/sym'
+require_relative '../../value/sym'
 
 def load_thread(call_number)
   begin

@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../rspec'
-require_relative '../../../lib/string_'
+require_relative '../../../lib/core_ext/string_'
 
 describe String do
   describe '.decoded' do

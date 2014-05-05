@@ -2,7 +2,7 @@ require 'base62'
 
 require_relative 'run_id_generator'
 require_relative 'sequence_id_generator'
-require_relative 'call_number'
+require_relative '../value/call_number'
 
 # This should probably have a bitstring class broken out of it, but I don't
 # expect to need to reuse those parts or change this algorithm anytime soon.

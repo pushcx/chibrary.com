@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../rspec'
-require_relative '../../../model/email'
+require_relative '../../../value/email'
 require_relative '../../../model/storage/list_address_storage'
 
 describe Email do

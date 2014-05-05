@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/call_number'
+require_relative '../../../value/call_number'
 
 describe CallNumber do
   describe '#initialize' do

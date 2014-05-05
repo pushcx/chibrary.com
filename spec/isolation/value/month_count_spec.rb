@@ -1,5 +1,5 @@
 require_relative '../../rspec'
-require_relative '../../../model/month_count'
+require_relative '../../../value/month_count'
 
 MCTestThreadSet = Struct.new(:sym, :thread_count, :message_count)
 

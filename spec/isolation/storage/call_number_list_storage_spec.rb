@@ -1,6 +1,6 @@
 require_relative '../../rspec'
 require_relative '../../../model/list'
-require_relative '../../../model/sym'
+require_relative '../../../value/sym'
 require_relative '../../../model/storage/call_number_list_storage'
 
 describe CallNumberListStorage do
