@@ -11,7 +11,7 @@ def de_yamlize content
   # don't deserialize to Message class, which little-resembles the Message
   # class from when these objects were yamlized
   content = content.to_utf8 'ascii-8bit'
-  content.gsub!(/[^\n]/, "")
+  content.gsub!(/\r[^\n]/, "")
   content.gsub!(/^--- !ruby\/object:Message *\n/, "--- \n") if content[0..4] == '--- !'
   content.gsub!(/^subject: .*\n/, '')
   content = YAML::load(content) if content[0..3] == '--- '
