@@ -10,7 +10,7 @@ class MessageId
   end
   
   def has_id?
-    raw =~ /^<?[a-zA-Z0-9%+\-\.=_]+@[a-zA-Z0-9_\-\.]+>?$/
+    raw =~ /\A<?[a-zA-Z0-9%+\-\.=_]+@[a-zA-Z0-9_\-\.]+>?\Z/
   end
 
   def extract_id
