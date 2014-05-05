@@ -3,9 +3,9 @@ require 'yaml'
 require 'riak'
 require 'zipruby'
 require 'active_support/core_ext/string'
-require_relative 'string_'
+require_relative 'core_ext/string_'
 
-class NotFound < RuntimeError ; end
+class NotFound < ArgumentError ; end
 
 def de_yamlize content
   # don't deserialize to Message class, which little-resembles the Message

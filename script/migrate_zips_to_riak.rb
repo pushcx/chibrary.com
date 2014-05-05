@@ -8,7 +8,7 @@ require_relative '../lib/storage.rb'
 require_relative '../service/call_number_service.rb'
 require_relative '../model/list.rb'
 require_relative '../model/message.rb'
-require_relative '../model/storage/message_repo.rb'
+require_relative '../repo/message_repo.rb'
 
 #thread_queue = Queue.new :thread
 
