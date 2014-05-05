@@ -50,7 +50,6 @@ x rename web/controller to something better-suited
 x rekey all call numbers to be base62; drop _ and - in ids
 x remove overwrite from MessageStorage, look up message ids instead
 x rewrite CallNumberGenerator to waste fewer bits
-  have MessageStorage overwrite check both key and id_hash_bin
 x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
   migrate all tests to rspec
 x Sy and Sym objects to encapsulate Slug, Year, + Month
@@ -59,6 +58,7 @@ x clean up ActionController mentions
 x update month_next_previous for current storage
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
+  run threader
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
 x update text on about page
 x move jobs into a proper job system
@@ -107,6 +107,8 @@ Possible refactorings:
   split Storage and Retrievage into separate objects?
 
 Feature ideas:
+  have MessageStorage overwrite check both key and id_hash_bin
+    (need when compiling an archive from multiple others)
   add instantclick.io to pjax page loads
   https://www.cs.cmu.edu/~enron/
   spam filtering
