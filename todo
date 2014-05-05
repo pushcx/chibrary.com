@@ -52,21 +52,32 @@ x remove overwrite from MessageStorage, look up message ids instead
 x rewrite CallNumberGenerator to waste fewer bits
 x clean up any messages with metadata edited into headers, ew (X-ListLibrary-*)
 x Sy and Sym objects to encapsulate Slug, Year, + Month
-  Email.date should parse Received headers first; fallback to Date from MUA
 x clean up ActionController mentions
 x update month_next_previous for current storage
+x update text on about page
+x move jobs into a proper job system
+x move misc data in cachcedhash *someplace else*
+x search and replace all instances of 'listlibrary'
+x search and replace all instances of 'mail' with 'email'
+x update CallNumberGenerator so two import scripts won't collide constantly
+x update to Ruby 2.1 - https://github.com/sup-heliotrope/sup/issues/22
+  Email.date should parse Received headers first; fallback to Date from MUA
+  Rename *Storage to Repo
+  Rename *Generator to service/
+  Move immutable objects to value/
+  Some models to collection/
+  Use tcrayford/Values in place of Struct
+  Use ice_nine to make sure my objects are immutable
+    module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
+  Slug value
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
   run and test threader
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
-x update text on about page
-x move jobs into a proper job system
-x move misc data in cachcedhash *someplace else*
-  clean up tests along the lines of Metz's magic tricks
-  update to Ruby 2 - https://github.com/sup-heliotrope/sup/issues/22
   replace 1.8 hash syntax with 1.9
+  clean up tests along the lines of Metz's magic tricks
   override sinatra error pages
   restore google analytics
   re-import ruby-dev
@@ -76,8 +87,6 @@ x move misc data in cachcedhash *someplace else*
   minify css and js
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   forward listlibrary.net/org to chibrary
-x search and replace all instances of 'listlibrary'
-x search and replace all instances of 'mail' with 'email'
   get /about
   get /search
   get /:slug/:year/:month/:call_number
@@ -89,21 +98,12 @@ x search and replace all instances of 'mail' with 'email'
   deploy
   check that google search works with new domain
   fix google analytics logging to only be included in prod
-x update CallNumberGenerator so two import scripts won't collide constantly
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
   announce
 
 Possible refactorings:
-  store MonthCount in Redis
-  Rename *Storage to Repo
-  Rename *Generator to service/
   Create procedure/ for driving scripts?
-  Move immutable objects to value/
-  Some models to collection/
-  Use tcrayford/Values in place of Struct
-  Use ice_nine to make sure my objects are immutable
-    module FlashFreeze ; def initiaize ; super ; IceNine.deep_freeze(self) ; end ; end ; # inside class: prepend FlashFreeze
-  Slug value
+  store MonthCount in Redis
   Use hamstergem/hamster in ThreadSet and other collections
   move Storage.serialize and .store to class methods?; I never keep obj around
   split Storage and Retrievage into separate objects?
