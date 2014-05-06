@@ -26,6 +26,8 @@ def remove_listlibrary_headers str
   str
 end
 
+LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
+
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
@@ -47,6 +49,8 @@ begin
     i += 1
     foo = true if i >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
+    slug = key.split('/').first
+    next unless LISTS_TO_LOAD.include? slug
     print "\n#{i} " if i % 1000 == 0
     print '.'
     #puts key
@@ -63,7 +67,6 @@ begin
       source = stored_message['source']
       slug = key.split('/').first
     end
-    next unless %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}.include? slug
     str = remove_listlibrary_headers(str)
 
     #call_number = CallNumberService.next!
