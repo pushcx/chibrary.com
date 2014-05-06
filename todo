@@ -69,6 +69,13 @@ x Use tcrayford/Values in place of Struct
 x Use ice_nine to make sure my objects are immutable
 x replace 1.8 hash syntax with 1.9
   clean up tests along the lines of Metz's magic tricks
+x   core_ext
+x   helper
+x   lib
+    service
+    value
+    model
+    repo
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
