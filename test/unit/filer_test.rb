@@ -17,9 +17,9 @@ class FilerTest < ActiveSupport::TestCase
     end
 
     should 'store messages' do
-      message = mock('message', :store => true, :key => "list/example_list/message/2006/10/goodid@example.com")
+      message = mock('message', store: true, key: "list/example_list/message/2006/10/goodid@example.com")
       message.expects(:slug).at_least_once.returns("example_list")
-      message.expects(:date).times(2).returns( mock(:year => 2006, :month => 10) )
+      message.expects(:date).times(2).returns( mock(year: 2006, month: 10) )
       Message.expects(:new).returns(message)
 
       f = Filer.new(0, 0)
@@ -69,8 +69,8 @@ class FilerTest < ActiveSupport::TestCase
       f.mailing_lists = { 'example_list' => [[2007, 8], [2007, 9]] }
       q = mock("thread queue")
       Queue.expects(:new).with(:thread).returns(q)
-      q.expects(:add).with(:slug => "example_list", :year => 2007, :month => "08")
-      q.expects(:add).with(:slug => "example_list", :year => 2007, :month => "09")
+      q.expects(:add).with(slug: "example_list", year: 2007, month: "08")
+      q.expects(:add).with(slug: "example_list", year: 2007, month: "09")
       f.queue_threader
     end
 

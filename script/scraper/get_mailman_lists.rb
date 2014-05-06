@@ -41,7 +41,7 @@ class GetMailmanLists < Filer
         name = nil if name == "<em>[no description available]</em>"
 
         puts "slug '#{slug}', name '#{name}', url: #{url}"
-        import_mailman.add :slug => slug, :name => name, :url => url
+        import_mailman.add slug: slug, name: name, url: url
       end
     end
   end

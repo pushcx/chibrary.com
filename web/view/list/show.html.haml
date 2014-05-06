@@ -2,7 +2,7 @@
   %h1= @list.title_name
 
 
-  %table{ :summary => "Links to monthly archives of this list" }
+  %table{ summary: "Links to monthly archives of this list" }
     %thead
       %tr.months
         %td.upper_left
@@ -16,14 +16,14 @@
             - month = "%02d" % i
             - if months.has_key?(month)
               %td.month.small
-                %a{ :href => "/#{@slug}/#{year}/#{month}" } #{months[month].thread_count}:#{months[month].message_count}
+                %a{ href: "/#{@slug}/#{year}/#{month}" } #{months[month].thread_count}:#{months[month].message_count}
             - else
               %td.empty_month= ''
 
   - if @list['homepage']
     %p
       Homepage:
-      %a{ :href => @list['homepage'] }= @list['homepage']
+      %a{ href: @list['homepage'] }= @list['homepage']
 
   - if @list['description']
     = @list['description']
@@ -45,5 +45,5 @@
     %ul
       - @snippets.each do |snippet|
         %li
-          %a.subject{ :href => snippet[:url] }= subject(snippet[:subject])
+          %a.subject{ href: snippet[:url] }= subject(snippet[:subject])
           %span.excerpt= h snippet[:excerpt]

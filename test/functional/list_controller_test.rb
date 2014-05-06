@@ -11,7 +11,7 @@ class ListControllerTest < ActionController::TestCase
       # mock for thread table in view
       ThreadList.expects(:year_counts).returns([])
 
-      get :show, :slug => @list.slug
+      get :show, slug: @list.slug
     end
 
     should_respond_with :success
@@ -21,8 +21,8 @@ class ListControllerTest < ActionController::TestCase
   end
 
   should "redirect years" do
-    @list = mock('list', :slug => 'slug')
-    get :year_redirect, :slug => @list.slug, :year => 2001
-    assert_redirected_to :action => :show
+    @list = mock('list', slug: 'slug')
+    get :year_redirect, slug: @list.slug, year: 2001
+    assert_redirected_to action: :show
   end
 end

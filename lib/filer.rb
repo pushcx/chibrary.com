@@ -58,18 +58,18 @@ class Filer
       begin
         $stdout.puts "#{@message_count} #{call_number} FAILED: #{e.message}"
         error_info = {
-          :exception => e.class.to_s,
-          :message   => e.message,
-          :backtrace => e.backtrace,
-          :mail      => mail
+          exception: e.class.to_s,
+          message:   e.message,
+          backtrace: e.backtrace,
+          mail:      mail
         }
         $archive["filer_failure/#{call_number}"] = error_info
       rescue
         $stdout.puts "#{@message_count} #{call_number} DOUBLE FAILURE: #{e.message}"
         secondary_error_info = {
-          :exception => e.class.to_s,
-          :message   => e.message,
-          :backtrace => e.backtrace
+          exception: e.class.to_s,
+          message:   e.message,
+          backtrace: e.backtrace
         }.to_yaml
         # double failure: couldn't store the failure in s3
         @rc ||= RemoteConnection.new
@@ -99,7 +99,7 @@ class Filer
     @thread_q = Queue.new :thread
     @mailing_lists.each do |slug, dates|
       dates.each do |year, month|
-        @thread_q.add :slug => slug, :year => year, :month => "%02d" % month
+        @thread_q.add slug: slug, year: year, month: "%02d" % month
       end
     end
   end

@@ -7,10 +7,10 @@ require 'rubygems'
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
 Sidekiq.configure_server do |config|
-  config.redis = { :url => 'redis://redis.example.com:6379/0', :namespace => 'sidekiq' }
+  config.redis = { url: 'redis://redis.example.com:6379/0', namespace: 'sidekiq' }
 end
 Sidekiq.configure_client do |config|
-  config.redis = { :url => 'redis://redis.example.com:6379/0', :namespace => 'sidekiq', :size => 1 }
+  config.redis = { url: 'redis://redis.example.com:6379/0', namespace: 'sidekiq', size: 1 }
 end
 
 Dir["lib/**/*.rb", 'model/**/*.rb'].each { |l| require l }

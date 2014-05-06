@@ -1,6 +1,6 @@
 .month
   %h1
-    %a{ :href => "/#{@slug}" }= (@list['name'] or @slug)
+    %a{ href: "/#{@slug}" }= (@list['name'] or @slug)
     = "#{@year}-#{@month}"
 
   %p= "#{@month_count.message_count} messages in #{@month_count.threaad_count} threads"
@@ -8,11 +8,11 @@
 %ol.threads
   - @threadset.each do |thread|
     %li.thread
-      %a{ :id => "t-#{thread.call_number}", :name => "t-#{thread.call_number}" }/
+      %a{ id: "t-#{thread.call_number}", name: "t-#{thread.call_number}" }/
       .header
         %span.count= thread.count
-        %a.subject{ :href => "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}" }= subject(thread)
-      = partial :'month/_thread_list.html', :locals => { :thread => thread }
+        %a.subject{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}" }= subject(thread)
+      = partial :'month/_thread_list.html', locals: { thread: thread }
 
 -# .panel
   :plain
@@ -26,4 +26,4 @@
     //--></script>
     <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 
-= partial :'month/_previous_next.html', :locals => { :previous_link => @previous_link, :next_link => @next_link }
+= partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }

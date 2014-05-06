@@ -12,7 +12,7 @@ end
 
 list_addresses = CachedHash.new "list_address"
 
-AWS::S3::Bucket.objects('listlibrary_archive', :prefix => "_listlibrary_no_list/").each do |mail|
+AWS::S3::Bucket.objects('listlibrary_archive', prefix: "_listlibrary_no_list/").each do |mail|
   message = Message.new(mail.key)
   if message.mailing_list != '_listlibrary_no_list'
     message.store

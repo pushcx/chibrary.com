@@ -28,7 +28,7 @@ describe RemoteConnection do
     handle = double("handle")
     sftp.should_receive(:open_handle).with("tmp/#{Process.pid}-3", "w").and_yield(handle)
     sftp.should_receive(:write).with(handle, "str")
-    sftp.should_receive(:fsetstat).with(handle, :permissions => 0644)
+    sftp.should_receive(:fsetstat).with(handle, permissions: 0644)
     rc.should_receive(:command).at_least(:once)
     rc.upload_file "path/to/filename", "str"
   end

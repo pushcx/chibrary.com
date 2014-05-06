@@ -14,9 +14,9 @@ class ThreadControllerTest < ActionController::TestCase
       @controller.expects(:thread_previous_next).returns ['previous', 'next']
       @list.expects(:[]).with('marker').returns('marker')
 
-      ThreadList.expects(:new).returns mock('thread_list', :redirect? => false)
-      $archive.expects(:[]).with('list/slug/thread/2009/09/00000000').returns mock('thread', :subject => 'subject')
-      get :show, :slug => 'slug', :year => '2009', :month => '09', :call_number => '00000000'
+      ThreadList.expects(:new).returns mock('thread_list', redirect?: false)
+      $archive.expects(:[]).with('list/slug/thread/2009/09/00000000').returns mock('thread', subject: 'subject')
+      get :show, slug: 'slug', year: '2009', month: '09', call_number: '00000000'
       assert_response :success
     end
 
@@ -24,7 +24,7 @@ class ThreadControllerTest < ActionController::TestCase
       # test load_thread
       assert_raises ActionController::RoutingError do
         $archive.expects(:[]).times(2).raises NotFound
-        get :show, :slug => @list.slug, :year => '2009', :month => '09', :call_number => '12345678'
+        get :show, slug: @list.slug, year: '2009', month: '09', call_number: '12345678'
       end
     end
   end

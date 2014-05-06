@@ -67,7 +67,7 @@ x Rename *Generator to service/
 x Move immutable objects to value/
 x Use tcrayford/Values in place of Struct
 x Use ice_nine to make sure my objects are immutable
-  replace 1.8 hash syntax with 1.9
+x replace 1.8 hash syntax with 1.9
   clean up tests along the lines of Metz's magic tricks
   test filer
   test fetcher

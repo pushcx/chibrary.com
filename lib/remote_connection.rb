@@ -15,10 +15,10 @@ class RemoteConnection
     @ssh = Net::SSH.start(
       "chibrary.com",
       "chibrary", {
-        :keys => [File.join(File.dirname(__FILE__), "chibrary_id_dsa")],
-        :compression => 'zlib',
-        :compression_level => 9,
-        :paranoid => :very,
+        keys: [File.join(File.dirname(__FILE__), "chibrary_id_dsa")],
+        compression: 'zlib',
+        compression_level: 9,
+        paranoid: :very,
       }
     )
     @sftp = @ssh.sftp.connect
@@ -41,7 +41,7 @@ class RemoteConnection
 
     @sftp.open_handle(tmpname, "w") do |handle|
       @sftp.write(handle, contents)
-      @sftp.fsetstat(handle, :permissions => 0644)
+      @sftp.fsetstat(handle, permissions: 0644)
     end
     command("/bin/mkdir -p /home/chibrary/chibrary.com/#{path}")
     command("/bin/mv /home/chibrary/#{tmpname} /home/chibrary/chibrary.com/#{path}/#{filename}")

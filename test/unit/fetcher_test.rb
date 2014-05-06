@@ -6,10 +6,10 @@ class FetcherTest < ActiveSupport::TestCase
   context 'a fetcher' do
     setup do
       Net::POP3.expects(:new).returns(mock(
-        :open_timeout= => nil,
-        :read_timeout= => nil,
-        :start => nil,
-        :n_mails => 0
+        open_timeout: nil,
+        read_timeout: nil,
+        start: nil,
+        n_mails: 0,
       ))
       f = Fetcher.new(0, 0)
       f.setup
@@ -40,7 +40,7 @@ class FetcherTest < ActiveSupport::TestCase
 
     should 'acquire mail' do
       f = Fetcher.new(0, 0)
-      mail = mock("mail", :delete => true)
+      mail = mock("mail", delete: true)
       mail.expects(:mail).at_least(1).returns("Test message")
       nil.expects(:block).yields(stub_everything)
       nil.expects(:n_mails).yields(0)

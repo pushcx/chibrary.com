@@ -87,7 +87,7 @@ begin
     #MessageRepo.new(message, MessageRepo::Overwrite::DO).store
 
     # queue threader for this list
-#    thread_queue.add :slug =>slug, :year => message.date.year, :month => "%02d" % message.date.month
+#    thread_queue.add :slug => slug, :year => message.date.year, :month => "%02d" % message.date.month
 #  end
 
 end

@@ -38,9 +38,9 @@ def container_partial c
   return partial('thread/_message_missing.html') if c.empty?
   return partial('thread/_message_no_archive.html') if c.message.no_archive
 
-  partial('thread/_message.html', :locals => {
-    :message => c.message,
-    :parent => c.root? ? nil : c.parent.message,
-    :children => c.children.sort.collect { |c| c.message unless c.empty? }.compact,
+  partial('thread/_message.html', locals: {
+    message: c.message,
+    parent: c.root? ? nil : c.parent.message,
+    children: c.children.sort.collect { |c| c.message unless c.empty? }.compact,
   })
 end

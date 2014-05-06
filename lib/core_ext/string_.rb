@@ -30,6 +30,6 @@ class String
     when 'x-user-defined'
       charset = 'ISO-8859-1' # just one message by one jerk
     end
-    self.encode("UTF-8", charset, :invalid => :replace, :undef => :replace).force_encoding('UTF-8')
+    self.encode("UTF-8", charset, invalid: :replace, undef: :replace).force_encoding('UTF-8')
   end
 end

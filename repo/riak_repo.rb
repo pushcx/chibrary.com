@@ -43,7 +43,7 @@ module RiakRepo
     end
 
     def db_client
-      $riak_client ||= Riak::Client.new(:protocol => "pbc", :pb_port => 8087)
+      $riak_client ||= Riak::Client.new(protocol: "pbc", pb_port: 8087)
     end
   end
 end

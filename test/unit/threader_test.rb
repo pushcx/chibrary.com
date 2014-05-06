@@ -52,12 +52,12 @@ class ThreaderTest < ActiveSupport::TestCase
     t = Threader.new
 
     # two empty jobs
-    job1 = Job.new :thread, :slug => 'example', :year => '2008', :month => '07'
+    job1 = Job.new :thread, slug: 'example', year: '2008', month: '07'
     list1 = mock("list1")
     list1.expects(:cached_message_list).returns([])
     list1.expects(:fresh_message_list).returns([])
 
-    job2 = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
+    job2 = Job.new :thread, slug: 'example', year: '2008', month: '08'
     list2 = mock("list2")
     list2.expects(:cached_message_list).returns([])
     list2.expects(:fresh_message_list).returns([])
@@ -72,7 +72,7 @@ class ThreaderTest < ActiveSupport::TestCase
     sym = Sym.new('example', '2007', '08')
 
     message_list = ['1@example.com']
-    threadset = mock("threadset", :rejoin_splits => true)
+    threadset = mock("threadset", rejoin_splits: true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
@@ -85,7 +85,7 @@ class ThreaderTest < ActiveSupport::TestCase
     sym = Sym.new('example', '2007', '08')
 
     message_list = ['1@example.com']
-    threadset = mock("threadset", :rejoin_splits => true)
+    threadset = mock("threadset", rejoin_splits: true)
 
     list = mock("list")
     list.expects(:cache_message_list).with("2007", "08", message_list)
@@ -98,7 +98,7 @@ class ThreaderTest < ActiveSupport::TestCase
   private
   def new_threader
     t = Threader.new
-    job = Job.new :thread, :slug => 'example', :year => '2008', :month => '08'
+    job = Job.new :thread, slug: 'example', year: '2008', month: '08'
     @thread_q.expects(:work).yields(job)
     t
   end
