@@ -1,8 +1,11 @@
+# Legacy code for accessing previous storage engines. Delete after migration
+# to Riak is complete.
 require 'fileutils'
 require 'yaml'
 require 'riak'
 require 'zipruby'
 require 'active_support/core_ext/string'
+
 require_relative 'core_ext/string_'
 
 class NotFound < ArgumentError ; end

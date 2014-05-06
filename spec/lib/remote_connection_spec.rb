@@ -10,13 +10,13 @@ describe RemoteConnection do
     Net::SSH.stub(:start).and_return(ssh)
   end
 
-  it 'tear down ssh and sftp connections on close' do
+  it 'tears down ssh and sftp connections on close' do
     ssh.should_receive(:close)
     sftp.should_receive(:close)
     rc.close
   end
 
-  it 'send commands to the server' do
+  it 'sends commands to the server' do
     process = double("process")
     process.should_receive(:popen3).with("command")
     ssh.should_receive(:process).and_return(process)

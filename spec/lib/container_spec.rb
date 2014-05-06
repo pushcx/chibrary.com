@@ -5,16 +5,10 @@ class TContainer
   include Container
 end
 
-class TValue
-  attr_reader :field
-
-  def initialize field=nil
-    @field = field
-  end
-end
+TValue = Struct.new(:field)
 
 describe TContainer do
-  describe '::new' do
+  describe '#initialize' do
     it 'is empty with just a key' do
       c = TContainer.new 'id@example.com'
       expect(c).to be_empty
@@ -39,7 +33,7 @@ describe TContainer do
 
     it 'considers containers with the same key equal, ignoring value diffs' do
       c1  = TContainer.new 'c1@example.com', TValue.new
-      c1_ = TContainer.new 'c1@example.com', TValue.new
+      c1_ = TContainer.new 'c1@example.com', nil
       c2  = TContainer.new 'c2@example.com', TValue.new
       expect(c1).to eq(c1_)
       expect(c1).to_not eq(c2)
@@ -80,7 +74,7 @@ describe TContainer do
       expect(c.depth).to eq(0)
     end
 
-    it "is 1 for any child" do
+    it "is 1 for a direct child" do
       c1 = TContainer.new 'c1@example.com'
         c2 = TContainer.new 'c2@example.com'
         c1.adopt c2
@@ -105,6 +99,7 @@ describe TContainer do
       c = TContainer.new 'id@example.com'
       expect(c).to be_empty
     end
+
     it 'considers a container with a value not empty' do
       c = TContainer.new('id@example.com', TValue.new)
       expect(c).to_not be_empty
@@ -141,7 +136,7 @@ describe TContainer do
         c1.adopt c2
       expect(c1).to_not be_a_child_of(c2)
     end
-    
+
     it 'does not consider unrelated containers to be children of each other' do
       c1 = TContainer.new 'c1@example.com'
       c2 = TContainer.new 'c2@example.com'
@@ -220,11 +215,11 @@ describe TContainer do
       expect(c1.effective_root).to be(c1)
     end
 
-    it 'is not an empty container with one child' do
+    it 'is a lone child of an empty container' do
       c1 = TContainer.new 'c1@example.com'
         c2 = TContainer.new 'c2@example.com', TValue.new
         c1.adopt c2
-      expect(c1.effective_root).not_to be(c1)
+      expect(c1.effective_root).to be(c2)
     end
   end
 

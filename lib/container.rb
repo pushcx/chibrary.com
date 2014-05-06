@@ -86,7 +86,7 @@ module Container
   end
 
   def value= value
-    raise "Can't assign value #{value.to_s} to non-empty container #{key}" unless empty?
+    raise "Can't reassign value #{value} of non-empty container #{key}" unless empty?
     @value = value
   end
 
@@ -123,7 +123,6 @@ module Container
   end
   protected :parent=
 
-  # Make this the parent of another container.
   def adopt container
     return if container.child_of?(self) or self.child_of?(container)
 
@@ -133,7 +132,6 @@ module Container
   end
 
   # debugging
-
   def dump depth=0
     puts "  " * depth + self.to_s
     children.each do |container|
