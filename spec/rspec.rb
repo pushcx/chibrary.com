@@ -1,5 +1,6 @@
 require 'rspec'
 require 'ostruct'
+
 require_relative '../value/message_id'
 require_relative '../value/sym'
 require_relative '../repo/riak_repo'
