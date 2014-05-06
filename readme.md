@@ -29,7 +29,7 @@ replaced. Arguably this makes them an Entity, but they have no code and I
 don't want them built in a mutable way.
 
 Entities
-Storage
+Repo
 Services
 Web
 
