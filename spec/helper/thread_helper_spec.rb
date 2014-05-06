@@ -3,25 +3,35 @@ require_relative '../../web/helper/thread_helper'
 require_relative '../../web/helper/application_helper'
 
 describe 'Thread Helper' do
-  it "#message_body" do
-    # This is kind of a dumb brittle test
-    self.should_receive(:remove_footer).and_return("body text")
-    self.should_receive(:f).and_return("body text")
-    self.should_receive(:compress_quotes).and_return("body text")
-    message_body(double(slug: 'example', body: "body text", list: 'list'))
+  describe "#message_body" do
+    # it is untested because it just calls all the others
   end
 
-  it "#remove_footer" do
-    body   = "body text\n"
-    footer = "\n---\nmailing list footer"
+  describe "#html_caps" do
+    it "marks up abbreviations as caps" do
+      expect(html_caps("IBM")).to eq('<span class="caps">IBM</span>')
+    end
 
-    str = remove_footer(body + footer, double('list', footer: footer))
-    expect(str).to eq(body.strip)
+    it "does not mark up caps in the middle of words" do
+      expect(html_caps("fooIBMbar")).to eq('fooIBMbar')
+    end
   end
 
-  it "#compress_quotes" do
-    YAML::load_file('spec/fixture/quoting.yaml').each do |name, quote|
-      expect(compress_quotes(f(quote['input']))).to eq(quote['expect']), "Testcase: #{name}"
+  describe "#remove_footer" do
+    it "strips a list's footer off the str" do
+      body   = "body text\n"
+      footer = "\n---\nmailing list footer"
+
+      str = remove_footer(body + footer, double('list', footer: footer))
+      expect(str).to eq(body.strip)
+    end
+  end
+
+  describe "#compress_quotes" do
+    it "marks up a variety of quoting styles" do
+      YAML::load_file('spec/fixture/quoting.yaml').each do |name, quote|
+        expect(compress_quotes(f(quote['input']))).to eq(quote['expect']), "Testcase: #{name}"
+      end
     end
   end
 

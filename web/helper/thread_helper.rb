@@ -3,8 +3,12 @@ def message_body m
   str = remove_footer(str, m.list)
   str = f(str)
   str = compress_quotes(str)
-  str.gsub!(/([A-Z]{3,})/, '<span class="caps">\1</span>')
+  str = html_caps(str)
   str
+end
+
+def html_caps str
+  str.gsub(/\b([A-Z]{3,})\b/, '<span class="caps">\1</span>')
 end
 
 def remove_footer str, list
@@ -34,13 +38,15 @@ def compress_quotes str
   str.strip
 end
 
+# This could be rewritten to be a query instead of a command, and probably
+# should be some kind of presenter around Container.
 def container_partial c
   return partial('thread/_message_missing.html') if c.empty?
   return partial('thread/_message_no_archive.html') if c.message.no_archive
 
   partial('thread/_message.html', locals: {
-    message: c.message,
-    parent: c.root? ? nil : c.parent.message,
+    message:  c.message,
+    parent:   c.root? ? nil : c.parent.message,
     children: c.children.sort.collect { |c| c.message unless c.empty? }.compact,
   })
 end
