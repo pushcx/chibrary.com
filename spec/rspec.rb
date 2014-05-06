@@ -21,7 +21,7 @@ RSpec.configure do |config|
     end
 
     module RedisRepo
-      def db_client
+      def self.db_client
         FakeRepo.new
       end
     end
