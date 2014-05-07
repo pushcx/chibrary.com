@@ -1,6 +1,7 @@
 require 'base64'
 require_relative 'riak_repo'
 require_relative '../value/call_number'
+require_relative '../value/sym'
 require_relative '../model/message'
 require_relative 'email_repo'
 
