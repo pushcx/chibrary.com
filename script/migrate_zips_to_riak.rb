@@ -50,9 +50,13 @@ begin
     foo = true if i >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
     slug = key.split('/').first
-    next unless LISTS_TO_LOAD.include? slug
     print "\n#{i} " if i % 1000 == 0
-    print '.'
+    if LISTS_TO_LOAD.include? slug
+      print 'x'
+    else
+      print '.'
+      next
+    end
     #puts key
 
     at = key
