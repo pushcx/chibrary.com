@@ -85,13 +85,13 @@ begin
     # TODO remove any listlibrary added headers - there's some in chipy
 
     # just exercising the message rather than actually storing it
-    ms = MessageRepo.new(message, MessageRepo::Overwrite::DO)
-    ms.extract_key
-    ms.serialize
-    Base64.strict_encode64(message.message_id.to_s)
-    "#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
-    Base64.strict_encode64(message.email.canonicalized_from_email)
-    #MessageRepo.new(message, MessageRepo::Overwrite::DO).store
+    #ms = MessageRepo.new(message, MessageRepo::Overwrite::DO)
+    #ms.extract_key
+    #ms.serialize
+    #Base64.strict_encode64(message.message_id.to_s)
+    #"#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
+    #Base64.strict_encode64(message.email.canonicalized_from_email)
+    MessageRepo.new(message, MessageRepo::Overwrite::DO).store
 
     # queue threader for this list
 #    thread_queue.add :slug => slug, :year => message.date.year, :month => "%02d" % message.date.month
