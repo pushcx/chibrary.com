@@ -72,10 +72,11 @@ x replace 1.8 hash syntax with 1.9
 x   core_ext
 x   helper
 x   lib
-    service
+x   service
     value
     model
     repo
+  clean up rig/sig/cng names
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
@@ -116,6 +117,8 @@ Possible refactorings:
   split Storage and Retrievage into separate objects?
 
 Feature ideas:
+  mark up italics in //
+  mark up bold in **
   have MessageStorage overwrite check both key and id_hash_bin
     (need when compiling an archive from multiple others)
   add instantclick.io to pjax page loads

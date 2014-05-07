@@ -8,20 +8,20 @@ require_relative '../value/call_number'
 # expect to need to reuse those parts or change this algorithm anytime soon.
 
 class CallNumberService
-  attr_reader :rig, :sig
+  attr_reader :ris, :sis
 
   SHUFFLE_TABLE = [41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28]
 
-  def initialize rig=RunIdService.new, sig=SequenceIdService.new
-    @rig = rig
-    @sig = sig
+  def initialize ris=RunIdService.new, sis=SequenceIdService.new
+    @ris = ris
+    @sis = sis
   end
 
   def next!
     v = version
     # consume_sequence_id! may cause run_id to advance
     s = consume_sequence_id!
-    r = rig.run_id
+    r = ris.run_id
     CallNumber.new format_ids_to_call(v, r, s)
   end
 
@@ -30,15 +30,15 @@ class CallNumberService
   end
 
   def consume_sequence_id!
-    sig.consume_sequence_id!
+    sis.consume_sequence_id!
   rescue SequenceIdExhaustion
     sequence_exhausted!
-    sig.consume_sequence_id!
+    sis.consume_sequence_id!
   end
 
   def sequence_exhausted!
-    @rig.next!
-    @sig.reset!
+    @ris.next!
+    @sis.reset!
   end
 
   def format_ids_to_call v, r, s
