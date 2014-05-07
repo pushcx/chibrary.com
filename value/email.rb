@@ -147,7 +147,7 @@ class Email
 
     # if there is no @, try for a censored email
     if !from.include?('@') and from.include?(' at ')
-      from.gsub!(' at ', '@')
+      from = from.gsub(' at ', '@')
     end
     if !from.include?('@')
       return 'no.email.address@chibrary.com'
