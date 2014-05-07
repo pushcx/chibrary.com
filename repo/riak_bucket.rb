@@ -1,11 +1,9 @@
 require 'forwardable'
 require 'riak'
 
-require_relative 'riak_repo'
-
 class RiakBucket
   extend Forwardable
-  def_delegators :@bucket, :name
+  def_delegators :@bucket, :name, :new
 
   def initialize bucket
     @bucket = bucket
@@ -15,5 +13,11 @@ class RiakBucket
     @bucket[key]
   rescue Riak::ProtobuffsFailedRequest
     raise NotFound
+  end
+
+  def []= key, value
+    o = @bucket.new key
+    o.data = value
+    o.store
   end
 end

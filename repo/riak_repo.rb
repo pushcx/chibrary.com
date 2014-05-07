@@ -1,5 +1,7 @@
 require 'riak'
 
+require_relative 'riak_bucket'
+
 class NotFound < ArgumentError ; end
 
 module RiakRepo
