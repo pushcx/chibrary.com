@@ -16,15 +16,6 @@ end
 describe ThreadSet do
   let(:ts) { ThreadSet.new Sym.new('slug', 2014, 1) }
 
-#  it 'hashes thread subjects -> call number' do
-#    c = Container.new
-#    ts << Message
-#    ts.finish
-#    expect(ts.subjects).to eq({
-#      '
-#    })
-#  end
-
   describe '#<<' do
     let(:root)  { ThreadableMessage.new('root@example.com',  'Foo', []) }
     let(:child) { ThreadableMessage.new('child@example.com', 'Foo', ['root@example.com']) }

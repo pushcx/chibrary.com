@@ -24,23 +24,24 @@ class Message
     "<Message(#{call_number}) #{message_id}>"
   end
 
-  def self.from_string str, call_number, source=nil, list=nil
-    Message.new Email.new(raw: str), call_number, source, list
-  end
-
-  def self.from_message m
-    Message.new m.email, m.call_number, m.source, m.list
-  end
-
   def likely_split_thread?
     subject.reply? or body_quotes?
   end
 
+  # this is kinda dumb about quotes... see compress_quotes in web/
   def body_quotes?
     body =~ /^[>\|] .+/
   end
 
   def == o
     o.email == email and o.source == source and o.call_number == call_number and o.message_id == message_id
+  end
+
+  def self.from_string str, call_number, source=nil, list=nil
+    Message.new Email.new(raw: str), call_number, source, list
+  end
+
+  def self.from_message m
+    Message.new m.email, m.call_number, m.source, m.list
   end
 end
