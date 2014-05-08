@@ -38,6 +38,10 @@ describe Message do
     end
   end
 
+  describe '#likely_split_thread?' do
+    # delegates to subejct and #body_quotes?, does not need testing
+  end
+
   describe '#body_quotes?' do
     it 'does when there are quoted lines' do
       m = Message.from_string "\n\n> body\ntext", 'callnumber'

@@ -10,7 +10,7 @@ class Message
   extend Forwardable
   def_delegators :@email, :subject, :n_subject, :date, :likely_thread_creation_from?, :references, :body
 
-  def initialize email, call_number, source=nil, list=nil
+  def initialize email, call_number, source=nil, list=NullList.new
     @email = email
     @call_number = CallNumber.new(call_number)
     @source = source
@@ -30,6 +30,10 @@ class Message
 
   def self.from_message m
     Message.new m.email, m.call_number, m.source, m.list
+  end
+
+  def likely_split_thread?
+    subject.reply? or body_quotes?
   end
 
   def body_quotes?

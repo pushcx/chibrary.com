@@ -24,7 +24,7 @@ class MessageContainer
   end
 
   def likely_split_thread?
-    empty? or message.subject.reply? or message.body_quotes?
+    message and message.likely_split_thread?
   end
 
   def value= message
@@ -38,12 +38,6 @@ class MessageContainer
 
   def subject_shorter_than? container
     return subject.length < container.subject.length
-  end
-
-  def slug
-    list = effective_field(:list)
-    return list.slug if list
-    ''
   end
 
   def call_number

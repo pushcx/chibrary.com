@@ -11,8 +11,8 @@ describe List do
       expect { List.new 'abc#123' }.to raise_error(InvalidSlug)
     end
 
-    it 'accepts - in list slugs' do
-      expect { List.new 'a-b' }.not_to raise_error
+    it 'accepts - and _ in list slugs' do
+      expect { List.new 'a-_b' }.not_to raise_error
     end
   end
 
