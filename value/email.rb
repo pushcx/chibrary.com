@@ -58,33 +58,19 @@ class Email
       map { |s| s.gsub(/\n */m, ' ').
       split(';') }.flatten.each do |raw|
         begin
-          date = Time.rfc2822(raw).utc
-          return date
+          return Time.rfc2822(raw).utc
         rescue ArgumentError
           begin
             # if it didn't manage an rfc date, hope for iso date. This is nice
             # when Emails have to be reconstructed from an archive.
-            date = Time.parse(raw + " UTC").utc
+            return Time.parse(raw + " UTC").utc
           rescue ArgumentError
             # If it's completely fucked, well, now is as good at time as any.
-            date = Time.now.utc
+            return Time.now.utc
           end
         end
     end
-
-    raw = header['Date']
-    begin
-      date = Time.rfc2822(raw).utc
-    rescue
-      begin
-        # if it didn't manage an rfc date, hope for iso date. This is nice
-        # when Emails have to be reconstructed from an archive.
-        date = Time.parse(raw + " UTC").utc
-      rescue
-        # If it's completely fucked, well, now is as good at time as any.
-        date = Time.now.utc
-      end
-    end
+    return Time.now.utc
   end
 
   def extract_no_archive
@@ -98,9 +84,6 @@ class Email
   def extract_body
     return '' if raw.nil? # body is not serialized
 
-    # Hack: use the RMail lib to find MIME-encoded body, which can be nested
-    # inside a MIME enclosure. This will have to change when I move to Ruby
-    # 2.0, as RMail is broken there.
     rmail = RMail::Parser.read(raw.gsub("\r", ''))
     parts = [rmail]
     encoding = nil

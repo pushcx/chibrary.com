@@ -20,8 +20,8 @@ describe Email do
         message_id: 'explicit@example.com',
         subject:    'subject',
       })
-      expect(e.instance_variable_get(:@message_id)).to be_a(MessageId)
-      expect(e.instance_variable_get(:@subject)).to be_a(Subject)
+      expect(e.message_id).to be_a(MessageId)
+      expect(e.subject).to be_a(Subject)
     end
   end
 
@@ -208,6 +208,11 @@ describe Email do
       expect(e.canonicalized_from_email).to eq('alice@example.com')
     end
 
+    it 'can get lightly spam-protected emails' do
+      e = Email.new raw: "From: Alice <alice at example.com>\n\nBody"
+      expect(e.canonicalized_from_email).to eq('alice@example.com')
+    end
+
     it 'removes . from gmail addresses' do
       e = Email.new raw: "From: Alice <ali.c.e@gmail.com>\n\nBody"
       expect(e.canonicalized_from_email).to eq('alice@gmail.com')
@@ -218,7 +223,10 @@ describe Email do
       expect(e.canonicalized_from_email).to eq('alice@example.com')
     end
 
-    # what does it do with invalid/missing from addresses?
+    it 'gives a stand-in for invaid emails' do
+      e = Email.new raw: "From: Alice \n\nBody"
+      expect(e.canonicalized_from_email).to eq('no.email.address@chibrary.com')
+    end
   end
 
   describe '#likely_thread_creation_from?' do

@@ -73,10 +73,10 @@ x   core_ext
 x   helper
 x   lib
 x   service
-    value
+x   value
     model
     repo
-  clean up rig/sig/cng names
+x clean up rig/sig/cng names
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p

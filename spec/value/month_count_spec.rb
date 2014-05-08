@@ -12,4 +12,18 @@ describe MonthCount do
       expect(mc.message_count).to eq(2)
     end
   end
+
+  describe '#empty?' do
+    it 'is both counts are zero' do
+      mc = MonthCount.new Sym.new('slug', 2014, 4), 0, 0
+      expect(mc).to be_empty
+    end
+
+    it 'is not if either is above zero' do
+      mc = MonthCount.new Sym.new('slug', 2014, 4), 1, 0
+      expect(mc).to_not be_empty
+      mc = MonthCount.new Sym.new('slug', 2014, 4), 0, 1
+      expect(mc).to_not be_empty
+    end
+  end
 end

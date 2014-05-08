@@ -22,7 +22,7 @@ describe CallNumber do
     end
 
     it 'is not if long' do
-      expect(CallNumber.new('asdf12ASDF12')).to_not be_valid
+      expect(CallNumber.new('asdf12ASDF1')).to_not be_valid
     end
 
     it 'is not if containing other characters' do
@@ -38,7 +38,7 @@ describe CallNumber do
     end
 
     it 'is case sensitive' do
-      expect(CallNumber.new('asdf12asdf')).to_not eq(CallNumber.new('asdf12ASDF'))
+      expect(CallNumber.new('asdf12asdf')).to_not eq(CallNumber.new('ASDF12ASDF'))
     end
   end
 
