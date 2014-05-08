@@ -16,6 +16,10 @@ end
 describe ThreadSet do
   let(:ts) { ThreadSet.new Sym.new('slug', 2014, 1) }
 
+  describe '#==' do
+    pending
+  end
+
   describe '#<<' do
     let(:root)  { ThreadableMessage.new('root@example.com',  'Foo', []) }
     let(:child) { ThreadableMessage.new('child@example.com', 'Foo', ['root@example.com']) }
@@ -103,10 +107,6 @@ describe ThreadSet do
     end
   end
 
-  describe '#==' do
-    pending
-  end
-
   describe '#prior and following_months' do
     it 'gets syms for the following four months' do
       ts = ThreadSet.new Sym.new('slug', 2013, 11)
@@ -136,6 +136,7 @@ describe ThreadSet do
       @found_thread_ids = ts.collect(&:message_id).map(&:to_s)
     end
 
+    # need to hand-check these and uncomment
     xit 'has all threads in order' do
       expect(@found_thread_ids).to eq(complex[:thread_root_ids])
     end
