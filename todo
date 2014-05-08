@@ -74,7 +74,7 @@ x   helper
 x   lib
 x   service
 x   value
-    model
+x   model
     repo
 x clean up rig/sig/cng names
   test filer
@@ -96,6 +96,7 @@ x clean up rig/sig/cng names
   get /
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   migrate functional tests to rspec
+  hand-check the pending thread_set specs
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
   run and test threader

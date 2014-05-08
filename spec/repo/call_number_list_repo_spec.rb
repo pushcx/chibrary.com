@@ -1,6 +1,6 @@
 require_relative '../rspec'
-require_relative '../../model/list'
 require_relative '../../value/sym'
+require_relative '../../model/list'
 require_relative '../../repo/call_number_list_repo'
 
 describe CallNumberListRepo do
