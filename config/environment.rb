@@ -17,7 +17,7 @@ require 'pathname'
 APP_ROOT = Pathname.new(__FILE__)
 APP_NAME = 'chibrary'
 
-Dir["lib/**/*.rb", 'model/**/*.rb'].each { |l| require l }
+Dir["lib/**/*.rb", 'value/**/*.rb', 'model/**/*.rb', 'repo/**/*.rb'].each { |f| require f }
 
 # finally, bring up the web stack
 Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
