@@ -29,11 +29,12 @@ GEM
     json (1.8.1)
     method_source (0.8.2)
     minitest (4.7.5)
+    more_math (0.1.0)
+      tins (~> 0.3)
     multi_json (1.8.2)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
-    permutation (0.1.8)
     pry (0.9.12.3)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -93,6 +94,7 @@ GEM
     tidy (1.1.2)
     tilt (1.4.1)
     timers (1.1.0)
+    tins (0.13.2)
     tzinfo (0.3.38)
     zipruby (0.3.6)
 
@@ -106,9 +108,9 @@ DEPENDENCIES
   hpricot
   htmlentities
   ice_nine
+  more_math
   net-sftp
   net-ssh
-  permutation
   pry
   rake
   redis
