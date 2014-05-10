@@ -25,8 +25,9 @@ class MonthCountRepo
     obj = bucket.new
     obj.key = extract_key
     obj.data = serialize
-    obj.indexes['slug_bin'] << thread_count.slug
-    obj.indexes['sy_bin'] << thread_count.sym.to_sy.to_key
+    obj.indexes['slug_bin'] << month_count.sym.slug
+    obj.indexes['sy_bin'] << month_count.sym.to_sy.to_key
+    obj.store
   end
 
   def self.build_key sym
