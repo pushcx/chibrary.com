@@ -6,7 +6,7 @@ class Summary
   def initialize call_number, n_subject, date, body
     @call_number = CallNumber.new(call_number)
     @n_subject = n_subject
-    @date = date.kind_of?(Time) ? date : Time.rfc2822(date)
+    @date = date.kind_of?(Time) ? date : Time.rfc2822(date).utc
     @blurb = body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join("\n")
 
     raise ArgumentError, "call_number '#{call_number}' is invalid" unless @call_number.valid?
