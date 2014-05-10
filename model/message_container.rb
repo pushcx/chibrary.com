@@ -40,6 +40,10 @@ class MessageContainer
     return subject.length < container.subject.length
   end
 
+  def slug
+    effective_field(:slug)
+  end
+
   def call_number
     effective_field(:call_number) or ''
   end
