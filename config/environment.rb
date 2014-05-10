@@ -20,7 +20,10 @@ APP_NAME = 'chibrary'
 Dir["lib/**/*.rb", 'value/**/*.rb', 'model/**/*.rb', 'repo/**/*.rb'].each { |f| require f }
 
 # finally, bring up the web stack
-Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |file| require file }
+# these specific routes need to get loaded first so that list doesn't shadow them
+require 'web/route/about_route'
+require 'web/route/search_route'
+Dir['web/route/**/*.rb', 'web/helper/**/*.rb'].each { |f| require f }
 
 before do
   @title = "Chibrary - Free Mailing List Archives"
