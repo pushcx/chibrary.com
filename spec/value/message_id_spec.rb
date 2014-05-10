@@ -49,6 +49,7 @@ describe MessageId do
     it 'returns the extracted id' do
       expect(MessageId.new('<id@example.com>').to_s).to eq('id@example.com')
     end
+
     it 'does not pass invalid ids' do
       s = MessageId.new('cats are great').to_s
       expect(s).to_not include('cats')

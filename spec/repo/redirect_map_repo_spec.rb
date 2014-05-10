@@ -5,8 +5,9 @@ require_relative '../../repo/redirect_map_repo'
 describe RedirectMapRepo do
   context 'instantiated with a RedirectMap' do
     it "generates a key based on sym" do
-      rm = RedirectMap.new sym_collaborator
-      RedirectMapRepo.new(rm).extract_key
+      rm = RedirectMap.new Sym.new('slug', 2014, 5)
+      key = RedirectMapRepo.new(rm).extract_key
+      expect(key).to eq('slug/2014/05')
     end
 
     describe "#serialize" do
@@ -22,7 +23,8 @@ describe RedirectMapRepo do
 
   describe "::build_key" do
     it "delegates key building to sym" do
-      RedirectMapRepo.build_key(sym_collaborator)
+      key = RedirectMapRepo.build_key(Sym.new('slug', 2014, 5))
+      expect(key).to eq('slug/2014/05')
     end
   end
 

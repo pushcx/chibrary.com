@@ -4,8 +4,9 @@ require_relative '../../repo/time_sort_repo'
 describe TimeSortRepo do
   context 'instantiated with a TimeSort' do
     it "generates a key based on sym" do
-      ts = TimeSort.new sym_collaborator
-      TimeSortRepo.new(ts).extract_key
+      ts = TimeSort.new Sym.new('slug', 2014, 5)
+      key = TimeSortRepo.new(ts).extract_key
+      expect(key).to eq('slug/2014/05')
     end
 
     describe "generating a hash" do
@@ -23,7 +24,8 @@ describe TimeSortRepo do
 
   describe "::build_key" do
     it "delegates building a key to sym" do
-      TimeSortRepo.build_key(sym_collaborator)
+      key = TimeSortRepo.build_key(Sym.new('slug', 2014, 5))
+      expect(key).to eq('slug/2014/05')
     end
   end
 

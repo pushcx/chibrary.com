@@ -61,7 +61,8 @@ describe TContainerRepo do
 
   describe '::build_month_key' do
     it 'delegates key building to the sym' do
-      TContainerRepo.build_month_key(sym_collaborator)
+      key = TContainerRepo.build_month_key(Sym.new('slug', 2014, 5))
+      expect(key).to eq('slug/2014/05')
     end
   end
 
