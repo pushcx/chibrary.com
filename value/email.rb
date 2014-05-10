@@ -81,7 +81,7 @@ class Email
     )
   end
 
-  def extract_body
+  def body
     return '' if raw.nil? # body is not serialized
 
     rmail = RMail::Parser.read(raw.gsub("\r", ''))
@@ -100,29 +100,25 @@ class Email
       end
       if content_type.nil? or content_type.downcase.include? 'text/plain'
         encoding = part.header['Content-Transfer-Encoding']
-        @body = part.body
+        extracted_body = part.body
         break
       end
     end
 
-    if @body.nil? # didn't find a text/plain body
-      @body = "This MIME-encoded message did not include a plain text body or could not be decoded."
+    if extracted_body.nil? # didn't find a text/plain body
+      extracted_body = "This MIME-encoded message did not include a plain text body or could not be decoded."
     end
 
     case encoding
     when /quoted-printable/i
-      @body = @body.unpack('M').first
+      extracted_body = extracted_body.unpack('M').first
     when /base64/i
-      @body = @body.unpack('m').first
+      extracted_body = extracted_body.unpack('m').first
     end # else it's fine
 
-    @body = @body.to_utf8(charset) if charset
+    extracted_body = extracted_body.to_utf8(charset) if charset
 
-    return @body = @body.strip
-  end
-
-  def body
-    @body ||= extract_body
+    return extracted_body.strip
   end
 
   def canonicalized_from_email
