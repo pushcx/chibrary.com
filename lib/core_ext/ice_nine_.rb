@@ -2,7 +2,7 @@ require 'ice_nine'
 
 module IceNine
   module DeepFreeze
-    def initiaize
+    def initialize *args, &block
       super
       # shallow freeze; any frozen values already have frozen values
       IceNine.deep_freeze!(self)
