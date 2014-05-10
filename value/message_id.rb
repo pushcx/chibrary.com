@@ -3,7 +3,7 @@ require_relative '../lib/core_ext/ice_nine_'
 class MessageId
   prepend IceNine::DeepFreeze
 
-  attr_reader :raw, :message_id
+  attr_reader :raw
 
   def initialize raw
     @raw = (raw || '').to_s
@@ -17,13 +17,9 @@ class MessageId
     raw =~ /\A<?[a-zA-Z0-9%+\-\.=_]+@[a-zA-Z0-9_\-\.]+>?\Z/
   end
 
-  def extract_id
-    @message_id ||= /^<?([^@]+@[^\>]+)>?/.match(raw)[1].chomp
-  end
-
   def to_s
     if valid?
-      extract_id
+      /^<?([^@]+@[^\>]+)>?/.match(raw)[1].chomp
     else
       "[invalid or missing message id]"
     end
@@ -55,6 +51,8 @@ class MessageId
     raise ArgumentError, "Missing call number to generate MessageId" if (call_number || '') == ''
 
     new "#{call_number}@generated-message-id.chibrary.org"
+
+
   end
 
   def self.extract_or_generate str, call_number
