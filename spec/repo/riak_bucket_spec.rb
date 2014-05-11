@@ -12,18 +12,32 @@ describe RiakBucket do
 
   describe "#[]" do
     it "proxies to the bucket's []" do
-      b = double('Riak::Bucket', :"[]" => 'value')
+      o = double('Riak::RObject', data: 'value')
+      b = double('Riak::Bucket')
+      b.should_receive(:[]).with('key').and_return(o)
       rb = RiakBucket.new b
       expect(rb['key']).to eq('value')
     end
 
     it "wraps Riak's exception to NotFound" do
-      b = double('Riak::Bucket')
+      b = double('Riak::Bucket', name: 'name')
       b.should_receive(:[]).with('key').and_raise(Riak::ProtobuffsFailedRequest.new('a', 'b'))
       rb = RiakBucket.new b
       expect {
         rb['key']
       }.to raise_error(NotFound)
+    end
+  end
+
+  describe "#[]=" do
+    it "writes value" do
+      o = double('Riak::RObject')
+      b = double('Riak::Bucket')
+      b.should_receive(:new).with('key').and_return(o)
+      o.should_receive(:data=).with('value')
+      o.should_receive(:store)
+      rb = RiakBucket.new b
+      rb['key'] = 'value'
     end
   end
 end
