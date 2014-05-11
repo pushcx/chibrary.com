@@ -35,10 +35,14 @@ class MonthCountRepo
     sym.to_key
   end
 
+  def self.retrieve key
+    hash = bucket[key]
+    MonthCount.new Sym.new(*key.split('/')), hash[:thread_count], hash[:message_count]
+  end
+
   def self.find sym
     key = build_key(sym)
-    hash = bucket[key]
-    MonthCount.new sym, hash[:thread_count], hash[:message_count]
+    retrieve key
   rescue NotFound
     MonthCount.new sym
   end
@@ -46,9 +50,9 @@ class MonthCountRepo
   def self.years_of_month_counts slug
     bucket.
       get_index('slug_bin', slug).
-      map { |call| find(call) }.
+      map { |key| retrieve(key) }.
       each_with_object( {} ) { |mc, years|
-        (years[mc.year] ||= {})[mc.month] = mc
+        (years[mc.sym.year] ||= {})[mc.sym.month] = mc
       }
   end
 

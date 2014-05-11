@@ -3,7 +3,7 @@
     %a{ href: "/#{@slug}" }= (@list['name'] or @slug)
     = "#{@year}-#{@month}"
 
-  %p= "#{@month_count.message_count} messages in #{@month_count.threaad_count} threads"
+  %p= "#{@month_count.message_count} messages in #{@month_count.thread_count} threads"
 
 %ol.threads
   - @threadset.each do |thread|

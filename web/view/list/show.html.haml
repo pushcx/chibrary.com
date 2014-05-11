@@ -12,11 +12,10 @@
       - @years_of_month_counts.to_a.each do |year, months|
         %tr
           %td.year= year
-          - 1.upto(12) do |i|
-            - month = "%02d" % i
+          - 1.upto(12) do |month|
             - if months.has_key?(month)
               %td.month.small
-                %a{ href: "/#{@slug}/#{year}/#{month}" } #{months[month].thread_count}:#{months[month].message_count}
+                %a{ href: "/#{@slug}/#{year}/#{'%02d' % month}" } #{months[month].thread_count}:#{months[month].message_count}
             - else
               %td.empty_month= ''
 
