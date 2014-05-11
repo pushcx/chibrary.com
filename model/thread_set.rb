@@ -145,7 +145,6 @@ class ThreadSet
       threadset.redirect thread, sym.year, sym.month
     end
   end
-  protected :retrieve_split_threads_from
 
   def each
     finish
