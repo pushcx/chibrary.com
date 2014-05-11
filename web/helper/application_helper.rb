@@ -64,18 +64,18 @@ def month_previous_next(sym)
 
   p = Time.utc(sym.year, sym.month).plus_month(-1)
   p_month = "%02d" % p.month
-  if list.thread_list(p.year, p_month).message_count > 0
-    p_link = "<a href='/#{slug}/#{p.year}/#{p_month}' rel='prev'>#{p.year}-#{p_month}</a>"
+  if MonthCountRepo.find(Sym.new(sym.slug, p.year, p_month)).message_count > 0
+    p_link = "<a href='/#{sym.slug}/#{p.year}/#{p_month}' rel='prev'>#{p.year}-#{p_month}</a>"
   else
-    p_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
+    p_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
   end
 
   n = Time.utc(sym.year, sym.month).plus_month(1)
   n_month = "%02d" % n.month
-  if list.thread_list(n.year, n_month).message_count > 0
-    n_link = "<a href='/#{slug}/#{n.year}/#{n_month}' rel='next'>#{n.year}-#{n_month}</a>"
+  if MonthCountRepo.find(Sym.new(sym.slug, n.year, n_month)).message_count > 0
+    n_link = "<a href='/#{sym.slug}/#{n.year}/#{n_month}' rel='next'>#{n.year}-#{n_month}</a>"
   else
-    n_link = "<a class='none' href='/#{slug}' rel='contents'>list</a>"
+    n_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
   end
 
   return [p_link, n_link]
