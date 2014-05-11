@@ -28,7 +28,7 @@ class TimeSort
   def self.from thread_set
     new(
       thread_set.sym,
-      thread_set.root_set.map { |t| { call_number: t.call_number, subject: t.n_subject } }
+      thread_set.threads.map { |t| { call_number: t.call_number, subject: t.n_subject } }
     )
   end
 end

@@ -76,9 +76,9 @@ describe ThreadSet do
     end
   end
 
-  describe '#root_set' do
+  describe '#threads' do
     it 'is empty with no threads' do
-      expect(ts.send(:root_set)).to eq([])
+      expect(ts.send(:threads)).to eq([])
     end
 
     it 'extracts a root set of threads' do
@@ -86,10 +86,10 @@ describe ThreadSet do
         ts << m2 = ThreadableMessage.new('m2@example.com', 'Foo', ['m1@example.com'])
       ts << m3 = ThreadableMessage.new('m3@example.com', 'Foo', [])
 
-      root_set = ts.send(:root_set)
-      expect(root_set.length).to eq(2)
-      expect(root_set.map(&:message)).to eq([m1, m3])
-      expect(ts.send(:root_set)).to eq(root_set)
+      threads = ts.send(:threads)
+      expect(threads.length).to eq(2)
+      expect(threads.map(&:message)).to eq([m1, m3])
+      expect(ts.send(:threads)).to eq(threads)
     end
   end
 

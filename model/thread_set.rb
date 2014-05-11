@@ -35,11 +35,9 @@ class ThreadSet
     true
   end
 
-  # yield the root set of containers
-  def root_set
-    @root_set ||= @containers.values.select { |c| c.root? }
+  def threads
+    @threads ||= @containers.values.select { |c| c.root? }
   end
-  private :root_set
 
   # finish the threading and yield each root container (thread) in turn
   def finish
@@ -53,9 +51,9 @@ class ThreadSet
       container.orphan if container.message.likely_thread_creation_from? container.parent.message.email
     end
 
-    @root_set = nil
+    @threads = nil
     # Next, pick the likeliest thread roots.
-    root_set.each do |container| # 5.4.B
+    threads.each do |container| # 5.4.B
       subject = container.n_subject
       existing = subjects.fetch(subject, nil)
       # This is more likely the thread root if...
@@ -66,7 +64,7 @@ class ThreadSet
     end
 
     # Next, move the rest of the same-subject roots under it.
-    root_set.each do |container| # 5.4.C
+    threads.each do |container| # 5.4.C
       subject = container.n_subject
       existing = subjects.fetch(subject, nil)
       next if !existing or existing == container
@@ -135,7 +133,7 @@ class ThreadSet
     finish
     # subjects would be cleared as soon as a message is added and the threading is flushed
     # But we know there won't be any more subjects added, so just cache it
-    subjects = root_set.collect(&:n_subject)
+    subjects = threads.collect(&:n_subject)
     threadset.each do |thread|
       next unless thread.likely_split_thread?
       next unless @containers.keys.include? thread.message_id or subjects.include? thread.n_subject
@@ -204,8 +202,8 @@ class ThreadSet
 
   def flush_threading
     # clear everything computed by finish
-    @subjects    = {} # threads: normalized subject -> root container
-    @root_set   = nil
+    @subjects = {} # threads: normalized subject -> root container
+    @threads  = nil
   end
 
   def redirect thread, year, month
