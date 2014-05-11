@@ -22,6 +22,7 @@ class MonthCountRepo
   end
 
   def store
+    return if month_count.empty?
     obj = bucket.new
     obj.key = extract_key
     obj.data = serialize
