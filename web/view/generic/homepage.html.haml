@@ -9,7 +9,7 @@
   <h2>All Lists</h2>
   %ul
     - @lists.each do |list|
-      %li= "<a href=\"/#{list.slug}\">#{(list['name'] or list.slug)}</a>"
+      %li= "<a href=\"/#{list.slug}\">#{(list.title_name)}</a>"
 
 .snippets
   <h2>Recent Messages</h2>
