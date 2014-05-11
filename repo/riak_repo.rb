@@ -28,7 +28,7 @@ module RiakRepo
   module ClassMethods
     def all
       # slow
-      db_client.list_keys(bucket).map { |key| find(key) }
+      db_client.list_keys(bucket.name).map { |key| find(key) }
     end
 
     def build_key
