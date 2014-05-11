@@ -30,5 +30,7 @@ class CallNumberListRepo
   def self.find sym
     key = build_key sym
     deserialize bucket[key]
+  rescue NotFound
+    []
   end
 end
