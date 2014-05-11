@@ -93,8 +93,8 @@ x clean up rig/sig/cng names
   combine css stylesheets; make print stylesheet
   minify css and js
   forward listlibrary.net/org to chibrary
-  get /about
-  get /search
+x get /about
+x get /search
   get /:slug/:year/:month/:call_number
   get /:slug/:year/:month
   get /:slug/:year
