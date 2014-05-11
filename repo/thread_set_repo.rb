@@ -1,5 +1,9 @@
 require_relative '../model/thread_set'
 require_relative 'message_container_repo'
+require_relative 'month_count_repo'
+require_relative 'redirect_map_repo'
+require_relative 'summary_container_repo'
+require_relative 'time_sort_repo'
 
 # Note this does not include RiakRepo as it delegates all the heavy lifting
 # to other Repo classes.
@@ -12,11 +16,12 @@ class ThreadSetRepo
   end
 
   def store
-    thread_set.finish
-    each do |thread|
-      SummaryContainerRepo.new(thread).store
+    thread_set.threads.each do |thread|
+      # TODO Make this serialize and store a full thread
+      #SummaryContainerRepo.new(thread.summarize).store
     end
-    ThreadCountRepo.new(MonthCount.for(thread_set)).store
+    SummaryRepo.new(Summary.from(thread)).store
+    MonthCountRepo.new(MonthCount.from(thread_set)).store
     TimeSortRepo.new(TimeSort.from(thread_set)).store
     RedirectMapRepo.new(thread_set.redirect_map).store
   end
