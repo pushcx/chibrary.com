@@ -25,6 +25,14 @@ class EmailRepo
   end
 
   def self.deserialize hash
-    Email.new hash
+    Email.new({
+      raw:        hash[:raw],
+      message_id: hash[:message_id],
+      subject:    hash[:subject],
+      from:       hash[:from],
+      references: hash[:references],
+      date:       Time.rfc2822(hash[:date]).utc,
+      no_archive: hash[:no_archvie],
+    })
   end
 end

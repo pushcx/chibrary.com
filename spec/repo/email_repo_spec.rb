@@ -18,6 +18,7 @@ describe EmailRepo do
       email = EmailRepo.deserialize({
         raw: "From: <alice@example.com>\n\nBody",
         from: 'bob@example.com',
+        date: Time.now.rfc2822,
       })
       expect(email.from).to eq('bob@example.com')
     end

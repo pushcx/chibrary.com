@@ -77,9 +77,14 @@ x   value
 x   model
     repo
 x clean up rig/sig/cng names
+  re-attempt removal of X-ListLibrary-Added-Header, seen in mud-dev/2000/01
+  missing MonthCount
+  empty RedirectMaps
+  move override fields (subject, date, etc.) up to Message
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
+  web: use summaries for month pages
   override sinatra error pages
   restore google analytics
   convert to html5
