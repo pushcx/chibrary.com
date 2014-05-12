@@ -13,6 +13,10 @@ class MonthCount
     thread_count == 0 and message_count == 0
   end
 
+  def == mc
+    mc.sym == sym and mc.thread_count == thread_count and mc.message_count == message_count
+  end
+
   def self.from ts
     new ts.sym, ts.thread_count, ts.message_count
   end

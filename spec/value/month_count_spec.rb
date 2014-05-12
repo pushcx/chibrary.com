@@ -1,5 +1,6 @@
 require_relative '../rspec'
 require_relative '../../value/month_count'
+require_relative '../../value/sym'
 
 MCTestThreadSet = Struct.new(:sym, :thread_count, :message_count)
 
@@ -24,6 +25,23 @@ describe MonthCount do
       expect(mc).to_not be_empty
       mc = MonthCount.new Sym.new('slug', 2014, 4), 0, 1
       expect(mc).to_not be_empty
+    end
+  end
+
+  describe '#==' do
+    it 'considers the same sym and counts to be equal' do
+      sym = Sym.new('slug', 2014, 1)
+      expect(MonthCount.new(sym, 1, 2)).to eq(MonthCount.new(sym, 1, 2))
+    end
+
+    it 'does not consider different sym to be the same' do
+      expect(MonthCount.new(Sym.new('slug', 2014, 1), 1, 2)).not_to eq(MonthCount.new(Sym.new('DIFF', 2014, 1), 1, 2))
+    end
+
+    it 'does not consider different coutns to be the same' do
+      sym = Sym.new('slug', 2014, 1)
+      expect(MonthCount.new(sym, 1, 2)).not_to eq(MonthCount.new(sym, 1, 3))
+      expect(MonthCount.new(sym, 1, 2)).not_to eq(MonthCount.new(sym, 2, 2))
     end
   end
 end
