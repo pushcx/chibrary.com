@@ -13,6 +13,6 @@ class SummaryContainerRepo
   end
 
   def self.container_class
-    MessageContainer
+    SummaryContainer
   end
 end

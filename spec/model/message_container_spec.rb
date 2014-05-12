@@ -118,7 +118,7 @@ describe MessageContainer do
     before   { c1.adopt c2 }
     subject  { c1.summarize }
 
-    expect_it { to be_a MessageContainer }
+    expect_it { to be_a SummaryContainer }
     it { expect(subject.value).to be_a(Summary) }
     it { expect(subject.call_number).to eq('callnumbr1') }
     it { expect(subject.n_subject).to eq('m1') }

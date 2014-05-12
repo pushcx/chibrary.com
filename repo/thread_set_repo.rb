@@ -16,7 +16,7 @@ class ThreadSetRepo
   end
 
   def store
-    SummarySetRepo.new(thread_set.summarize_threads).store
+    SummarySetRepo.new(thread_set.sym, thread_set.summarize_threads).store
     MonthCountRepo.new(MonthCount.from(thread_set)).store
     TimeSortRepo.new(TimeSort.from(thread_set)).store
     RedirectMapRepo.new(thread_set.redirect_map).store
