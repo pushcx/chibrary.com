@@ -3,9 +3,11 @@ require 'more_math/permutation'
 require_relative '../rspec'
 require_relative '../../value/sym'
 require_relative '../../model/message'
+require_relative '../../model/summary_container'
 require_relative '../../model/thread_set'
 
 ThreadableMessage = Struct.new(:message_id, :subject, :references) do
+  def call_number ; 'callnumber' ; end
   def body ; '' ; end
   def n_subject ; subject ; end
   def date ; Time.now ; end
@@ -126,6 +128,16 @@ describe ThreadSet do
         Sym.new('slug', 2013,  8),
         Sym.new('slug', 2013,  7),
       ])
+    end
+  end
+
+  describe "#summarize_threads" do
+    it "summarizes all threads" do
+      ts << ThreadableMessage.new('t1@example.com', 'Foo', [])
+      ts << ThreadableMessage.new('t2@example.com', 'Bar', [])
+      summary = ts.summarize_threads
+      expect(summary.count).to eq(2)
+      expect(summary.first).to be_a(SummaryContainer)
     end
   end
 

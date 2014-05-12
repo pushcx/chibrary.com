@@ -213,6 +213,10 @@ class ThreadSet
   end
   protected :redirect
 
+  def summarize_threads
+    threads.map(&:summarize)
+  end
+
   def to_s
     "ThreadSet #{sym.to_key}"
   end
