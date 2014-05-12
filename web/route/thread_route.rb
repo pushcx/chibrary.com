@@ -5,14 +5,13 @@ def load_thread(call_number)
     r = RedirectMapRepo.find(Sym.new(@slug, @year, @month)).redirect? @call_number
     redirect_to "#{r}#m-#{@call_number}" and return if r
     @thread = MessageContainerRepo.find(call_number)
-  rescue NotFound
-    raise ArgumentError, "Thread not found"
+  rescue NotFound, InvalidCallNumber
+    raise Sinatra::NotFound, "Thread not found"
   end
 end
 
 get  '/:slug/:year/:month/:call_number' do
   call_number = CallNumber.new(params[:call_number])
-  raise ArgumentError, "Invalid Call Number" unless call_number.valid?
 
   load_list
   load_month

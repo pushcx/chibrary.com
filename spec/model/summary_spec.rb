@@ -4,14 +4,6 @@ require_relative '../rspec'
 require_relative '../../model/summary'
 
 describe Summary do
-  describe '::new' do
-    it 'raises on invalid call_numbers' do
-      expect {
-        Summary.new 'foo', nil, Time.now, 'body'
-      }.to raise_error(ArgumentError, /call_number/)
-    end
-  end
-
   describe '::from copies fields' do
     let(:now)     { Time.now }
     let(:message) { double(call_number: 'callnumb', n_subject: 'foo', date: now, body: 'body') }

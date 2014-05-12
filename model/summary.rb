@@ -8,8 +8,6 @@ class Summary
     @n_subject = n_subject
     @date = date.kind_of?(Time) ? date : Time.rfc2822(date).utc
     @blurb = body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join("\n")
-
-    raise ArgumentError, "call_number '#{call_number}' is invalid" unless @call_number.valid?
   end
 
   def self.from message

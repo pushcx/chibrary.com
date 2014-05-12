@@ -3,14 +3,6 @@ require_relative '../../model/message'
 require_relative '../../model/list'
 
 describe Message do
-  describe '::new' do
-    it 'raises on invalid call_numbers' do
-      expect {
-        Message.new nil, 'foo'
-      }.to raise_error(ArgumentError, /call_number/)
-    end
-  end
-
   describe 'delegates to email for fields' do
     let(:now) { Time.now }
     let(:email) { double('email', n_subject: 'foo', date: now).as_null_object }

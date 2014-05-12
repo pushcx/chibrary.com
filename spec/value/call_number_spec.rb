@@ -14,21 +14,23 @@ describe CallNumber do
 
   describe '#valid?' do
     it 'is with exactly 8 alphanumberic characters' do
-      expect(CallNumber.new('asdfASDF')).to be_valid
+      expect {
+        CallNumber.new('asdfASDF')
+      }.to_not raise_error
     end
 
     it 'is not if short' do
-      expect(CallNumber.new('asdfASD')).to_not be_valid
+      expect { CallNumber.new('asdfASD') }.to raise_error(InvalidCallNumber)
     end
 
     it 'is not if long' do
-      expect(CallNumber.new('asdfASDF1')).to_not be_valid
+      expect { CallNumber.new('asdfASDF1') }.to raise_error(InvalidCallNumber)
     end
 
     it 'is not if containing other characters' do
-      expect(CallNumber.new('asdf--12')).to_not be_valid
-      expect(CallNumber.new('asdf__12')).to_not be_valid
-      expect(CallNumber.new('asdf"\'12')).to_not be_valid
+      expect { CallNumber.new('asdf--12') }.to raise_error(InvalidCallNumber)
+      expect { CallNumber.new('asdf__12') }.to raise_error(InvalidCallNumber)
+      expect { CallNumber.new('asdf"\'12') }.to raise_error(InvalidCallNumber)
     end
   end
 

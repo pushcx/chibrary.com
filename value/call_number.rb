@@ -2,6 +2,8 @@ require_relative '../lib/core_ext/ice_nine_'
 
 CALL_NUMBER_BITS = 47
 
+class InvalidCallNumber < ArgumentError ; end
+
 class CallNumber
   prepend IceNine::DeepFreeze
 
@@ -9,6 +11,7 @@ class CallNumber
 
   def initialize str
     @str = (str || '').to_s
+    raise InvalidCallNumber, "Invalid Call Number '#{@str}'" unless valid?
   end
 
   def valid?

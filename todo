@@ -79,6 +79,7 @@ x   model
 x clean up rig/sig/cng names
 x re-attempt removal of X-ListLibrary-Added-Header, seen in mud-dev/2000/01
 x missing MonthCount
+x is there any reason CallNumber.new shouldn't raise on invalid?
   empty RedirectMaps
   add index for looking up all lists
   move override fields (subject, date, etc.) up to Message
