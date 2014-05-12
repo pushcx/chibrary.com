@@ -3,6 +3,7 @@ require_relative 'message_container_repo'
 require_relative 'month_count_repo'
 require_relative 'redirect_map_repo'
 require_relative 'summary_container_repo'
+require_relative 'summary_set_repo'
 require_relative 'time_sort_repo'
 
 # Note this does not include RiakRepo as it delegates all the heavy lifting

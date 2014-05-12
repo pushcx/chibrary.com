@@ -1,4 +1,5 @@
 require_relative '../rspec'
+require_relative '../../model/message'
 require_relative '../../model/message_container'
 
 describe MessageContainer do

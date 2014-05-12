@@ -2,6 +2,7 @@
 
 require_relative '../lib/container'
 require_relative 'summary'
+require_relative 'summary_container'
 
 class MessageContainer
   include Container
