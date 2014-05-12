@@ -74,8 +74,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    #call_number = CallNumberService.next!
-    call_number = 'x' + i.to_s.rjust(9, '0')
+    call_number = CallNumberService.next!
     message = Message.from_string(
       str,
       call_number,
