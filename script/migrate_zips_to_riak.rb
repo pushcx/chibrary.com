@@ -29,6 +29,7 @@ end
 #LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
 LISTS_TO_LOAD = %w{mud-dev}
 
+call_number_service = CallNumberService.new
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
@@ -74,7 +75,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    call_number = CallNumberService.next!
+    call_number = call_number_service.next!
     message = Message.from_string(
       str,
       call_number,
