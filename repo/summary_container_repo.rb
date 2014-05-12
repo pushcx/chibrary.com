@@ -16,4 +16,3 @@ class SummaryContainerRepo
     MessageContainer
   end
 end
-

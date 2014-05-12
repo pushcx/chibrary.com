@@ -16,11 +16,7 @@ class ThreadSetRepo
   end
 
   def store
-    thread_set.threads.each do |thread|
-      # TODO Make this serialize and store a full thread
-      #SummaryContainerRepo.new(thread.summarize).store
-    end
-    SummaryRepo.new(Summary.from(thread)).store
+    SummarySetRepo.new(thread_set.summarize_threads).store
     MonthCountRepo.new(MonthCount.from(thread_set)).store
     TimeSortRepo.new(TimeSort.from(thread_set)).store
     RedirectMapRepo.new(thread_set.redirect_map).store

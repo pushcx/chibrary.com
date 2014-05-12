@@ -1,5 +1,3 @@
-require 'time'
-
 require_relative '../model/summary'
 
 # Does not import RiakRepo completely or confirm to the Repo interface

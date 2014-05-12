@@ -28,6 +28,22 @@ describe TimeSort do
     end
   end
 
+  describe '#==' do
+    it 'considers the same sym and threads equal' do
+      sym = Sym.new('slug', 2014, 5)
+      expect(TimeSort.new(sym, [{ call_number: 'callnumber', subject: 'Subject' }])).to eq(TimeSort.new(sym, [{ call_number: 'callnumber', subject: 'Subject' }]))
+    end
+
+    it 'does not consider different syms equal' do
+      expect(TimeSort.new(Sym.new('slug', 2014, 5), [])).not_to eq(TimeSort.new(Sym.new('DIFF', 2014, 5), []))
+    end
+
+    it 'does not consider different threads equal' do
+      sym = Sym.new('slug', 2014, 5)
+      expect(TimeSort.new(sym, [])).not_to eq(TimeSort.new(sym, [{ call_number: 'callnumber', subject: 'Subject' }]))
+    end
+  end
+
   describe '::from' do
     CallNumberContainer = Struct.new(:call_number)
 

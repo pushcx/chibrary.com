@@ -25,6 +25,10 @@ class TimeSort
     threads[index]
   end
 
+  def == ts
+    ts.sym == sym and ts.threads == threads
+  end
+
   def self.from thread_set
     new(
       thread_set.sym,

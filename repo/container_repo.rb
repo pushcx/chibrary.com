@@ -62,8 +62,13 @@ module ContainerRepo
     end
 
     def find call_number
-      hash = bucket[call_number]
+      hash = bucket[call_number.to_s]
+      # messagecontainer didn't get written, no tree
       deserialize(hash)
+    end
+
+    def thread call_number
+      # TODO
     end
 
     def month sym
