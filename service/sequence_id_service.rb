@@ -13,7 +13,7 @@ class SequenceIdService
   end
 
   def consume_sequence_id!
-    raise SequenceIdExhaustion if sequence_id > MAX_SEQUENCE_ID
+    raise SequenceIdExhaustion if @sequence_id > MAX_SEQUENCE_ID
     @sequence_id.tap { increment! }
   end
 
