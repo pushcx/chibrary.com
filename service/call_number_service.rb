@@ -44,7 +44,7 @@ class CallNumberService
   def format_ids_to_call v, r, s
     bitstring = combine(v, r, s)
     shuffled = stable_bitstring_shuffle bitstring
-    shuffled.to_i(2).base62_encode
+    shuffled.to_i(2).base62_encode.rjust(8, '0')
   end
 
   def combine v, r, s

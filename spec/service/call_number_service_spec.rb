@@ -51,6 +51,11 @@ describe CallNumberService do
     it "combines and shuffles ids" do
       expect(spec_cns.format_ids_to_call(0, 99, 345)).to eq('2VznWE2i')
     end
+
+    it 'is always 8 characters, even with 0 bits' do
+      expect(spec_cns.format_ids_to_call(0, 0, 0)).to eq('00000000')
+      expect(spec_cns.format_ids_to_call(0, 0, 1)).to eq('00bVJxYW')
+    end
   end
 
   describe "#combine" do
