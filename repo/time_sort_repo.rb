@@ -1,5 +1,4 @@
 require_relative 'riak_repo'
-require_relative '../value/sym'
 require_relative '../value/time_sort'
 require_relative 'thread_link_repo'
 
