@@ -19,7 +19,7 @@ class SummaryRepo
     }
   end
 
-  def deserialize h
+  def self.deserialize h
     Summary.new h[:call_number], h[:n_subject], h[:date], h[:blurb]
   end
 end
