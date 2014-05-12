@@ -7,8 +7,7 @@ class CallNumberListRepo
   attr_reader :sym, :call_numbers
 
   def initialize sym, call_numbers
-    @sym = sym
-    @call_numbers = call_numbers
+    @sym, @call_numbers  = sym, call_numbers
   end
 
   def extract_key
@@ -23,8 +22,8 @@ class CallNumberListRepo
     sym.to_key
   end
 
-  def self.deserialize h
-    h.map { |str| CallNumber.new str }
+  def self.deserialize ary
+    ary.map { |str| CallNumber.new str }
   end
 
   def self.find sym

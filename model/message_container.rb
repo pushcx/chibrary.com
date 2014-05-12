@@ -62,7 +62,7 @@ class MessageContainer
 
   def summarize
     summary = Summary.from(value)
-    c = MessageContainer.new key, summary
+    c = SummaryContainer.new key, summary
     children.each { |child| c.adopt(child.summarize) }
     c
   end
