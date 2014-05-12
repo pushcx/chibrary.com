@@ -9,7 +9,7 @@ describe MessageRepo do
   context 'instantiated with a Message' do
     it '#extract_key' do
       m = FakeStorableMessage.new
-      expect(MessageRepo.new(m).extract_key).to eq('callnumber')
+      expect(MessageRepo.new(m).extract_key).to eq('callnumb')
     end
 
     describe '#serialize' do
@@ -19,7 +19,7 @@ describe MessageRepo do
       subject { message_repo.serialize }
 
       it { expect(subject[:source]).to eq('source') }
-      it { expect(subject[:call_number]).to eq('callnumber') }
+      it { expect(subject[:call_number]).to eq('callnumb') }
       it { expect(subject[:message_id]).to eq('id@example.com') }
       it { expect(subject[:list_slug]).to eq('slug') }
       it { expect(subject[:email]).to eq({}) }
@@ -120,27 +120,27 @@ describe MessageRepo do
   end
 
   it '::build_key builds based on call number' do
-    expect(MessageRepo.build_key('callnumber')).to eq('callnumber')
+    expect(MessageRepo.build_key('callnumb')).to eq('callnumb')
   end
 
   it '::deserialize instantiates messages and emails' do
     EmailRepo.should_receive(:deserialize).with('email').and_return(double('email', message_id: 'id@example.com'))
     message = MessageRepo.deserialize({
       email: 'email',
-      call_number: 'callnumber',
+      call_number: 'callnumb',
       source: 'source',
       list_slug: 'slug',
     })
-    expect(message.call_number).to eq('callnumber')
+    expect(message.call_number).to eq('callnumb')
     expect(message.source).to eq('source')
     expect(message.list).to eq(List.new('slug'))
   end
 
   it '::message_list' do
     bucket = double('bucket')
-    bucket.should_receive(:get_index).with('sym_bin', 'slug/2014/01').and_return(['callnumber'])
+    bucket.should_receive(:get_index).with('sym_bin', 'slug/2014/01').and_return(['callnumb'])
     MessageRepo.stub(:bucket).and_return(bucket)
     list = MessageRepo.call_number_list(Sym.new('slug', 2014, 1))
-    expect(list).to eq([CallNumber.new('callnumber')])
+    expect(list).to eq([CallNumber.new('callnumb')])
   end
 end

@@ -7,7 +7,7 @@ require_relative '../../model/summary_container'
 require_relative '../../model/thread_set'
 
 ThreadableMessage = Struct.new(:message_id, :subject, :references) do
-  def call_number ; 'callnumber' ; end
+  def call_number ; 'callnumb' ; end
   def body ; '' ; end
   def n_subject ; subject ; end
   def date ; Time.now ; end
@@ -144,7 +144,7 @@ describe ThreadSet do
   context 'a complex, real-world set of threads' do
     let(:complex) { YAML::load_file('../fixture/complex_thread.yaml') }
     before do
-      complex[:source_messages].each { |m| ts << Message.from_string(m, 'callnumber') }
+      complex[:source_messages].each { |m| ts << Message.from_string(m, 'callnumb') }
       @found_thread_ids = ts.collect(&:message_id).map(&:to_s)
     end
 
@@ -166,17 +166,17 @@ describe ThreadSet do
     let(:fixture) { YAML::load_file('spec/fixture/quoting_reply.yaml') }
 
     it 'uses quotes in the absence of headers' do
-      ts << (initial = Message.from_string(fixture[:initial_message], 'callnumber'))
-      ts << (regular = Message.from_string(fixture[:regular_reply], 'callnumber'))
-      ts << (quoting = Message.from_string(fixture[:quoting_reply], 'callnumber'))
+      ts << (initial = Message.from_string(fixture[:initial_message], 'callnumb'))
+      ts << (regular = Message.from_string(fixture[:regular_reply], 'callnumb'))
+      ts << (quoting = Message.from_string(fixture[:quoting_reply], 'callnumb'))
       ts.send(:finish)
       expect(ts.containers[quoting.message_id].parent.message_id).to eq(regular.message_id)
     end
   end
 
   describe '#retrieve_split_threads_from' do
-    let(:parent) { Message.from_string("Message-Id: parent@example.com\nSubject: Foo\n\nfoo", 'callnumber') }
-    let(:child)  { Message.from_string("Message-Id: child@example.com\nSubject: Re: Foo\n\nfoo2", 'callnumber') }
+    let(:parent) { Message.from_string("Message-Id: parent@example.com\nSubject: Foo\n\nfoo", 'callnumb') }
+    let(:child)  { Message.from_string("Message-Id: child@example.com\nSubject: Re: Foo\n\nfoo2", 'callnumb') }
 
     it 'threads an example - canary for retrieve_split_threads_from' do
       ts << parent
@@ -200,7 +200,7 @@ describe ThreadSet do
       other = ThreadSet.new Sym.new('slug', '2007', '12')
       # This message will be recognized as a split thread, but a parent for it
       # doesn't exist in ts
-      other << Message.from_string("Message-Id: orphan@example.com\nIn-Reply-To: missing@example.com\nSubject: Bar\n\nbar", 'callnumber')
+      other << Message.from_string("Message-Id: orphan@example.com\nIn-Reply-To: missing@example.com\nSubject: Bar\n\nbar", 'callnumb')
       ts.send(:retrieve_split_threads_from, other)
       expect(ts.length).to eq(1)
       expect(other.length).to eq(1)
