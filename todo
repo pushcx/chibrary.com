@@ -77,7 +77,7 @@ x   value
 x   model
     repo
 x clean up rig/sig/cng names
-  re-attempt removal of X-ListLibrary-Added-Header, seen in mud-dev/2000/01
+x re-attempt removal of X-ListLibrary-Added-Header, seen in mud-dev/2000/01
 x missing MonthCount
   empty RedirectMaps
   add index for looking up all lists

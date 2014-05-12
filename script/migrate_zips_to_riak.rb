@@ -17,16 +17,17 @@ def remove_listlibrary_headers str
   # Date headers were added to 3 in ruby-list, 2 in chipy
   # 3 messages in ruby-list have Date headers added
   # 2 messages in chipy have Date headers added
-  while str =~ /^  X-ListLibrary-Added-Header: (.*)$/
+  while str =~ /^X-ListLibrary-Added-Header: (.*)$/
     header = $1 # Thanks, Perl
     header.sub!('\n','') # yes, remove a literal \n that yaml didn't parse
-    str.sub!(/^  #{header}: .*\n/, '')
-    str.sub!(/^  X-ListLibrary-Added-Header: .*\n/, '')
+    str.sub!(/^#{header}: .*\n/, '')
+    str.sub!(/^X-ListLibrary-Added-Header: .*\n/, '')
   end
   str
 end
 
-LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
+#LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
+LISTS_TO_LOAD = %w{mud-dev}
 
 start = ARGV.shift
 raise "need start number" if start.nil?
@@ -81,8 +82,6 @@ begin
       source,
       List.new(slug)
     )
-    # TODO replace message id if it's @generated-message-id.listlibrary.net
-    # TODO remove any listlibrary added headers - there's some in chipy
 
     # just exercising the message rather than actually storing it
     #ms = MessageRepo.new(message, MessageRepo::Overwrite::DO)
