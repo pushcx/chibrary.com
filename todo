@@ -83,6 +83,8 @@ x is there any reason CallNumber.new shouldn't raise on invalid?
   empty RedirectMaps
   add index for looking up all lists
   move override fields (subject, date, etc.) up to Message
+  datetime for when archived
+  use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
   test filer
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
