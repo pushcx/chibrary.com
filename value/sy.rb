@@ -1,4 +1,8 @@
+require 'adamantium'
+
 class Sy
+  include Adamantium
+
   attr_reader :slug, :year
 
   def initialize slug, year

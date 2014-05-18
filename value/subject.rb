@@ -1,10 +1,10 @@
+require 'adamantium'
 require 'forwardable'
-require_relative '../lib/core_ext/ice_nine_'
+
 require_relative '../lib/core_ext/string_'
 
-
 class Subject
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   RE_PATTERN = /\s*\[?(Re|Fwd?)([\[\(]?\d+[\]\)]?)?:\s*/i
 

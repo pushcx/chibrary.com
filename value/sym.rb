@@ -1,7 +1,11 @@
+require 'adamantium'
+
 require_relative '../lib/core_ext/time_'
 require_relative 'sy'
 
 class Sym
+  include Adamantium
+
   attr_reader :slug, :year, :month
 
   def initialize slug, year, month

@@ -1,7 +1,7 @@
-require_relative '../lib/core_ext/ice_nine_'
+require 'adamantium'
 
 class MonthCount
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   attr_reader :sym, :thread_count, :message_count
 

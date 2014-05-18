@@ -1,7 +1,7 @@
-require_relative '../lib/core_ext/ice_nine_'
+require 'adamantium'
 
 class MessageId
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   attr_reader :raw
 

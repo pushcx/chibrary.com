@@ -20,7 +20,7 @@ gem 'rake'
 gem 'shotgun'
 
 # infrastructure
-gem 'ice_nine'
+gem 'adamantium'
 
 # work
 gem 'base62'

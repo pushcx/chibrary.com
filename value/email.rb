@@ -1,3 +1,4 @@
+require 'adamantium'
 require 'base62'
 require 'base64'
 require 'digest/sha2'
@@ -7,11 +8,9 @@ require 'time'
 require_relative 'headers'
 require_relative 'subject'
 require_relative 'message_id'
-require_relative '../lib/core_ext/ice_nine_'
-
 
 class Email
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   attr_reader :raw, :header
 
@@ -23,10 +22,12 @@ class Email
   def message_id
     MessageId.new header['Message-Id']
   end
+  memoize :message_id
 
   def subject
     Subject.new header['Subject']
   end
+  memoize :subject
 
   def n_subject
     subject.normalized
@@ -35,6 +36,7 @@ class Email
   def from
     header['From'].sub(/"(.*?)"/, '\1').decoded
   end
+  memoize :from
 
   def references
     "#{header['In-Reply-To']} #{header['References']}".
@@ -43,6 +45,7 @@ class Email
       select { |m| m.valid? }.
       uniq
   end
+  memoize :references
 
   def date
     # Received headers are prepended, so we can take the first value there
@@ -65,6 +68,7 @@ class Email
     end
     return Time.now.utc
   end
+  memoize :date
 
   def no_archive
     (
@@ -73,6 +77,7 @@ class Email
       header['Archive'] =~ /no/i
     )
   end
+  memoize :no_archive
 
   def body
     return '' if raw.nil? # body is not serialized
@@ -113,6 +118,7 @@ class Email
 
     return extracted_body.strip
   end
+  memoize :body
 
   def canonicalized_from_email
     from = header['From']
@@ -138,6 +144,7 @@ class Email
     end
     parts.join('@')
   end
+  memoize :canonicalized_from_email
 
   # Guess if this message actually starts a new thread instead of replying to parent
   # maybe this huge thing should be its own class
@@ -181,6 +188,7 @@ class Email
       raw.chomp.split(/[^\w@\.\-_]/).select { |s| s =~ /@/ }
     end.flatten
   end
+  memoize :possible_list_addresses
 
   def mid_hash
     raise 'No CHIBRARY_SALT in environment' unless ENV['CHIBRARY_SALT']
@@ -193,6 +201,7 @@ class Email
     ].join('')
     Digest::SHA2.hexdigest(value).to_i(16).base62_encode
   end
+  memoize :mid_hash
 
   def vitals_hash
     raise 'No CHIBRARY_SALT in environment' unless ENV['CHIBRARY_SALT']
@@ -207,6 +216,7 @@ class Email
 
     Digest::SHA2.hexdigest(value).to_i(16).base62_encode
   end
+  memoize :vitals_hash
 
   def == other
     other.raw == raw

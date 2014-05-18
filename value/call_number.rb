@@ -1,11 +1,11 @@
-require_relative '../lib/core_ext/ice_nine_'
+require 'adamantium'
 
 CALL_NUMBER_BITS = 47
 
 class InvalidCallNumber < ArgumentError ; end
 
 class CallNumber
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   attr_reader :str
 

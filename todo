@@ -82,8 +82,8 @@ x missing MonthCount
 x is there any reason CallNumber.new shouldn't raise on invalid?
 x add index for looking up all lists
 x move override fields (subject, date, etc.) up to Message, they're mutable
-  use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
-  test filer
+x use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
+  rewrite filer as service... or repo?
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   web: use summaries for month pages

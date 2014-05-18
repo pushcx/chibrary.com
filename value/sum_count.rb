@@ -1,7 +1,7 @@
-require_relative '../lib/core_ext/ice_nine_'
+require 'adamantium'
 
 SumCount = Struct.new(:thread_count, :message_count) do
-  prepend IceNine::DeepFreeze
+  include Adamantium
 
   def self.of month_counts
     SumCount.new(
