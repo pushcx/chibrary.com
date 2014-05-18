@@ -27,6 +27,12 @@ class ListRepo
     }
   end
 
+  def indexes
+    {
+      slug_bin: list.slug,
+    }
+  end
+
   def self.deserialize h
     List.new h[:slug], h[:name], h[:description], h[:homepage]
   end
@@ -35,5 +41,9 @@ class ListRepo
     key = build_key(slug)
     hash = bucket[key]
     deserialize(hash)
+  end
+  
+  def self.all
+    bucket.get_index('slug_bin', '0'..'z').map { |k| find(k) }
   end
 end

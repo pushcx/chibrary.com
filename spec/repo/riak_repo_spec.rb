@@ -19,8 +19,12 @@ describe RiakRepo do
   describe "#store" do
     it "puts it in the bucket" do
       es = ExampleRepo.new
+      object = double('object')
+      object.should_receive(:key=).with('/key')
+      object.should_receive(:data=).with({})
+      object.should_receive(:store)
       bucket = double('bucket')
-      bucket.should_receive(:[]=).with('/key', {})
+      bucket.should_receive(:new).and_return(object)
       es.should_receive(:bucket).and_return(bucket)
       es.store
     end

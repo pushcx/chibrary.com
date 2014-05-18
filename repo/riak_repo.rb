@@ -17,20 +17,27 @@ module RiakRepo
     raise NotImplementedError
   end
 
+  def indexes
+    {}
+  end
+
   def bucket
     self.class.bucket
   end
 
   def store
-    bucket[extract_key] = serialize
+    obj = bucket.new
+    obj.key = extract_key
+    obj.data = serialize
+    indexes.each do |index, values|
+      Array(values).each do |value|
+        obj.indexes[index.to_s] << value.to_s
+      end
+    end
+    obj.store
   end
 
   module ClassMethods
-    def all
-      # slow
-      db_client.list_keys(bucket.name).map { |key| find(key) }
-    end
-
     def build_key
       raise NotImplementedError
     end
