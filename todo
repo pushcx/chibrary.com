@@ -84,6 +84,7 @@ x add index for looking up all lists
 x move override fields (subject, date, etc.) up to Message, they're mutable
 x use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
   rewrite filer as service... or repo?
+x Message only knows its List so Sym and MessageRepo can get at its slug
   test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   web: use summaries for month pages
@@ -117,7 +118,6 @@ x get /search
 Possible refactorings:
   empty RedirectMaps?
   datetime for when archived
-  Message only knows its List so Sym and MessageRepo can get at its slug
   Models to entities/
   Slug value
   Create procedure/ for driving scripts?

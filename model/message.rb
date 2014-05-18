@@ -4,16 +4,15 @@ require_relative '../value/call_number'
 require_relative '../value/email'
 
 class Message
-  attr_accessor :email, :call_number, :source, :list, :overlay
+  attr_accessor :email, :call_number, :source, :overlay
 
   extend Forwardable
   def_delegators :@email, :likely_thread_creation_from?
 
-  def initialize email, call_number, source=nil, list=NullList.new, overlay={}
+  def initialize email, call_number, source=nil, overlay={}
     @email = email
     @call_number = CallNumber.new(call_number)
     @source = source
-    @list = list
     @overlay = overlay
     overlay[:message_id] = MessageId.generate_for(call_number) unless message_id.valid?
   end
@@ -58,11 +57,11 @@ class Message
     o.email == email and o.source == source and o.call_number == call_number and o.message_id == message_id
   end
 
-  def self.from_string str, call_number, source=nil, list=nil, overlay={}
-    Message.new Email.new(str), call_number, source, list, overlay
+  def self.from_string str, call_number, source=nil, overlay={}
+    Message.new Email.new(str), call_number, source, overlay
   end
 
   def self.from_message m
-    Message.new m.email, m.call_number, m.source, m.list
+    Message.new m.email, m.call_number, m.source, m.overlay
   end
 end

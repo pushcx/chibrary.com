@@ -1,6 +1,5 @@
 require_relative '../rspec'
 require_relative '../../model/message'
-require_relative '../../model/list'
 
 describe Message do
   describe "overlaying email fields" do
@@ -10,7 +9,7 @@ describe Message do
     end
 
     it "can overlay email fields at initialization" do
-      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb', 'source', List.new('list'), subject: 'Bar'
+      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb', 'source', subject: 'Bar'
       expect(m.subject).to eq('Bar')
     end
 
@@ -58,8 +57,8 @@ describe Message do
 
   describe '#==' do
     it 'is the same if the fields are the same' do
-      m1 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', List.new('list')
-      m2 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', List.new('list')
+      m1 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', {}
+      m2 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', {}
       expect(m2).to eq(m1)
     end
   end
@@ -73,12 +72,11 @@ describe Message do
 
   describe '::from_message' do
     it 'copies fields' do
-      m1 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
+      m1 = Message.from_string "\n\nBody", 'callnumb', 'source'
       m2 = Message.from_message m1
       expect(m2.email.body).to eq(m1.email.body)
       expect(m2.call_number).to eq(m1.call_number)
       expect(m2.source).to eq(m2.source)
-      expect(m2.list).to eq(m1.list)
     end
   end
 end

@@ -43,8 +43,4 @@ class Sym
   def self.from_container container
     new container.slug, container.date.year, container.date.month
   end
-
-  def self.from_message message
-    new message.list.slug, message.date.year, message.date.month
-  end
 end

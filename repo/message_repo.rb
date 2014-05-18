@@ -11,7 +11,7 @@ class MessageOverwriteError < StandardError ; end
 class MessageRepo
   include RiakRepo
 
-  attr_reader :message, :overwrite
+  attr_reader :message, :list, :overwrite
 
   module Overwrite
     ERROR = :error
@@ -19,8 +19,9 @@ class MessageRepo
     DONT = :dont
   end
 
-  def initialize message, overwrite=Overwrite::ERROR
+  def initialize message, list, overwrite=Overwrite::ERROR
     @message = message
+    @list = list
     @overwrite = overwrite
   end
 
@@ -33,7 +34,7 @@ class MessageRepo
       source:      message.source,
       call_number: message.call_number.to_s,
       message_id:  message.message_id,
-      list_slug:   message.list.slug,
+      list_slug:   list.slug,
       overlay:     message.overlay,
       email:       EmailRepo.new(message.email).serialize,
     }
@@ -62,7 +63,7 @@ class MessageRepo
     obj.key = key
     obj.data = serialize
     obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
-    obj.indexes['sym_bin']     << Sym.from_message(message).to_key
+    obj.indexes['sym_bin']     << Sym.new(list.slug, message.date.year, message.date.month).to_key
     obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 
@@ -74,7 +75,7 @@ class MessageRepo
   end
 
   def self.deserialize hash
-    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:source], List.new(hash[:list_slug]), hash.fetch(:overlay, {})
+    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:source], hash.fetch(:overlay, {})
   end
 
   def self.find call_number

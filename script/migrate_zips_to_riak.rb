@@ -4,11 +4,11 @@
 
 require 'yaml'
 require 'json'
-require_relative '../lib/storage.rb'
-require_relative '../service/call_number_service.rb'
-require_relative '../model/list.rb'
-require_relative '../model/message.rb'
-require_relative '../repo/message_repo.rb'
+require_relative '../lib/storage'
+require_relative '../service/call_number_service'
+require_relative '../model/list'
+require_relative '../model/message'
+require_relative '../repo/message_repo'
 
 #thread_queue = Queue.new :thread
 
@@ -79,8 +79,7 @@ begin
     message = Message.from_string(
       str,
       call_number,
-      source,
-      List.new(slug)
+      source
     )
 
     # just exercising the message rather than actually storing it
@@ -90,7 +89,7 @@ begin
     #Base64.strict_encode64(message.message_id.to_s)
     #"#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
     #Base64.strict_encode64(message.email.canonicalized_from_email)
-    MessageRepo.new(message, MessageRepo::Overwrite::DO).store
+    MessageRepo.new(message, List.new(slug), MessageRepo::Overwrite::DO).store
 
     # queue threader for this list
 #    thread_queue.add :slug => slug, :year => message.date.year, :month => "%02d" % message.date.month
