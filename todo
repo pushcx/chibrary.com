@@ -75,15 +75,13 @@ x   lib
 x   service
 x   value
 x   model
-    repo
+    repo (remove the Fake doubles)
 x clean up rig/sig/cng names
 x re-attempt removal of X-ListLibrary-Added-Header, seen in mud-dev/2000/01
 x missing MonthCount
 x is there any reason CallNumber.new shouldn't raise on invalid?
-  empty RedirectMaps?
 x add index for looking up all lists
-  move override fields (subject, date, etc.) up to Message
-  datetime for when archived
+x move override fields (subject, date, etc.) up to Message, they're mutable
   use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
   test filer
   test fetcher
@@ -117,6 +115,9 @@ x get /search
   announce
 
 Possible refactorings:
+  empty RedirectMaps?
+  datetime for when archived
+  Message only knows its List so Sym and MessageRepo can get at its slug
   Models to entities/
   Slug value
   Create procedure/ for driving scripts?
@@ -125,6 +126,7 @@ Possible refactorings:
   Use hamstergem/hamster in ThreadSet and other collections
   move Storage.serialize and .store to class methods?; I never keep obj around
   split Storage and Retrievage into separate objects?
+  store deeply nested items (SummarySet, etc) as flat list + parentings to avoid json serialization limits
 
 Feature ideas:
   mark up italics in //

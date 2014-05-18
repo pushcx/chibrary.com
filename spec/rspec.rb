@@ -69,6 +69,7 @@ class FakeMessage
 end
 
 class FakeStorableMessage < FakeMessage
+  def overlay ; {} ; end
   def email ; OpenStruct.new(canonicalized_from_email: 'from@example.com') ; end
   def source ; 'source' ; end
   def call_number ; 'callnumb' ; end

@@ -34,6 +34,7 @@ class MessageRepo
       call_number: message.call_number.to_s,
       message_id:  message.message_id,
       list_slug:   message.list.slug,
+      overlay:     message.overlay,
       email:       EmailRepo.new(message.email).serialize,
     }
   end
@@ -73,7 +74,7 @@ class MessageRepo
   end
 
   def self.deserialize hash
-    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:source], List.new(hash[:list_slug])
+    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:source], List.new(hash[:list_slug]), hash.fetch(:overlay, {})
   end
 
   def self.find call_number

@@ -1,7 +1,6 @@
 require 'base62'
 require 'base64'
 require 'digest/sha2'
-require 'forwardable'
 require 'rmail'
 require 'time'
 
@@ -15,35 +14,29 @@ class Email
   prepend IceNine::DeepFreeze
 
   attr_reader :raw, :header
-  attr_reader :from, :message_id, :references, :date, :no_archive, :subject
 
-  extend Forwardable
-  def_delegator :@subject, :normalized, :n_subject
-
-  def initialize fields
-    @raw        = fields[:raw]
+  def initialize raw
+    @raw        = raw
     @header     = Headers.new raw
-    @message_id = MessageId.new(fields[:message_id] || extract_message_id)
-    @subject    = Subject.new(fields[:subject] || extract_subject)
-    @from       = fields[:from]       || extract_from
-    @references = fields[:references] || extract_references
-    @date       = fields[:date]       || extract_date
-    @no_archive = fields[:no_archive] || extract_no_archive
   end
 
-  def extract_message_id
-    header['Message-Id']
+  def message_id
+    MessageId.new header['Message-Id']
   end
 
-  def extract_subject
-    header['Subject']
+  def subject
+    Subject.new header['Subject']
   end
 
-  def extract_from
+  def n_subject
+    subject.normalized
+  end
+
+  def from
     header['From'].sub(/"(.*?)"/, '\1').decoded
   end
 
-  def extract_references
+  def references
     "#{header['In-Reply-To']} #{header['References']}".
       split(/\s+/).
       map { |s| MessageId.new(s) }.
@@ -51,7 +44,7 @@ class Email
       uniq
   end
 
-  def extract_date
+  def date
     # Received headers are prepended, so we can take the first value there
     # and fall back to Date
     (header.all('Received') << header['Date']).
@@ -73,8 +66,8 @@ class Email
     return Time.now.utc
   end
 
-  def extract_no_archive
-    @no_archive = !!(
+  def no_archive
+    (
       header['X-No-Archive'] =~ /yes/i or
       header['X-Archive'] != '' or
       header['Archive'] =~ /no/i
@@ -216,12 +209,6 @@ class Email
   end
 
   def == other
-    other.body == body and
-    (other.message_id == message_id or (!other.message_id.valid? and !message_id.valid?)) and
-    other.subject == subject and
-    other.from == from and
-    other.references == references and
-    other.date.to_i == date.to_i and
-    other.no_archive == no_archive
+    other.raw == raw
   end
 end

@@ -14,7 +14,7 @@ class Subject
   def_delegators :@original, :length
 
   def initialize str
-    @original = str || ''
+    @original = (str || '').to_s
   end
 
   def reply?

@@ -3,17 +3,45 @@ require_relative '../../model/message'
 require_relative '../../model/list'
 
 describe Message do
-  describe 'delegates to email for fields' do
-    let(:now) { Time.now }
-    let(:email) { double('email', n_subject: 'foo', date: now).as_null_object }
-    let(:message) { Message.new(email, 'callnumb') }
+  describe "overlaying email fields" do
+    it "passes through to email by default" do
+      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb'
+      expect(m.subject).to eq('Foo')
+    end
 
-    it { expect(message.n_subject).to eq('foo') }
-    it { expect(message.date).to eq(now) }
+    it "can overlay email fields at initialization" do
+      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb', 'source', List.new('list'), subject: 'Bar'
+      expect(m.subject).to eq('Bar')
+    end
+
+    it "can overlay email fields at runtime" do
+      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb'
+      m.subject = 'Bar'
+      expect(m.subject).to eq('Bar')
+    end
+
+    it "can overlay n_subject from subject" do
+      m = Message.from_string "Subject: Foo\n\nBody", 'callnumb'
+      m.subject = 'Bar'
+      expect(m.n_subject).to eq('Bar')
+    end
+
+    it "generates message_id overlay if email is missing one" do
+      m = Message.from_string "\n\nBody", 'callnumb'
+      expect(m.message_id.to_s).to include('callnumb')
+    end
   end
 
   describe '#likely_split_thread?' do
-    # delegates to subejct and #body_quotes?, does not need testing
+    it "is if subject is reply" do
+      m = Message.from_string "Subject: Re: foo\n\n", 'callnumb'
+      expect(m.likely_split_thread?).to be_true
+    end
+
+    it "is if body quotes" do
+      m = Message.from_string "\n\n> body\ntext", 'callnumb'
+      expect(m.likely_split_thread?).to be_true
+    end
   end
 
   describe '#body_quotes?' do
@@ -30,8 +58,8 @@ describe Message do
 
   describe '#==' do
     it 'is the same if the fields are the same' do
-      m1 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
-      m2 = Message.from_string "\n\nBody", 'callnumb', 'source', List.new('list')
+      m1 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', List.new('list')
+      m2 = Message.from_string "Message-Id: id@example.com\n\nBody", 'callnumb', 'source', List.new('list')
       expect(m2).to eq(m1)
     end
   end

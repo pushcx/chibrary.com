@@ -93,31 +93,7 @@ describe MessageId do
 
   describe '::generate_for' do
     it 'creates based on call number' do
-      expect(MessageId.generate_for('0123456789').to_s).to include('0123456789')
-    end
-
-    it 'raises without a call_number' do
-      expect {
-        MessageId.generate_for ''
-      }.to raise_error(ArgumentError)
-    end
-  end
-
-  describe '::extract_or_generate' do
-    it 'given a valid message id string, creates from that' do
-      mid = MessageId.extract_or_generate('id@example.com', 'call')
-      expect(mid.to_s).to include('id@example.com')
-    end
-
-    it 'given a valid message id object, creates from that' do
-      mid = MessageId.extract_or_generate(MessageId.new('id@example.com'), 'call')
-      expect(mid.to_s).to include('id@example.com')
-    end
-
-
-    it 'given an invalid message id, generates from call_number' do
-      mid = MessageId.extract_or_generate('srsly cats man', 'call')
-      expect(mid.to_s).to include('call')
+      expect(MessageId.generate_for('01234567').to_s).to include('01234567')
     end
   end
 

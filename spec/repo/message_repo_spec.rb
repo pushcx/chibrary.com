@@ -1,6 +1,6 @@
 require_relative '../rspec'
-require_relative '../../model/list'
 require_relative '../../value/sym'
+require_relative '../../model/list'
 require_relative '../../repo/message_repo'
 
 class EmailRepo ; end
@@ -23,6 +23,7 @@ describe MessageRepo do
       it { expect(subject[:message_id]).to eq('id@example.com') }
       it { expect(subject[:list_slug]).to eq('slug') }
       it { expect(subject[:email]).to eq({}) }
+      it { expect(subject[:overlay]).to eq({}) }
     end
 
     describe '#dont_overwrite_if_already_stored' do
@@ -130,10 +131,14 @@ describe MessageRepo do
       call_number: 'callnumb',
       source: 'source',
       list_slug: 'slug',
+      overlay: {
+        message_id: 'overlay@example.com',
+      },
     })
     expect(message.call_number).to eq('callnumb')
     expect(message.source).to eq('source')
     expect(message.list).to eq(List.new('slug'))
+    expect(message.message_id.to_s).to eq('overlay@example.com')
   end
 
   it '::message_list' do

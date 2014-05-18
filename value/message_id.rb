@@ -48,16 +48,6 @@ class MessageId
   end
 
   def self.generate_for call_number
-    raise ArgumentError, "Missing call number to generate MessageId" if (call_number || '') == ''
-
     new "#{call_number}@generated-message-id.chibrary.org"
-
-
-  end
-
-  def self.extract_or_generate str, call_number
-    mid = new(str)
-    return mid if mid.valid?
-    return generate_for call_number
   end
 end
