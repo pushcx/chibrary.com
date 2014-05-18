@@ -2,6 +2,8 @@ require 'riak'
 
 require_relative 'riak_bucket'
 
+Riak.json_options = { max_nesting: 100 }
+
 class NotFound < ArgumentError ; end
 
 module RiakRepo
