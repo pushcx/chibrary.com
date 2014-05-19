@@ -74,10 +74,20 @@ ol.threads {
       float: left;
       margin-right: 0.5em;
       text-align: right;
-      width: 2.5em;
+      width: 4.0em;
+    }
+    ol.threads li.thread .header .twiddler {
+      float: left;
+      color: #125AA7;
+    }
+    ol.threads li.thread.closed:hover .header .twiddler::before {
+      content: "\25b6";
+    }
+    ol.threads li.thread .header .twiddler.open::before {
+      content: "\25bc";
     }
     ol.threads ol.thread_list {
-      margin-left: 3.5em;
+      margin-left: 4.0em;
     }
     ol.threads li.thread ol.thread_list.closed {
       display: none;

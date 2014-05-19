@@ -3,12 +3,13 @@ $(function() {
   $("li.thread").click(function(){
     $(this).toggleClass('closed');
     $(this).find('ol.thread_list').toggleClass('closed');
+    $(this).find('.twiddler').toggleClass('open');
   }).dblclick(function() {
     if ($(this).is('.closed')) {
-      $('li.thread').removeClass('closed');
+      $('li.thread').removeClass('closed').find('.twiddler').addClass('open');
       $('li.thread ol.thread_list').removeClass('closed');
     } else {
-      $('li.thread').addClass('closed');
+      $('li.thread').addClass('closed').find('.twiddler').removeClass('open');
       $('li.thread ol.thread_list').addClass('closed');
     }
   }).addClass('closed');

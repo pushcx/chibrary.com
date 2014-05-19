@@ -10,7 +10,9 @@
     %li.thread
       %a{ id: "t-#{thread.call_number}", name: "t-#{thread.call_number}" }/
       .header
-        %span.count= thread.count
+        %span.count
+          %span.twiddler &nbsp;
+          = thread.count
         %a.subject{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}" }= subject(thread)
       = partial :'month/_thread_list.html', locals: { thread: thread }
 
