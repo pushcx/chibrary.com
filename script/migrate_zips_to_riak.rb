@@ -5,7 +5,7 @@
 require 'yaml'
 require 'json'
 require_relative '../lib/storage'
-require_relative '../service/call_number_service'
+require_relative '../service/filer'
 require_relative '../model/list'
 require_relative '../model/message'
 require_relative '../repo/message_repo'
@@ -29,7 +29,7 @@ end
 #LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
 LISTS_TO_LOAD = %w{mud-dev}
 
-call_number_service = CallNumberService.new
+filer = Filer.new 'riak-migration'
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
@@ -75,26 +75,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    call_number = call_number_service.next!
-    message = Message.from_string(
-      str,
-      call_number,
-      source
-    )
-
-    # just exercising the message rather than actually storing it
-    #ms = MessageRepo.new(message, MessageRepo::Overwrite::DO)
-    #ms.extract_key
-    #ms.serialize
-    #Base64.strict_encode64(message.message_id.to_s)
-    #"#{message.list.slug}/#{message.date.year}/%02d" % message.date.month
-    #Base64.strict_encode64(message.email.canonicalized_from_email)
-    MessageRepo.new(message, List.new(slug), MessageRepo::Overwrite::DO).store
-
-    # queue threader for this list
-#    thread_queue.add :slug => slug, :year => message.date.year, :month => "%02d" % message.date.month
-#  end
-
+    filer.file str, source, List.new(slug)
 end
 rescue Exception => e
   puts
@@ -103,5 +84,6 @@ rescue Exception => e
   File.write('fail', raw)
   raise e
 end
+filer.thread_jobs
 
 puts Time.now

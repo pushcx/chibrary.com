@@ -1,3 +1,5 @@
+require 'set'
+
 require_relative '../rspec'
 require_relative '../../value/sym'
 
@@ -53,6 +55,15 @@ describe Sym do
       sy = sym.to_sy
       expect(sym.slug).to eq(sy.slug)
       expect(sym.year).to eq(sy.year)
+    end
+  end
+
+  describe 'in a set' do
+    it 'does not duplicate' do
+      sym1 = Sym.new('slug', 2014, 5)
+      sym2 = Sym.new('slug', 2014, 5)
+      set = Set.new [sym1, sym2]
+      expect(set.size).to eq(1)
     end
   end
 

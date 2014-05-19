@@ -83,9 +83,8 @@ x is there any reason CallNumber.new shouldn't raise on invalid?
 x add index for looking up all lists
 x move override fields (subject, date, etc.) up to Message, they're mutable
 x use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb/adamantium
-  rewrite filer as service... or repo?
+x rewrite filer as service... or repo?
 x Message only knows its List so Sym and MessageRepo can get at its slug
-  test fetcher
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
   web: use summaries for month pages
   override sinatra error pages
@@ -114,6 +113,7 @@ x get /search
   fix google analytics logging to only be included in prod
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
   announce
+  test fetcher
 
 Possible refactorings:
   empty RedirectMaps?

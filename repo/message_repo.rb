@@ -54,6 +54,10 @@ class MessageRepo
     end
   end
 
+  def sym
+    Sym.new(list.slug, message.date.year, message.date.month)
+  end
+
   def store
     key = extract_key
     guard_against_error_overwrite(key)
@@ -63,7 +67,7 @@ class MessageRepo
     obj.key = key
     obj.data = serialize
     obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
-    obj.indexes['sym_bin']     << Sym.new(list.slug, message.date.year, message.date.month).to_key
+    obj.indexes['sym_bin']     << sym.to_key
     obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
     obj.store
 

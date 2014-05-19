@@ -34,7 +34,11 @@ class Sym
   def == other
     other.slug == slug and same_time_as? other
   end
-  alias :eql :==
+  alias :eql? :==
+
+  def hash
+    to_key.hash
+  end
 
   def to_s
     "<Sym #{to_key}>"
