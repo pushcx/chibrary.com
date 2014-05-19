@@ -58,10 +58,11 @@ ol.threads {
   list-style-type: none;
   margin-left: 0;
 }
-    ol.threads li.thread .header a.subject {
-      background-color: white;
-      padding: 2px 1em 2px 0.5em;
-    }
+  ol.threads li.thread .header {
+    height: 1.5em;
+    margin: 0;
+    overflow: hidden;
+  }
     ol.threads li.thread.closed .header {
       background-color: transparent;
     }
@@ -69,12 +70,16 @@ ol.threads {
     ol.threads li.thread.closed:hover .header {
       background-color: #ddeedd;
     }
+    ol.threads li.thread .header a.subject {
+      background-color: white;
+      padding: 2px 1em 2px 0.5em;
+    }
     ol.threads li.thread .header .count {
       display: block;
       float: left;
       margin-right: 0.5em;
       text-align: right;
-      width: 4.0em;
+      width: 3em;
     }
     ol.threads li.thread .header .twiddler {
       float: left;
@@ -119,6 +124,9 @@ ol.thread_list {
   margin-left: 0;
 }
 ol.thread_list li {
+  height: 1.5em;
+  margin: 0;
+  overflow: hidden;
   width: 100%;
 }
   ol.thread_list li span.indent {
@@ -146,6 +154,10 @@ ol.thread_list li {
     color: #888888;
     font-style: italic;
     text-decoration: none;
+  }
+  ol.thread_list li .blurb {
+    color: #555555;
+    margin-left: 1em;
   }
 
 /* thread view */

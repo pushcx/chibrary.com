@@ -29,6 +29,10 @@ class SummaryContainer
     effective_field(:n_subject) or ''
   end
 
+  def blurb
+    effective_field(:blurb) or ''
+  end
+
   def to_s
     v = empty? ? 'empty' : value.to_s
     return "<SummaryContainer(#{key}): #{v}>"

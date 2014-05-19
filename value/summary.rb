@@ -12,7 +12,7 @@ class Summary
     @from = from
     @n_subject = n_subject
     @date = date.kind_of?(Time) ? date : Time.rfc2822(date).utc
-    @blurb = body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }[0..4].join("\n")
+    @blurb = body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }.join("\n")[0..149]
   end
 
   # matches API for _thread_list partial

@@ -10,10 +10,10 @@
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
         %a{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
       - else
-        %a{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
-          %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
-          = from message.from
+        %a.message{ style: "margin-left: #{container.depth * 1.5}em;", href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
+          = thread_line_from message.from
           %span.date= message.date.strftime("%m-%d %H:%M")
+          %span.blurb= container.blurb
           - subjects.pop while container.depth <= subjects.last[:depth]
           - if message.n_subject != subjects.last[:subject] and !subjects.last[:subject].include? message.n_subject
             %span.subject= subject(message)

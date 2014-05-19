@@ -9,6 +9,15 @@ def from from
   f from.dup
 end
 
+def thread_line_from from
+  f = from.strip
+  if f =~ /\w <?[\w\-\.]+@[\w\-\.]+>?/ # has a name + email
+    f.gsub /(.*) <?[\w\-\.]+@[\w\-\.]+>?/, '\1'
+  else
+    f.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([\w]+)/, '\1@\2...\3') # hide email domain
+  end
+end
+
 def subject o
   subj = (o.is_a? String) ? o : o.n_subject
   subj = subj.blank? ? '<i>no subject</i>' : subj
