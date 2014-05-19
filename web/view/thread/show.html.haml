@@ -6,7 +6,6 @@
 = partial 'month/_thread_list.html', locals: { thread: @thread }
 
 .thread
-  - @missing_count = 0
   - @thread.each do |c|
     = container_partial c
 

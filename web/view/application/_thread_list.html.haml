@@ -1,13 +1,11 @@
 %ol.thread_list
-  - @missing_count = 0
   - subjects = [{ depth: -1, subject: thread.n_subject }]
   - thread.each do |container|
     %li
       - message = container.message
       - if container.empty?
-        - @missing_count += 1
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
-        %a{ href: "#missing-#{@missing_count}", :class => "missing" } missing
+        %span{ :class => "missing" } missing
       - elsif message.no_archive?
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
         %a{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived

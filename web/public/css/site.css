@@ -132,14 +132,11 @@ ol.thread_list li {
     ol.thread_list li:hover {
       background-color: #ddeeee;
     }
-  ol.thread_list li a.missing {
+  ol.thread_list li .missing {
     color: #888888;
     font-style: italic;
     text-decoration: none;
   }
-    ol.thread_list li a.missing:hover {
-      text-decoration: underline;
-    }
 
 /* thread view */
 
