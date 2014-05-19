@@ -54,14 +54,9 @@ class ThreadWorker
       threadset.retrieve_split_threads_from ts
       ThreadSetRepo.new(ts).store
     end
+    #threadset.dump
+    #threadset.summarize_threads.each {|s| s.dump }
     ThreadSetRepo.new(threadset).store
-
-    cache_work(sym, fresh_message_list)
-  end
-
-  def cache_work sym, message_list
-    # cache the message_list (for Threader) and thread_list (for Renderer)
-    CallNumberListRepo.new(sym, message_list).store
-    nil
+    CallNumberListRepo.new(sym, fresh_message_list).store
   end
 end

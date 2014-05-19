@@ -100,7 +100,7 @@ class ThreadSet
       direct_quotes = container.message.body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
 
       # Loop through all containers to find the message with the most
-      # matched quotes. (Can't just look through the existing container's
+      # matched quotes. (Can't just look through the existing containers'
       # children, as this may be a reply to a reply that's also missing
       # its references but hasn't been sorted in yet.)
       best = 0
@@ -214,7 +214,7 @@ class ThreadSet
   protected :redirect
 
   def summarize_threads
-    threads.map(&:summarize)
+    map(&:summarize)
   end
 
   def to_s
