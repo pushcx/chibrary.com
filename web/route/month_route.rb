@@ -7,7 +7,7 @@ get '/:slug/:year/:month/?' do
   @month_count = MonthCountRepo.find sym
   raise Sinatra::NotFound, "No messages in #{@slug}/#{@year}/#{@month}" if @month_count.empty?
   @previous_link, @next_link = month_previous_next sym
-  @threadset = ThreadSetRepo.month sym
+  @summary_set = SummarySetRepo.find sym
 
   haml :'month/show.html'
 end

@@ -8,7 +8,7 @@
         - @missing_count += 1
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
         %a{ href: "#missing-#{@missing_count}", :class => "missing" } missing
-      - elsif message.no_archive
+      - elsif message.no_archive?
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
         %a{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
       - else

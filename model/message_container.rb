@@ -63,7 +63,11 @@ class MessageContainer
 
   def summarize
     summary = Summary.from(value)
-    c = SummaryContainer.new key, summary
+    if value.no_archive?
+      c = SummaryContainer.new key
+    else
+      c = SummaryContainer.new key, summary
+    end
     children.each { |child| c.adopt(child.summarize) }
     c
   end

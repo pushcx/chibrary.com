@@ -6,7 +6,7 @@
   %p= "#{@month_count.message_count} messages in #{@month_count.thread_count} threads"
 
 %ol.threads
-  - @threadset.each do |thread|
+  - @summary_set.each do |thread|
     %li.thread
       %a{ id: "t-#{thread.call_number}", name: "t-#{thread.call_number}" }/
       .header

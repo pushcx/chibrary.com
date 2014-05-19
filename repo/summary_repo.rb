@@ -13,6 +13,7 @@ class SummaryRepo
   def serialize
     {
       call_number: summary.call_number.to_s,
+      from:        summary.from,
       n_subject:   summary.n_subject,
       date:        summary.date.rfc2822,
       blurb:       summary.blurb,
@@ -20,6 +21,6 @@ class SummaryRepo
   end
 
   def self.deserialize h
-    Summary.new h[:call_number], h[:n_subject], h[:date], h[:blurb]
+    Summary.new h[:call_number], h[:from], h[:n_subject], h[:date], h[:blurb]
   end
 end

@@ -10,6 +10,9 @@ class SummaryContainer
     super
   end
 
+  alias :message  :value
+  alias :message_id :key
+
   def slug
     effective_field(:slug)
   end

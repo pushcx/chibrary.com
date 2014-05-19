@@ -70,14 +70,14 @@ class Email
   end
   memoize :date
 
-  def no_archive
+  def no_archive?
     (
       header['X-No-Archive'] =~ /yes/i or
       header['X-Archive'] != '' or
       header['Archive'] =~ /no/i
     )
   end
-  memoize :no_archive
+  memoize :no_archive?
 
   def body
     return '' if raw.nil? # body is not serialized

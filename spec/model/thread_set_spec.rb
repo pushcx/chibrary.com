@@ -8,11 +8,13 @@ require_relative '../../model/thread_set'
 
 ThreadableMessage = Struct.new(:message_id, :subject, :references) do
   def call_number ; 'callnumb' ; end
+  def from ; 'from' ; end
   def body ; '' ; end
   def n_subject ; subject ; end
   def date ; Time.now ; end
   def likely_thread_creation_from?(email) ; false ; end
   def email ; 'email' ; end
+  def no_archive? ; false ; end
 end
 
 describe ThreadSet do

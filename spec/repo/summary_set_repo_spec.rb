@@ -10,8 +10,8 @@ describe SummarySetRepo do
   let(:now) { Time.now }
   let(:summary_containers) {
     [
-      SummaryContainer.new('s1@example.com', Summary.new('callnum1', 'Foo', now, 'Blurb')),
-      SummaryContainer.new('s2@example.com', Summary.new('callnum2', 'Foo', now, 'Blurb')),
+      SummaryContainer.new('s1@example.com', Summary.new('callnum1', 'From', 'Foo', now, 'Blurb')),
+      SummaryContainer.new('s2@example.com', Summary.new('callnum2', 'From', 'Foo', now, 'Blurb')),
     ]
   }
   let(:serialized) {
@@ -20,6 +20,7 @@ describe SummarySetRepo do
         key: "s1@example.com",
         value: {
           call_number: "callnum1",
+          from: "From",
           n_subject: "Foo",
           date: now.rfc2822,
           blurb: "Blurb",
@@ -30,6 +31,7 @@ describe SummarySetRepo do
         key: "s2@example.com",
         value: {
           call_number: "callnum2",
+          from: "From",
           n_subject: "Foo",
           date: now.rfc2822,
           blurb: "Blurb",

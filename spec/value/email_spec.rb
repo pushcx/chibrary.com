@@ -25,21 +25,21 @@ describe Email do
     end
   end
 
-  describe '#extract_message_id' do
+  describe '#message_id' do
     it 'gets the header' do
       e = Email.new "Message-Id: id@example.com\n\nBody"
       expect(e.message_id).to eq('id@example.com')
     end
   end
 
-  describe '#extract_subject' do
+  describe '#subject' do
     it 'gets the header' do
       e = Email.new "Subject: Foo\n\nBody"
       expect(e.subject).to eq('Foo')
     end
   end
 
-  describe '#extract_from' do
+  describe '#from' do
     it 'gets the header' do
       e = Email.new "From: alice@example.com\n\nBody"
       expect(e.from).to eq('alice@example.com')
@@ -61,7 +61,7 @@ describe Email do
     end
   end
 
-  describe '#extract_references' do
+  describe '#references' do
     it 'pulls from In-Reply-To and References' do
       e = Email.new "In-Reply-To: irt@example.com\nReferences: ref@example.com\n\nBody"
       expect(e.references).to include('irt@example.com')
@@ -91,7 +91,7 @@ describe Email do
     end
   end
 
-  describe '#extract_date' do
+  describe '#date' do
     it 'extracts proper rfc2822 dates' do
       e = Email.new "Date: Tue, 14 Aug 2007 19:26:26 +0900\n\nBody"
       expect(e.date.to_s).to eq('2007-08-14 10:26:26 UTC')
@@ -123,29 +123,29 @@ describe Email do
     end
   end
 
-  describe '#extract_no_archive' do
+  describe '#no_archive?' do
     it "defaults false" do
       e = Email.new "\n\nBody"
-      expect(e.no_archive).to be_false
+      expect(e.no_archive?).to be_false
     end
 
     it "is true if X-No-Archive includes 'yes'" do
       e = Email.new "X-No-Archive: yes\n\nBody"
-      expect(e.no_archive).to be_true
+      expect(e.no_archive?).to be_true
     end
 
     it "is true if X-Archive has any text" do
       e = Email.new "X-Archive: cats\n\nBody"
-      expect(e.no_archive).to be_true
+      expect(e.no_archive?).to be_true
     end
 
     it "is true if Archive includes 'no'" do
       e = Email.new "Archive: no\n\nBody"
-      expect(e.no_archive).to be_true
+      expect(e.no_archive?).to be_true
     end
   end
 
-  describe '#extract_body' do
+  describe '#body' do
     it 'reads plain text messages' do
       e = Email.new "\n\nPlain text body."
       expect(e.body).to eq("Plain text body.")

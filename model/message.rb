@@ -17,7 +17,7 @@ class Message
     overlay[:message_id] = MessageId.generate_for(call_number) unless message_id.valid?
   end
 
-  [:from, :references, :no_archive, :body].each do |field|
+  [:from, :references, :no_archive?, :body].each do |field|
     define_method(field) do
       overlay.fetch(field, email.public_send(field))
     end

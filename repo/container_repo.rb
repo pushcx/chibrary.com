@@ -54,6 +54,7 @@ module ContainerRepo
     end
 
     def deserialize h
+      h.deep_symbolize_keys!
       container = container_class.new h[:key], deserialize_value(h[:value])
       h[:children].each do |child|
         container.adopt self.deserialize(child)
