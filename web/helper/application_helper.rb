@@ -6,7 +6,7 @@ def f str
 end
 
 def from from
-  f from
+  f from.dup
 end
 
 def subject o
