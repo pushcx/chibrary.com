@@ -1,7 +1,7 @@
 require 'time'
 
 require_relative '../rspec'
-require_relative '../../model/summary'
+require_relative '../../value/summary'
 require_relative '../../repo/summary_repo'
 
 describe SummaryRepo do

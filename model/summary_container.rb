@@ -1,7 +1,7 @@
 # based on http://www.jwz.org/doc/threading.html
 
 require_relative '../lib/container'
-require_relative 'summary'
+require_relative '../value/summary'
 
 class SummaryContainer
   include Container

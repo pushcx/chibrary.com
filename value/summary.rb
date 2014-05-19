@@ -1,6 +1,10 @@
+require 'adamantium'
+
 require_relative '../value/call_number'
 
 class Summary
+  include Adamantium
+
   attr_reader :call_number, :from, :n_subject, :date, :blurb
 
   def initialize call_number, from, n_subject, date, body

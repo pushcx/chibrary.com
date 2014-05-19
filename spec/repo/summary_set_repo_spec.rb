@@ -2,7 +2,7 @@ require 'time'
 
 require_relative '../rspec'
 require_relative '../../value/sym'
-require_relative '../../model/summary'
+require_relative '../../value/summary'
 require_relative '../../model/summary_container'
 require_relative '../../repo/summary_set_repo'
 

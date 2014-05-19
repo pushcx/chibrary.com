@@ -86,8 +86,8 @@ x use memoize/adamantium for frozen + memoization (yay) https://github.com/dkubb
 x rewrite filer as service... or repo?
 x Message only knows its List so Sym and MessageRepo can get at its slug
   false positive subject changes: http://localhost:9393/get-theinfo/2008/01/00hyE01p
-  web: use summaries for month pages
-  move summary to value
+x web: use summaries for month pages
+x move summary to value
   override sinatra error pages
   restore google analytics
   convert to html5

@@ -1,4 +1,4 @@
-require_relative '../model/summary'
+require_relative '../value/summary'
 
 # Does not import RiakRepo completely or confirm to the Repo interface
 # because Summaries are never loaded individually, only via
