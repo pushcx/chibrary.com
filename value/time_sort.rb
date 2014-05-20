@@ -1,5 +1,7 @@
 require 'adamantium'
 
+require_relative 'call_number'
+require_relative 'subject'
 require_relative 'thread_link'
 
 class TimeSort
@@ -10,7 +12,8 @@ class TimeSort
   def initialize sym, threads=[]
     @sym = sym
     @threads = threads.map { |t|
-      ThreadLink.new(sym, t[:call_number], t[:subject])
+      t.symbolize_keys!
+      ThreadLink.new(sym, CallNumber.new(t[:call_number]), Subject.new(t[:subject]))
     }
   end
 
