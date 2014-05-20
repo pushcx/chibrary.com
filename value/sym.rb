@@ -10,6 +10,8 @@ class Sym
 
   def initialize slug, year, month
     @slug, @year, @month = slug, year.to_i, month.to_i
+    raise ArgumentError, "Invalid year '#{@year}'" unless @year.to_s =~ /\A\d{4}\Z/
+    raise ArgumentError, "Invalid month" unless (1..12).include? @month
   end
 
   def same_time_as? sym

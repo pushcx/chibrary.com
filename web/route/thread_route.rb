@@ -2,7 +2,7 @@ require_relative '../../value/sym'
 
 def load_thread(call_number)
   begin
-    r = RedirectMapRepo.find(Sym.new(@slug, @year, @month)).redirect? @call_number
+    r = RedirectMapRepo.find(@sym).redirect? @call_number
     redirect_to "#{r}#m-#{@call_number}" and return if r
     @thread = MessageContainerRepo.find(call_number)
   rescue NotFound, InvalidCallNumber
@@ -18,7 +18,7 @@ get  '/:slug/:year/:month/:call_number' do
   load_thread(call_number)
 
   @title = "#{subject(@thread.subject)} - #{@list.title_name}"
-  @previous_link, @next_link = thread_previous_next(Sym.new(@slug, @year, @month), @call_number)
+  @previous_link, @next_link = thread_previous_next(@sym, @call_number)
 
   haml :'thread/show.html'
 end

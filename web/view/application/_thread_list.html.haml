@@ -8,9 +8,9 @@
         %span{ :class => "missing" } missing
       - elsif message.no_archive?
         %span.indent{ style: "width: #{container.depth * 1.5}em" } &nbsp;
-        %a{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
+        %a{ href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
       - else
-        %a.message{ style: "margin-left: #{container.depth * 1.5}em;", href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
+        %a.message{ style: "margin-left: #{container.depth * 1.5}em;", href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
           = thread_line_from message.from
           %span.date= message.date.strftime("%m-%d %H:%M")
           %span.blurb= container.blurb

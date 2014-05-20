@@ -39,10 +39,7 @@ rescue InvalidSlug
 end
 
 def load_month
-  @year, @month = params[:year], params[:month]
-  raise Sinatra::NotFound, "Invalid year" unless @year =~ /^\d{4}$/
-  raise Sinatra::NotFound, "Invalid month" unless @month =~ /^\d{2}$/
-  raise Sinatra::NotFound, "Ridiculous month" unless (1..12).include? @month.to_i
+  @sym = Sym.new(@slug, params[:year], params[:month])
 end
 
 def thread_previous_next(sym, call_number)

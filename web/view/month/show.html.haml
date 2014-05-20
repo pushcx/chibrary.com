@@ -1,7 +1,7 @@
 .month
   %h1
     %a{ href: "/#{@slug}" }= (@list.title_name)
-    = "#{@year}-#{@month}"
+    = "#{@sym.year}-#{@sym.month}"
 
   %p= "#{@month_count.message_count} messages in #{@month_count.thread_count} threads"
 
@@ -13,7 +13,7 @@
         %span.count
           %span.twiddler &nbsp;
           = thread.count
-        %a.subject{ href: "/#{@slug}/#{@year}/#{@month}/#{thread.call_number}" }= subject(thread)
+        %a.subject{ href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}" }= subject(thread)
         %span.blurb= thread.blurb
       = partial :'month/_thread_list.html', locals: { thread: thread }
 
