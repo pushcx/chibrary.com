@@ -90,7 +90,7 @@ x web: use summaries for month pages
 x move summary to value
 x put blurb into month pages
 x override sinatra error pages
-  restore google analytics
+x restore google analytics
   convert to html5
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
