@@ -18,8 +18,8 @@ def thread_line_from from
   end
 end
 
-def subject o
-  subj = (o.is_a? String) ? o : o.n_subject
+def subject subj
+  subj = subj.to_s
   subj = subj.blank? ? '<i>no subject</i>' : subj
 #  if @list and marker = @list['marker']
 #    subj = subj[marker.length..-1].strip if subj.downcase[0...marker.length] == marker.downcase
@@ -52,14 +52,14 @@ def thread_previous_next(sym, call_number)
 
   if previous_thread = TimeSortRepo.previous_link(sym, call_number)
     previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
-    previous_link += "<br />#{previous_thread.year}-#{previous_thread.month}" unless sym.same_time_as? previous_thread
+    previous_link += "<br />#{previous_thread.sym.year}-#{previous_thread.sym.month}" unless sym.same_time_as? previous_thread.sym
   else
     previous_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
   end
 
   if next_thread = TimeSortRepo.previous_link(sym, call_number)
     next_link = "#{thread_link(next_thread, :next)} &gt;"
-    next_link += "<br />#{next_thread.year}-#{next_thread.month}" if sym.same_time_as? next_thread
+    next_link += "<br />#{next_thread.sym.year}-#{next_thread.sym.month}" if sym.same_time_as? next_thread.sym
   else
     next_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
   end
