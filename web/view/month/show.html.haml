@@ -1,19 +1,19 @@
-.month
+%section.month
   %h1
     %a{ href: "/#{@slug}" }= (@list.title_name)
     = "#{@sym.year}-#{@sym.month}"
 
   %p= "#{@month_count.message_count} messages in #{@month_count.thread_count} threads"
 
-%ol.threads
-  - @summary_set.each do |thread|
-    %li.thread{ id: "t-#{thread.call_number}" }
-      .header
-        %span.count
-          %span.twiddler &nbsp;
-          = thread.count
-        %a.subject{ href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}" }= subject(thread)
-        %span.blurb= thread.blurb
-      != partial :'month/_thread_list.html', locals: { thread: thread }
+  %ol.threads
+    - @summary_set.each do |thread|
+      %li.thread{ id: "t-#{thread.call_number}" }
+        .header
+          %span.count
+            %span.twiddler &nbsp;
+            = thread.count
+          %a.subject{ href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}" }= subject(thread)
+          %span.blurb= thread.blurb
+        != partial :'month/_thread_list.html', locals: { thread: thread }
 
 != partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
