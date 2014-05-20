@@ -19,11 +19,7 @@ $(function() {
   $('ol.thread_list').on('mouseout', function(){
     $(this).css('background-position', '-1px 0px');
   }).on('mouseover', 'li', function(){
-    var li = $(this), indent = li.attr('indent');
-    if (typeof indent == 'undefined') {
-      indent = li.find('span.indent').css('width');
-      li.attr('indent', indent);
-    }
+    var li = $(this), indent = li.css('padding-left');
     li.parent().css('background-position', indent + ' 0px');
   });
 

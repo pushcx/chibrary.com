@@ -123,10 +123,6 @@ ol.thread_list li {
   overflow: hidden;
   width: 100%;
 }
-  ol.thread_list li span.indent {
-    display: block;
-    float: left;
-  }
   ol.thread_list li time {
     color: #555555;
   }
