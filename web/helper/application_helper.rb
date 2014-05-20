@@ -40,6 +40,8 @@ end
 
 def load_month
   @sym = Sym.new(@slug, params[:year], params[:month])
+rescue ArgumentError
+  raise Sinatra::NotFound
 end
 
 def thread_previous_next(sym, call_number)
