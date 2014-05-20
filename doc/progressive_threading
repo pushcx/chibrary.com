@@ -1,0 +1,36 @@
+2014-05-19 Idea:
+Rather than have a ThreadWorker that needs to run on a month's worth of
+messages (with assorted hacks for pulling messages between neighboring
+months), can the system be redesigned so a 'thread' is a high-level concept
+and the ThreadWorker runs on one thread at a time?
+
+I think so. There's nothing in the algorithm that prevents it, and it means a
+lot less things depend on Syms.
+
+In this future....
+
+SummarySets becomes Summaries, stored one per thread rather than an Set stored
+per month
+
+MonthCount stays pretty much the same if the lists continue to have month
+pages.
+
+TimeSort is tough. It exists to answer the question "what thread starts
+before/after this one temporally"? I guess it could continue to exist with
+Syms. Or move to Riak, which is suited to this sort of thing: structured, and
+can be recreated if it gets dropped on the floor.
+
+RedirectMap disappears: to look up the Thread for a message you search
+Thread's indexes for that CallNumber.
+
+ThreadWorker will be queued with a list of CallNumbers to add to threads
+rather than a Sym.
+
+Threader works with a single message. It finds a Thread for it based on
+indexes for MessageId References and normalized Subject. If it can't find one,
+it creates one.
+
+Thread is a new object, finally explicit in the system. It stores metadata
+about the thread, like CallNumbers, MessageIds, Subjects... actually, it
+probably looks a lot like a Summary.
+
