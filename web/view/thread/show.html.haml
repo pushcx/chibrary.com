@@ -1,16 +1,19 @@
-%h1.subject= subject(@thread)
+%section
+  %header
+    %h1.subject= subject(@thread)
 
-= partial 'thread/_thread_line.html', locals: { thread: @thread, list: @list, slug: @slug, year: @sym.year, month: @sym.month }
-= partial 'thread/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
+    != partial 'thread/_thread_line.html', locals: { thread: @thread, list: @list, slug: @slug, year: @sym.year, month: @sym.month }
+    != partial 'thread/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
 
-= partial 'month/_thread_list.html', locals: { thread: @thread }
+  != partial 'month/_thread_list.html', locals: { thread: @thread }
 
-.thread
-  - @thread.each do |c|
-    = container_partial c
+  .thread
+    - @thread.each do |c|
+      != container_partial c
 
-%hr 
+  %hr
 
-= partial 'thread/_thread_line.html', locals: { thread: @thread, list: @list, slug: @slug, year: @sym.year, month: @sym.month }
+  %footer
+    != partial 'thread/_thread_line.html', locals: { thread: @thread, list: @list, slug: @slug, year: @sym.year, month: @sym.month }
 
-= partial 'thread/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
+    != partial 'thread/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }

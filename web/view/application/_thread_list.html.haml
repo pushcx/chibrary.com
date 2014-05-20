@@ -12,7 +12,7 @@
       - else
         %a.message{ style: "margin-left: #{container.depth * 1.5}em;", href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
           = thread_line_from message.from
-          %span.date= message.date.strftime("%m-%d %H:%M")
+          %time{ datetime: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}", title: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}" }= message.date.strftime("%m-%d %H:%M")
           %span.blurb= container.blurb
           - subjects.pop while container.depth <= subjects.last[:depth]
           - if message.n_subject != subjects.last[:subject] and !subjects.last[:subject].include? message.n_subject

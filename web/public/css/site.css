@@ -1,54 +1,48 @@
-#page, #footer {
+/* common layout */
+
+#page, footer {
   max-width: 80em;
   margin: 0 auto;
 }
-/* common layout */
-#footer h4 {
+
+footer h4 {
   float: left;
   margin-right: 1em;
 }
-#footer p {
+footer p {
   float: left;
 }
-#footer div.search {
+footer div.search {
   float: left;
 }
-#footer p.tagline {
+footer p.tagline {
   margin-right: 1.5em;
 }
-#footer p.links a {
+footer p.links a {
   margin-right: 1.5em;
 }
 
 /* homepage */
-div.lists {
-  float: right;
-  margin: 0 0 18px 36px;
-  width: 20em;
-}
-  div.lists ul {
-    margin: 0;
-  }
-div.snippets h2 {
-  clear: none;
+
+nav.lists {
 }
 
 /* list view */
 
-div.list table {
+.list table {
   border: none;
 }
-div.list table td {
+.list table td {
   text-align: right;
 }
-div.list table thead tr.months td.upper_left {
+.list table thead tr.months td.upper_left {
   border: none;
 }
-div.list table thead tr.months td {
+.list table thead tr.months td {
   border-bottom: 1px solid #dddddd;
   width: 4em;
 }
-div.list table tbody tr:last-child td.year {
+.list table tbody tr:last-child td.year {
   border-bottom: none;
 }
 
@@ -133,7 +127,7 @@ ol.thread_list li {
     display: block;
     float: left;
   }
-  ol.thread_list li span.date {
+  ol.thread_list li time {
     color: #555555;
   }
   ol.thread_list li span.subject {
@@ -162,40 +156,40 @@ ol.thread_list li {
 
 /* thread view */
 
-div.message div.header {
+.message div.header {
   background: #ddeeee;
   border-top: 1px solid #ccdddd;
   margin-top: -1px;
   padding: 0 0.1em;
 }
-  div.message div.header h4.from {
+  .message div.header h4.from {
     clear: none;
   }
-  div.message div.header h6.date {
+  .message div.header h6.date {
     float: right;
     margin-top: -18px;
   }
-  div.message div.header div.more {
+  .message div.header div.more {
     background: #ddeeee;
     display: none;
     height: 18px;
     float: left;
     width: 100%;
   }
-    div.message div.header div.more div.flag {
+    .message div.header div.more div.flag {
       display: none;
       font-size: 10px;
       float: right;
     }
-div.message.missing p {
+.message.missing p {
   background: #eeeedd;
   border-top: 1px solid #ddddcc;
   margin-top: -1px;
 }
-div.message div.body {
+.message div.body {
   padding: 18px 0;
 }
-div.message div.body pre {
+.message div.body pre {
   background-color: transparent;
   border: none;
   margin: 0;
@@ -211,7 +205,7 @@ div.message div.body pre {
 
 /* message */
 
-div.message div.body blockquote {
+.message div.body blockquote {
   background-color: #dddddd;
   border-top: 1px solid #EEEEEE;
   border-bottom: 1px solid #EEEEEE;
@@ -220,7 +214,7 @@ div.message div.body blockquote {
   margin: -1px 0;
   padding: 0 0.1em;
 }
-  div.message div.body blockquote.closed {
+  .message div.body blockquote.closed {
     background-color: transparent;
     color: #666666;
     display: block;
@@ -228,7 +222,7 @@ div.message div.body blockquote {
     padding: 0 0.1em;
     width: 100%;
   }
-  div.message div.body blockquote.closed:hover {
+  .message div.body blockquote.closed:hover {
     background-color: #dddddd;
     cursor: pointer;
   }
@@ -244,17 +238,3 @@ div.flag iframe {
 #page div iframe {
   height: 1000px;
 }
-
-/* advertising */
-
-div.panel {
-  display: none;
-  margin-bottom: 18px;
-}
-div.jobsyndicate {
-  height: 100px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.jobsyndicate table, .jobsyndicate th, .jobsyndicate td { border: none }

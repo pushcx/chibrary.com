@@ -91,7 +91,8 @@ x move summary to value
 x put blurb into month pages
 x override sinatra error pages
 x restore google analytics
-  convert to html5
+x convert to html5
+  in thread_list, sibling line is missing
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js

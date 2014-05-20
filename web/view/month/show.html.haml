@@ -7,14 +7,13 @@
 
 %ol.threads
   - @summary_set.each do |thread|
-    %li.thread
-      %a{ id: "t-#{thread.call_number}", name: "t-#{thread.call_number}" }/
+    %li.thread{ id: "t-#{thread.call_number}" }
       .header
         %span.count
           %span.twiddler &nbsp;
           = thread.count
         %a.subject{ href: "/#{@sym.slug}/#{@sym.year}/#{@sym.month}/#{thread.call_number}" }= subject(thread)
         %span.blurb= thread.blurb
-      = partial :'month/_thread_list.html', locals: { thread: thread }
+      != partial :'month/_thread_list.html', locals: { thread: thread }
 
-= partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
+!= partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }

@@ -1,14 +1,14 @@
 !!!
 %html
   %head
-    %meta{'http-equiv' => 'Content-Type', :content => 'text/html; charset=utf-8'}/
+    %meta{ charset: 'UTF-8' }
     %title= @title
     %link{ rel: 'stylesheet', href: '/css/screen.css' }
     %link{ rel: 'stylesheet', href: '/css/site.css' }
   %body
     #page
-      = yield
-    #footer.quiet
+      != yield
+    %footer.quiet
       %hr/
       %h4.sitename
         %a{ href: "/" } Chibrary

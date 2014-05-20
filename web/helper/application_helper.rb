@@ -12,7 +12,7 @@ end
 def thread_line_from from
   f = from.strip
   if f =~ /\w <?[\w\-\.]+@[\w\-\.]+>?/ # has a name + email
-    f.gsub /(.*) <?[\w\-\.]+@[\w\-\.]+>?/, '\1'
+    f.gsub! /(.*) <?[\w\-\.]+@[\w\-\.]+>?/, '\1'
   else
     f.gsub!(/([\w\-\.]*?)@(..)[\w\-\.]*\.([\w]+)/, '\1@\2...\3') # hide email domain
   end

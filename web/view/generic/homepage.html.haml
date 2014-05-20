@@ -1,20 +1,14 @@
-%h1 Chibrary
+%section
+  %h1 Chibrary
 
-%p
-  Chibrary ("shy-brary") provides free, highly-readable public mailing list
-  archives. If you run a list, we'd probably be happy to archive it. (More
-  <a href="/about">about</a> the site.)
+  %p
+    Chibrary ("shy-brary") provides free, highly-readable public mailing list
+    archives. If you run a list, we'd probably be happy to archive it. (More
+    <a href="/about">about</a> the site.)
 
-.lists
-  <h2>All Lists</h2>
-  %ul
-    - @lists.each do |list|
-      %li= "<a href=\"/#{list.slug}\">#{(list.title_name)}</a>"
-
-.snippets
-  <h2>Recent Messages</h2>
-  %ul
-    - @snippets.each do |snippet|
-      %li
-        %a.subject{ href: snippet['url'] }= subject(snippet['subject'])
-        %span.excerpt= h snippet[:excerpt]
+  %nav.lists
+    <h2>All Lists</h2>
+    %ul
+      - @lists.each do |list|
+        %li
+          %a{ href: "/#{list.slug}" }= list.title_name

@@ -1,8 +1,8 @@
-.list
+%section.list
   %h1= @list.title_name
 
-
-  %table{ summary: "Links to monthly archives of this list" }
+  %table
+    %caption Links to monthly archives of this list.
     %thead
       %tr.months
         %td.upper_left
@@ -26,12 +26,3 @@
 
   - if @list.description
     = @list.description
-
-- unless @snippets.empty?
-  .snippets
-    <h2>Recent Messages</h2>
-    %ul
-      - @snippets.each do |snippet|
-        %li
-          %a.subject{ href: snippet[:url] }= subject(snippet[:subject])
-          %span.excerpt= h snippet[:excerpt]
