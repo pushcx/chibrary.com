@@ -1,6 +1,6 @@
 %section
   %header
-    %h1.subject= subject(@thread)
+    %h1.subject= subject(@thread.n_subject)
 
     != partial 'thread/_thread_line.html', locals: { thread: @thread, list: @list, slug: @slug, year: @sym.year, month: @sym.month }
     != partial 'thread/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
