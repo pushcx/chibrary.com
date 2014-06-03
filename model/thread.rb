@@ -1,0 +1,2 @@
+class Thread
+end

@@ -93,6 +93,24 @@ x override sinatra error pages
 x restore google analytics
 x convert to html5
 x in thread_list, sibling line is missing
+  progressive threading:
+    Thread class knows what a thread is
+    ThreadRepo stores summaries;
+      stores summaries of all messages in one thread
+      index MessageId hash, n_subject hash, effective_field(:date)
+      can pull a hydrated thread by hitting MessageRepo (potentially a lot)
+    ThreadSet disappears
+    ThreadSetRepo, MessageContainerRepo, and SummaryContainerRepo all disappear
+    Threader works on individual messages
+    Filer chunks messages to thread by n_subject hash
+    Threader finds threads by MessageId and n_subject hash
+    urls lose year, month
+    with or without slug?
+      /m/call_number -> /t/call_number#call_number
+      /message/call_number -> /thread/call_number#call_number
+      /linux-kernel/call_number -> /linux-kernel/call_number#call_number
+    Month view pulls all threads via index
+    Thread view asks ThreadRepo for all messages
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js
@@ -144,3 +162,5 @@ Feature ideas:
   extract keywords - uncommon words per thread TD*IDF
   use keywrods to show related threads
   can fetchmail -B -l etc get the lost mail?
+  minitest?
+  arhive blog posts + comments
