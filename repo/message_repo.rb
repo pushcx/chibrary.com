@@ -86,6 +86,10 @@ class MessageRepo
     deserialize(bucket[build_key(call_number)])
   end
 
+  def self.find_all call_numbers
+    bucket.get_many(call_numbers).map { |k, h| deserialize h }
+  end
+
   def self.call_number_list sym
     bucket.get_index('sym_bin', sym.to_key).map { |k| CallNumber.new k }
   end

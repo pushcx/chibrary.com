@@ -20,6 +20,16 @@ class RiakBucket
     raise NotFound, "Bucket #{@bucket.name} Key #{key} not found", bt
   end
 
+  def get_many keys
+    objs = @bucket.get_many(keys)
+    objs.each do |k, v|
+      data = v.data
+      data.deep_symbolize_keys! if data.is_a? Hash
+      objs[k] = data
+    end
+  # TODO trigger the 'missing' error and try to report only failing keys
+  end
+
   def []= key, value
     o = @bucket.new key
     o.data = value
