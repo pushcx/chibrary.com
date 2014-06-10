@@ -1,6 +1,5 @@
 require_relative '../lib/core_ext/time_'
 require_relative 'message_container'
-require_relative 'redirect_map'
 
 # A ThreadSet holds the threads (container trees) and does the work of sorting
 # messages into container trees.
@@ -9,7 +8,7 @@ require_relative 'redirect_map'
 class ThreadSet
   include Enumerable
 
-  attr_accessor :sym, :containers, :subjects, :redirect_map
+  attr_accessor :sym, :containers, :subjects
 
   def initialize sym
     @sym = sym
@@ -17,7 +16,6 @@ class ThreadSet
     # @containers is roughly id_table from JWZ's doc
     @containers = {} # message_id -> container
     @subjects = {}
-    @redirect_map = RedirectMap.new sym
     flush_threading
   end
 
@@ -128,22 +126,6 @@ class ThreadSet
     (1..4).map { |n| sym.plus_month(n) }
   end
 
-  def retrieve_split_threads_from threadset
-    return if @containers.empty?
-    finish
-    # subjects would be cleared as soon as a message is added and the threading is flushed
-    # But we know there won't be any more subjects added, so just cache it
-    subjects = threads.collect(&:n_subject)
-    threadset.each do |thread|
-      next unless thread.likely_split_thread?
-      next unless @containers.keys.include? thread.message_id or subjects.include? thread.n_subject
-
-      # redirects?
-      thread.each { |c| self << c.message unless c.empty? }
-      threadset.redirect thread, sym.year, sym.month
-    end
-  end
-
   def each
     finish
     subjects.values.sort.each { |c| yield c }
@@ -205,13 +187,6 @@ class ThreadSet
     @subjects = {} # threads: normalized subject -> root container
     @threads  = nil
   end
-
-  def redirect thread, year, month
-    @redirect_map.redirect thread.collect(&:call_number), year, month
-    thread.each { |c| @containers.delete(c.message_id) }
-    flush_threading
-  end
-  protected :redirect
 
   def summarize_threads
     map(&:summarize)

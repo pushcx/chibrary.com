@@ -105,7 +105,7 @@ x     SumamrySetRepo
       ThreadSetRepo
 x     MessageContainerRepo
       ContainerRepo
-      RedirectMap and RedirectMap repo
+x     RedirectMap and RedirectMap repo
     Threader works on small batches of or individual messages
     Filer chunks messages to thread by n_subject hash
     Threader finds threads by MessageId and n_subject hash

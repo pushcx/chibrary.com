@@ -41,19 +41,6 @@ class ThreadWorker
 
     return if removed.empty? and added.empty?
 
-    # Many threads are split by replies in later months. This rejoins them.
-    threadset.prior_months.each do |s|
-      # Rejoin any threads from later months
-      ts = ThreadSetRepo.month(s)
-      ts.retrieve_split_threads_from threadset
-      ThreadSetRepo.new(ts).store
-    end
-    threadset.following_months.each do |s|
-      # And move threads up to earlier months when possible
-      ts = ThreadSetRepo.month(s)
-      threadset.retrieve_split_threads_from ts
-      ThreadSetRepo.new(ts).store
-    end
     #threadset.dump
     #threadset.summarize_threads.each {|s| s.dump }
     ThreadSetRepo.new(threadset).store

@@ -3,8 +3,6 @@ require_relative '../../value/sym'
 require_relative '../../value/month_count'
 require_relative '../../value/time_sort'
 require_relative '../../repo/month_count_repo'
-require_relative '../../repo/redirect_map_repo'
-require_relative '../../repo/summary_set_repo'
 require_relative '../../repo/thread_set_repo'
 require_relative '../../repo/time_sort_repo'
 
@@ -16,14 +14,10 @@ describe ThreadSetRepo do
     it 'delegates like mad' do
       sym = Sym.new('slug', 2014, 1)
       thread_set = ThreadSet.new(sym)
-      ssr = double(SummarySetRepo, store: true)
-      SummarySetRepo.should_receive(:new).with(sym, thread_set.summarize_threads).and_return(ssr)
       mcr = double(MonthCountRepo, store: true)
       MonthCountRepo.should_receive(:new).with(MonthCount.from(thread_set)).and_return(mcr)
       tsr = double(TimeSortRepo, store: true)
       TimeSortRepo.should_receive(:new).with(TimeSort.from(thread_set)).and_return(tsr)
-      rmr = double(RedirectMapRepo, store: true)
-      RedirectMapRepo.should_receive(:new).with(thread_set.redirect_map).and_return(rmr)
       ThreadSetRepo.new(thread_set).store
     end
   end
