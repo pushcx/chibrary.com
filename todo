@@ -94,14 +94,19 @@ x restore google analytics
 x convert to html5
 x in thread_list, sibling line is missing
   progressive threading:
-    Thread class knows what a thread is
+x   Thread class knows what a thread is
     ThreadRepo stores summaries;
       stores summaries of all messages in one thread
-      index MessageId hash, n_subject hash, effective_field(:date)
-      can pull a hydrated thread by hitting MessageRepo (potentially a lot)
+x     index slug, MessageId hash, n_subject hash, sym
+x     can pull a hydrated thread by hitting MessageRepo with get_many
     ThreadSet disappears
-    ThreadSetRepo, MessageContainerRepo, and SummaryContainerRepo all disappear
-    Threader works on individual messages
+    remove:
+x     SumamrySetRepo
+      ThreadSetRepo
+x     MessageContainerRepo
+      ContainerRepo
+      RedirectMap and RedirectMap repo
+    Threader works on small batches of or individual messages
     Filer chunks messages to thread by n_subject hash
     Threader finds threads by MessageId and n_subject hash
     urls lose year, month

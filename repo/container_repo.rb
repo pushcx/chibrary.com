@@ -37,6 +37,7 @@ module ContainerRepo
     obj.key = container.call_number
     obj.data = serialize
     obj.indexes['month_bin'] << extract_month_key
+    #container.cache_snippet
   end
 
   module ClassMethods
