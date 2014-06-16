@@ -22,12 +22,13 @@ class RiakBucket
 
   def get_many keys
     objs = @bucket.get_many(keys)
+    missing = objs.select { |k, v| k.nil? }
+    raise NotFound, "Bucket #{@bucket.name} key(s) not found: #{missing.keys.join(', ')}" if missing.any?
     objs.each do |k, v|
       data = v.data
       data.deep_symbolize_keys! if data.is_a? Hash
       objs[k] = data
     end
-  # TODO trigger the 'missing' error and try to report only failing keys
   end
 
   def []= key, value
