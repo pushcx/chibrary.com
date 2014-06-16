@@ -107,8 +107,8 @@ x     MessageContainerRepo
 x     SummaryContainerRepo
 x     ContainerRepo
 x     RedirectMap and RedirectMap repo
+x   Filer chunks messages to thread by n_subject hash
     Threader works on small batches of or individual messages
-    Filer chunks messages to thread by n_subject hash
     Threader finds threads by MessageId and n_subject hash
     urls lose year, month
     with or without slug?
