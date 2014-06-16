@@ -1,7 +1,7 @@
 require_relative '../../value/sym'
 
 def load_thread call_number
-  thread = ThreadRepo.find(@call_number)
+  thread = ThreadRepo.find_by_root(@call_number)
   # hydrate?
   @thread = MessageContainerRepo.find(@call_number)
 rescue NotFound
@@ -11,7 +11,7 @@ rescue InvalidCallNumber
 end
 
 def load_redirect call_number
-  root_call_number = ThreadRepo.redirect_for(call_number)
+  root_call_number = ThreadRepo.root_for(call_number)
   redirect_to "/thread/#{root_call_number}#m-#{call_number}"
 rescue NotFound
   raise Sinatra::NotFound, "Thread not found (unknown call number)"

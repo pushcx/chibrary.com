@@ -2,6 +2,7 @@
 
 require_relative '../lib/container'
 require_relative '../value/summary'
+require_relative 'message_container'
 
 class SummaryContainer
   include Container
@@ -31,6 +32,12 @@ class SummaryContainer
 
   def blurb
     effective_field(:blurb) or ''
+  end
+
+  def messagize messages
+    c = MessageContainer.new key, messages[call_number]
+    children.each { |child| c.adopt(child.messagize) }
+    c
   end
 
   def to_s

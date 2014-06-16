@@ -1,22 +1,25 @@
+require 'forwardable'
+
+require 'container'
+
 class Thread
   include Enumerable
 
-  attr_reader :containers
+  attr_reader container_tree
 
-  def initialize
+  extend Forwardable
+  def_delegators :@container_tree, :<=>, :each
+
+  def initialize container_tree
+    @container_tree = container_tree
   end
 
-  def each &block
-    containers.each &block
+  def summarize
+    @container_tree = container_tree.summarize
   end
 
-  def hydrate message
-    raise TODO
-  end
-
-  def root_call_number
-    # call number of root
-    raise TODO
+  def messagize messages
+    @container_tree = container_tree.messagize messages
   end
 
   def call_numbers
@@ -29,13 +32,5 @@ class Thread
 
   def n_subjects
     map(&:n_subject).uniq.compact.sort
-  end
-
-  def self.from_containers
-    raise TODO
-  end
-
-  def self.from_summaries
-    raise TODO
   end
 end
