@@ -21,10 +21,7 @@ class CallNumber
   def == other
     to_s == other.to_s
   end
-
-  def eql? other
-    self == other
-  end
+  alias :eql? :==
 
   def hash
     to_s.hash
