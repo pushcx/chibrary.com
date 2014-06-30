@@ -1,5 +1,6 @@
 require_relative 'riak_repo'
 require_relative '../value/month_count'
+require_relative 'sym_repo'
 
 class MonthCountRepo
   include RiakRepo
@@ -36,7 +37,7 @@ class MonthCountRepo
   end
 
   def self.deserialize key, hash
-    MonthCount.new Sym.new(*key.split('/')), hash[:thread_count], hash[:message_count]
+    MonthCount.new SymRepo.deserialize(key), hash[:thread_count], hash[:message_count]
   end
 
   def self.retrieve key
