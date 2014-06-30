@@ -33,4 +33,5 @@ class CallNumber
   def to_s
     str
   end
+  alias :to_str :to_s
 end

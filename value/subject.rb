@@ -28,6 +28,7 @@ class Subject
   def to_s
     original
   end
+  alias :to_str :to_s
 
   def == other
     return original == other.original if other.is_a?(Subject)

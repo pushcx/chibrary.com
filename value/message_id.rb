@@ -24,6 +24,7 @@ class MessageId
       "[invalid or missing message id]"
     end
   end
+  alias :to_str :to_s
 
   def == other
     other = MessageId.new(other)
