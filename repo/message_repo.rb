@@ -1,9 +1,7 @@
 require 'base64'
 require_relative 'riak_repo'
 require_relative '../value/call_number'
-require_relative '../value/sym'
 require_relative '../model/message'
-require_relative '../model/list'
 require_relative 'email_repo'
 
 class MessageOverwriteError < StandardError ; end
@@ -11,7 +9,7 @@ class MessageOverwriteError < StandardError ; end
 class MessageRepo
   include RiakRepo
 
-  attr_reader :message, :list, :overwrite
+  attr_reader :message, :sym, :overwrite
 
   module Overwrite
     ERROR = :error
@@ -19,9 +17,9 @@ class MessageRepo
     DONT = :dont
   end
 
-  def initialize message, list, overwrite=Overwrite::ERROR
+  def initialize message, sym, overwrite=Overwrite::ERROR
     @message = message
-    @list = list
+    @sym = sym
     @overwrite = overwrite
   end
 
@@ -31,12 +29,10 @@ class MessageRepo
 
   def serialize
     {
-      source:      message.source,
-      call_number: message.call_number.to_s,
-      message_id:  message.message_id,
-      list_slug:   list.slug,
-      overlay:     message.overlay,
       email:       EmailRepo.new(message.email).serialize,
+      call_number: message.call_number.to_s,
+      source:      message.source,
+      overlay:     message.overlay,
     }
   end
 
@@ -52,10 +48,6 @@ class MessageRepo
       exists = bucket.exists? key
       raise MessageOverwriteError, "overwrite attempted for Message #{@key}" if exists
     end
-  end
-
-  def sym
-    Sym.new(list.slug, message.date.year, message.date.month)
   end
 
   def store
@@ -88,9 +80,5 @@ class MessageRepo
 
   def self.find_all call_numbers
     bucket.get_many(call_numbers).map { |k, h| deserialize h }
-  end
-
-  def self.call_number_list sym
-    bucket.get_index('sym_bin', sym.to_key).map { |k| CallNumber.new k }
   end
 end

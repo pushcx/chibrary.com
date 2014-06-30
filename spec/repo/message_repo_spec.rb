@@ -1,29 +1,26 @@
 require_relative '../rspec'
 require_relative '../../value/sym'
-require_relative '../../model/list'
 require_relative '../../repo/message_repo'
 
 class EmailRepo ; end
 
 describe MessageRepo do
-  let(:list) { List.new('slug') }
+  let(:sym) { Sym.new('slug', 2014, 6) }
 
-  context 'instantiated with a Message and List' do
+  context 'instantiated with a Message and Sym' do
     it '#extract_key' do
       m = FakeStorableMessage.new
-      expect(MessageRepo.new(m, list).extract_key).to eq('callnumb')
+      expect(MessageRepo.new(m, sym).extract_key).to eq('callnumb')
     end
 
     describe '#serialize' do
       let(:m) { FakeStorableMessage.new }
-      let(:message_repo) { MessageRepo.new(m, list) }
+      let(:message_repo) { MessageRepo.new(m, sym) }
       before { EmailRepo.should_receive(:new).and_return(double('email_repo', serialize: {})) }
       subject { message_repo.serialize }
 
       it { expect(subject[:source]).to eq('source') }
       it { expect(subject[:call_number]).to eq('callnumb') }
-      it { expect(subject[:message_id]).to eq('id@example.com') }
-      it { expect(subject[:list_slug]).to eq('slug') }
       it { expect(subject[:email]).to eq({}) }
       it { expect(subject[:overlay]).to eq({}) }
     end
@@ -31,21 +28,21 @@ describe MessageRepo do
     describe '#dont_overwrite_if_already_stored' do
       it 'returns true if message is stored' do
         m = FakeStorableMessage.new
-        ms = MessageRepo.new(m, list, MessageRepo::Overwrite::DONT)
+        ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::DONT)
         ms.stub(:bucket).and_return(double('bucket', exists?: true))
         expect(ms.dont_overwrite_if_already_stored('key')).to eq(true)
       end
 
       it 'returns false if message is not stored' do
         m = FakeStorableMessage.new
-        ms = MessageRepo.new(m, list, MessageRepo::Overwrite::DONT)
+        ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::DONT)
         ms.stub(:bucket).and_return(double('bucket', exists?: false))
         expect(ms.dont_overwrite_if_already_stored('key')).to eq(false)
       end
 
       it 'returns false if overwrite is not set to DONT' do
         m = FakeStorableMessage.new
-        ms = MessageRepo.new(m, list, MessageRepo::Overwrite::DO)
+        ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::DO)
         expect(ms.dont_overwrite_if_already_stored('key')).to eq(false)
       end
     end
@@ -54,7 +51,7 @@ describe MessageRepo do
       it 'raises if the message is already stored' do
         m = FakeStorableMessage.new
         expect  {
-          ms = MessageRepo.new(m, list, MessageRepo::Overwrite::ERROR)
+          ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::ERROR)
           ms.stub(:bucket).and_return(double('bucket', exists?: true))
           ms.guard_against_error_overwrite 'key'
         }.to raise_error(MessageOverwriteError)
@@ -63,7 +60,7 @@ describe MessageRepo do
       it 'does not raise if the message is not stored' do
         m = FakeStorableMessage.new
         expect  {
-          ms = MessageRepo.new(m, list, MessageRepo::Overwrite::ERROR)
+          ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::ERROR)
           ms.stub(:bucket).and_return(double('bucket', exists?: false))
           ms.guard_against_error_overwrite 'key'
         }.not_to raise_error
@@ -72,7 +69,7 @@ describe MessageRepo do
       it 'does nothing if overwrite is not set to ERROR' do
         m = FakeStorableMessage.new
         expect  {
-          ms = MessageRepo.new(m, list, MessageRepo::Overwrite::DO)
+          ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::DO)
           ms.guard_against_error_overwrite 'key'
         }.not_to raise_error
       end
@@ -83,7 +80,7 @@ describe MessageRepo do
         def store ; end
       end
       let(:m)  { FakeStorableMessage.new }
-      let(:ms) { MessageRepo.new(m, list, MessageRepo::Overwrite::DO) }
+      let(:ms) { MessageRepo.new(m, sym, MessageRepo::Overwrite::DO) }
       let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'sym_bin' => [], 'author_bin' => [] }) }
       before do
         ms.stub(:bucket).and_return(double('bucket', new: riak_object))
@@ -102,7 +99,7 @@ describe MessageRepo do
 
       it 'indexes the list/month/year' do
         ms.store
-        expect(riak_object.indexes['sym_bin']).to eq(['slug/2013/11'])
+        expect(riak_object.indexes['sym_bin']).to eq(['slug/2014/06'])
       end
 
       it 'indexes the author email' do
@@ -113,7 +110,7 @@ describe MessageRepo do
 
     it 'does not overwrite when instructed not to' do
       m = FakeStorableMessage.new
-      ms = MessageRepo.new(m, list, MessageRepo::Overwrite::DONT)
+      ms = MessageRepo.new(m, sym, MessageRepo::Overwrite::DONT)
       bucket = double('bucket', exists?: true)
       bucket.should_not_receive(:new)
       ms.stub(:bucket).and_return(bucket)
@@ -140,13 +137,5 @@ describe MessageRepo do
     expect(message.call_number).to eq('callnumb')
     expect(message.source).to eq('source')
     expect(message.message_id.to_s).to eq('overlay@example.com')
-  end
-
-  it '::message_list' do
-    bucket = double('bucket')
-    bucket.should_receive(:get_index).with('sym_bin', 'slug/2014/01').and_return(['callnumb'])
-    MessageRepo.stub(:bucket).and_return(bucket)
-    list = MessageRepo.call_number_list(Sym.new('slug', 2014, 1))
-    expect(list).to eq([CallNumber.new('callnumb')])
   end
 end

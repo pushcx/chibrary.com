@@ -20,7 +20,8 @@ class Filer
     src ||= source
     message = Message.from_string(raw_email, call_number, src)
     list ||= ListAddressRepo.find_list_by_addresses(message.email.possible_list_addresses)
-    message_repo = MessageRepo.new(message, list, MessageRepo::Overwrite::DO)
+    sym = Sym.new(list.slug, message.date.year, message.date.month)
+    message_repo = MessageRepo.new(message, sym, MessageRepo::Overwrite::DO)
     message_repo.store
 
     filed[message.n_subject] = filed.fetch(message.n_subject, []) << call_number
