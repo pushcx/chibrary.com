@@ -42,8 +42,9 @@ class ListRepo
     hash = bucket[key]
     deserialize(hash)
   end
-  
+
   def self.all
-    bucket.get_index('slug_bin', '0'..'z').map { |k| find(k) }
+    keys = bucket.get_index('slug_bin', '0'..'z')
+    bucket.get_many(keys).map { |k, h| deserialize h }
   end
 end
