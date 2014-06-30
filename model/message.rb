@@ -7,7 +7,7 @@ class Message
   attr_accessor :email, :call_number, :source, :overlay
 
   extend Forwardable
-  def_delegators :@email, :likely_thread_creation_from?
+  def_delegators :@email, :direct_quotes, :likely_thread_creation_from?, :lines_matching
 
   def initialize email, call_number, source=nil, overlay={}
     @email = email

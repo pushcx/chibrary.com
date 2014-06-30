@@ -322,4 +322,28 @@ describe Email do
       expect(e2).to eq(e1)
     end
   end
+
+  describe '#direct_quotes' do
+    it 'returns the contents of immediate quotes' do
+      e = Email.new "\n\n> quote\nresponse"
+      expect(e.direct_quotes).to include('quote')
+    end
+
+    it 'does not return direct text' do
+      e = Email.new "\n\n> quote\nresponse"
+      expect(e.direct_quotes).to_not include('response')
+    end
+
+    it 'does not return nested quotes' do
+      e = Email.new "\n\n> > nested\n> quote\nresponse"
+      expect(e.direct_quotes).to_not include('nested')
+    end
+  end
+
+  describe '#lines_matching' do
+    it 'counts the lines that match any of the lines given' do
+      e = Email.new "\n\n> quote\nresponse"
+      expect(e.lines_matching ['response']).to eq(1)
+    end
+  end
 end

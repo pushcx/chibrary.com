@@ -221,4 +221,13 @@ class Email
   def == other
     other.raw == raw
   end
+
+  # TODO should find top-quoted quotes
+  def direct_quotes
+    body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
+  end
+
+  def lines_matching quotes
+    quotes.collect { |q| (body.include? q) ? 1 : 0 }.inject(0, &:+)
+  end
 end
