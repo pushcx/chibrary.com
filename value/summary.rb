@@ -11,7 +11,7 @@ class Summary
     @call_number = CallNumber.new(call_number)
     @from = from
     @n_subject = n_subject
-    @date = date.kind_of?(Time) ? date : Time.rfc2822(date).utc
+    @date = date.kind_of?(Time) ? date.utc : Time.rfc2822(date).utc
     @blurb = body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^>|@|:$/) }.join("\n")[0..149]
   end
 
@@ -24,4 +24,13 @@ class Summary
     return nil if message.nil? # for empty containers
     new(message.call_number, message.from, message.n_subject, message.date, message.body)
   end
+
+  def == other
+    call_number == other.call_number &&
+    from == other.from &&
+    n_subject == other.n_subject &&
+    date.rfc2822 == other.date.rfc2822 && # stored messages truncate microseconds
+    blurb == other.blurb
+  end
+  alias :eql? :==
 end

@@ -71,6 +71,10 @@ class MessageContainer
     c
   end
 
+  def messagize
+    self
+  end
+
   def to_s
     v = empty? ? 'empty' : value.to_s
     return "<MessageContainer(#{key}): #{v}>"

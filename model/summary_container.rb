@@ -34,9 +34,13 @@ class SummaryContainer
     effective_field(:blurb) or ''
   end
 
+  def summarize
+    self
+  end
+
   def messagize messages
     c = MessageContainer.new key, messages[call_number]
-    children.each { |child| c.adopt(child.messagize) }
+    children.each { |child| c.adopt(child.messagize messages) }
     c
   end
 

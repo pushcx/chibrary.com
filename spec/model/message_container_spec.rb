@@ -129,6 +129,14 @@ describe MessageContainer do
     it { expect(subject.children.first.n_subject).to eq('m2') }
   end
 
+  describe '#messagize is a no-op' do
+    it 'returns itself' do
+      m = Message.from_string "Subject: m1\n\nm1", 'callnum1'
+      c = MessageContainer.new 'c@example.com', m
+      expect(c.messagize).to be(c)
+    end
+  end
+
   describe '#to_s' do
     it 'identifies empty containers' do
       c = MessageContainer.new('c@example.com')
