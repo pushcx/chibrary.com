@@ -103,7 +103,7 @@ x     can pull a hydrated thread by hitting MessageRepo with get_many
     update MonthCount + MonthCountRepo to pull from ThreadRepo
     remove:
 x     SummarySetRepo
-      TimeSort and TimeSortRepo
+x     TimeSort and TimeSortRepo
       ThreadSetRepo
 x     MessageContainerRepo
 x     SummaryContainerRepo

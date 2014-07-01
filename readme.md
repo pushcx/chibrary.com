@@ -71,9 +71,6 @@ Slug and year. I have no idea why this object ever existed, but I remember feeli
 
 A Sym, CallNumber, and Subject are used to make links to next/previous Threads on the Thread Route.
 
-### TimeSort
-
-An ordered list of ThreadLinks for a Sym.
 
 ...there should probably be a Slug value, but isn't.
 

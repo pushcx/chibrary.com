@@ -44,24 +44,24 @@ rescue ArgumentError
   raise Sinatra::NotFound
 end
 
-def thread_previous_next(sym, call_number)
+def thread_previous_next(thread)
   def thread_link thread, type
     rel = type ? " rel='#{type} prefetch'" : ''
     "<a href='#{thread.href}' #{rel}>#{f(subject(thread.subject))}</a>"
   end
 
-  if previous_thread = TimeSortRepo.previous_link(sym, call_number)
+  if previous_thread = ThreadRepo.previous_thread(thread)
     previous_link = "&lt; #{thread_link(previous_thread, :prev)}"
-    previous_link += "<br />#{previous_thread.sym.year}-#{previous_thread.sym.month}" unless sym.same_time_as? previous_thread.sym
+    previous_link += "<br />#{previous_thread.sym.year}-#{previous_thread.sym.month}" unless thread.sym.same_time_as? previous_thread.sym
   else
-    previous_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
+    previous_link = "<a class='none' href='/#{thread.sym.slug}' rel='contents'>list</a>"
   end
 
-  if next_thread = TimeSortRepo.previous_link(sym, call_number)
+  if next_thread = ThreadRepo.next_thread(thread)
     next_link = "#{thread_link(next_thread, :next)} &gt;"
-    next_link += "<br />#{next_thread.sym.year}-#{next_thread.sym.month}" if sym.same_time_as? next_thread.sym
+    next_link += "<br />#{next_thread.sym.year}-#{next_thread.sym.month}" if thread.sym.same_time_as? next_thread.sym
   else
-    next_link = "<a class='none' href='/#{sym.slug}' rel='contents'>list</a>"
+    next_link = "<a class='none' href='/#{thread.sym.slug}' rel='contents'>list</a>"
   end
 
   [previous_link, next_link]

@@ -15,7 +15,6 @@ class ThreadSetRepo
 
   def store
     MonthCountRepo.new(MonthCount.from(thread_set)).store
-    TimeSortRepo.new(TimeSort.from(thread_set)).store
   end
 
   def self.month sym

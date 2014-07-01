@@ -23,7 +23,7 @@ get  '/:slug/:year/:month/:call_number' do
   load_thread CallNumber.new(params[:call_number])
 
   @title = "#{subject(@thread.subject)} - #{@list.title_name}"
-  @previous_link, @next_link = thread_previous_next(@sym, @call_number)
+  @previous_link, @next_link = thread_previous_next(@thread)
 
   haml :'thread/show.html'
 end
