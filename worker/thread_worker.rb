@@ -1,49 +1,33 @@
 require 'sidekiq'
 
-require_relative '../lib/core_ext/time_'
-require_relative '../value/sym'
-require_relative '../model/thread_set'
-require_relative '../repo/call_number_list_repo'
+require_relative '../value/call_number'
+require_relative '../model/thread'
+require_relative '../model/message_container'
 require_relative '../repo/message_repo'
-require_relative '../repo/thread_set_repo'
+require_relative '../repo/thread_repo'
 
 class ThreadWorker
   include Sidekiq::Worker
 
-  def perform slug, year, month
-    thread(Sym.new(slug, year, month))
+  def initialize
   end
 
-  def thread sym
-    cached_message_list = CallNumberListRepo.find sym
-    fresh_message_list  = MessageRepo.call_number_list sym
+  def perform call_numbers
+    call_numbers.each { |cn| thread CallNumber.new(cn) }
+  end
 
-    if cached_message_list == fresh_message_list
-      puts "nothing to do"
-      return
+  def thread_for_message message
+    ThreadRepo.potential_threads_for(message) do |thread|
+      #next unless thread.sym.slug == ListAddressRepo.find_list_by_addresses(message.email.possible_list_addresses).slug
+      return thread if thread.conversation_for? message
     end
+    Thread.new MessageContainer.new(message)
+  end
 
-    # if any messages were removed, rebuild for safety over the speed of find and remove
-    removed = (cached_message_list - fresh_message_list)
-    if !removed.empty?
-      threadset = ThreadSet.new(sym)
-      added = fresh_message_list
-    else
-      threadset = ThreadSetRepo.month(sym)
-      added = fresh_message_list - cached_message_list
-      puts "#{fresh_message_list.size} messages, #{cached_message_list .size} in cache, adding #{added.size}"
-    end
-
-    # add messages
-    added.each do |call_number|
-      threadset << MessageRepo.find(call_number)
-    end
-
-    return if removed.empty? and added.empty?
-
-    #threadset.dump
-    #threadset.summarize_threads.each {|s| s.dump }
-    ThreadSetRepo.new(threadset).store
-    CallNumberListRepo.new(sym, fresh_message_list).store
+  def thread call_number
+    message = MessageRepo.find(call_number)
+    thread = thread_for_message message
+    thread << message
+    ThreadRepo.new(thread).store
   end
 end
