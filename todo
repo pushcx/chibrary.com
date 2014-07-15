@@ -99,12 +99,12 @@ x   ThreadRepo stores summaries;
 x     stores summaries of all messages in one thread
 x     index slug, MessageId hash, n_subject hash, sym
 x     can pull a hydrated thread by hitting MessageRepo with get_many
-    ThreadSet disappears
+x   ThreadSet disappears
 x   update MonthCount + MonthCountRepo to pull from ThreadRepo
-    remove:
+x   remove:
 x     SummarySetRepo
 x     TimeSort and TimeSortRepo
-      ThreadSetRepo
+x     ThreadSetRepo
 x     MessageContainerRepo
 x     SummaryContainerRepo
 x     ContainerRepo
@@ -143,7 +143,10 @@ x get /search
   fix google analytics logging to only be included in prod
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
   announce
-  test fetcher
+  integration tests:
+    Fetcher
+    MonthCountWorker
+
 
 Possible refactorings:
   Body class for blurbs, quoting (incl top posting), and compress quotes
