@@ -17,7 +17,7 @@ class MonthCount
     mc.sym == sym and mc.thread_count == thread_count and mc.message_count == message_count
   end
 
-  def self.from ts
-    new ts.sym, ts.thread_count, ts.message_count
+  def self.from month
+    new month.first.sym, month.count, month.map(&:message_count).inject(&:+)
   end
 end

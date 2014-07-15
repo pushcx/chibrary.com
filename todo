@@ -100,7 +100,7 @@ x     stores summaries of all messages in one thread
 x     index slug, MessageId hash, n_subject hash, sym
 x     can pull a hydrated thread by hitting MessageRepo with get_many
     ThreadSet disappears
-    update MonthCount + MonthCountRepo to pull from ThreadRepo
+x   update MonthCount + MonthCountRepo to pull from ThreadRepo
     remove:
 x     SummarySetRepo
 x     TimeSort and TimeSortRepo
