@@ -50,20 +50,20 @@ class MessageRepo
     end
   end
 
+  def indexes
+    ix = {}
+    ix[:id_hash_bin] = Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
+    ix[:sym_bin] = sym.to_key
+    ix[:slug_timestamp_bin] = "#{sym.slug}_#{message.date.to_i}"
+    ix[:author_bin] = Base64.strict_encode64(message.email.canonicalized_from_email)
+    ix
+  end
+
   def store
     key = extract_key
     guard_against_error_overwrite(key)
     return message if dont_overwrite_if_already_stored(key)
-
-    obj = bucket.new
-    obj.key = key
-    obj.data = serialize
-    obj.indexes['id_hash_bin'] << Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
-    obj.indexes['sym_bin']     << sym.to_key
-    obj.indexes['author_bin']  << Base64.strict_encode64(message.email.canonicalized_from_email)
-    obj.store
-
-    message
+    super
   end
 
   def self.build_key call_number
