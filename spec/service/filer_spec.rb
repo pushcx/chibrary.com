@@ -12,7 +12,7 @@ describe Filer do
       f = Filer.new 'source'
 
       cns.should_receive(:next!).and_return('callnumb')
-      list = double('List')
+      list = double('List', slug: 'slug')
       ListAddressRepo.should_receive(:find_list_by_addresses).with(['user@example.com']).and_return(list)
       mr = double('MessageRepo', sym: 'sym')
       mr.should_receive(:store)
@@ -25,8 +25,8 @@ describe Filer do
   describe '#thread_jobs' do
     it 'queues workers' do
       filer = Filer.new 'source'
-      filer.instance_variable_set(:@syms_seen, [Sym.new('slug', 2014, 5)])
-      ThreadWorker.should_receive(:perform_async).with('slug', 2014, 5)
+      filer.instance_variable_set(:@filed, { 'subject' => ['callnumb'] })
+      ThreadWorker.should_receive(:perform_async).with(['callnumb'])
       filer.thread_jobs
     end
   end

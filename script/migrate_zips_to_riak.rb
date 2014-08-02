@@ -7,8 +7,6 @@ require 'json'
 require_relative '../lib/storage'
 require_relative '../service/filer'
 require_relative '../model/list'
-require_relative '../model/message'
-require_relative '../repo/message_repo'
 
 #thread_queue = Queue.new :thread
 

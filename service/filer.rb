@@ -7,7 +7,8 @@ require_relative '../worker/thread_worker'
 module Chibrary
 
 class Filer
-  attr_reader :source, :call_number_service, :message_count, :n_subjects_seen
+  attr_reader :source
+  attr_reader :call_number_service, :message_count, :filed
 
   def initialize source
     @source = source

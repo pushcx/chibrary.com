@@ -83,7 +83,7 @@ describe MessageRepo do
       end
       let(:m)  { FakeStorableMessage.new }
       let(:ms) { MessageRepo.new(m, sym, MessageRepo::Overwrite::DO) }
-      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'sym_bin' => [], 'author_bin' => [] }) }
+      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'sym_bin' => [], 'author_bin' => [], 'slug_timestamp_bin' => [] }) }
       before do
         ms.stub(:bucket).and_return(double('bucket', new: riak_object))
         EmailRepo.stub(:new).and_return(double('EmailRepo', serialize: {}))

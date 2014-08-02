@@ -137,6 +137,7 @@ x get /search
   migrate all lists to riak
   retrieve messages from archive/old_list/_listlibrary_no_list
   run and test threader
+  delete lib/storage.rb
   deploy
   re-import ruby-dev
   check that google search works with new domain

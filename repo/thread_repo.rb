@@ -20,7 +20,7 @@ class ThreadRepo
       # creates an index that ascends in the right order to find the previous
       # thread. If you are debugging this in Nov 2286, I'm sorry. Add a digit.
       slug_timestamp_prev_bin: "#{thread.sym.slug}_#{10_000_000_000 - thread.date.utc.to_i}",
-      call_number_bin: thread.call_numbers.map { |cn| Base64.strict_encode64(cn.) },
+      call_number_bin: thread.call_numbers.map { |cn| Base64.strict_encode64(cn) },
       message_id_bin: thread.message_ids.map { |id| Base64.strict_encode64(id) },
       n_subject_bin: thread.n_subjects.map { |s| Base64.strict_encode64(s) },
     }
@@ -122,9 +122,9 @@ class ThreadRepo
   private
 
   def np_thread index
-    start = indexes[index].succ
-    end = start.gsub(/./, '~') # asciibetically last
-    keys = bucket.get_index(index.to_s, start..end, max_results: 1)
+    from = indexes[index].succ
+    to = from.gsub(/./, '~') # asciibetically last
+    keys = bucket.get_index(index.to_s, (from..to), max_results: 1)
     return nil if keys.empty?
     find keys.first
   end

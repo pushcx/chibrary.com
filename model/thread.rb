@@ -7,7 +7,7 @@ module Chibrary
 class Thread
   include Enumerable
 
-  attr_reader container_tree
+  attr_reader :container_tree
 
   extend Forwardable
   def_delegators :@container_tree, :<=>, :each
