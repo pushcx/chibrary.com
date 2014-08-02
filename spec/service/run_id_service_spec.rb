@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../service/run_id_service'
 
+module Chibrary
+
 describe RunIdService do
   describe "#run_id" do
     it "accesses @run_id" do
@@ -45,3 +47,5 @@ describe RunIdService do
     end
   end
 end
+
+end # Chibrary

@@ -1,5 +1,7 @@
 require 'adamantium'
 
+module Chibrary
+
 class Sy
   include Adamantium
 
@@ -13,3 +15,5 @@ class Sy
     "#{slug}/#{year}"
   end
 end
+
+end # Chibrary

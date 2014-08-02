@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../service/call_number_service'
 
+module Chibrary
+
 describe CallNumberService do
   def spec_cns
     CallNumberService.new CNSTestRunIdService.new, CNSTestSequenceIdService.new
@@ -90,3 +92,4 @@ describe CallNumberService do
   end
 end
 
+end # Chibrary

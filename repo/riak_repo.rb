@@ -4,6 +4,8 @@ require_relative 'riak_bucket'
 
 Riak.json_options = { max_nesting: 100 }
 
+module Chibrary
+
 class NotFound < ArgumentError ; end
 class TooManyFound < RuntimeError ; end
 
@@ -46,7 +48,7 @@ module RiakRepo
     end
 
     def bucket
-      name = self.name.split('Repo').first.downcase
+      name = self.name.split('::').last.split('Repo').first.downcase
       @bucket ||= RiakBucket.new db_client.bucket(name)
     end
 
@@ -59,3 +61,5 @@ module RiakRepo
     end
   end
 end
+
+end # Chibrary

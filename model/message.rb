@@ -3,6 +3,8 @@ require 'forwardable'
 require_relative '../value/call_number'
 require_relative '../value/email'
 
+module Chibrary
+
 class Message
   attr_accessor :email, :call_number, :source, :overlay
 
@@ -65,3 +67,5 @@ class Message
     Message.new m.email, m.call_number, m.source, m.overlay
   end
 end
+
+end # Chibrary

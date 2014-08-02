@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../web/helper/thread_helper'
 require_relative '../../web/helper/application_helper'
 
+module Chibrary
+
 describe 'Thread Helper' do
   describe "#message_body" do
     # it is untested because it just calls all the others
@@ -58,3 +60,5 @@ describe 'Thread Helper' do
     end
   end
 end
+
+end # Chibrary

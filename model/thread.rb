@@ -2,6 +2,8 @@ require 'forwardable'
 
 require 'container'
 
+module Chibrary
+
 class Thread
   include Enumerable
 
@@ -34,3 +36,5 @@ class Thread
     map(&:n_subject).uniq.compact.sort
   end
 end
+
+end # Chibrary

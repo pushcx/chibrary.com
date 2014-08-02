@@ -2,6 +2,8 @@ require_relative 'riak_repo'
 require_relative '../model/list'
 require_relative 'list_repo'
 
+module Chibrary
+
 class ListAddressRepo
   include RiakRepo
 
@@ -23,3 +25,5 @@ class ListAddressRepo
     list
   end
 end
+
+end # Chibrary

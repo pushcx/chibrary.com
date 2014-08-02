@@ -1,5 +1,7 @@
 require 'adamantium'
 
+module Chibrary
+
 class MonthCount
   include Adamantium
 
@@ -21,3 +23,5 @@ class MonthCount
     new month.first.sym, month.count, month.map(&:message_count).inject(&:+)
   end
 end
+
+end # Chibrary

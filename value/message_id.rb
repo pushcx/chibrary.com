@@ -1,5 +1,7 @@
 require 'adamantium'
 
+module Chibrary
+
 class MessageId
   include Adamantium
 
@@ -52,3 +54,5 @@ class MessageId
     new "#{call_number}@generated-message-id.chibrary.org"
   end
 end
+
+end # Chibrary

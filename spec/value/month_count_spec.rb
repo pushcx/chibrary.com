@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../value/month_count'
 require_relative '../../value/sym'
 
+module Chibrary
+
 MCTestThread = Struct.new(:sym, :message_count)
 
 describe MonthCount do
@@ -46,3 +48,5 @@ describe MonthCount do
     end
   end
 end
+
+end # Chibrary

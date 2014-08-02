@@ -9,6 +9,8 @@ require_relative 'headers'
 require_relative 'subject'
 require_relative 'message_id'
 
+module Chibrary
+
 class Email
   include Adamantium
 
@@ -231,3 +233,5 @@ class Email
     quotes.collect { |q| (body.include? q) ? 1 : 0 }.inject(0, &:+)
   end
 end
+
+end # Chibrary

@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../web/helper/application_helper'
 
+module Chibrary
+
 describe 'App Helper' do
   describe 'f' do
     it 'formats email addresses and links' do
@@ -27,3 +29,5 @@ describe 'App Helper' do
     end
   end
 end
+
+end # Chibrary

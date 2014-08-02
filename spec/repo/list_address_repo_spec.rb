@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../repo/list_address_repo'
 
+module Chibrary
+
 describe ListAddressRepo do
   describe '::find_list_by_address' do
     it 'finds lists' do
@@ -20,3 +22,5 @@ describe ListAddressRepo do
     end
   end
 end
+
+end # Chibrary

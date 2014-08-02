@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../repo/list_repo'
 
+module Chibrary
+
 describe ListRepo do
   context 'instantiated with a List' do
     it "generates a key based on list" do
@@ -62,3 +64,5 @@ describe ListRepo do
     end
   end
 end
+
+end # Chibrary

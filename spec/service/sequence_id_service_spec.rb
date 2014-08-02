@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../service/sequence_id_service'
 
+module Chibrary
+
 # This spec digs into the private instance variable @sequence_id to test
 # thoroughly. A major feature of SequenceIdService is maintaining an API
 # that prevents accidental reuse, so that is correctly private.
@@ -63,3 +65,4 @@ describe SequenceIdService do
   end
 end
 
+end # Chibrary

@@ -5,6 +5,8 @@ require_relative '../model/message_container'
 require_relative '../repo/sym_repo'
 require_relative '../repo/thread_repo'
 
+module Chibrary
+
 class MonthCountWorker
   include Sidekiq::Worker
 
@@ -29,3 +31,5 @@ class MonthCountWorker
   end
 
 end
+
+end # Chibrary

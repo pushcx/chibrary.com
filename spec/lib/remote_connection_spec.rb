@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../lib/remote_connection'
 
+module Chibrary
+
 describe RemoteConnection do
   let(:sftp) { double("sftp connection") }
   let(:ssh)  { double("ssh connection", sftp: double('connector', connect: sftp)) }
@@ -33,3 +35,5 @@ describe RemoteConnection do
     rc.upload_file "path/to/filename", "str"
   end
 end
+
+end # Chibrary

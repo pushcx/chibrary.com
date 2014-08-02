@@ -10,6 +10,8 @@ class Net::SFTP::Session
   end
 end
 
+module Chibrary
+
 class RemoteConnection
   def initialize
     @ssh = Net::SSH.start(
@@ -69,3 +71,5 @@ class RemoteConnection
   end
 
 end
+
+end # Chibrary

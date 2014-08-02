@@ -4,6 +4,8 @@ require_relative '../lib/container'
 require_relative '../value/summary'
 require_relative 'summary_container'
 
+module Chibrary
+
 class MessageContainer
   include Container
 
@@ -80,3 +82,5 @@ class MessageContainer
     return "<MessageContainer(#{key}): #{v}>"
   end
 end
+
+end # Chibrary

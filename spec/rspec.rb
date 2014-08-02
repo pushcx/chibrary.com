@@ -14,15 +14,17 @@ RSpec.configure do |config|
   config.alias_example_to :expect_it
 
   config.before(:each) do
-    module RiakRepo::ClassMethods
-      def db_client
-        FakeRepo.new
+    module Chibrary
+      module RiakRepo::ClassMethods
+        def db_client
+          FakeRepo.new
+        end
       end
-    end
 
-    module RedisRepo
-      def self.db_client
-        FakeRepo.new
+      module RedisRepo
+        def self.db_client
+          FakeRepo.new
+        end
       end
     end
   end
@@ -33,6 +35,8 @@ RSpec::Core::MemoizedHelpers.module_eval do
   alias to should
   alias to_not should_not
 end
+
+module Chibrary
 
 class CNSTestRunIdService
   def run_id
@@ -74,3 +78,5 @@ class FakeStorableMessage < FakeMessage
   def source ; 'source' ; end
   def call_number ; 'callnumb' ; end
 end
+
+end # Chibrary

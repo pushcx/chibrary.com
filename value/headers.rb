@@ -6,6 +6,8 @@ RMail::Header::Field.send(:remove_const, :EXTRACT_FIELD_NAME_RE)
 # a field name is any printable ascii character but space and :
 RMail::Header::Field::EXTRACT_FIELD_NAME_RE = /\A([\x21-\x39\x3b-\x7e]+):\s*/ou
 
+module Chibrary
+
 class Headers
   include Adamantium
 
@@ -21,3 +23,5 @@ class Headers
     @rmail.header.fetch_all(header)
   end
 end
+
+end # Chibrary

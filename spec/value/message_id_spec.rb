@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/message_id'
 
+module Chibrary
+
 describe MessageId do
   describe '#valid?' do
     it 'is valid if well-formatted' do
@@ -103,3 +105,5 @@ describe MessageId do
     end
   end
 end
+
+end # Chibrary

@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../repo/riak_repo'
 
+module Chibrary
+
 describe RiakRepo do
 
   class ExampleRepo
@@ -59,3 +61,5 @@ describe RiakRepo do
   end
 
 end
+
+end # Chibrary

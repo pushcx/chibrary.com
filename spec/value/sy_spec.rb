@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/sy'
 
+module Chibrary
+
 describe Sy do
   describe '#initialize' do
     it 'casts year to int' do
@@ -14,3 +16,5 @@ describe Sy do
     end
   end
 end
+
+end # Chibrary

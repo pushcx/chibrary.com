@@ -3,6 +3,8 @@ require 'ostruct'
 require_relative '../rspec'
 require_relative '../../value/summary'
 
+module Chibrary
+
 describe Summary do
   describe '#no_archive?' do
     it 'is always false to match _thread_list partial' do
@@ -63,3 +65,5 @@ describe Summary do
     end
   end
 end
+
+end # Chibrary

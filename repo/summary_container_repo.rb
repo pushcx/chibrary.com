@@ -1,6 +1,8 @@
 require_relative 'summary_repo'
 require_relative '../model/summary_container'
 
+module Chibrary
+
 class SummaryContainerRepo
   attr_reader :container
 
@@ -25,3 +27,5 @@ class SummaryContainerRepo
     container
   end
 end
+
+end # Chibrary

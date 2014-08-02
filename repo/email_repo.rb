@@ -1,5 +1,7 @@
 require_relative '../value/email'
 
+module Chibrary
+
 # Does not include RiakRepo or support the same API because emails are only
 # persisted in Messages.
 class EmailRepo
@@ -17,3 +19,5 @@ class EmailRepo
     Email.new(str)
   end
 end
+
+end # Chibrary

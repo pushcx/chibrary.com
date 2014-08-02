@@ -1,6 +1,8 @@
 require_relative 'riak_repo'
 require_relative '../model/list'
 
+module Chibrary
+
 class ListRepo
   include RiakRepo
 
@@ -48,3 +50,5 @@ class ListRepo
     bucket.get_many(keys).map { |k, h| deserialize h }
   end
 end
+
+end # Chibrary

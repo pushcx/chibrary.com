@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../lib/container'
 
+module Chibrary
+
 class TContainer
   include Container
 end
@@ -339,3 +341,5 @@ describe TContainer do
   end
 
 end
+
+end # Chibrary

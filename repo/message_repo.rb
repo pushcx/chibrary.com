@@ -4,6 +4,8 @@ require_relative '../value/call_number'
 require_relative '../model/message'
 require_relative 'email_repo'
 
+module Chibrary
+
 class MessageOverwriteError < StandardError ; end
 
 class MessageRepo
@@ -82,3 +84,5 @@ class MessageRepo
     bucket.get_many(call_numbers).map { |k, h| deserialize h }
   end
 end
+
+end # Chibrary

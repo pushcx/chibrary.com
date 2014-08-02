@@ -1,5 +1,7 @@
 require_relative 'riak_repo'
 
+module Chibrary
+
 class ThreadRepo
   include RiakRepo
 
@@ -127,3 +129,5 @@ class ThreadRepo
     find keys.first
   end
 end
+
+end # Chibrary

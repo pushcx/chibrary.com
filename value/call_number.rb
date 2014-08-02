@@ -1,5 +1,7 @@
 require 'adamantium'
 
+module Chibrary
+
 CALL_NUMBER_BITS = 47
 
 class InvalidCallNumber < ArgumentError ; end
@@ -32,3 +34,5 @@ class CallNumber
   end
   alias :to_str :to_s
 end
+
+end # Chibrary

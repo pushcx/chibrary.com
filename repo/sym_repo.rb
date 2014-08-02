@@ -1,5 +1,7 @@
 require_relative '../value/sym'
 
+module Chibrary
+
 class SymRepo
   attr_reader :sym
 
@@ -15,3 +17,5 @@ class SymRepo
     Sym.new(*s.split('/'))
   end
 end
+
+end # Chibrary

@@ -4,6 +4,8 @@ require_relative '../rspec'
 require_relative '../../value/email'
 require_relative '../../repo/list_address_repo'
 
+module Chibrary
+
 describe Email do
   describe '::new' do
     it 'uses field-specific classes' do
@@ -347,3 +349,5 @@ describe Email do
     end
   end
 end
+
+end # Chibrary

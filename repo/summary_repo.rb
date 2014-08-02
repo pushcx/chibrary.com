@@ -1,5 +1,7 @@
 require_relative '../value/summary'
 
+module Chibrary
+
 # Does not import RiakRepo completely or confirm to the Repo interface
 # because Summaries are never loaded individually, only via
 # SummaryContainerRepo.
@@ -24,3 +26,5 @@ class SummaryRepo
     Summary.new h[:call_number], h[:from], h[:n_subject], h[:date], h[:blurb]
   end
 end
+
+end # Chibrary

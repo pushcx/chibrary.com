@@ -3,6 +3,8 @@ require 'adamantium'
 require_relative '../lib/core_ext/time_'
 require_relative 'sy'
 
+module Chibrary
+
 class Sym
   include Adamantium
 
@@ -50,3 +52,5 @@ class Sym
     new container.slug, container.date.year, container.date.month
   end
 end
+
+end # Chibrary

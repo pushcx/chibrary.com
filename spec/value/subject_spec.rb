@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/subject'
 
+module Chibrary
+
 describe Subject do
   REPLY_SUBJECTS = ["Re: foo", "RE: foo", "RE[9]: foo", "re(9): foo", "re:foo", "re: Re: foo", "fwd: foo", "Fwd: foo", "Fwd[14]: foo", "Re: Fwd: RE: fwd(3): foo", "fw: foo"]
 
@@ -69,3 +71,5 @@ describe Subject do
     end
   end
 end
+
+end # Chibrary

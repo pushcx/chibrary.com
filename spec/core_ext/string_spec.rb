@@ -3,6 +3,8 @@
 require_relative '../rspec'
 require_relative '../../lib/core_ext/string_'
 
+module Chibrary
+
 describe String do
   describe '.decoded' do
     it 'extracts base64' do
@@ -26,3 +28,5 @@ describe String do
     end
   end
 end
+
+end # Chibrary

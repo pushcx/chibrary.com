@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../repo/riak_bucket'
 
+module Chibrary
+
 describe RiakBucket do
   describe "#initialize" do
     it "wraps a Riak Bucket object" do
@@ -41,3 +43,5 @@ describe RiakBucket do
     end
   end
 end
+
+end # Chibrary

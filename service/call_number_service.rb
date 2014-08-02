@@ -7,6 +7,8 @@ require_relative '../value/call_number'
 # This should probably have a bitstring class broken out of it, but I don't
 # expect to need to reuse those parts or change this algorithm anytime soon.
 
+module Chibrary
+
 class CallNumberService
   attr_reader :ris, :sis
 
@@ -56,3 +58,5 @@ class CallNumberService
     (0..CALL_NUMBER_BITS-1).map { |i| bitstring[SHUFFLE_TABLE[i]] }.join('')
   end
 end
+
+end # Chibrary

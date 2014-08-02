@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/call_number'
 
+module Chibrary
+
 describe CallNumber do
   describe '#initialize' do
     it 'can be initialized with a string' do
@@ -57,3 +59,5 @@ describe CallNumber do
     end
   end
 end
+
+end # Chibrary

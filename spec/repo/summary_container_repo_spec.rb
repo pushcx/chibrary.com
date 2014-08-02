@@ -4,6 +4,8 @@ require_relative '../../model/summary_container'
 require_relative '../../repo/summary_repo'
 require_relative '../../repo/summary_container_repo'
 
+module Chibrary
+
 describe SummaryRepo do
   describe '#serialize' do
     let(:s1) { Summary.new 'callnum1', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
@@ -56,3 +58,5 @@ describe SummaryRepo do
     end
   end
 end
+
+end # Chibrary

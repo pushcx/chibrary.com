@@ -3,6 +3,8 @@ require 'set'
 require_relative '../rspec'
 require_relative '../../value/sym'
 
+module Chibrary
+
 describe Sym do
   describe '#initialize' do
     it 'casts year to int' do
@@ -79,3 +81,5 @@ describe Sym do
     end
   end
 end
+
+end # Chibrary

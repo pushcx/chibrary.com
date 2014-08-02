@@ -2,6 +2,8 @@ require 'adamantium'
 
 require_relative '../value/call_number'
 
+module Chibrary
+
 class Summary
   include Adamantium
 
@@ -34,3 +36,5 @@ class Summary
   end
   alias :eql? :==
 end
+
+end # Chibrary

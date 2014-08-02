@@ -29,7 +29,7 @@ end
 #LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
 LISTS_TO_LOAD = %w{mud-dev}
 
-filer = Filer.new 'riak-migration'
+filer = Chibrary::Filer.new 'riak-migration'
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
@@ -75,7 +75,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    filer.file str, source, List.new(slug)
+    filer.file str, source, Chibrary::List.new(slug)
 end
 rescue Exception => e
   puts

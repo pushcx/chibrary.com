@@ -4,6 +4,8 @@ require_relative '../rspec'
 require_relative '../../value/summary'
 require_relative '../../repo/summary_repo'
 
+module Chibrary
+
 describe SummaryRepo do
   let(:now) { Time.now.utc }
 
@@ -37,3 +39,5 @@ describe SummaryRepo do
     end
   end
 end
+
+end # Chibrary

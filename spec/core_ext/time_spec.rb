@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../lib/core_ext/time_'
 
+module Chibrary
+
 describe Time do
   let(:base_time) { Time.utc(2007, 9, 11) }
 
@@ -42,3 +44,5 @@ describe Time do
     end
   end
 end
+
+end # Chibrary

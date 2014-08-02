@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../value/sym'
 require_relative '../../repo/sym_repo'
 
+module Chibrary
+
 describe SymRepo do
   context 'instantiated with a Sym' do
     describe '#serialize' do
@@ -19,3 +21,5 @@ describe SymRepo do
     end
   end
 end
+
+end # Chibrary

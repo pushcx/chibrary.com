@@ -4,6 +4,8 @@ require_relative '../repo/message_repo'
 require_relative '../repo/list_address_repo'
 require_relative '../worker/thread_worker'
 
+module Chibrary
+
 class Filer
   attr_reader :source, :call_number_service, :message_count, :n_subjects_seen
 
@@ -33,3 +35,5 @@ class Filer
     end
   end
 end
+
+end # Chibrary

@@ -1,3 +1,5 @@
+module Chibrary
+
 class SequenceIdExhaustion < RangeError ; end
 
 class SequenceIdService
@@ -23,3 +25,5 @@ class SequenceIdService
     @sequence_id += 1
   end
 end
+
+end # Chibrary

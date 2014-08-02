@@ -1,3 +1,5 @@
+module Chibrary
+
 class ThreadLinkRepo
   attr_reader :thread_link
 
@@ -12,3 +14,5 @@ class ThreadLinkRepo
     }
   end
 end
+
+end # Chibrary

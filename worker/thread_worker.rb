@@ -6,6 +6,8 @@ require_relative '../model/message_container'
 require_relative '../repo/message_repo'
 require_relative '../repo/thread_repo'
 
+module Chibrary
+
 class ThreadWorker
   include Sidekiq::Worker
 
@@ -31,3 +33,5 @@ class ThreadWorker
     ThreadRepo.new(thread).store
   end
 end
+
+end # Chibrary

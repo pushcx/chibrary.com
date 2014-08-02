@@ -1,3 +1,5 @@
+module Chibrary
+
 class InvalidSlug < RuntimeError ; end
 
 class NullList
@@ -34,3 +36,5 @@ class List
     )
   end
 end
+
+end # Chibrary

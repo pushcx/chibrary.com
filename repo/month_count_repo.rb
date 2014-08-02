@@ -2,6 +2,8 @@ require_relative 'riak_repo'
 require_relative '../value/month_count'
 require_relative 'sym_repo'
 
+module Chibrary
+
 class MonthCountRepo
   include RiakRepo
 
@@ -61,3 +63,5 @@ class MonthCountRepo
   end
 
 end
+
+end # Chibrary

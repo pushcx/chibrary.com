@@ -3,6 +3,8 @@ require_relative '../../value/summary'
 require_relative '../../model/message'
 require_relative '../../model/summary_container'
 
+module Chibrary
+
 describe SummaryContainer do
   describe 'effective fields' do
     class FieldsValue
@@ -61,3 +63,5 @@ describe SummaryContainer do
   end
 
 end
+
+end # Chibrary

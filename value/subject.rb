@@ -3,6 +3,8 @@ require 'forwardable'
 
 require_relative '../lib/core_ext/string_'
 
+module Chibrary
+
 class Subject
   include Adamantium
 
@@ -36,3 +38,4 @@ class Subject
   end
 end
 
+end # Chibrary

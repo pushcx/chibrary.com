@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/headers'
 
+module Chibrary
+
 describe Headers do
   describe "#[]" do
     it 'looks up headers' do
@@ -31,3 +33,5 @@ describe Headers do
     end
   end
 end
+
+end # Chibrary

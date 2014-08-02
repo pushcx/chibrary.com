@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../model/message'
 require_relative '../../model/message_container'
 
+module Chibrary
+
 describe MessageContainer do
   describe 'sorting' do
     class DateValue
@@ -149,3 +151,5 @@ describe MessageContainer do
     end
   end
 end
+
+end # Chibrary

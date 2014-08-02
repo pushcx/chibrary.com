@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../value/sym'
 require_relative '../../service/filer'
 
+module Chibrary
+
 describe Filer do
   describe '#file' do
     it 'puts strings into MessageRepo' do
@@ -29,3 +31,5 @@ describe Filer do
     end
   end
 end
+
+end # Chibrary

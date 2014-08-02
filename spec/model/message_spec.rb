@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../model/message'
 
+module Chibrary
+
 describe Message do
   describe "overlaying email fields" do
     it "passes through to email by default" do
@@ -80,3 +82,5 @@ describe Message do
     end
   end
 end
+
+end # Chibrary

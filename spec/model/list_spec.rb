@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../model/list'
 
+module Chibrary
+
 describe List do
   describe '::new' do
     it 'raises if a slug is too long' do
@@ -44,3 +46,5 @@ describe List do
     end
   end
 end
+
+end # Chibrary

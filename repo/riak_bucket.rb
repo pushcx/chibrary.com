@@ -2,6 +2,8 @@ require 'active_support/core_ext/hash'
 require 'forwardable'
 require 'riak'
 
+module Chibrary
+
 class RiakBucket
   extend Forwardable
   def_delegators :@bucket, :get_index, :name, :new
@@ -37,3 +39,5 @@ class RiakBucket
     o.store
   end
 end
+
+end # Chibrary

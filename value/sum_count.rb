@@ -1,5 +1,7 @@
 require 'adamantium'
 
+module Chibrary
+
 SumCount = Struct.new(:thread_count, :message_count) do
   include Adamantium
 
@@ -10,3 +12,5 @@ SumCount = Struct.new(:thread_count, :message_count) do
     )
   end
 end
+
+end # Chibrary

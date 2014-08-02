@@ -1,6 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/sum_count'
 
+module Chibrary
+
 SCTestMonthCount = Struct.new(:thread_count, :message_count)
 
 describe SumCount do
@@ -16,3 +18,5 @@ describe SumCount do
     end
   end
 end
+
+end # Chibrary

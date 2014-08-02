@@ -1,5 +1,7 @@
 require_relative '../repo/redis_repo'
 
+module Chibrary
+
 class TooManyRunCollisions < RuntimeError ; end
 
 class RunIdService
@@ -39,3 +41,5 @@ class RunIdService
     end
   end
 end
+
+end # Chibrary

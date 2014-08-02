@@ -2,6 +2,8 @@ require_relative '../rspec'
 require_relative '../../value/sym'
 require_relative '../../repo/message_repo'
 
+module Chibrary
+
 class EmailRepo ; end
 
 describe MessageRepo do
@@ -139,3 +141,5 @@ describe MessageRepo do
     expect(message.message_id.to_s).to eq('overlay@example.com')
   end
 end
+
+end # Chibrary
