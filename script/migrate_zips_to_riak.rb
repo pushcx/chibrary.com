@@ -4,9 +4,10 @@
 
 require 'yaml'
 require 'json'
-require_relative '../lib/storage'
-require_relative '../service/filer'
+require_relative '../value/slug'
 require_relative '../model/list'
+require_relative '../service/filer'
+require_relative '../lib/storage'
 
 #thread_queue = Queue.new :thread
 
@@ -49,9 +50,9 @@ begin
     i += 1
     foo = true if i >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     next unless foo
-    slug = key.split('/').first
+    slug = Slug.new key.split('/').first
     print "\n#{i} " if i % 1000 == 0
-    if LISTS_TO_LOAD.include? slug
+    if LISTS_TO_LOAD.include? slug.to_s
       print 'x'
     else
       print '.'
@@ -65,11 +66,11 @@ begin
     if stored_message.is_a? String
       str = stored_message.to_utf8 'ascii-8bit'
       source = 'riak-migration'
-      slug = '_no_list'
+      slug = Slug.new '_no_list'
     else
       str = stored_message['message'].to_utf8 'ascii-8bit'
       source = stored_message['source']
-      slug = key.split('/').first
+      slug = Slug.new key.split('/').first
     end
     str = remove_listlibrary_headers(str)
 

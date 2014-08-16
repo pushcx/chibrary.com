@@ -1,4 +1,5 @@
 require_relative 'riak_repo'
+require_relative '../value/slug'
 require_relative '../model/list'
 require_relative 'list_repo'
 
@@ -10,7 +11,7 @@ class ListAddressRepo
   # maybe this is hinky, but no one actually care to hang onto the
   # intermediate slug and look up the List themselves
   def self.find_list_by_address address
-    slug = bucket[address]
+    slug = Slug.new bucket[address]
     ListRepo.find(slug)
   rescue NotFound
     NullList.new

@@ -4,20 +4,6 @@ require_relative '../../model/list'
 module Chibrary
 
 describe List do
-  describe '::new' do
-    it 'raises if a slug is too long' do
-      expect { List.new '01234567890123456789x' }.to raise_error(InvalidSlug)
-    end
-
-    it 'raises if a slug contains non-alpha characters' do
-      expect { List.new 'abc#123' }.to raise_error(InvalidSlug)
-    end
-
-    it 'accepts - and _ in list slugs' do
-      expect { List.new 'a-_b' }.not_to raise_error
-    end
-  end
-
   it '#slug' do
     expect(List.new('slug').slug).to eq('slug')
   end

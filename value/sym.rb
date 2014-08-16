@@ -11,7 +11,7 @@ class Sym
   attr_reader :slug, :year, :month
 
   def initialize slug, year, month
-    @slug, @year, @month = slug, year.to_i, month.to_i
+    @slug, @year, @month = Slug.new(slug), year.to_i, month.to_i
     raise ArgumentError, "Invalid year '#{@year}'" unless @year.to_s =~ /\A\d{4}\Z/
     raise ArgumentError, "Invalid month" unless (1..12).include? @month
   end

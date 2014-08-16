@@ -8,7 +8,8 @@ class Sy
   attr_reader :slug, :year
 
   def initialize slug, year
-    @slug, @year = slug, year.to_i
+    @slug, @year = Slug.new(slug), year.to_i
+    raise ArgumentError, "Invalid year '#{@year}'" unless @year.to_s =~ /\A\d{4}\Z/
   end
 
   def to_key

@@ -38,7 +38,7 @@ describe MonthCount do
     end
 
     it 'does not consider different sym to be the same' do
-      expect(MonthCount.new(Sym.new('slug', 2014, 1), 1, 2)).not_to eq(MonthCount.new(Sym.new('DIFF', 2014, 1), 1, 2))
+      expect(MonthCount.new(Sym.new('slug', 2014, 1), 1, 2)).not_to eq(MonthCount.new(Sym.new('diff', 2014, 1), 1, 2))
     end
 
     it 'does not consider different coutns to be the same' do

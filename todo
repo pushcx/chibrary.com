@@ -154,7 +154,7 @@ Possible refactorings:
   empty RedirectMaps?
   datetime for when archived
   Models to entities/
-  Slug value
+x Slug value
   Create procedure/ for driving scripts?
   store MonthCount in Redis
   Some models to aggregate/?

@@ -17,7 +17,7 @@ class ListRepo
   end
 
   def self.build_key slug
-    slug
+    slug.to_s
   end
 
   def serialize
@@ -31,7 +31,7 @@ class ListRepo
 
   def indexes
     {
-      slug_bin: list.slug,
+      slug_bin: list.slug.to_s,
     }
   end
 
