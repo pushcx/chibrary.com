@@ -14,6 +14,11 @@ class Sy
   def to_key
     "#{slug}/#{year}"
   end
+  alias :to_s :to_key
+
+  def inspect
+    "<Chibrary::Sy:0x%x #{to_s}'>" % (object_id << 1)
+  end
 end
 
 end # Chibrary

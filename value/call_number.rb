@@ -33,6 +33,10 @@ class CallNumber
     str
   end
   alias :to_str :to_s
+
+  def inspect
+    "<Chibrary::CallNumber:0x%x #{to_s}>" % (object_id << 1)
+  end
 end
 
 end # Chibrary

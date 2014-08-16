@@ -47,7 +47,7 @@ class MessageId
   end
 
   def inspect
-    "#<MessageId:%x '%s'>" % [(object_id << 1), to_s]
+    "#<Chibrary::MessageId:%x '#{to_s}'>" % (object_id << 1)
   end
 
   def self.generate_for call_number

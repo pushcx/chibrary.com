@@ -22,6 +22,14 @@ class MonthCount
   def self.from month
     new month.first.sym, month.count, month.map(&:message_count).inject(&:+)
   end
+
+  def to_s
+    "#{sym}: #{thread_count}:#{message_count}"
+  end
+
+  def inspect
+    "<Chibrary::MonthCount:%x #{to_s}>" % (object_id << 1)
+  end
 end
 
 end # Chibrary

@@ -32,6 +32,10 @@ class Subject
   end
   alias :to_str :to_s
 
+  def inspect
+    "<Chibrary::Subject:0x%x '#{original[0..19]}'>" % (object_id << 1)
+  end
+
   def == other
     return original == other.original if other.is_a?(Subject)
     return original == other # String

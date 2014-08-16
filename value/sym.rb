@@ -28,6 +28,7 @@ class Sym
   def to_key
     "#{slug}/#{year}/%02d" % month
   end
+  alias :to_s :to_key
 
   # breaks the general pattern to have this here rather than Sy.from_sym, but
   # the code looks nicer
@@ -44,8 +45,8 @@ class Sym
     to_key.hash
   end
 
-  def to_s
-    "<Sym #{to_key}>"
+  def inspect
+    "<Chibrary::Sym:0x%x #{to_s}'>" % (object_id << 1)
   end
 
   def self.from_container container
