@@ -220,6 +220,10 @@ class Email
   end
   memoize :vitals_hash
 
+  def inspect
+    "<Chibrary::Email:0x%x id:#{message_id}>" % (object_id << 1)
+  end
+
   def == other
     other.raw == raw
   end
