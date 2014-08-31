@@ -70,9 +70,9 @@ describe Email do
       expect(e.references).to include('ref@example.com')
     end
 
-    it 'puts In-Reply-To before References' do
+    it 'puts References before In-Reply-To' do
       e = Email.new "In-Reply-To: irt@example.com\nReferences: ref@example.com\n\nBody"
-      expect(e.references.index('irt@example.com')).to be < e.references.index('ref@example.com')
+      expect(e.references.index('ref@example.com')).to be < e.references.index('irt@example.com')
     end
 
     it 'maintains order of References' do

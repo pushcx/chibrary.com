@@ -41,7 +41,7 @@ class Email
   memoize :from
 
   def references
-    "#{header['In-Reply-To']} #{header['References']}".
+    "#{header['References']} #{header['In-Reply-To']}".
       split(/\s+/).
       map { |s| MessageId.new(s) }.
       select { |m| m.valid? }.
