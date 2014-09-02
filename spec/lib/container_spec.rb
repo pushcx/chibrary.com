@@ -291,7 +291,7 @@ describe TContainer do
       v = TValue.new
       expect {
         c.value = v
-      }.to raise_error(/non-empty/)
+      }.to raise_error(ContainerNotEmpty)
     end
   end
 

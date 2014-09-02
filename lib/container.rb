@@ -1,5 +1,7 @@
 module Chibrary
 
+class ContainerNotEmpty < RuntimeError ; end
+
 # Each container holds 0 or 1 values and any number of child containers.
 # The value is optional so that I can build thread trees even before seeing
 # all messages (based on References and In-Reply-To).
@@ -88,7 +90,7 @@ module Container
   end
 
   def value= value
-    raise "Can't reassign value #{value} of non-empty container #{key}" unless empty?
+    raise ContainerNotEmpty, "Can't reassign value #{value} of non-empty container #{key}" unless empty?
     @value = value
   end
 
