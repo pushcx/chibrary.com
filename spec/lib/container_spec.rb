@@ -340,6 +340,17 @@ describe TContainer do
     end
   end
 
+  describe '::unwrap' do
+    it 'given a Container, returns its value' do
+      c = TContainer.new 'key', 3
+      expect(Container.unwrap c).to eq(3)
+    end
+
+    it 'given a value, returns it' do
+      expect(Container.unwrap 3).to eq(3)
+    end
+  end
+
 end
 
 end # Chibrary

@@ -142,6 +142,11 @@ module Container
       container.dump depth + 1
     end
   end
+
+  def self.unwrap value_or_container
+    return value_or_container.value if value_or_container.is_a? Container
+    value_or_container
+  end
 end
 
 end # Chibrary
