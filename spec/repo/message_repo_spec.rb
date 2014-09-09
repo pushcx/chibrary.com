@@ -77,36 +77,55 @@ describe MessageRepo do
       end
     end
 
-    describe '#store' do
-      RiakObjectDouble = Struct.new(:indexes, :key, :data) do
-        def store ; end
-      end
-      let(:m)  { FakeStorableMessage.new }
-      let(:ms) { MessageRepo.new(m, sym, MessageRepo::Overwrite::DO) }
-      let(:riak_object) { RiakObjectDouble.new({ 'id_hash_bin' => [], 'sym_bin' => [], 'author_bin' => [], 'slug_timestamp_bin' => [] }) }
-      before do
-        ms.stub(:bucket).and_return(double('bucket', new: riak_object))
-        EmailRepo.stub(:new).and_return(double('EmailRepo', serialize: {}))
+    describe "#indexes" do
+      it 'indexes a valid message_id' do
+        mr = MessageRepo.new(FakeStorableMessage.new, sym)
+        expect(mr.indexes[:id_hash_bin]).to eq(Base64.strict_encode64('id@example.com'))
       end
 
-      it 'stores a message' do
-        riak_object.should_receive(:store)
-        ms.store
+      it 'does not index an invalid message_id' do
+        mr = MessageRepo.new(FakeStorableMessage.new('bad message id'), sym)
+        expect(mr.indexes).to_not have_key(:id_hash_bin)
       end
 
-      it 'indexes the message_id' do
-        ms.store
-        expect(riak_object.indexes['id_hash_bin']).to eq([Base64.strict_encode64('id@example.com')])
+      it 'indexes the sym' do
+        mr = MessageRepo.new(FakeStorableMessage.new, sym)
+        expect(mr.indexes[:sym_bin]).to eq('slug/2014/06')
       end
 
-      it 'indexes the list/month/year' do
-        ms.store
-        expect(riak_object.indexes['sym_bin']).to eq(['slug/2014/06'])
+      it 'indexes the slug + timestamp' do
+        mr = MessageRepo.new(FakeStorableMessage.new, sym)
+        expect(mr.indexes[:slug_timestamp_bin]).to eq('slug_1385013600')
       end
 
       it 'indexes the author email' do
-        ms.store
-        expect(riak_object.indexes['author_bin']).to eq([Base64.strict_encode64('from@example.com')])
+        mr = MessageRepo.new(FakeStorableMessage.new, sym)
+        expect(mr.indexes[:author_bin]).to eq(Base64.strict_encode64('from@example.com'))
+      end
+    end
+
+    describe '#store' do
+      # This makes me with I composed against RiakRepo instead of basically
+      # inheriting from it.
+      let(:index) { double('index', '[]' => []) }
+      let(:riak_obj) { double('riak object', indexes: index).as_null_object }
+      let(:bucket) { double('bucket', new: riak_obj, exists?: false) }
+      let(:mr) { MessageRepo.new(FakeStorableMessage.new, sym) }
+      before { mr.stub(:bucket).and_return(bucket) }
+
+      it 'guards against error overwrite' do
+        mr.should_receive(:guard_against_error_overwrite)
+        mr.store
+      end
+
+      it "doesn't overwrite if already stored" do
+        mr.should_receive(:dont_overwrite_if_already_stored)
+        mr.store
+      end
+
+      it 'invokes super' do
+        riak_obj.should_receive(:store)
+        mr.store
       end
     end
 

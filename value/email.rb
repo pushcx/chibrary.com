@@ -27,7 +27,8 @@ class Email
   memoize :message_id
 
   def subject
-    Subject.new header['Subject']
+    h = header['Subject']
+    Subject.new h != '' ? h : '[missing subject]'
   end
   memoize :subject
 

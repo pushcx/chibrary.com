@@ -63,6 +63,10 @@ class MessageContainer
     effective_field(:n_subject) or ''
   end
 
+  def references
+    effective_field(:references) or []
+  end
+
   def summarize
     if value.no_archive?
       c = SummaryContainer.new key

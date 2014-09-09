@@ -40,6 +40,10 @@ class Subject
     return original == other.original if other.is_a?(Subject)
     return original == other # String
   end
+
+  def <=> other
+    to_s <=> other.to_s
+  end
 end
 
 end # Chibrary

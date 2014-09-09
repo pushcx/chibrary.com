@@ -50,6 +50,10 @@ class MessageId
     "#<Chibrary::MessageId:%x '#{to_s}'>" % (object_id << 1)
   end
 
+  def <=> other
+    to_s <=> other.to_s
+  end
+
   def self.generate_for call_number
     new "#{call_number}@generated-message-id.chibrary.org"
   end

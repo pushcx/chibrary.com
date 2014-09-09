@@ -24,6 +24,7 @@ class Filer
     message = Message.from_string(raw_email, call_number, src)
     list ||= ListAddressRepo.find_list_by_addresses(message.email.possible_list_addresses)
     sym = Sym.new(list.slug, message.date.year, message.date.month)
+    # TODO catch and overlay duplicate message ids here
     message_repo = MessageRepo.new(message, sym, MessageRepo::Overwrite::DO)
     message_repo.store
 

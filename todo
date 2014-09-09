@@ -111,13 +111,12 @@ x     ContainerRepo
 x     RedirectMap and RedirectMap repo
 x     CallNumberList
 x   Filer chunks messages to thread by n_subject hash
-    Threader works on small batches of or individual messages
-    Threader finds threads by MessageId and n_subject hash
-    urls lose year, month
-    with or without slug?
-      /m/call_number -> /t/call_number#call_number
-      /message/call_number -> /thread/call_number#call_number
-      /linux-kernel/call_number -> /linux-kernel/call_number#call_number
+x   Threader works on small batches of or individual messages
+x   Threader finds threads by MessageId and n_subject hash
+    MessageRepo drop call number overwrite guards; Filer overlay new mid by default
+    Threader caches threads pulled in its life
+    Threader or Thread#conversation_for? checks message is for the right list
+    urls lose year, month; messages to /slug/message/call_number
     Month view pulls all threads via index
     Thread view asks ThreadRepo for all messages
   check design on tablets and phones
@@ -126,9 +125,10 @@ x   Filer chunks messages to thread by n_subject hash
   forward listlibrary.net/org to chibrary
 x get /about
 x get /search
-  get /:slug/:year/:month/:call_number
+  get /:slug/:callnumb
+  get /:slug/message/:callnumb
   get /:slug/:year/:month
-  get /:slug/:year
+  get /:slug/:year -> /:slug
   get /:slug
   get /
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
@@ -162,6 +162,7 @@ x Slug value
   move Storage.serialize and .store to class methods?; I never keep obj around
   split Storage and Retrievage into separate objects?
   store deeply nested items (SummarySet, etc) as flat list + parentings to avoid json serialization limits
+  replace RiakRepo inheritance with composition (see how ugly MessageRepo#store tests are)
 
 Feature ideas:
   mark up italics in //

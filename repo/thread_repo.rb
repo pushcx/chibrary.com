@@ -1,4 +1,6 @@
 require_relative 'riak_repo'
+require_relative 'summary_container_repo'
+require_relative 'sym_repo'
 
 module Chibrary
 
@@ -13,13 +15,13 @@ class ThreadRepo
 
   def indexes
     {
-      slug_bin: thread.sym.slug,
+      slug_bin: thread.slug,
       sym_bin:  thread.sym.to_key,
-      slug_timestamp_next_bin: "#{thread.sym.slug}_#{thread.date.utc.to_i}",
+      slug_timestamp_next_bin: "#{thread.slug}_#{thread.date.utc.to_i}",
       # Riak secondary indexes do not support reverse order queries, so this
       # creates an index that ascends in the right order to find the previous
       # thread. If you are debugging this in Nov 2286, I'm sorry. Add a digit.
-      slug_timestamp_prev_bin: "#{thread.sym.slug}_#{10_000_000_000 - thread.date.utc.to_i}",
+      slug_timestamp_prev_bin: "#{thread.slug}_#{10_000_000_000 - thread.date.utc.to_i}",
       call_number_bin: thread.call_numbers.map { |cn| Base64.strict_encode64(cn) },
       message_id_bin: thread.message_ids.map { |id| Base64.strict_encode64(id) },
       n_subject_bin: thread.n_subjects.map { |s| Base64.strict_encode64(s) },
@@ -28,7 +30,7 @@ class ThreadRepo
 
   def serialize
     {
-      sym: SymRepo.new(thread.sym).serialize,
+      slug: thread.slug,
       containers: SummaryContainerRepo.new(thread.root).serialize,
     }
   end
@@ -51,7 +53,7 @@ class ThreadRepo
 
   def self.deserialize h
     h.symbolize_keys!
-    Thread.new SymRepo.deserialize(h[:sym]), SummaryContainerRepo.deserialize(h[:containers])
+    Thread.new h[:slug], SummaryContainerRepo.deserialize(h[:containers])
   end
 
   def self.find call_number
@@ -88,18 +90,19 @@ class ThreadRepo
   def self.threads_by_n_subject s
     keys = bucket.get_index('n_subject_bin', Base64.strict_encode64(s))
     if block_given?
-      keys.ecah { |cn| yield cn }
+      keys.each { |cn| yield cn }
     else
       keys.map { |cn| find_with_messages(cn) }
     end
   end
 
   def self.month sym
-    load_multiple_threads bucket.get_index('smy_bin', sym.to_key, max_results: 999_999_999)
+    load_multiple_threads bucket.get_index('smy_bin', sym.to_key)
   end
 
   def self.load_multiple_threads keys
     threads = bucket.get_many(keys).map { |k, h| deserialize h }
+    threads.sort!
     threads
   end
 
@@ -122,9 +125,9 @@ class ThreadRepo
   private
 
   def np_thread index
-    from = indexes[index].succ
-    to = from.gsub(/./, '~') # asciibetically last
-    keys = bucket.get_index(index.to_s, (from..to), max_results: 1)
+    first = indexes[index].succ
+    last = start.gsub(/./, '~') # asciibetically last
+    keys = bucket.get_index(index.to_s, first..last, max_results: 1)
     return nil if keys.empty?
     find keys.first
   end

@@ -15,10 +15,15 @@ describe Email do
     end
   end
 
-  describe 'subject delegation' do
-    it '#subject returns subject object' do
+  describe '#subject delegation' do
+    it 'returns subject object' do
       e = Email.new "Subject: Re: Foo\n\nBody"
       expect(e.subject).to eq(Subject.new('Re: Foo'))
+    end
+
+    it 'replaces missing subjects' do
+      e = Email.new "From: a@example.com\n\nBody"
+      expect(e.subject).to eq(Subject.new('[missing subject]'))
     end
 
     it '#n_subject returns subject.normalized' do

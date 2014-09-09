@@ -25,6 +25,10 @@ class CallNumber
   end
   alias :eql? :==
 
+  def <=> other
+    to_s <=> other.to_s
+  end
+
   def hash
     to_s.hash
   end
