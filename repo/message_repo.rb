@@ -6,23 +6,14 @@ require_relative 'email_repo'
 
 module Chibrary
 
-class MessageOverwriteError < StandardError ; end
-
 class MessageRepo
   include RiakRepo
 
-  attr_reader :message, :sym, :overwrite
+  attr_reader :message, :sym
 
-  module Overwrite
-    ERROR = :error
-    DO = :do
-    DONT = :dont
-  end
-
-  def initialize message, sym, overwrite=Overwrite::ERROR
+  def initialize message, sym
     @message = message
     @sym = sym
-    @overwrite = overwrite
   end
 
   def extract_key
@@ -34,38 +25,18 @@ class MessageRepo
       email:       EmailRepo.new(message.email).serialize,
       call_number: message.call_number.to_s,
       source:      message.source,
+      # Should this map overlay's values .to_s instead of letting .to_json do it?
       overlay:     message.overlay,
     }
   end
 
-  def dont_overwrite_if_already_stored key
-    if overwrite == Overwrite::DONT
-      return bucket.exists? key
-    end
-    false
-  end
-
-  def guard_against_error_overwrite key
-    if overwrite == Overwrite::ERROR
-      exists = bucket.exists? key
-      raise MessageOverwriteError, "overwrite attempted for Message #{@key}" if exists
-    end
-  end
-
   def indexes
     ix = {}
-    ix[:id_hash_bin] = Base64.strict_encode64(message.message_id.to_s) if message.message_id.valid?
+    ix[:id_hash_bin] = Base64.strict_encode64(message.message_id.to_s)
     ix[:sym_bin] = sym.to_key
     ix[:slug_timestamp_bin] = "#{sym.slug}_#{message.date.to_i}"
     ix[:author_bin] = Base64.strict_encode64(message.email.canonicalized_from_email)
     ix
-  end
-
-  def store
-    key = extract_key
-    guard_against_error_overwrite(key)
-    return message if dont_overwrite_if_already_stored(key)
-    super
   end
 
   def self.build_key call_number
@@ -82,6 +53,10 @@ class MessageRepo
 
   def self.find_all call_numbers
     bucket.get_many(call_numbers).map { |k, h| deserialize h }
+  end
+
+  def self.has_message_id? message_id
+    bucket.get_index('id_hash_bin', Base64.strict_encode64(message_id)).any?
   end
 end
 

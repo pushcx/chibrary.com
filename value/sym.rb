@@ -1,6 +1,7 @@
 require 'adamantium'
 
 require_relative '../lib/core_ext/time_'
+require_relative 'slug'
 require_relative 'sy'
 
 module Chibrary

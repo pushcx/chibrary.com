@@ -113,7 +113,7 @@ x     CallNumberList
 x   Filer chunks messages to thread by n_subject hash
 x   Threader works on small batches of or individual messages
 x   Threader finds threads by MessageId and n_subject hash
-    MessageRepo drop call number overwrite guards; Filer overlay new mid by default
+x   MessageRepo drop call number overwrite guards; Filer overlay new mid by default
     Threader caches threads pulled in its life
     Threader or Thread#conversation_for? checks message is for the right list
     urls lose year, month; messages to /slug/message/call_number

@@ -17,6 +17,7 @@ describe Filer do
       mr = double('MessageRepo', sym: 'sym')
       mr.should_receive(:store)
       MessageRepo.should_receive(:new).and_return(mr)
+      MessageRepo.should_receive(:has_message_id?).and_return(false)
 
       f.file "From: user@example.com\n\nBody"
     end

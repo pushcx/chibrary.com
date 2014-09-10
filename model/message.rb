@@ -16,7 +16,11 @@ class Message
     @call_number = CallNumber.new(call_number)
     @source = source
     @overlay = overlay
-    overlay[:message_id] = MessageId.generate_for(call_number) unless message_id.valid?
+    generate_message_id unless message_id.valid?
+  end
+
+  def generate_message_id
+    self.message_id = MessageId.generate_for(call_number)
   end
 
   [:from, :references, :no_archive?, :body].each do |field|
