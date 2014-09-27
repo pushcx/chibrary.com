@@ -22,21 +22,24 @@ class RiakBucket
     raise NotFound, "Bucket #{@bucket.name} Key #{key} not found", bt
   end
 
-  def get_many keys
-    objs = @bucket.get_many(keys)
-    missing = objs.select { |k, v| k.nil? }
-    raise NotFound, "Bucket #{@bucket.name} key(s) not found: #{missing.keys.join(', ')}" if missing.any?
-    objs.each do |k, v|
-      data = v.data
-      data.deep_symbolize_keys! if data.is_a? Hash
-      objs[k] = data
-    end
-  end
-
   def []= key, value
     o = @bucket.new key
     o.data = value
     o.store
+  end
+
+  def get_any keys
+    @bucket.get_many(keys).map do |k, v|
+      v &&= v.data.is_a?(Hash) ? v.data.deep_symbolize_keys : v.data
+      [k, v]
+    end.to_h
+  end
+
+  def get_all keys
+    objs = get_any(keys)
+    missing = objs.select { |k, v| v.nil? }
+    raise NotFound, "Bucket #{@bucket.name} key(s) not found: #{missing.keys.join(', ')}" if missing.any?
+    objs
   end
 end
 

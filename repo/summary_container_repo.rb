@@ -19,8 +19,8 @@ class SummaryContainerRepo
   end
 
   def self.deserialize h
-    h.symbolize_keys!
-    container = SummaryContainer.new h[:key], SummaryRepo.deserialize(h[:value])
+    h.deep_symbolize_keys!
+    container = SummaryContainer.new h.fetch(:key), SummaryRepo.deserialize(h.fetch(:value))
     h[:children].each do |child_hash|
       container.adopt deserialize(child_hash)
     end

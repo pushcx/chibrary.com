@@ -114,8 +114,7 @@ x   Filer chunks messages to thread by n_subject hash
 x   Threader works on small batches of or individual messages
 x   Threader finds threads by MessageId and n_subject hash
 x   MessageRepo drop call number overwrite guards; Filer overlay new mid by default
-    Threader caches threads pulled in its life
-    Threader or Thread#conversation_for? checks message is for the right list
+x   ThreadWorker or Thread#conversation_for? checks message is for the right list
     urls lose year, month; messages to /slug/message/call_number
     Month view pulls all threads via index
     Thread view asks ThreadRepo for all messages
@@ -149,7 +148,10 @@ x get /search
     MonthCountWorker
 
 
+
 Possible refactorings:
+  perf: ThreadWorker caches threads pulled in its life (huge potential for race conditions)
+  perf: ThreadWorker -> ThreadRepo -> ListAddressRepo repeats address lookups
   Body class for blurbs, quoting (incl top posting), and compress quotes
   empty RedirectMaps?
   datetime for when archived

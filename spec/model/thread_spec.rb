@@ -109,8 +109,6 @@ describe Thread do
   end
 
   describe '#conversation_for?' do
-    it 'is not the conversation is not on the same list'
-
     it 'is if there is an empty container for it' do
       m1 = Message.from_string "Message-Id: 2@example.com\nIn-Reply-To: 1@example.com\n\nBody", 'callnum2'
       thread = Thread.new :slug, [m1]

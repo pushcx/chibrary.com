@@ -8,8 +8,10 @@ module Chibrary
 class ListAddressRepo
   include RiakRepo
 
-  # maybe this is hinky, but no one actually care to hang onto the
-  # intermediate slug and look up the List themselves
+  def self.addresses_match_slug? addresses, slug
+    bucket.get_any(addresses).any? { |k, v| v == slug }
+  end
+
   def self.find_list_by_address address
     slug = Slug.new bucket[address]
     ListRepo.find(slug)
@@ -18,12 +20,9 @@ class ListAddressRepo
   end
 
   def self.find_list_by_addresses addresses
-    list = NullList.new
-    addresses.each do |address|
-      list = find_list_by_address address
-      return list unless list.null_list?
-    end
-    list
+    matched = bucket.get_any(addresses).select { |k, v| v.present? }
+    return ListRepo.find(matched.values.first) if matched.any?
+    NullList.new
   end
 end
 

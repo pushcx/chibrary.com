@@ -15,6 +15,7 @@ class SummaryRepo
   def serialize
     {
       call_number: summary.call_number.to_s,
+      message_id:  summary.message_id.to_s,
       from:        summary.from,
       n_subject:   summary.n_subject,
       date:        summary.date.rfc2822,
@@ -23,7 +24,7 @@ class SummaryRepo
   end
 
   def self.deserialize h
-    Summary.new h[:call_number], h[:from], h[:n_subject], h[:date], h[:blurb]
+    Summary.new h.fetch(:call_number), h.fetch(:message_id), h.fetch(:from), h.fetch(:n_subject), h.fetch(:date), h.fetch(:blurb)
   end
 end
 

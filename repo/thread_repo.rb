@@ -1,4 +1,5 @@
 require_relative 'riak_repo'
+require_relative 'list_address_repo'
 require_relative 'summary_container_repo'
 require_relative 'sym_repo'
 
@@ -13,9 +14,16 @@ class ThreadRepo
     @thread = thread
   end
 
+  def serialize
+    {
+      slug: thread.slug,
+      containers: SummaryContainerRepo.new(thread.root).serialize,
+    }
+  end
+
   def indexes
     {
-      slug_bin: thread.slug,
+      slug_bin: thread.slug.to_s,
       sym_bin:  thread.sym.to_key,
       slug_timestamp_next_bin: "#{thread.slug}_#{thread.date.utc.to_i}",
       # Riak secondary indexes do not support reverse order queries, so this
@@ -28,15 +36,8 @@ class ThreadRepo
     }
   end
 
-  def serialize
-    {
-      slug: thread.slug,
-      containers: SummaryContainerRepo.new(thread.root).serialize,
-    }
-  end
-
   def extract_key
-    self.build_key thread.call_number
+    self.class.build_key thread.root.call_number.to_s
   end
 
   def next_thread
@@ -52,8 +53,17 @@ class ThreadRepo
   end
 
   def self.deserialize h
-    h.symbolize_keys!
-    Thread.new h[:slug], SummaryContainerRepo.deserialize(h[:containers])
+    h.deep_symbolize_keys!
+    Thread.new h[:slug], SummaryContainerRepo.deserialize(h.fetch(:containers))
+  end
+
+  def self.root_for call_number
+    keys = bucket.get_index('call_number_bin', Base64.strict_encode64(call_number.to_s))
+    raise NotFound if keys.empty?
+    # If this next line is failing, I've managed to store a Message's Summary
+    # in two Threads.
+    raise TooManyFound if keys.length > 1
+    return CallNumber.new(keys.first)
   end
 
   def self.find call_number
@@ -62,51 +72,39 @@ class ThreadRepo
     deserialize data
   end
 
-  def self.root_for call_number
-    keys = bucket.get_index('call_number_bin', Base64.strict_encode64(call_number))
-    raise NotFound if keys.empty?
-    # If this next line is failing, I've managed to store a Message's Summary
-    # in two Threads.
-    raise TooManyFound if keys.length > 1
-    return keys.first
-  end
-
   def self.find_with_messages call_number
     thread = find call_number
-    MessageRepo.find_all(thread.call_numbers).each do |message|
-      thread.hydrate message
-    end
+    thread.messagize MessageRepo.find_all(thread.call_numbers)
+    thread
   end
 
-  def self.threads_by_message_id id
-    keys = bucket.get_index('message_id_bin', Base64.strict_encode64(id))
-    if block_given?
-      keys.each { |cn| yield cn }
-    else
-      keys.map { |cn| find_with_messages(cn) }
-    end
-  end
-
-  def self.threads_by_n_subject s
-    keys = bucket.get_index('n_subject_bin', Base64.strict_encode64(s))
-    if block_given?
-      keys.each { |cn| yield cn }
-    else
-      keys.map { |cn| find_with_messages(cn) }
-    end
-  end
-
-  def self.month sym
-    load_multiple_threads bucket.get_index('smy_bin', sym.to_key)
-  end
-
-  def self.load_multiple_threads keys
-    threads = bucket.get_many(keys).map { |k, h| deserialize h }
+  def self.find_all call_numbers
+    threads = bucket.get_all(call_numbers).map { |k, h| deserialize h }
     threads.sort!
     threads
   end
 
-  def potential_threads_for message
+  def self.threads_by_message_id id
+    find_all bucket.get_index('message_id_bin', Base64.strict_encode64(id))
+  end
+
+  def self.threads_by_n_subject s
+    find_all bucket.get_index('n_subject_bin', Base64.strict_encode64(s))
+  end
+
+  def self.month sym
+    find_all bucket.get_index('smy_bin', sym.to_key)
+  end
+
+  def self.thread_for_message message
+    potential_threads_for(message) do |thread|
+      next unless ListAddressRepo.address_matches_slug?(message.email.possible_list_addresses, thread.slug)
+      return thread if thread.conversation_for? message
+    end
+    Thread.new slug, [message]
+  end
+
+  def self.potential_threads_for message
     # Look up any thread that mentions this message's MessageId (eg. has an
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
@@ -126,7 +124,7 @@ class ThreadRepo
 
   def np_thread index
     first = indexes[index].succ
-    last = start.gsub(/./, '~') # asciibetically last
+    last = first.gsub(/./, '~') # asciibetically last
     keys = bucket.get_index(index.to_s, first..last, max_results: 1)
     return nil if keys.empty?
     find keys.first

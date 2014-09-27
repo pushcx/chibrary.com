@@ -42,6 +42,56 @@ describe RiakBucket do
       rb['key'] = 'value'
     end
   end
+
+  describe "#get_any" do
+    it "fetches many values" do
+      r = double('Riak::Result', data: { 'foo' => 'foo' })
+      b = double('Riak::Bucket', name: 'name')
+      b.should_receive(:get_many).with(['a', 'b']).and_return({ 'a' => r, 'b' => nil })
+      rb = RiakBucket.new b
+      results = rb.get_any ['a', 'b']
+      expect(results).to be_a(Hash)
+      expect(results.keys).to eq(['a', 'b'])
+    end
+
+    it "symbolizes keys in the values" do
+      r = double('Riak::Result', data: { 'foo' => 'foo' })
+      b = double('Riak::Bucket', name: 'name')
+      b.should_receive(:get_many).with(['a']).and_return({ 'a' => r })
+      rb = RiakBucket.new b
+      results = rb.get_any ['a']
+      expect(results['a'].keys.first).to be_a(Symbol)
+    end
+
+    it "returns nils to missing keys" do
+      b = double('Riak::Bucket', name: 'name')
+      b.should_receive(:get_many).with(['b']).and_return({ 'b' => nil })
+      rb = RiakBucket.new b
+      results = rb.get_any ['b']
+      expect(results['b']).to eq(nil)
+    end
+  end
+
+  describe "#get_all" do
+    it "fetches many values" do
+      r = double('Riak::Result', data: { 'foo' => 'foo' })
+      b = double('Riak::Bucket', name: 'name')
+      b.should_receive(:get_many).with(['a', 'b']).and_return({ 'a' => r, 'b' => r })
+      rb = RiakBucket.new b
+      results = rb.get_all ['a', 'b']
+      expect(results).to be_a(Hash)
+      expect(results.keys).to eq(['a', 'b'])
+    end
+
+    it "raises on missing keys" do
+      b = double('Riak::Bucket', name: 'name')
+      b.should_receive(:get_many).with(['a']).and_return({ 'a' => nil })
+      rb = RiakBucket.new b
+      expect {
+        results = rb.get_all ['a']
+      }.to raise_error(NotFound)
+    end
+  end
 end
 
 end # Chibrary

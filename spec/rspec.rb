@@ -66,6 +66,8 @@ class FakeMessage
   end
 
   def list ; OpenStruct.new(slug: 'slug') ; end
+  def subject ; 'subject' ; end
+  def n_subject ; 'subject' ; end
   def from ; 'from@example.com' ; end
   def subject_is_reply? ; false ; end
   def date ; Time.new(2013, 11, 21) ; end
@@ -77,6 +79,7 @@ class FakeStorableMessage < FakeMessage
   def email ; OpenStruct.new(canonicalized_from_email: 'from@example.com') ; end
   def source ; 'source' ; end
   def call_number ; 'callnumb' ; end
+  def references ; [] ; end
 end
 
 end # Chibrary

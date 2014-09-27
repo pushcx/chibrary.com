@@ -135,7 +135,7 @@ describe MessageContainer do
     it 'returns itself' do
       m = Message.from_string "Subject: m1\n\nm1", 'callnum1'
       c = MessageContainer.new 'c@example.com', m
-      expect(c.messagize).to be(c)
+      expect(c.messagize []).to be(c)
     end
   end
 

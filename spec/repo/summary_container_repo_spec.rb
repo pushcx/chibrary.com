@@ -8,8 +8,8 @@ module Chibrary
 
 describe SummaryRepo do
   describe '#serialize' do
-    let(:s1) { Summary.new 'callnum1', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
-    let(:s2) { Summary.new 'callnum2', 'f2@example.com', 'n 2', Time.now, 'blurb 2' }
+    let(:s1) { Summary.new 'callnum1', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
+    let(:s2) { Summary.new 'callnum2', '2@example.com', 'f2@example.com', 'n 2', Time.now, 'blurb 2' }
     let(:c1) { SummaryContainer.new '1@example.com', s1 }
     let(:c2) { SummaryContainer.new '2@example.com', s2 }
     before { c1.adopt c2 }
@@ -27,8 +27,8 @@ describe SummaryRepo do
   end
 
   describe '::deserialize' do
-    let(:s1) { Summary.new 'callnum1', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
-    let(:s2) { Summary.new 'callnum2', 'f2@example.com', 'n 2', Time.now, 'blurb 2' }
+    let(:s1) { Summary.new 'callnum1', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
+    let(:s2) { Summary.new 'callnum2', '2@example.com', 'f2@example.com', 'n 2', Time.now, 'blurb 2' }
     let(:hash) {
       {
         key: '1@example.com',

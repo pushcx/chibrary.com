@@ -56,7 +56,7 @@ class MonthCountRepo
 
   def self.years_of_month_counts slug
     keys = bucket. get_index('slug_bin', slug.to_s)
-    bucket.get_many(keys).map { |k, h| deserialize k, h }.
+    bucket.get_all(keys).map { |k, h| deserialize k, h }.
       each_with_object( {} ) { |mc, years|
         (years[mc.sym.year] ||= {})[mc.sym.month] = mc
       }

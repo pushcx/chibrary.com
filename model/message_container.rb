@@ -77,7 +77,7 @@ class MessageContainer
     c
   end
 
-  def messagize
+  def messagize messages
     self
   end
 

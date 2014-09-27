@@ -34,7 +34,7 @@ describe SummaryContainer do
 
   describe '#summarize is a no-op' do
     it 'returns itself' do
-      s = Summary.new 'callnumb', 'from@example.com', 'subject', Time.now, 'blurb'
+      s = Summary.new 'callnumb', '1@example.com', 'from@example.com', 'subject', Time.now, 'blurb'
       c = SummaryContainer.new 'c@example.com', s
       expect(c.summarize).to be(c)
     end
@@ -45,8 +45,8 @@ describe SummaryContainer do
     let(:m2) { Message.from_string "Subject: m2\n\nm2", 'callnum2' }
     let(:messages) { { 'callnum1' => m1, 'callnum2' => m2 } }
 
-    let(:s1) { Summary.new 'callnum1', '1@example.com', 'm1', Time.now, 'blurb' }
-    let(:s2) { Summary.new 'callnum2', '2@example.com', 'm2', Time.now, 'blurb' }
+    let(:s1) { Summary.new 'callnum1', 'c1@example.com', '1@example.com', 'm1', Time.now, 'blurb' }
+    let(:s2) { Summary.new 'callnum2', 'c2@example.com', '2@example.com', 'm2', Time.now, 'blurb' }
     let(:c1) { SummaryContainer.new 'c1@example.com', s1 }
     let(:c2) { SummaryContainer.new 'c2@example.com', s2 }
     before   { c1.adopt c2 }
@@ -55,6 +55,7 @@ describe SummaryContainer do
     expect_it { to be_a MessageContainer }
     it { expect(subject.value).to be_a(Message) }
     it { expect(subject.call_number).to eq('callnum1') }
+    it { expect(subject.message_id).to eq('c1@example.com') }
     it { expect(subject.subject).to eq('m1') }
 
     it { expect(subject.children.first.value).to be_a(Message) }

@@ -23,6 +23,11 @@ class Thread
     set_root
   end
 
+  def messagize messages
+    @root = root.messagize(messages)
+    @containers = Hash[ root.map { |c| [c.call_number, c] } ]
+  end
+
   def sym
     Sym.new(slug, date.year, date.month)
   end
@@ -44,7 +49,7 @@ class Thread
   end
 
   def conversation_for? message
-    # TODO return false unless slug == message.sym.slug
+    # Warning: doesn't check lists, ThreadRepo.thread_for does
     return true if message_ids.include? message.message_id
     return false unless n_subjects.include? message.n_subject
     return containers.values.any? { |c| c.message.lines_matching(message.direct_quotes) > 0 }
