@@ -142,6 +142,7 @@ x get /search
   check that google search works with new domain
   fix google analytics logging to only be included in prod
   check chiphpug/message/2008/07/20080715202245.10853.qmail@mail.cellit.net for weird multi-line subject
+  test /search in prod
   announce
   integration tests:
     Fetcher

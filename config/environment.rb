@@ -18,6 +18,7 @@ APP_ROOT = Pathname.new(__FILE__)
 APP_NAME = 'chibrary'
 
 Dir["lib/**/*.rb", 'value/**/*.rb', 'model/**/*.rb', 'repo/**/*.rb'].each { |f| require f }
+include Chibrary
 
 # finally, bring up the web stack
 # these specific routes need to get loaded first so that list doesn't shadow them
