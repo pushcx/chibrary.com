@@ -1,6 +1,6 @@
 def message_body m
-  str = m.body.strip!
-  str = remove_footer(str, m.list)
+  str = m.body.strip
+  #str = remove_footer(str, m.list)
   str = f(str)
   str = compress_quotes(str)
   str = html_caps(str)

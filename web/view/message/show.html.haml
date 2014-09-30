@@ -1,0 +1,14 @@
+%section
+  %header
+    %h1.subject= subject(@message.n_subject)
+
+  - if @thread_call_number
+    %p
+      This is a single message out of context. View the discussion in context:
+      %a{ href: "/#{@slug}/thread/#{@thread_call_number}#m-#{@message.call_number}", rel: :canonical }= subject(@message.subject)
+
+  .single-message
+    - if @message.no_archive?
+      = partial('thread/_message_no_archive.html')
+    - else
+      = partial('thread/_message.html', locals: { message: @message, parent: nil, children: [] })
