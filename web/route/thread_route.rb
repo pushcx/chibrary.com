@@ -1,9 +1,5 @@
-require_relative '../../value/sym'
-
 def load_thread call_number
-  thread = ThreadRepo.find_by_root(@call_number)
-  # hydrate?
-  @thread = MessageContainerRepo.find(@call_number)
+  thread = ThreadRepo.find_with_messages(@call_number)
 rescue NotFound
   load_redirect call_number
 rescue InvalidCallNumber

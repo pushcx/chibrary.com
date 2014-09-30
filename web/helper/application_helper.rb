@@ -30,7 +30,7 @@ def subject subj
 end
 
 def load_list
-  @slug = params[:slug]
+  @slug = Slug.new params[:slug]
   @list = ListRepo.find(@slug)
 rescue NotFound
   raise Sinatra::NotFound, "Unknown list"

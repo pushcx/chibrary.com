@@ -117,7 +117,7 @@ x   MessageRepo drop call number overwrite guards; Filer overlay new mid by defa
 x   ThreadWorker or Thread#conversation_for? checks message is for the right list
     urls lose year, month; messages to /slug/message/call_number
     Month view pulls all threads via index
-    Thread view asks ThreadRepo for all messages
+x   Thread view asks ThreadRepo for all messages
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js
