@@ -273,27 +273,27 @@ ol.thread_list li {
 
 /* thread view */
 
-.message div.header {
+.message header {
   background: #ddeeee;
   border-top: 1px solid #ccdddd;
   margin-top: -1px;
   padding: 0 0.1em;
 }
-  .message div.header h4.from {
+  .message header .from {
     clear: none;
   }
-  .message div.header h6.date {
+  .message header .date {
     float: right;
     margin-top: -18px;
   }
-  .message div.header div.more {
+  .message header .more {
     background: #ddeeee;
     display: none;
     height: 18px;
     float: left;
     width: 100%;
   }
-    .message div.header div.more div.flag {
+    .message header .more .flag {
       display: none;
       font-size: 10px;
       float: right;
@@ -303,10 +303,10 @@ ol.thread_list li {
   border-top: 1px solid #ddddcc;
   margin-top: -1px;
 }
-.message div.body {
+.message .body {
   padding: 18px 0;
 }
-.message div.body pre {
+.message .body pre {
   background-color: transparent;
   border: none;
   margin: 0;
@@ -322,7 +322,7 @@ ol.thread_list li {
 
 /* message */
 
-.message div.body blockquote {
+.message .body blockquote {
   background-color: #dddddd;
   border-top: 1px solid #EEEEEE;
   border-bottom: 1px solid #EEEEEE;
@@ -331,7 +331,7 @@ ol.thread_list li {
   margin: -1px 0;
   padding: 0 0.1em;
 }
-  .message div.body blockquote.closed {
+  .message .body blockquote.closed {
     background-color: transparent;
     color: #666666;
     display: block;
@@ -339,12 +339,12 @@ ol.thread_list li {
     padding: 0 0.1em;
     width: 100%;
   }
-  .message div.body blockquote.closed:hover {
+  .message .body blockquote.closed:hover {
     background-color: #dddddd;
     cursor: pointer;
   }
 
-div.flag iframe {
+.flag iframe {
   display: none;
   height: 1px;
   width: 1px;

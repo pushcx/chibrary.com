@@ -171,6 +171,7 @@ x Slug value
   replace RiakRepo inheritance with composition (see how ugly MessageRepo#store tests are)
 
 Feature ideas:
+  restore remove_footer
   mark up italics in //
   mark up bold in **
   have MessageStorage overwrite check both key and id_hash_bin
