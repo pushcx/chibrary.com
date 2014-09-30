@@ -8,6 +8,7 @@ require_relative '../value/slug'
 require_relative '../model/list'
 require_relative '../service/filer'
 require_relative '../lib/storage'
+include Chibrary
 
 #thread_queue = Queue.new :thread
 
@@ -28,30 +29,24 @@ end
 #LISTS_TO_LOAD = %w{theinfo get-theinfo process-theinfo view-theinfo mud-dev mud-dev2}
 LISTS_TO_LOAD = %w{mud-dev}
 
-filer = Chibrary::Filer.new 'riak-migration'
+filer = Filer.new 'riak-migration'
 start = ARGV.shift
 raise "need start number" if start.nil?
 start = start.to_i
 
-#Dir['archive/old_list/*'].each do |list_path|
-#  next unless list_path.include? 'theinfo' or list_path.include? 'linux-kernel'
-#  puts "#{Time.now} #{list_path}"
-#  slug = list_path.split('/').last
 begin
 
   zdir = ZDir.new 'archive/old_list'
   at = nil
   raw = nil
-  foo = false
   i = 0
   zdir.each(true) do |key|
-    # skip dirs - why did I want that yielded in the first place?
-    #next unless File.file? "#{list_path}/#{key}"
-    i += 1
-    foo = true if i >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
-    next unless foo
+    next unless (i += 1) >= start #key.include? 'linux-kernel/message/2003/04/3EAC8E29.9080007@rogers.com'
     slug = Slug.new key.split('/').first
-    print "\n#{i} " if i % 1000 == 0
+    if i % 1000 == 0
+      print "\n#{i} "
+      filer.thread_jobs
+    end
     if LISTS_TO_LOAD.include? slug.to_s
       print 'x'
     else
@@ -79,8 +74,11 @@ end
 rescue Exception => e
   puts
   puts i, at
-  raw = zdir.raw at
-  File.write('fail', raw)
+  if at
+    raw = zdir.raw(at)
+    File.write('fail', raw)
+  end
+  filer.thread_jobs
   raise e
 end
 filer.thread_jobs

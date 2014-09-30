@@ -35,6 +35,7 @@ class Filer
     filed.each do |n_subject, call_numbers|
       ThreadWorker.perform_async call_numbers
     end
+    @filed = {}
   end
 end
 

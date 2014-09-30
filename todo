@@ -151,8 +151,9 @@ x get /search
 
 
 Possible refactorings:
-  perf: ThreadWorker caches threads pulled in its life (huge potential for race conditions)
+  perf: Filer -> ListAddressRepo repeats address lookups
   perf: ThreadWorker -> ThreadRepo -> ListAddressRepo repeats address lookups
+  perf: ThreadWorker caches threads pulled in its life (huge potential for race conditions)
   Body class for blurbs, quoting (incl top posting), and compress quotes
   empty RedirectMaps?
   datetime for when archived
