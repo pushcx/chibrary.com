@@ -48,7 +48,9 @@ class MessageRepo
   end
 
   def self.find call_number
-    deserialize(bucket[build_key(call_number)])
+    key = build_key(call_number)
+    data = bucket[key]
+    deserialize data
   end
 
   def self.find_all call_numbers
