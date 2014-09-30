@@ -16,7 +16,7 @@ class String
   end
 
   def to_utf8 charset
-    case charset
+    case charset.downcase
     when 'ks_c_5601-1987'
       charset = 'CP949'
     when 'unknown-8bit'
@@ -27,8 +27,10 @@ class String
       charset = 'UTF-8'
     when 'x-mac-thai'
       charset = 'macthai'
-    when 'x-user-defined'
-      charset = 'ISO-8859-1' # just one message by one jerk
+    when 'x-unknown' # seriously?
+      charset = 'ISO-8859-1'
+    when 'x-user-defined' # just one message by one jerk
+      charset = 'ISO-8859-1'
     end
     self.encode("UTF-8", charset, invalid: :replace, undef: :replace).force_encoding('UTF-8')
   end
