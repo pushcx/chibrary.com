@@ -9,11 +9,10 @@ module Chibrary
 class MessageRepo
   include RiakRepo
 
-  attr_reader :message, :sym
+  attr_reader :message
 
-  def initialize message, sym
+  def initialize message
     @message = message
-    @sym = sym
   end
 
   def extract_key
@@ -24,6 +23,7 @@ class MessageRepo
     {
       email:       EmailRepo.new(message.email).serialize,
       call_number: message.call_number.to_s,
+      slug:        message.slug,
       source:      message.source,
       # Should this map overlay's values .to_s instead of letting .to_json do it?
       overlay:     message.overlay,
@@ -31,12 +31,12 @@ class MessageRepo
   end
 
   def indexes
-    ix = {}
-    ix[:id_hash_bin] = Base64.strict_encode64(message.message_id.to_s)
-    ix[:sym_bin] = sym.to_key
-    ix[:slug_timestamp_bin] = "#{sym.slug}_#{message.date.to_i}"
-    ix[:author_bin] = Base64.strict_encode64(message.email.canonicalized_from_email)
-    ix
+    {
+      sym_bin:            message.sym.to_key,
+      slug_timestamp_bin: "#{message.slug}_#{message.date.to_i}",
+      id_hash_bin:        Base64.strict_encode64(message.message_id.to_s),
+      author_bin:         Base64.strict_encode64(message.email.canonicalized_from_email),
+    }
   end
 
   def self.build_key call_number
@@ -44,7 +44,7 @@ class MessageRepo
   end
 
   def self.deserialize hash
-    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:source], hash.fetch(:overlay, {})
+    Message.new EmailRepo.deserialize(hash[:email]), hash[:call_number], hash[:slug], hash[:source], hash.fetch(:overlay, {})
   end
 
   def self.find call_number

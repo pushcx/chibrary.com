@@ -13,13 +13,13 @@ describe Filer do
 
       cns.should_receive(:next!).and_return('callnumb')
       list = double('List', slug: 'slug')
-      ListAddressRepo.should_receive(:find_list_by_addresses).with(['user@example.com']).and_return(list)
+      ListRepo.should_receive(:for).with('slug', ['user@example.com']).and_return(list)
       mr = double('MessageRepo', sym: 'sym')
       mr.should_receive(:store)
       MessageRepo.should_receive(:new).and_return(mr)
       MessageRepo.should_receive(:has_message_id?).and_return(false)
 
-      f.file "From: user@example.com\n\nBody"
+      f.file "From: user@example.com\n\nBody", 'slug'
     end
   end
 

@@ -45,6 +45,12 @@ class ListRepo
     deserialize(hash)
   end
 
+  def self.for slug, possible_list_addresses
+    find slug
+  rescue NotFound
+    ListAddressRepo.find_list_by_addresses(possible_list_addresses)
+  end
+
   def self.all
     keys = bucket.get_index('slug_bin', '0'..'z')
     bucket.get_all(keys).map { |k, h| deserialize h }

@@ -18,14 +18,13 @@ class Filer
     @filed = {} # n_subject => [call_numbers]
   end
 
-  def file raw_email, src=nil, list=nil
+  def file raw_email, slug=nil, src=nil
     call_number = call_number_service.next!
     src ||= source
-    message = Message.from_string(raw_email, call_number, src)
-    list ||= ListAddressRepo.find_list_by_addresses(message.email.possible_list_addresses)
-    sym = Sym.new(list.slug, message.date.year, message.date.month)
+    list = ListRepo.for slug, Email.new(raw_email).possible_list_addresses
+    message = Message.from_string(raw_email, call_number, list.slug, src)
     message.generate_message_id if MessageRepo.has_message_id? message.message_id
-    message_repo = MessageRepo.new(message, sym)
+    message_repo = MessageRepo.new(message)
     message_repo.store
 
     filed[message.n_subject] = filed.fetch(message.n_subject, []) << call_number

@@ -75,6 +75,8 @@ class FakeMessage
 end
 
 class FakeStorableMessage < FakeMessage
+  def slug ; 'slug' ; end
+  def sym ; OpenStruct.new(to_key: 'slug/2014/09') ; end
   def overlay ; {} ; end
   def email ; OpenStruct.new(canonicalized_from_email: 'from@example.com') ; end
   def source ; 'source' ; end

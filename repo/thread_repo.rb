@@ -96,12 +96,12 @@ class ThreadRepo
     find_all bucket.get_index('smy_bin', sym.to_key)
   end
 
-  def self.thread_for_message message
+  def self.thread_for message
     potential_threads_for(message) do |thread|
-      next unless ListAddressRepo.address_matches_slug?(message.email.possible_list_addresses, thread.slug)
+      next unless slugs.include? thread.slug
       return thread if thread.conversation_for? message
     end
-    Thread.new slug, [message]
+    Thread.new slugs.first, [message]
   end
 
   def self.potential_threads_for message
@@ -109,14 +109,17 @@ class ThreadRepo
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
     message.references.reverse.unshift(message.message_id).each do |message_id|
-      @threads.each { |t| ThreadRepo.new(t).store }
       threads_by_message_id(message_id) do |call_number|
-        yield find_with_messages(call_number)
+        thread = find_with_messages(call_number)
+        next unless thread.slug == message.slug
+        yield thread
       end
     end
     # Look up threads by subject
-    find_by_n_subject(message.n_subject).each do |call_number|
-      yield find_with_messages(call_number)
+    threads_by_n_subject(message.n_subject).each do |call_number|
+      thread = find_with_messages(call_number)
+      next unless thread.slug == message.slug
+      yield thread
     end
   end
 

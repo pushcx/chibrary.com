@@ -114,8 +114,8 @@ describe MessageContainer do
   end
 
   describe '#summarize converts a MessageContainer into equivalent SummaryContainer' do
-    let(:m1) { Message.from_string "Subject: m1\n\nm1", 'callnum1' }
-    let(:m2) { Message.from_string "Subject: m2\n\nm2", 'callnum2' }
+    let(:m1) { Message.from_string "Subject: m1\n\nm1", 'callnum1', 'slug' }
+    let(:m2) { Message.from_string "Subject: m2\n\nm2", 'callnum2', 'slug' }
     let(:c1) { MessageContainer.new 'c1@example.com', m1 }
     let(:c2) { MessageContainer.new 'c2@example.com', m2 }
     before   { c1.adopt c2 }
@@ -133,7 +133,7 @@ describe MessageContainer do
 
   describe '#messagize is a no-op' do
     it 'returns itself' do
-      m = Message.from_string "Subject: m1\n\nm1", 'callnum1'
+      m = Message.from_string "Subject: m1\n\nm1", 'callnum1', 'slug'
       c = MessageContainer.new 'c@example.com', m
       expect(c.messagize []).to be(c)
     end

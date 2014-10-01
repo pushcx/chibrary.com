@@ -69,7 +69,7 @@ begin
     end
     str = remove_listlibrary_headers(str)
 
-    filer.file str, source, Chibrary::List.new(slug)
+    filer.file str, slug, source
 end
 rescue Exception => e
   puts

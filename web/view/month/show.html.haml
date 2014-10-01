@@ -16,4 +16,4 @@
           %span.blurb= thread.blurb
         != partial :'month/_thread_list.html', locals: { thread: thread }
 
-!= partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }
+= partial :'month/_previous_next.html', locals: { previous_link: @previous_link, next_link: @next_link }

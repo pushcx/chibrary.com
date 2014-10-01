@@ -2,21 +2,28 @@ require 'forwardable'
 
 require_relative '../value/call_number'
 require_relative '../value/email'
+require_relative '../value/slug'
+require_relative '../value/sym'
 
 module Chibrary
 
 class Message
-  attr_accessor :email, :call_number, :source, :overlay
+  attr_accessor :email, :call_number, :slug, :source, :overlay
 
   extend Forwardable
   def_delegators :@email, :direct_quotes, :likely_thread_creation_from?, :lines_matching
 
-  def initialize email, call_number, source=nil, overlay={}
+  def initialize email, call_number, slug, source, overlay={}
     @email = email
     @call_number = CallNumber.new(call_number)
+    @slug = Slug.new(slug)
     @source = source
     @overlay = overlay
     generate_message_id unless message_id.valid?
+  end
+
+  def sym
+    Sym.new(slug, date.year, date.month)
   end
 
   def generate_message_id
@@ -60,15 +67,15 @@ class Message
   end
 
   def == o
-    o.email == email and o.source == source and o.call_number == call_number and o.message_id == message_id
+    o.email == email and o.slug == slug and o.source == source and o.call_number == call_number and o.message_id == message_id
   end
 
-  def self.from_string str, call_number, source=nil, overlay={}
-    Message.new Email.new(str), call_number, source, overlay
+  def self.from_string str, call_number, slug, source='string', overlay={}
+    Message.new Email.new(str), call_number, slug, source, overlay
   end
 
   def self.from_message m
-    Message.new m.email, m.call_number, m.source, m.overlay
+    Message.new m.email, m.call_number, m.slug, m.source, m.overlay
   end
 end
 

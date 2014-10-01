@@ -41,8 +41,8 @@ describe SummaryContainer do
   end
 
   describe '#messagize converts a SummaryContainer into equivalent MessageContainer' do
-    let(:m1) { Message.from_string "Subject: m1\n\nm1", 'callnum1' }
-    let(:m2) { Message.from_string "Subject: m2\n\nm2", 'callnum2' }
+    let(:m1) { Message.from_string "Subject: m1\n\nm1", 'callnum1', 'slug' }
+    let(:m2) { Message.from_string "Subject: m2\n\nm2", 'callnum2', 'slug' }
     let(:messages) { { 'callnum1' => m1, 'callnum2' => m2 } }
 
     let(:s1) { Summary.new 'callnum1', 'c1@example.com', '1@example.com', 'm1', Time.now, 'blurb' }
