@@ -16,24 +16,28 @@ $(function() {
   $('ol.threads ol.thread_list').addClass('closed');
 
   // thread_list: show vertical line to pick out siblings
-  $('ol.thread_list').on('mouseout', function(){
+  $('ol.thread_list').mouseout(function(){
     $(this).css('background-position', '-1px 0px');
-  }).on('mouseover', 'li', function(){
+  }).mouseover(function(){
     var li = $(this), indent = li.css('padding-left');
     li.parent().css('background-position', indent + ' 0px');
   });
 
   // thread view: toggleable blockquotes
-  $("div.body blockquote").toggle(function() {
+  $(".single-message, .thread").on('click', 'blockquote:not(.closed)', function() {
     // close up
     this.quote = $(this).html();
     $(this).html("---- click to show quote ----")
     $(this).toggleClass('closed');
-  },function(){
+  })
+  .find('blockquote:not(.closed)').trigger('click');
+  $(".single-message, .thread").on('click', 'blockquote.closed', function() {
     // open up
     $(this).html(this.quote)
     $(this).toggleClass('closed');
-  }).each(function(){ if (!$(this).is('.short')) $(this).click(); });
+  })
+  ;
+  //.each(function(){ if (!$(this).is('.short')) $(this).click(); });
   // after page height changes, get back to named anchor
   if (location.hash) {
     window.scrollTo(0, $(location.hash)[0].offsetTop);
@@ -41,18 +45,17 @@ $(function() {
   }
 
   // thread view: hover over thread for parent/child links
-  $("div.message").hover(
-    function(){ $(this).find("div.more").show(); },
-    function(){ $(this).find("div.more").hide(); }
-  );
+  $(".message")
+    .on('mouseenter', function(){ $(this).find(".more").show(); } )
+    .on('mouseleave', function(){ $(this).find(".more").hide(); } );
 
   // thread view: keyboard shortcuts
-  if ($('div.thread').size()) {
+  if ($('.thread').size()) {
     // find the top message displayed at least partially in the window
     var current_message = function() {
       var top = (document.all) ? document.body.scrollTop : window.pageYOffset;
       var match = null;
-      $("div.message").each(function(){
+      $(".message").each(function(){
         if (this.offsetTop > top)
           return false;
         match = this;
@@ -64,68 +67,68 @@ $(function() {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       switch(e.which) {
       case 106: // j, next message
-        $("div.more").hide(); 
+        $(".more").hide();
         var current = current_message();
         if (current)
           var next = current.next();
         else
-          var next = $("div.message:first");
-        next.find("div.more").show();
+          var next = $(".message:first");
+        next.find(".more").show();
         if (next.size() == 1)
           window.scrollTo(0, next[0].offsetTop);
         break;
       case 107: // k, previous message
-        $("div.more").hide(); 
+        $(".more").hide();
         var current = current_message();
         if (current)
           var prev = current_message().prev();
         if (!current || prev.size() == 0)
           var prev = $("h1.subject");
-        prev.find("div.more").show();
+        prev.find(".more").show();
         window.scrollTo(0, prev[0].offsetTop);
         break;
       case 105: // i, in-reply-to
-        $("div.more").hide(); 
+        $(".more").hide();
         var current = current_message();
         if (current) {
           var a = current.find("a.in-reply-to")
           if (a.size() != 1)
             break;
-          $(a.attr("href")).parent().find("div.more").show();
+          $(a.attr("href")).parent().find(".more").show();
           window.scrollTo(0, $(a.attr("href"))[0].offsetTop);
         }
         break;
       case 110: // n, next thread
-        var n = $("div.previous_next:first .next a");
+        var n = $(".previous_next:first .next a");
         if (n.size() == 1)
           window.location = "http://chibrary.com" + n.attr("href");
         break;
       case 112: // p, previous thread
-        var p = $("div.previous_next:first .previous a");
+        var p = $(".previous_next:first .previous a");
         if (p.size() == 1)
           window.location = "http://chibrary.com" + p.attr("href");
         break;
       case 113: // q, toggle quotes in message
         var current = current_message();
         if (!current)
-          current = $("div.message:first");
+          current = $(".message:first");
 
-        var b = current.find("div.body blockquote:first");
+        var b = current.find(".body blockquote:first");
         if (b.size() == 1 && b.is('.closed'))
-          current.find("div.body blockquote.closed").click();
+          current.find(".body blockquote.closed").click();
         else
-          current.find("div.body blockquote:not(.closed)").click();
+          current.find(".body blockquote:not(.closed)").click();
         break;
       case 81:  // Q, toggle all quotes
         var current = current_message();
         if (current)
-          var b = current.find("div.body blockquote:first");
+          var b = current.find(".body blockquote:first");
         else
-          var b = $("div.body blockquote:first");
+          var b = $(".body blockquote:first");
         if (b && b.size() == 1 && b.is('.closed'))
-          $("div.body blockquote.closed").click();
+          $(".body blockquote.closed").click();
         else
-          $("div.body blockquote:not(.closed)").click();
+          $(".body blockquote:not(.closed)").click();
         if (current)
           window.scrollTo(0, current[0].offsetTop);
         break;
@@ -137,13 +140,13 @@ $(function() {
   }
 
   // thread view: ajaxify the flag links
-  $("div.flag").css("display", "block").find("a").click(function(e){
+  $(".flag").css("display", "block").find("a").click(function(e){
     e.preventDefault();
     $(this).css("display", "none").after('<iframe src="' + $(this).attr("href") + '"></iframe>Thanks');
   });
 
   // show ads in production
-  jQuery.each(['google', 'live', 'msn', 'yahoo', 'localhost'], function(i, site) {
+  $.each(['google', 'live', 'msn', 'yahoo', 'localhost'], function(i, site) {
     var re = new RegExp ("http:\/\/[^\/]*" + site + ".*\/", "");
     if (re.exec(document.referrer)) {
       $(".panel").show();

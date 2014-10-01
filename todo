@@ -118,7 +118,7 @@ x   ThreadWorker or Thread#conversation_for? checks message is for the right lis
 x   urls lose year, month; messages to /slug/message/call_number
     Month view pulls all threads via index
 x   Thread view asks ThreadRepo for all messages
-  replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
+x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
   check design on tablets and phones
   combine css stylesheets; make print stylesheet
   minify css and js
