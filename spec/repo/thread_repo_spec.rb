@@ -12,6 +12,7 @@ describe ThreadRepo do
     call_number: 'callnum1',
     message_id: '1@example.com',
     n_subject: 'subject',
+    body: '',
   ) }
   let(:t) { Thread.new 'slug', [message] }
 

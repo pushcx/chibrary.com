@@ -17,7 +17,7 @@ class ThreadRepo
   def serialize
     {
       slug: thread.slug,
-      containers: SummaryContainerRepo.new(thread.root).serialize,
+      containers: SummaryContainerRepo.new(thread.root.summarize).serialize,
     }
   end
 
@@ -98,10 +98,9 @@ class ThreadRepo
 
   def self.thread_for message
     potential_threads_for(message) do |thread|
-      next unless slugs.include? thread.slug
       return thread if thread.conversation_for? message
     end
-    Thread.new slugs.first, [message]
+    Thread.new message.slug, [message]
   end
 
   def self.potential_threads_for message
@@ -109,15 +108,13 @@ class ThreadRepo
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
     message.references.reverse.unshift(message.message_id).each do |message_id|
-      threads_by_message_id(message_id) do |call_number|
-        thread = find_with_messages(call_number)
+      threads_by_message_id(message_id) do |thread|
         next unless thread.slug == message.slug
         yield thread
       end
     end
     # Look up threads by subject
-    threads_by_n_subject(message.n_subject).each do |call_number|
-      thread = find_with_messages(call_number)
+    threads_by_n_subject(message.n_subject).each do |thread|
       next unless thread.slug == message.slug
       yield thread
     end
