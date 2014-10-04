@@ -141,12 +141,12 @@ describe Thread do
       expect(thread.call_numbers).to include('callnum1')
     end
 
-    it 'stores MessageContainers' do
+    it 'stores Containers' do
       m0 = Message.from_string "Message-Id: 0@example.com\n\nBody", 'callnum0', 'slug'
       thread = Thread.new(:slug, [m0])
 
       m1 = Message.from_string "Message-Id: 1@example.com\n\nBody", 'callnum1', 'slug'
-      thread << MessageContainer.new(m1.message_id, m1)
+      thread << Container.new(m1.message_id, m1)
       expect(thread.call_numbers).to include('callnum1')
     end
 
@@ -200,7 +200,7 @@ describe Thread do
       thread = Thread.new(:slug, [m0])
       m1 = Message.from_string "Message-Id: 1@example.com\n\nBody", 'callnum1', 'slug'
       c = thread.send(:store_in_container, m1)
-      expect(c).to be_a(MessageContainer)
+      expect(c).to be_a(Container)
       expect(thread.containers.count).to eq(2)
     end
   end
@@ -263,6 +263,41 @@ describe Thread do
       m3 = Message.from_string "\n\n> quoted text 1\n> quoted text 2\n> quoted text 3\n\nm2", 'callnum3', 'slug'
       thread = Thread.new(:slug, [m1, m2, m3])
       expect(thread.containers[MessageId.new 'callnum3@generated-message-id.chibrary.org'].parent.call_number).to eq('callnum1')
+    end
+  end
+
+  describe '#safe_to_thread?' do
+    # if all these tests blow up, it's probably because they're testing
+    # Thread#safe_to_thread? with containers that aren't in its @containers
+    it 'is if child is an orphan' do
+      c1 = Container.new 'c1@example.com', message
+      c2 = Container.new 'c2@example.com', message
+      thread = Thread.new 'slug', c1
+      expect(thread.send(:safe_to_thread?, c1, c2)).to be_true
+    end
+
+    it 'is not if child has a different parent' do
+      m_possible_parent = Message.from_string "Message-Id: possible_parent@example.com\n\nBody", 'callnum0', 'slug'
+      m_actual_parent = Message.from_string "Message-Id: actual_parent@example.com\nBody", 'callnum0', 'slug'
+      m_child = Message.from_string "Message-Id: child@example.com\nIn-Reply-To: actual_parent@example.com\n\nBody", 'callnum0', 'slug'
+      c_possible_parent = Container.new 'possible_parent@example.com', m_possible_parent
+      c_actual_parent = Container.new 'actual_parent@example.com', m_actual_parent
+      c_child = Container.new 'child@example.com', m_child
+      c_actual_parent.adopt(c_child)
+      thread = Thread.new 'slug', c_possible_parent
+      expect(thread.send(:safe_to_thread?, c_possible_parent, c_child)).to be_false
+    end
+
+    it 'is if the child names this as their parent' do
+      m_possible_parent = Message.from_string "Message-Id: possible_parent@example.com\n\nBody", 'callnum0', 'slug'
+      m_actual_parent = Message.from_string "Message-Id: actual_parent@example.com\nBody", 'callnum0', 'slug'
+      m_child = Message.from_string "Message-Id: child@example.com\nIn-Reply-To: actual_parent@example.com\n\nBody", 'callnum0', 'slug'
+      c_possible_parent = Container.new 'possible_parent@example.com', m_possible_parent
+      c_actual_parent = Container.new 'actual_parent@example.com', m_actual_parent
+      c_child = Container.new 'child@example.com', m_child
+      c_possible_parent.adopt(c_child)
+      thread = Thread.new 'slug', c_possible_parent
+      expect(thread.send(:safe_to_thread?, c_actual_parent, c_child)).to be_true
     end
   end
 end

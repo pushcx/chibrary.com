@@ -1,5 +1,5 @@
 require_relative 'summary_repo'
-require_relative '../model/summary_container'
+require_relative '../model/container'
 
 module Chibrary
 
@@ -20,7 +20,7 @@ class SummaryContainerRepo
 
   def self.deserialize h
     h.deep_symbolize_keys!
-    container = SummaryContainer.new h.fetch(:key), SummaryRepo.deserialize(h.fetch(:value))
+    container = Container.new h.fetch(:key), SummaryRepo.deserialize(h.fetch(:value))
     h[:children].each do |child_hash|
       container.adopt deserialize(child_hash)
     end

@@ -88,7 +88,7 @@ describe ThreadRepo do
   end
 
   it '::deserialize Thread' do
-    sc = SummaryContainerRepo.new(SummaryContainer.new('1@example.com', Summary.new('callnumb', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1')))
+    sc = SummaryContainerRepo.new(Container.new('1@example.com', Summary.new('callnumb', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1')))
     hash = {
       'slug' => 'slug',
       'containers' => sc.serialize,
@@ -100,7 +100,7 @@ describe ThreadRepo do
 
   describe "::find" do
     it "instantiates a Thread from the bucket" do
-      sc = SummaryContainerRepo.new(SummaryContainer.new('1@example.com', Summary.new('callnumb', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1')))
+      sc = SummaryContainerRepo.new(Container.new('1@example.com', Summary.new('callnumb', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1')))
       bucket = double('bucket')
       bucket.should_receive(:[]).with('slug').and_return({
         'slug' => 'slug',
@@ -143,7 +143,7 @@ describe ThreadRepo do
   describe "::find_with_messages" do
     it "finds a Thread and hydrates it with Messages" do
       ThreadRepo.should_receive(:find).and_return(t)
-      MessageRepo.should_receive(:find_all).with(['callnum1']).and_return(message)
+      MessageRepo.should_receive(:find_all).with(['callnum1']).and_return({'callnum1' => message})
       thread = ThreadRepo.find_with_messages('callnumb')
       expect(thread.root.value).to eq(message)
     end

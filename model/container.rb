@@ -1,12 +1,19 @@
+require_relative '../value/summary'
+require_relative '../model/message'
+
 module Chibrary
 
 class ContainerNotEmpty < RuntimeError ; end
+class KeyMismatch < ArgumentError ; end
 
+# Maybe monad + Composite Pattern:
 # Each container holds 0 or 1 values and any number of child containers.
 # The value is optional so that I can build thread trees even before seeing
 # all messages (based on References and In-Reply-To).
-module Container
+class Container
   include Enumerable
+
+  # Generic container key/value/tree code ----------------------------
 
   attr_reader :key, :value, :parent, :children
 
@@ -60,10 +67,6 @@ module Container
       parent.root
     end
   end
-  
-  def <=> other
-    key <=> other.key
-  end
 
   def each#(&block)
     # yield this container
@@ -87,11 +90,6 @@ module Container
     else
       self
     end
-  end
-
-  def value= value
-    raise ContainerNotEmpty, "Can't reassign value #{value} of non-empty container #{key}" unless empty?
-    @value = value
   end
 
   # When asked for subject or date, return the earliest available.
@@ -135,7 +133,67 @@ module Container
     container.parent = self
   end
 
-  # debugging
+  def to_s
+    v = empty? ? 'empty' : value.to_s
+    return "<Container(#{key}): #{v}>"
+  end
+
+  # Message/Summary-specific code below this line --------------------
+
+  alias :message    :value
+  alias :message_id :key
+
+  def value= value
+    raise "Container in a container?" if value.is_a? Container
+    raise KeyMismatch, "Message id #{value.message_id} doesn't match container #{key}" if value.respond_to?(:message_id) and value.message_id != key
+    raise ContainerNotEmpty, "Can't reassign value #{value} of non-empty container #{key}" unless empty?
+    @value = value
+  end
+  alias :message=   :value=
+
+  def slug        ; effective_field(:slug) ; end
+  def call_number ; effective_field(:call_number) or '' ; end
+  def date        ; effective_field(:date) or Time.now ; end
+  def subject     ; effective_field(:subject) or '' ; end
+  def n_subject   ; effective_field(:n_subject) or '' ; end
+  def blurb       ; effective_field(:blurb) or '' ; end
+  def references  ; effective_field(:references) or [] ; end
+
+  
+  def <=> other
+    value.respond_to?(:date) ? date <=> other.date : key <=> other.key
+  end
+
+  def likely_split_thread?
+    message and message.likely_split_thread?
+  end
+
+  def subject_shorter_than? container
+    return subject.length < container.subject.length
+  end
+
+  def summarize
+    return self if value.is_a? Summary
+
+    if value.no_archive?
+      c = Container.new key
+    else
+      c = Container.new key, Summary.from(message)
+    end
+    children.each { |child| c.adopt(child.summarize) }
+    c
+  end
+
+  def messagize messages
+    return self if value.is_a? Message
+
+    c = Container.new key, messages[call_number]
+    children.each { |child| c.adopt(child.messagize messages) }
+    c
+  end
+
+  # Debugging --------------------------------------------------------
+
   def dump depth=0
     puts "  " * depth + self.to_s
     children.each do |container|
@@ -147,6 +205,7 @@ module Container
     return value_or_container.value if value_or_container.is_a? Container
     value_or_container
   end
+
 end
 
 end # Chibrary

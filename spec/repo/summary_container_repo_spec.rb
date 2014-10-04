@@ -1,6 +1,6 @@
 require_relative '../rspec'
 require_relative '../../value/summary'
-require_relative '../../model/summary_container'
+require_relative '../../model/container'
 require_relative '../../repo/summary_repo'
 require_relative '../../repo/summary_container_repo'
 
@@ -10,8 +10,8 @@ describe SummaryRepo do
   describe '#serialize' do
     let(:s1) { Summary.new 'callnum1', '1@example.com', 'f1@example.com', 'n 1', Time.now, 'blurb 1' }
     let(:s2) { Summary.new 'callnum2', '2@example.com', 'f2@example.com', 'n 2', Time.now, 'blurb 2' }
-    let(:c1) { SummaryContainer.new '1@example.com', s1 }
-    let(:c2) { SummaryContainer.new '2@example.com', s2 }
+    let(:c1) { Container.new '1@example.com', s1 }
+    let(:c2) { Container.new '2@example.com', s2 }
     before { c1.adopt c2 }
     subject { SummaryContainerRepo.new(c1).serialize }
 
@@ -44,7 +44,7 @@ describe SummaryRepo do
     }
     subject { SummaryContainerRepo.deserialize(hash) }
     it 'creates SummaryContainers' do
-      expect(subject).to be_a(SummaryContainer)
+      expect(subject).to be_a(Container)
     end
     it 'restores message id key' do
       expect(subject.key).to eq('1@example.com')

@@ -1,7 +1,6 @@
 require 'forwardable'
 
-require_relative '../lib/container'
-require_relative 'message_container'
+require_relative 'container'
 
 module Chibrary
 
@@ -72,7 +71,7 @@ class Thread
   end
 
   def find_or_create_container mid
-    container = containers.fetch(mid) { MessageContainer.new(mid) }
+    container = containers.fetch(mid) { Container.new(mid) }
     containers[mid] ||= container
     container
   end
@@ -83,12 +82,20 @@ class Thread
     # walk this container's references and parent them
     container.references.each do |message_id|
       child = find_or_create_container message_id
-      parent.adopt child if parent
+      parent.adopt child if parent and safe_to_thread? parent, child
       parent = child
     end
     # The last reference is trusted to be the parent of this message,
     # but once we have all the messages we confirm.
     parent.adopt container if parent
+  end
+
+  def safe_to_thread? parent, child
+    # Don't adopt any messages that already have parents (that is, they're
+    # threaded). A message with a malicious References header should not be
+    # able to reparent other messages willy-nilly, but we do trust a message
+    # to report its own parent.
+    child.orphan? or (!child.empty? and child.value.references.last == parent.message_id)
   end
 
   def set_root
