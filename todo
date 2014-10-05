@@ -126,10 +126,10 @@ x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
 x get /about
 x get /search
   get /:slug/thread/:callnumb
-  get /:slug/message/:callnumb
+x get /:slug/message/:callnumb
   get /:slug/:year/:month
-  get /:slug/:year -> /:slug
-  get /:slug
+x get /:slug/:year -> /:slug
+x get /:slug
   get /
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   migrate functional tests to rspec
