@@ -36,7 +36,7 @@ class Thread
   end
 
   def message_count
-    call_numbers.count
+    containers.count
   end
 
   def message_ids
