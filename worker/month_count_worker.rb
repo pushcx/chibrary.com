@@ -1,6 +1,7 @@
 require 'sidekiq'
 
-require_relative '../value/call_number'
+require_relative '../value/month_count'
+require_relative '../repo/month_count_repo'
 require_relative '../repo/sym_repo'
 require_relative '../repo/thread_repo'
 
@@ -14,7 +15,7 @@ class MonthCountWorker
     store monthcount of_month identified_by(serialized_sym)
   end
 
-  def identified_by serialized
+  def identified_by serialized_sym
     SymRepo.deserialize serialized_sym
   end
 
