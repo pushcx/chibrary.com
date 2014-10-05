@@ -1,3 +1,5 @@
+require 'set'
+
 require_relative '../service/call_number_service'
 require_relative '../model/message'
 require_relative '../repo/message_repo'
@@ -8,7 +10,7 @@ module Chibrary
 
 class Filer
   attr_reader :source
-  attr_reader :call_number_service, :message_count, :filed
+  attr_reader :call_number_service, :message_count, :filed, :months
 
   def initialize source
     @source = source
@@ -16,6 +18,7 @@ class Filer
     @call_number_service = CallNumberService.new
     @message_count = 0
     @filed = {} # n_subject => [call_numbers]
+    @months = Set.new
   end
 
   def file raw_email, slug=nil, src=nil
@@ -28,11 +31,15 @@ class Filer
     message_repo.store
 
     filed[message.n_subject] = filed.fetch(message.n_subject, []) << call_number
+    months << message.sym
   end
 
   def thread_jobs
     filed.each do |n_subject, call_numbers|
       ThreadWorker.perform_async call_numbers
+    end
+    months.each do |sym|
+      MonthCountWorker.perform_async sym
     end
     @filed = {}
   end

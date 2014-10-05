@@ -9,6 +9,7 @@ module Chibrary
 
 class ThreadWorker
   include Sidekiq::Worker
+  sidekiq_options :queue => :thread
 
   def perform call_numbers
     call_numbers.each { |cn| thread CallNumber.new(cn) }

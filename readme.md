@@ -8,6 +8,11 @@ Install instructions
 * Install Redis 2.4.15
 * Run `bundle install` to install the gems
 
+Running
+* Local server: `shotgun`
+* Jobs: sidekiq -q thread -q month_count -q default
+  (always do threads before month counts so they're not off)
+
 Influences:
   Sandi Metz: Practical Object-Oriented Design in Ruby, Magic Tricks of Testing
   J.B. Rainsberger: Integration Tests Are A Scam

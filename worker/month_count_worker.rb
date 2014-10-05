@@ -8,6 +8,7 @@ module Chibrary
 
 class MonthCountWorker
   include Sidekiq::Worker
+  sidekiq_options :queue => :month_count
 
   def perform serialized_sym
     store monthcount of_month identified_by(serialized_sym)
