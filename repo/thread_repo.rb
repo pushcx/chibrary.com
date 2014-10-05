@@ -1,3 +1,4 @@
+require_relative '../model/thread'
 require_relative 'riak_repo'
 require_relative 'list_address_repo'
 require_relative 'summary_container_repo'
@@ -93,7 +94,7 @@ class ThreadRepo
   end
 
   def self.month sym
-    find_all bucket.get_index('smy_bin', sym.to_key)
+    find_all bucket.get_index('sym_bin', sym.to_key)
   end
 
   def self.thread_for message
