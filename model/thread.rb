@@ -9,7 +9,7 @@ class Thread
 
   include Enumerable
   extend Forwardable
-  def_delegators :@root, :each, :date, :<=>, :summarize!, :messagize!, :n_subject
+  def_delegators :@root, :each, :blurb, :call_number, :date, :<=>, :summarize!, :messagize!, :n_subject
 
   attr_reader :slug, :containers, :root
 

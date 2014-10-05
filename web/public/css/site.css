@@ -266,7 +266,7 @@ ol.thread_list li {
     font-style: italic;
     text-decoration: none;
   }
-  ol.thread_list li .blurb {
+  .blurb {
     color: #555555;
     margin-left: 1em;
   }

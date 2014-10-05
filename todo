@@ -116,7 +116,7 @@ x   Threader finds threads by MessageId and n_subject hash
 x   MessageRepo drop call number overwrite guards; Filer overlay new mid by default
 x   ThreadWorker or Thread#conversation_for? checks message is for the right list
 x   urls lose year, month; messages to /slug/message/call_number
-    Month view pulls all threads via index
+x   Month view pulls all threads via index
 x   Thread view asks ThreadRepo for all messages
 x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
   check design on tablets and phones
@@ -127,10 +127,10 @@ x get /about
 x get /search
   get /:slug/thread/:callnumb
 x get /:slug/message/:callnumb
-  get /:slug/:year/:month
+x get /:slug/:year/:month
 x get /:slug/:year -> /:slug
 x get /:slug
-  get /
+x get /
   talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   migrate functional tests to rspec
   hand-check the pending thread_set specs

@@ -38,7 +38,7 @@ class ThreadRepo
   end
 
   def extract_key
-    self.class.build_key thread.root.call_number.to_s
+    self.class.build_key thread.call_number.to_s
   end
 
   def next_thread
