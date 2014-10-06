@@ -49,7 +49,7 @@ describe ThreadRepo do
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_next_bin", "slug_1411760701".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return(['callnext'])
         tr.should_receive(:bucket).and_return(bucket)
-        tr.should_receive(:find).with('callnext').and_return(:next)
+        ThreadRepo.should_receive(:find).with('callnext').and_return(:next)
         expect(tr.next_thread).to eq(:next)
       end
 
@@ -68,7 +68,7 @@ describe ThreadRepo do
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_prev_bin", "slug_8588239301".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return(['callprev'])
         tr.should_receive(:bucket).and_return(bucket)
-        tr.should_receive(:find).with('callprev').and_return(:prev)
+        ThreadRepo.should_receive(:find).with('callprev').and_return(:prev)
         expect(tr.previous_thread).to eq(:prev)
       end
 

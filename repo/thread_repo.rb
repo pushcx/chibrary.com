@@ -1,6 +1,8 @@
+require 'base64'
+
 require_relative '../model/thread'
 require_relative 'riak_repo'
-require_relative 'list_address_repo'
+require_relative 'message_repo'
 require_relative 'summary_container_repo'
 require_relative 'sym_repo'
 
@@ -128,7 +130,7 @@ class ThreadRepo
     last = first.gsub(/./, '~') # asciibetically last
     keys = bucket.get_index(index.to_s, first..last, max_results: 1)
     return nil if keys.empty?
-    find keys.first
+    self.class.find keys.first
   end
 end
 

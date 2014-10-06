@@ -3,7 +3,7 @@ def load_thread call_number
   if root_call_number != call_number
     redirect_to "/#{@slug}/thread/#{root_call_number}#m-#{call_number}"
   end
-  @thread = ThreadRepo.find_with_messages(@call_number)
+  @thread = ThreadRepo.find_with_messages(call_number)
 rescue NotFound
   raise Sinatra::NotFound, "Thread not found (unknown call number)"
 rescue InvalidCallNumber
