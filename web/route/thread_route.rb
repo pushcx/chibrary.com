@@ -14,7 +14,7 @@ get  '/:slug/thread/:call_number' do
   load_list
   load_thread CallNumber.new(params[:call_number])
 
-  @title = "#{subject(@thread.subject)} - #{@list.title_name}"
+  @title = "#{subject(@thread.n_subject)} - #{@list.title_name}"
   @previous_link, @next_link = thread_previous_next(@thread)
 
   haml :'thread/show.html'
