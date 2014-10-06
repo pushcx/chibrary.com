@@ -39,7 +39,7 @@ describe 'Thread Helper' do
 
   describe "#container_partial" do
     it "renders messages" do
-      mock_message = double('message', no_archive: false )
+      mock_message = double('message', no_archive?: false )
 
       container = double("container", message: mock_message, empty?: false, root?: true, children: [])
 
@@ -54,7 +54,7 @@ describe 'Thread Helper' do
     end
 
     it "renders no_archive messages" do
-      no_archive_container = double('no_archive container', empty?: false, message: double(no_archive: true))
+      no_archive_container = double('no_archive container', empty?: false, message: double(no_archive?: true))
       self.should_receive(:partial).with('thread/_message_no_archive.html')
       container_partial(no_archive_container)
     end

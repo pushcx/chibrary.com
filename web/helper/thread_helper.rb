@@ -42,7 +42,7 @@ end
 # should be some kind of presenter around Container.
 def container_partial c
   return partial('thread/_message_missing.html') if c.empty?
-  return partial('thread/_message_no_archive.html') if c.message.no_archive
+  return partial('thread/_message_no_archive.html') if c.message.no_archive?
 
   partial('thread/_message.html', locals: {
     message:  c.message,
