@@ -1,6 +1,9 @@
+- sym = thread.sym
+- slug = sym.slug
 %p
   = thread.count
-  messages in this thread from 
-  %a{ href: "/#{@slug}" }= list.title_name
+  = thread.count == 1 ? "message" : "messages"
+  in this thread from
+  %a{ href: "/#{slug}" }= list.title_name
   in
-  %a{ href: "/#{@slug}/#{year}/#{month}/#t-#{thread.call_number}" }= year.to_s + "-" + month
+  %a{ href: "/#{slug}/#{sym.year}/#{sym.month}/#t-#{thread.call_number}" }= sym.when

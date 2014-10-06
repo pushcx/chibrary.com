@@ -31,6 +31,10 @@ class Sym
   end
   alias :to_s :to_key
 
+  def when
+    "#{year}-%02d" % month
+  end
+
   # breaks the general pattern to have this here rather than Sy.from_sym, but
   # the code looks nicer
   def to_sy
