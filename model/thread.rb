@@ -13,13 +13,12 @@ class Thread
 
   attr_reader :slug, :containers, :root
 
-  def initialize slug, messages
+  def initialize slug, root
     raise ArgumentError, 'You wanted ::Thread.new, but called Chibrary::Thread.new' if block_given?
     @slug = Slug.new(slug)
-    @containers = {} # CallNumber => Container
-    messages.each { |m| self << m }
-    raise ArgumentError, "Threads require one container so they always have a root" if @containers.empty?
-    set_root
+    @root = Container.wrap(root)
+    @containers = Hash[ @root.map { |c| [c.key, c] } ] # MessageId => Container
+    create_root_reference_containers
   end
 
   def messagize messages
@@ -32,7 +31,7 @@ class Thread
   end
 
   def call_numbers
-    map(&:call_number).uniq.sort
+    map(&:call_number).select { |cn| cn != '' }.uniq
   end
 
   def message_count
@@ -50,8 +49,8 @@ class Thread
   def conversation_for? message
     # Warning: doesn't check lists, ThreadRepo.thread_for does
     return true if message_ids.include? message.message_id
-    return false unless n_subjects.include? message.n_subject
-    return containers.values.any? { |c| c.message.lines_matching(message.direct_quotes) > 0 }
+    return true if n_subjects.include? message.n_subject
+    return containers.values.any? { |c| c.message.lines_matching(message.quotes) > 0 }
   end
 
   def << message_or_container
@@ -74,6 +73,15 @@ class Thread
     container = containers.fetch(mid) { Container.new(mid) }
     containers[mid] ||= container
     container
+  end
+
+  def create_root_reference_containers
+    root.references.reverse.each do |message_id|
+      previous = root
+      c = find_or_create_container message_id
+      c.adopt previous
+      @root = c
+    end
   end
 
   def parent_references container, parent=nil

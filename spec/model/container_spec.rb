@@ -335,6 +335,35 @@ describe Container do
     end
   end
 
+  # Message/Summary-specific code below this line --------------------
+
+  describe '::coerce' do
+    it 'returns Containers' do
+      c = Container.new 'key', 3
+      expect(Container.wrap c).to be(c)
+    end
+
+    it 'puts Messages in Containers' do
+      m = Message.from_string "Subject: m\n\nm", 'callnum1', 'slug'
+      c = Container.wrap(m)
+      expect(c).to be_a(Container)
+      expect(c.value).to be(m)
+    end
+
+    it 'puts Summaries in Containers' do
+      s = Summary.new 'callnumb', '1@example.com', 'from@example.com', 'subject', Time.now, 'blurb'
+      c = Container.wrap(s)
+      expect(c).to be_a(Container)
+      expect(c.value).to be(s)
+    end
+
+    it 'raises if an unknown class' do
+      expect {
+        Container.wrap 3
+      }.to raise_error(CantWrap)
+    end
+  end
+
   describe '::unwrap' do
     it 'given a Container, returns its value' do
       c = Container.new 'key', 3
@@ -345,8 +374,6 @@ describe Container do
       expect(Container.unwrap 3).to eq(3)
     end
   end
-
-  # Message/Summary-specific code below this line --------------------
 
   describe 'aliasing' do
     it 'aliases #message_id to #key' do

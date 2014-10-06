@@ -14,7 +14,7 @@ describe ThreadRepo do
     n_subject: 'subject',
     body: '',
   ) }
-  let(:t) { Thread.new 'slug', [message] }
+  let(:t) { Thread.new 'slug', message }
 
   context 'instantiated with a Thread' do
     describe '#serialize' do
@@ -48,7 +48,7 @@ describe ThreadRepo do
         tr = ThreadRepo.new(t)
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_next_bin", "slug_1411760701".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return(['callnext'])
-        tr.should_receive(:bucket).and_return(bucket)
+        ThreadRepo.should_receive(:bucket).and_return(bucket)
         ThreadRepo.should_receive(:find).with('callnext').and_return(:next)
         expect(tr.next_thread).to eq(:next)
       end
@@ -57,7 +57,7 @@ describe ThreadRepo do
         tr = ThreadRepo.new(t)
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_next_bin", "slug_1411760701".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return([])
-        tr.should_receive(:bucket).and_return(bucket)
+        ThreadRepo.should_receive(:bucket).and_return(bucket)
         expect(tr.next_thread).to eq(nil)
       end
     end
@@ -67,7 +67,7 @@ describe ThreadRepo do
         tr = ThreadRepo.new(t)
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_prev_bin", "slug_8588239301".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return(['callprev'])
-        tr.should_receive(:bucket).and_return(bucket)
+        ThreadRepo.should_receive(:bucket).and_return(bucket)
         ThreadRepo.should_receive(:find).with('callprev').and_return(:prev)
         expect(tr.previous_thread).to eq(:prev)
       end
@@ -76,7 +76,7 @@ describe ThreadRepo do
         tr = ThreadRepo.new(t)
         bucket = double('bucket')
         bucket.should_receive(:get_index).with("slug_timestamp_prev_bin", "slug_8588239301".."~~~~~~~~~~~~~~~", {:max_results=>1}).and_return([])
-        tr.should_receive(:bucket).and_return(bucket)
+        ThreadRepo.should_receive(:bucket).and_return(bucket)
         expect(tr.previous_thread).to eq(nil)
       end
     end

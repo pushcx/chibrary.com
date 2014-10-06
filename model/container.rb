@@ -5,6 +5,7 @@ module Chibrary
 
 class ContainerNotEmpty < RuntimeError ; end
 class KeyMismatch < ArgumentError ; end
+class CantWrap < ArgumentError ; end
 
 # Maybe monad + Composite Pattern:
 # Each container holds 0 or 1 values and any number of child containers.
@@ -73,7 +74,7 @@ class Container
     yield self
     children.sort!
     # TODO: simpler?
-    #@children.each(&block) do |child|
+    #@children.each(&block)
     children.each do |child|
       # and yield what all children containers yield
       child.each { |y| yield y }
@@ -192,6 +193,19 @@ class Container
     c
   end
 
+  def self.wrap obj
+    return obj if obj.is_a? Container
+    return obj.root if obj.is_a? Thread
+    return Container.new(obj.message_id, obj) if obj.is_a? Message or obj.is_a? Summary
+    return Container.new(obj.message_id, obj) if obj.is_a? OpenStruct # test hack
+    raise CantWrap, "Cannot wrap #{obj.class} in a Container"
+  end
+
+  def self.unwrap value_or_container
+    return value_or_container.value if value_or_container.is_a? Container
+    value_or_container
+  end
+
   # Debugging --------------------------------------------------------
 
   def dump depth=0
@@ -199,11 +213,6 @@ class Container
     children.each do |container|
       container.dump depth + 1
     end
-  end
-
-  def self.unwrap value_or_container
-    return value_or_container.value if value_or_container.is_a? Container
-    value_or_container
   end
 
 end
