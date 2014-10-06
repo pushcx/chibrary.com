@@ -36,7 +36,7 @@ class Thread
   end
 
   def message_count
-    containers.count
+    containers.select { |k, c| !c.empty? }.count
   end
 
   def message_ids
