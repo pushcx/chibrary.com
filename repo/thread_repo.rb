@@ -112,13 +112,17 @@ class ThreadRepo
     # look up any MessageId's referenced.
     message.references.reverse.unshift(message.message_id).each do |message_id|
       threads_by_message_id(message_id) do |thread|
+        next if thread.call_number == message.call_number
         next unless thread.slug == message.slug
         yield thread
       end
     end
     # Look up threads by subject
     threads_by_n_subject(message.n_subject).each do |thread|
+      next if thread.call_number == message.call_number
       next unless thread.slug == message.slug
+      # need to check quote text when an archive is missing ids
+      thread.messagize MessageRepo.find_all(thread.call_numbers)
       yield thread
     end
   end
