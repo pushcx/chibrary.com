@@ -29,7 +29,7 @@ class RiakBucket
   end
 
   def get_any keys
-    @bucket.get_many(keys).map do |k, v|
+    @bucket.get_many(keys.map(&:to_s)).map do |k, v|
       v &&= v.data.is_a?(Hash) ? v.data.deep_symbolize_keys : v.data
       [k, v]
     end.to_h
