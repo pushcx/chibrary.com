@@ -6,9 +6,9 @@
       - if container.empty?
         %span{ :class => "missing",  } missing
       - elsif message.no_archive?
-        %a{ href: "/#{thread.sym.slug}/#{thread.sym.year}/#{thread.sym.month}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
+        %a{ href: "/#{thread.sym.to_key}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
       - else
-        %a.message{ href: "/#{thread.sym.slug}/#{thread.sym.year}/#{thread.sym.month}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
+        %a.message{ href: "/#{thread.sym.to_key}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
           = thread_line_from message.from
           %time{ datetime: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}", title: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}" }= message.date.strftime("%m-%d %H:%M")
           %span.blurb= container.blurb
