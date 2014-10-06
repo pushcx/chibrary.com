@@ -54,7 +54,7 @@ class MessageRepo
   end
 
   def self.find_all call_numbers
-    bucket.get_all(call_numbers).map { |k, h| deserialize h }
+    Hash[ bucket.get_all(call_numbers).map { |k, h| [k, deserialize(h)] } ]
   end
 
   def self.has_message_id? message_id
