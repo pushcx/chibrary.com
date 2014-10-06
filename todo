@@ -119,13 +119,13 @@ x   urls lose year, month; messages to /slug/message/call_number
 x   Month view pulls all threads via index
 x   Thread view asks ThreadRepo for all messages
 x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
+  bug: threads not recombining
   check design on tablets and phones
-  combine css stylesheets; make print stylesheet
-  minify css and js
+x combine css stylesheets
   forward listlibrary.net/org to chibrary
 x get /about
 x get /search
-  get /:slug/thread/:callnumb
+x get /:slug/thread/:callnumb
 x get /:slug/message/:callnumb
 x get /:slug/:year/:month
 x get /:slug/:year -> /:slug
@@ -171,11 +171,15 @@ x Slug value
   replace RiakRepo inheritance with composition (see how ugly MessageRepo#store tests are)
 
 Feature ideas:
+  test all helpers
+  test routes (not capybara)
   restore remove_footer
   mark up italics in //
   mark up bold in **
+  make print stylesheet
   have MessageStorage overwrite check both key and id_hash_bin
     (need when compiling an archive from multiple others)
+  minify css and js
   add instantclick.io to pjax page loads
   https://www.cs.cmu.edu/~enron/
   spam filtering
