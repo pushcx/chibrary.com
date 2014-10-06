@@ -14,6 +14,8 @@ $(function() {
     }
   }).addClass('closed');
   $('ol.threads ol.thread_list').addClass('closed');
+  // open the thread if linked directly to it
+  $(location.hash).trigger('click');
 
   // thread_list: show vertical line to pick out siblings
   $('ol.thread_list').mouseout(function(){

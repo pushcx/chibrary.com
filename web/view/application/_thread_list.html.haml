@@ -1,14 +1,14 @@
 %ol.thread_list
   - subjects = [{ depth: -1, subject: thread.n_subject }]
   - thread.each do |container|
-    %li{ style: "padding-left: #{container.depth * 1.5}em;" }
+    %li{ name: "t-#{thread.call_number}", style: "padding-left: #{container.depth * 1.5}em;" }
       - message = container.message
       - if container.empty?
         %span{ :class => "missing",  } missing
       - elsif message.no_archive?
-        %a{ href: "/#{thread.sym.to_key}/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
+        %a{ href: "/#{thread.slug}/thread/#{thread.call_number}/#m-#{message.call_number}", class: "missing" } not archived
       - else
-        %a.message{ href: "/#{thread.sym.to_key}/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
+        %a.message{ href: "/#{thread.slug}/thread/#{thread.call_number}/#m-#{message.call_number}", class: "message" }
           = thread_line_from message.from
           %time{ datetime: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}", title: "#{message.date.strftime("%Y-%m-%d %H:%M:%S")}" }= message.date.strftime("%m-%d %H:%M")
           %span.blurb= container.blurb

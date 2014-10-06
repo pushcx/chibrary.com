@@ -12,7 +12,7 @@
           %span.count
             %span.twiddler &nbsp;
             = thread.count
-          %a.subject{ href: "/#{@sym.to_key}/#{thread.call_number}" }= subject(thread.n_subject)
+          %a.subject{ href: "/#{@sym.slug}/thread/#{thread.call_number}" }= subject(thread.n_subject)
           %span.blurb= thread.blurb
         != partial :'month/_thread_list.html', locals: { thread: thread }
 
