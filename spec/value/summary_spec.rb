@@ -15,7 +15,7 @@ describe Summary do
 
   describe '::from copies fields' do
     let(:now)     { Time.now }
-    let(:message) { double(call_number: 'callnumb', message_id: '1@example.com', from: 'From', n_subject: 'foo', date: now, body: 'body') }
+    let(:message) { double(call_number: 'callnumb', message_id: '1@example.com', from: 'From', n_subject: 'foo', date: now, blurb: 'body') }
     let(:summary) { Summary.from message }
 
     it { expect(summary.call_number).to eq('callnumb') }

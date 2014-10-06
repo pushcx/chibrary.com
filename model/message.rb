@@ -53,6 +53,10 @@ class Message
     Time.rfc2822(overlay.fetch(:date, email.date.rfc2822))
   end
 
+  def blurb
+    body.split("\n").select { |l| not (l.chomp.empty? or l =~ /^ *>|@|:$/) }.join("\n")[0..149]
+  end
+
   def to_s
     "<Message(#{call_number}) #{message_id}>"
   end

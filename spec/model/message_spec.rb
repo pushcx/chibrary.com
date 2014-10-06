@@ -33,6 +33,29 @@ describe Message do
     end
   end
 
+  describe "blurb" do
+    it "takes text from body" do
+      m = Message.from_string "\n\nBody text", 'callnumb', 'slug'
+      expect(m.blurb).to include('Body text')
+    end
+
+    it "ignores quotes" do
+      m = Message.from_string "\n\nBody text\n> quoted\n\nnot quote", 'callnumb', 'slug'
+      expect(m.blurb).to_not include('quoted')
+    end
+
+    it "skips blank lines" do
+      m = Message.from_string "\n\nBody text\n\n\nnot quote", 'callnumb', 'slug'
+      expect(m.blurb).to_not include("\n\n")
+    end
+
+
+    it "returns a max of 150 chars" do
+      m = Message.from_string "\n\nIt would be cute if message blurbs fit in a tweet, but it turns out with narrow letters and short subjects that a thread_list item might need a few more characters", 'callnumb', 'slug'
+      expect(m.blurb.length).to be <= 150
+    end
+  end
+
   describe '#likely_split_thread?' do
     it "is if subject is reply" do
       m = Message.from_string "Subject: Re: foo\n\n", 'callnumb', 'slug'
