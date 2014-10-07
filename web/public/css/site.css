@@ -206,6 +206,7 @@ ol.threads {
       content: "\25bc";
     }
     ol.threads ol.thread_list {
+      overflow: hidden;
       margin-left: 4.0em;
     }
     ol.threads li.thread ol.thread_list.closed {
