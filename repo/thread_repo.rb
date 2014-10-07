@@ -34,8 +34,8 @@ class ThreadRepo
       # thread. If you are debugging this in Nov 2286, I'm sorry. Add a digit.
       slug_timestamp_prev_bin: "#{thread.slug}_#{10_000_000_000 - thread.date.utc.to_i}",
       call_number_bin: thread.call_numbers.map { |cn| Base64.strict_encode64(cn) },
-      message_id_bin: thread.message_ids.map { |id| Base64.strict_encode64(id) },
-      n_subject_bin: thread.n_subjects.map { |s| Base64.strict_encode64(s) },
+      slug_message_id_bin: thread.message_ids.map { |id| "#{thread.slug}_#{Base64.strict_encode64(id)}" },
+      slug_n_subject_bin: thread.n_subjects.map { |s| "#{thread.slug}_#{Base64.strict_encode64(s)}" },
     }
   end
 
@@ -87,8 +87,12 @@ class ThreadRepo
     threads
   end
 
-  def self.threads_by_message_id id
-    find_all bucket.get_index('message_id_bin', Base64.strict_encode64(id))
+  def self.threads_by_message_id slug, id
+    find_all bucket.get_index('slug_message_id_bin', "#{slug}_#{Base64.strict_encode64(id)}")
+  end
+
+  def self.threads_by_n_subject slug, s
+    find_all bucket.get_index('slug_n_subject_bin', "#{slug}_#{Base64.strict_encode64(s)}")
   end
 
   def self.threads_by_n_subject s
@@ -111,14 +115,14 @@ class ThreadRepo
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
     message.references.reverse.unshift(message.message_id).each do |message_id|
-      threads_by_message_id(message_id) do |thread|
+      threads_by_message_id(message.slug, message_id) do |thread|
         next if thread.call_number == message.call_number
         next unless thread.slug == message.slug
         yield thread
       end
     end
     # Look up threads by subject
-    threads_by_n_subject(message.n_subject).each do |thread|
+    threads_by_n_subject(message.slug, message.n_subject).each do |thread|
       next if thread.call_number == message.call_number
       next unless thread.slug == message.slug
       # need to check quote text when an archive is missing ids

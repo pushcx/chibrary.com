@@ -35,8 +35,8 @@ describe ThreadRepo do
       it { expect(subject[:slug_timestamp_next_bin]).to eq('slug_1411760700') }
       it { expect(subject[:slug_timestamp_prev_bin]).to eq('slug_8588239300') }
       it { expect(subject[:call_number_bin]).to eq(['Y2FsbG51bTE=']) }
-      it { expect(subject[:message_id_bin]).to eq(['MUBleGFtcGxlLmNvbQ==']) }
-      it { expect(subject[:n_subject_bin]).to eq(['c3ViamVjdA==']) }
+      it { expect(subject[:slug_message_id_bin]).to eq(['slug_MUBleGFtcGxlLmNvbQ==']) }
+      it { expect(subject[:slug_n_subject_bin]).to eq(['slug_c3ViamVjdA==']) }
     end
 
     it "#extract_key is based on CallNumber" do
