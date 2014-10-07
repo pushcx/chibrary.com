@@ -18,9 +18,9 @@ $(function() {
   $(location.hash).trigger('click');
 
   // thread_list: show vertical line to pick out siblings
-  $('ol.thread_list').mouseout(function(){
+  $('ol.thread_list').on('mouseleave', 'li', function(){
     $(this).css('background-position', '-1px 0px');
-  }).mouseover(function(){
+  }).on('mouseover', 'li', function(){
     var li = $(this), indent = li.css('padding-left');
     li.parent().css('background-position', indent + ' 0px');
   });
