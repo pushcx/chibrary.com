@@ -1,4 +1,5 @@
 require_relative 'summary_repo'
+require_relative '../value/message_id'
 require_relative '../model/container'
 
 module Chibrary
@@ -12,7 +13,7 @@ class SummaryContainerRepo
 
   def serialize c=container
     {
-      key:      c.key,
+      key:      c.key.to_s,
       value:    SummaryRepo.new(c.value).serialize,
       children: c.children.map { |child| serialize(child) },
     }
@@ -20,7 +21,7 @@ class SummaryContainerRepo
 
   def self.deserialize h
     h.deep_symbolize_keys!
-    container = Container.new h.fetch(:key), SummaryRepo.deserialize(h.fetch(:value))
+    container = Container.new MessageId.new(h.fetch(:key)), SummaryRepo.deserialize(h.fetch(:value))
     h[:children].each do |child_hash|
       container.adopt deserialize(child_hash)
     end

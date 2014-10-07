@@ -1,9 +1,11 @@
+require_relative '../value/message_id'
 require_relative '../value/summary'
 require_relative '../model/message'
 
 module Chibrary
 
 class ContainerNotEmpty < RuntimeError ; end
+class KeyNotMessageId < ArgumentError ; end
 class KeyMismatch < ArgumentError ; end
 class CantWrap < ArgumentError ; end
 
@@ -19,7 +21,8 @@ class Container
   attr_reader :key, :value, :parent, :children
 
   def initialize key, value=nil
-    @key = key
+    @key = MessageId.new(key)
+    raise KeyNotMessageId, @key.to_s unless @key.valid?
     @value = value
     @parent = nil
     @children = []

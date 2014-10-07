@@ -23,6 +23,12 @@ describe Container do
       c = Container.new('id@example.com', TValue.new)
       expect(c).to_not be_empty
     end
+
+    it "raises if key doesn't look like a MessageId" do
+      expect {
+        Container.new 'foo'
+      }.to raise_error(KeyNotMessageId)
+    end
   end
 
   describe '#==' do
@@ -199,16 +205,16 @@ describe Container do
 
   describe '#each' do
     it 'iterates in reading order, an in-order traversal' do
-      c1 = Container.new 'c1'
-        c2 = Container.new 'c2'
+      c1 = Container.new 'c1@example.com'
+        c2 = Container.new 'c2@example.com'
         c1.adopt c2
-          c3 = Container.new 'c3'
+          c3 = Container.new 'c3@example.com'
           c2.adopt c3
-        c4 = Container.new 'c4'
+        c4 = Container.new 'c4@example.com'
         c1.adopt c4
 
       seen = c1.collect { |c| c.key }
-      expect(seen).to eq(%w(c1 c2 c3 c4))
+      expect(seen).to eq(%w(c1@example.com c2@example.com c3@example.com c4@example.com))
     end
   end
 
@@ -339,7 +345,7 @@ describe Container do
 
   describe '::coerce' do
     it 'returns Containers' do
-      c = Container.new 'key', 3
+      c = Container.new '1@example.com', 3
       expect(Container.wrap c).to be(c)
     end
 
@@ -366,7 +372,7 @@ describe Container do
 
   describe '::unwrap' do
     it 'given a Container, returns its value' do
-      c = Container.new 'key', 3
+      c = Container.new '1@example.com', 3
       expect(Container.unwrap c).to eq(3)
     end
 
@@ -472,14 +478,14 @@ describe Container do
     end
 
     it "sorts by date if values have dates" do
-      c1 = Container.new 'id', DateValue.new(Time.now - 1)
-      c2 = Container.new 'id', DateValue.new(Time.now)
+      c1 = Container.new 'id@example.com', DateValue.new(Time.now - 1)
+      c2 = Container.new 'id@example.com', DateValue.new(Time.now)
       expect([c2, c1].sort).to eq([c1, c2])
     end
 
     it "sorts by key otherwise" do
-      c1 = Container.new 'a'
-      c2 = Container.new 'b'
+      c1 = Container.new 'a@example.com'
+      c2 = Container.new 'b@example.com'
       expect([c2, c1].sort).to eq([c1, c2])
     end
   end
