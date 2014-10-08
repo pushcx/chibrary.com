@@ -1,7 +1,7 @@
 def load_thread call_number
   root_call_number = ThreadRepo.root_for(call_number)
   if root_call_number != call_number
-    redirect_to "/#{@slug}/thread/#{root_call_number}#m-#{call_number}"
+    redirect to("/#{@slug}/thread/#{root_call_number}#m-#{call_number}")
   end
   @thread = ThreadRepo.find_with_messages(call_number)
 rescue NotFound
