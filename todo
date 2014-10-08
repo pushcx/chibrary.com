@@ -119,7 +119,9 @@ x   urls lose year, month; messages to /slug/message/call_number
 x   Month view pulls all threads via index
 x   Thread view asks ThreadRepo for all messages
 x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
-  bug: threads not recombining
+x bug: threads not recombining
+x ThreadRepo.potential_threads_for: check the previous 300 Messages within 4 months
+  bug: Message in multiple Threads
   check design on tablets and phones
 x combine css stylesheets
   forward listlibrary.net/org to chibrary
@@ -171,6 +173,9 @@ x Slug value
   replace RiakRepo inheritance with composition (see how ugly MessageRepo#store tests are)
 
 Feature ideas:
+  smoke test MonthCountWorker
+  smoke test ThreadWorker
+  smoke test Filer
   test all helpers
   test routes (not capybara)
   restore remove_footer

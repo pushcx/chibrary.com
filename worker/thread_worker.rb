@@ -20,6 +20,8 @@ class ThreadWorker
     thread = ThreadRepo.thread_for message
     thread << message
     ThreadRepo.new(thread).store
+    # find stragglers
+    thread
   end
 end
 

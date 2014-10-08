@@ -229,7 +229,11 @@ class Email
     other.raw == raw
   end
 
-  # TODO should find top-quoted quotes
+  # TODO should find top-quoted quotes, quote is waiting to be a class
+  def quotes
+    body.scan(/^> /).collect { |q| q.sub(/^(> *)*/, '') }
+  end
+
   def direct_quotes
     body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
   end

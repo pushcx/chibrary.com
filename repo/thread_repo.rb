@@ -9,6 +9,7 @@ require_relative 'sym_repo'
 module Chibrary
 
 class ThreadRepo
+  POTENTIAL_THREADS_TEMPORALLY = 300
   include RiakRepo
 
   attr_reader :thread
@@ -28,11 +29,11 @@ class ThreadRepo
     {
       slug_bin: thread.slug.to_s,
       sym_bin:  thread.sym.to_key,
-      slug_timestamp_next_bin: "#{thread.slug}_#{thread.date.utc.to_i}",
+      slug_timestamp_next_bin: self.class.build_timestamp_next_index(thread),
       # Riak secondary indexes do not support reverse order queries, so this
       # creates an index that ascends in the right order to find the previous
       # thread. If you are debugging this in Nov 2286, I'm sorry. Add a digit.
-      slug_timestamp_prev_bin: "#{thread.slug}_#{10_000_000_000 - thread.date.utc.to_i}",
+      slug_timestamp_prev_bin: self.class.build_timestamp_prev_index(thread),
       call_number_bin: thread.call_numbers.map { |cn| Base64.strict_encode64(cn) },
       slug_message_id_bin: thread.message_ids.map { |id| "#{thread.slug}_#{Base64.strict_encode64(id)}" },
       slug_n_subject_bin: thread.n_subjects.map { |s| "#{thread.slug}_#{Base64.strict_encode64(s)}" },
@@ -44,15 +45,23 @@ class ThreadRepo
   end
 
   def next_thread
-    np_thread :slug_timestamp_next_bin
+    self.class.np_thread :slug_timestamp_next_bin, self.class.build_timestamp_next_index(thread)
   end
 
   def previous_thread
-    np_thread :slug_timestamp_prev_bin
+    self.class.np_thread :slug_timestamp_prev_bin, self.class.build_timestamp_prev_index(thread)
   end
 
   def self.build_key call_number
     call_number.to_s
+  end
+
+  def self.build_timestamp_next_index o
+    "#{o.slug}_#{o.date.utc.to_i}"
+  end
+
+  def self.build_timestamp_prev_index o
+    "#{o.slug}_#{10_000_000_000 - o.date.utc.to_i}"
   end
 
   def self.deserialize h
@@ -95,8 +104,15 @@ class ThreadRepo
     find_all bucket.get_index('slug_n_subject_bin', "#{slug}_#{Base64.strict_encode64(s)}")
   end
 
-  def self.threads_by_n_subject s
-    find_all bucket.get_index('n_subject_bin', Base64.strict_encode64(s))
+  def self.next_threads message
+    from = build_timestamp_next_index(message)
+    find_all np_thread_keys(:slug_timestamp_next_bin, from, POTENTIAL_THREADS_TEMPORALLY)
+  end
+
+  def self.previous_threads message
+    from = build_timestamp_prev_index(message)
+    keys = np_thread_keys(:slug_timestamp_prev_bin, from, POTENTIAL_THREADS_TEMPORALLY)
+    find_all keys
   end
 
   def self.month sym
@@ -107,25 +123,32 @@ class ThreadRepo
     potential_threads_for(message) do |thread|
       return thread if thread.conversation_for? message
     end
-    Thread.new message.slug, [message]
+    Thread.new message.slug, Container.new(message.message_id, message)
   end
 
   def self.potential_threads_for message
+    puts "potential_threads_for #{message.call_number}"
     # Look up any thread that mentions this message's MessageId (eg. has an
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
     message.references.reverse.unshift(message.message_id).each do |message_id|
       threads_by_message_id(message.slug, message_id) do |thread|
         next if thread.call_number == message.call_number
-        next unless thread.slug == message.slug
+        #puts "id potential #{thread.call_number}"
         yield thread
       end
     end
     # Look up threads by subject
     threads_by_n_subject(message.slug, message.n_subject).each do |thread|
       next if thread.call_number == message.call_number
-      next unless thread.slug == message.slug
+      #puts "n_subject potential #{thread.call_number}"
       # need to check quote text when an archive is missing ids
+      thread.messagize MessageRepo.find_all(thread.call_numbers)
+      yield thread
+    end
+    # Finally, try all earlier threads from the list
+    previous_threads(message).each do |thread|
+      #puts "previous potential #{thread.call_number}"
       thread.messagize MessageRepo.find_all(thread.call_numbers)
       yield thread
     end
@@ -133,12 +156,16 @@ class ThreadRepo
 
   private
 
-  def np_thread index
-    first = indexes[index].succ
-    last = first.gsub(/./, '~') # asciibetically last
-    keys = bucket.get_index(index.to_s, first..last, max_results: 1)
+  def self.np_thread index, from
+    keys = np_thread_keys index, from, 1
     return nil if keys.empty?
-    self.class.find keys.first
+    find keys.first
+  end
+
+  def self.np_thread_keys index, from, max_results
+    first = from.succ
+    last = first.gsub(/./, '~') # asciibetically last
+    keys = bucket.get_index(index.to_s, first..last, max_results: max_results)
   end
 end
 
