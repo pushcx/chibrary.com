@@ -15,7 +15,7 @@
           - 1.upto(12) do |month|
             - if months.has_key?(month)
               %td.month.small
-                %a{ href: "/#{@slug}/#{year}/#{'%02d' % month}" } #{months[month].thread_count}:#{months[month].message_count}
+                %a{ href: "/#{@slug}/#{year}/#{'%02d' % month}" } #{months[month].message_count}:#{months[month].thread_count}
             - else
               %td.empty_month= ''
 
