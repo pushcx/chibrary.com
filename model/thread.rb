@@ -11,12 +11,13 @@ class Thread
   extend Forwardable
   def_delegators :@root, :each, :blurb, :call_number, :date, :<=>, :summarize!, :messagize!, :n_subject
 
-  attr_reader :slug, :containers, :root
+  attr_reader :slug, :containers, :root, :initial_root
 
   def initialize slug, root
     raise ArgumentError, 'You wanted ::Thread.new, but called Chibrary::Thread.new' if block_given?
     @slug = Slug.new(slug)
     @root = Container.wrap(root)
+    @initial_root = @root
     @containers = Hash[ @root.map { |c| [c.key, c] } ] # MessageId => Container
     create_root_reference_containers
   end
@@ -59,6 +60,10 @@ class Thread
     parent_references container
     set_root
     parent_messages_without_references
+  end
+
+  def root_changed?
+    initial_root.call_number != root.call_number
   end
 
   private

@@ -28,6 +28,10 @@ class RiakBucket
     o.store
   end
 
+  def delete key
+    @bucket.delete key.to_s
+  end
+
   def get_any keys
     @bucket.get_many(keys.map(&:to_s)).map do |k, v|
       v &&= v.data.is_a?(Hash) ? v.data.deep_symbolize_keys : v.data

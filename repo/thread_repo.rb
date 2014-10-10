@@ -40,6 +40,19 @@ class ThreadRepo
     }
   end
 
+  def store
+    # better to temporarily have two copies than risk the delete succeeding
+    # and super's store failing
+    super
+    bucket.delete thread.initial_root.call_number if thread.root_changed?
+    thread.call_numbers.each do |cn|
+      thread_cns = bucket.get_index('call_number_bin', Base64.strict_encode64(cn.to_s))
+      if thread_cns.length != 1
+        raise RuntimeError, "storing #{thread.call_number} just duped #{cn}"
+      end
+    end
+  end
+
   def extract_key
     self.class.build_key thread.call_number.to_s
   end
