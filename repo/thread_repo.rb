@@ -48,7 +48,7 @@ class ThreadRepo
     thread.call_numbers.each do |cn|
       thread_cns = bucket.get_index('call_number_bin', Base64.strict_encode64(cn.to_s))
       if thread_cns.length != 1
-        raise RuntimeError, "storing #{thread.call_number} just duped #{cn}"
+        raise RuntimeError, "storing #{thread.call_number} just duplicate-stored #{cn}"
       end
     end
   end
@@ -140,7 +140,7 @@ class ThreadRepo
   end
 
   def self.potential_threads_for message
-    puts "potential_threads_for #{message.call_number}"
+    #puts "potential_threads_for #{message.call_number}"
     # Look up any thread that mentions this message's MessageId (eg. has an
     # empty Container waiting for it) and then, from parent to grandparent,
     # look up any MessageId's referenced.
