@@ -120,14 +120,14 @@ describe Thread do
       expect(thread).to be_conversation_for(m2)
     end
 
-    it 'is not if the subject does not match' do
-      m1 = Message.from_string "Subject: 1\n\nBody", 'callnum1', 'slug'
+    it 'is if subject matches' do
+      m1 = Message.from_string "Subject: subj\n\nBody", 'callnum1', 'slug'
       thread = Thread.new(:slug, m1)
-      m2 = Message.from_string "Subject: 2\n\nBody", 'callnum2', 'slug'
-      expect(thread).not_to be_conversation_for(m2)
+      m2 = Message.from_string "Subject: Re: subj\n\nBody", 'callnum2', 'slug'
+      expect(thread).to be_conversation_for(m2)
     end
 
-    it 'is if matching quotes' do
+    it 'is if matching direct quotes' do
       m1 = Message.from_string "\n\nm1 text", 'callnum1', 'slug'
       thread = Thread.new(:slug, m1)
       m2 = Message.from_string "\n\n> m1 text\nm2", 'callnum2', 'slug'
