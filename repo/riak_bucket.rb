@@ -13,7 +13,7 @@ class RiakBucket
   end
 
   def [] key
-    data = @bucket[key].data
+    data = @bucket[key.to_s].data
     data.deep_symbolize_keys! if data.is_a? Hash
     data
   rescue Riak::ProtobuffsFailedRequest => e
@@ -23,7 +23,7 @@ class RiakBucket
   end
 
   def []= key, value
-    o = @bucket.new key
+    o = @bucket.new key.to_s
     o.data = value
     o.store
   end
