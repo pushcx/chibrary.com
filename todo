@@ -121,10 +121,7 @@ x   Thread view asks ThreadRepo for all messages
 x replace jquery (33k, min + zip, unreliable) with zepto (7k, min+ zip)
 x bug: threads not recombining
 x ThreadRepo.potential_threads_for: check the previous 300 Messages within 4 months
-  bug: Message in multiple Threads
-  check design on tablets and phones
 x combine css stylesheets
-  forward listlibrary.net/org to chibrary
 x get /about
 x get /search
 x get /:slug/thread/:callnumb
@@ -133,7 +130,10 @@ x get /:slug/:year/:month
 x get /:slug/:year -> /:slug
 x get /:slug
 x get /
-  talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
+x talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
+  bug: Message in multiple Threads
+  check design on tablets and phones
+  forward listlibrary.net/org to chibrary
   migrate functional tests to rspec
   hand-check the pending thread_set specs
   migrate all lists to riak
