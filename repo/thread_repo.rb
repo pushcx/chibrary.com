@@ -134,6 +134,11 @@ class ThreadRepo
 
   def self.thread_for message
     potential_threads_for(message) do |thread|
+      #if message.n_subject =~ /middleware/i or message.n_subject =~ /Sun's sim/i
+      #  puts "potential_threads_for: #{message.call_number}, #{message.from}, #{message.subject}"
+      #  puts "  thread #{thread.call_number}, #{thread.n_subject} - conversation_for? #{thread.conversation_for? message}"
+      #  require 'pry'; binding.pry
+      #end
       return thread if thread.conversation_for? message
     end
     Thread.new message.slug, Container.new(message.message_id, message)

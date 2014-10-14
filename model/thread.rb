@@ -118,7 +118,7 @@ class Thread
       # 1. There is no existing root
       # 2. The existing root isn't empty and this one is
       # 3. The existing root has more re/fwd gunk on it
-      @root = container if !@root or (!@root.empty? and container.empty?) or container.subject_shorter_than? @root
+      @root = container if !@root or (!@root.empty? and container.empty?) or container.less_gunk_than? @root
     end
     @root.orphan
   end

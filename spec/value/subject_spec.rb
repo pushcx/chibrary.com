@@ -47,6 +47,20 @@ describe Subject do
     end
   end
 
+  describe '#gunk_length' do
+    it "is 0 for subjects with none of that" do
+      expect(Subject.new('foo').gunk_length).to eq(0)
+    end
+
+    it "is the length of the re/fwd gunk including trailing spaces" do
+      expect(Subject.new('re:  foo').gunk_length).to eq(5)
+    end
+
+    it "is length of all re/fwd gunk" do
+      expect(Subject.new('re: fwd: foo').gunk_length).to eq(9)
+    end
+  end
+
   describe '#to_s' do
     it 'passes through original subjects' do
       expect(Subject.new('Re: foo').to_s).to eq('Re: foo')

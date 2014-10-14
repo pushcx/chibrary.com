@@ -27,6 +27,11 @@ class Subject
     original.decoded.gsub(RE_PATTERN, '').strip
   end
 
+  # "gunk" is my highly technical term for "re/fwd" additions
+  def gunk_length
+    original.length - normalized.length
+  end
+
   def to_s
     original
   end

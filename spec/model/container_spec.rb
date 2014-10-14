@@ -494,7 +494,7 @@ describe Container do
     # delegates to message and does not need testing
   end
 
-  describe "#subject_shorter_than?" do
+  describe "#less_gunk_thank?" do
     # this is too stupidly simple to test
   end
 

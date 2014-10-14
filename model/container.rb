@@ -172,8 +172,8 @@ class Container
     message and message.likely_split_thread?
   end
 
-  def subject_shorter_than? container
-    return subject.length < container.subject.length
+  def less_gunk_than? container
+    return subject.gunk_length < container.subject.gunk_length
   end
 
   def summarize
