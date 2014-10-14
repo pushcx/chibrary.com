@@ -132,6 +132,8 @@ x get /:slug
 x get /
 x talk to carl/sheila about rackspace credit hosting? @codersquid @nextdayvideo
   bug: Message in multiple Threads
+  Thread.conversation_for?: check for lazy replies and return false
+  Thread.set_root: check length of actual re/fwd stuff, not overall length
   check design on tablets and phones
   forward listlibrary.net/org to chibrary
   migrate functional tests to rspec

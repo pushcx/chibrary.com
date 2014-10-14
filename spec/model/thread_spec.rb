@@ -113,6 +113,8 @@ describe Thread do
   end
 
   describe '#conversation_for?' do
+    let(:messages) { Hash[ YAML::load_file('spec/fixture/thread/conversation_for_middleware.yaml').map { |cn, raw| [cn, Message.from_string(raw, cn, 'slug')] } ] }
+
     it 'is if there is an empty container for it' do
       m1 = Message.from_string "Message-Id: 2@example.com\nIn-Reply-To: 1@example.com\n\nBody", 'callnum2', 'slug'
       thread = Thread.new :slug, m1
@@ -132,6 +134,12 @@ describe Thread do
       thread = Thread.new(:slug, m1)
       m2 = Message.from_string "\n\n> m1 text\nm2", 'callnum2', 'slug'
       expect(thread).to be_conversation_for(m2)
+    end
+
+    it 'is if substantial quotes match, even with different subjects' do
+      thread = Thread.new(:slug, messages[:ceo00001])
+      thread << messages[:luca0001]
+      expect(thread.conversation_for? messages[:michael1]).to be_true
     end
   end
 

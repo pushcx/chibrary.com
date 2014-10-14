@@ -1,0 +1,753 @@
+# correct threading:
+# ceo00001
+#   luca0001
+#   michael1
+#     ceo00002
+#   mike0001
+
+:ceo00001: |
+  From: ceo <ceo@grexengine.com>
+  Date: Wed, 31 Mar 2004 13:54:53 +0100
+  Subject: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the first one :))
+
+  At the GDC Sun released a new technology, a protype MMOG server system.
+  I'm guessing quite a few people on this list saw it (I'd be interested
+  to know what you thought).
+  
+  It was built by someone at Sun's "Game Technology Group", who have
+  had a slightly shakey start, being both a rallying point for the
+  java games dev community, but also burning a lot of bridges with
+  said community. I mention this only to cushion against the tone of
+  the quoted post :)...it came after a separate discussion where their
+  claims to being the only group who had *ever* produced a system with
+  things like failover and duplication prevention were countered, and
+  several people asked them why they were trying to roll their own
+  rather than working with partners.
+  
+  The developer apparently hadn't heard of Gordon's "10 Reasons" talk from
+  GDC03, and seemed to feel  that the few key problems solves by their
+  tech was the holy grail for MMOG development that would make it easy and
+  cost-effective. I disagreed, and asked for his reaction to all the other
+  issues. This is his blow-by-blow response; it gives some interesting
+  insights into what Sun's strategy is with this Sim Server:
+  
+    http://www.javagaming.org/cgi-bin/JGNetForums/YaBB.cgi?board=News;action=display;num=1080697150
+  
+  (note: pasted the 10 responses to the 10 questions below)
+  
+  His summary is "So in short, which of Gordon's 10 does the Sim
+  Server adress?  My answer is every one thats real!" which I find
+  somewhat blinkered. It appears he chooses to ignore all the
+  non-technical problems, including issues of maintenance, customer
+  support, ongoing development, etc.
+  
+  Adam M
+  
+  --<cut>--
+    Jeff's 10 Answers to Gordon
+    �� on: Today at 1:39am �� 	Quote Modify
+  
+    Sicne BBB asked for it, I looked it up. here's my 10 answers to
+    Gordon's (IMO in some cases naive) 'reasons":
+  
+    JEFF'S 10 Answers to Gordons 10 Reasons not to do a Massively
+    Multiplayer Game:
+  
+    #10. Too many are being built. Walton compared the current crop of
+    in-development games to the "RTS frenzy" of a few years ago. It's
+    a fine genre, but there are just too many in development.
+  
+      Answer.  This is like saying there are too many single player
+      games. The category is huge.  There are too many almost
+      IDENTICAL online RPGS being built.  That I agree with, but thats
+      a tiny tiny slice of the potential market.
+  
+      We are seeing so much "me too-ism" mostly because of the
+      difficutly of building good scalable games today.  There is a
+      (actually pretty lousy) existing model of a scalable RPG in EQ
+      and everyones basically tryign to copy that one model for fear
+      of failure if they try something new.
+  
+      As in ANY place in the game industry if you stick to the safe
+      ground you will be in with lots of competiotrs.  If you go new
+      places and do new things there are a wealth of new
+      opportunities.  As for their difficulty, well thats what we are
+      *solving* with the Sim Server.
+  
+      This actually becomes a reason TO do Massively Multiplayer
+      games-- unlike the platform game market there are all kinds of
+      well known genres that havent even been touched yet.  Break out
+      into a new area and you will have 0 competition.
+  
+    #9. The craft requires mastery of too many disciplines. These
+    include managing a huge team of dozens of people, customer
+    service, community relations, network operations, billing,
+    marketing, and communication and service coherency. Most MMOGs
+    fail in at least two of these crucial areas, Walton supposed.
+  
+      The answer to this is simply not to try to do it all. A
+      technology like the Sim Server allows non networking or parallel
+      processing savvy engineers to be fully competant massively
+      scalable server programmers. It "knows about" databases and
+      multi-processing and such so the game programmer deosnt have to.
+  
+      Simialrly rather then trying to do all your own customer
+      service, there are well known (by the rest of the computer
+      industry) third party solutions you can engage.
+  
+      HOWEVER the Sim Server helps here too.  It provides a common
+      back end administration interface to many games at once. It also
+      shares the laod across those games. The result is that one
+      operations center, and thus a single operations center team, can
+      handle ALL the back end administration functions for a whole
+      raft of games.
+  
+      This makes the epicenter/hosting model a good model for both
+      developers and hosting centers and offloads that
+      responsabiltyifrom the developer. All the back office services,
+      including customer support, can by handled one outsourcer for
+      any number of games-- splitting costs between all clients and
+      taking the load off the developer.
+  
+  
+    #8. It requires a huge time with multiple, diverse skill
+    sets. These include client, server, database, and Web programming
+    skills and generating gobs of content. Walton said a game that is
+    three times bigger is at least 10 times harder to develop.
+  
+      Not with the Sim Server.  It handles all your persistance.  It
+      handles your scalable server design.
+  
+      You, as the developer, write what appears to be event driven
+      monothreaded code.  All your sim objects automatically persist
+      and your code gets automatically scaled out across the entire
+      back end.
+  
+      The result is deadlock proof, race proof, massively scaled code
+      that is as easy to write as a mono-threaded app.
+  
+    #7. Getting the credit card from the customer is hard. Not all
+    customers have credit cards, and consumers are generally
+    suspicious of online transactions. New customers don't always
+    fathom the value proposition of an MMOG until they try it.
+  
+      I don't see this slowing Sony down.  Getting the CC is easy if
+      the user trusts you.  People trust Sony so sony ahs no prolbem
+      with it.
+  
+      This again is where large hosting providers can help.  The
+      customer trusts them and they hanbdle the billign for you.  In
+      addition, they use existing Sun enterprise billign systems which
+      are already highly secure adding to that sense of trust as well
+      as providing other ways to bill.
+  
+      The last point is just silly.  How many "cancel in 30 days"
+      offers has Gordon recieved. Why does he think they structure
+      things that way?  All packaged MM games come with at least a
+      "free" bundled 30 days for exactly that reason.
+  
+    #6. Online games are completely counterintuitive to packaged-goods
+    game company management. MMOGs are essentially launching all the
+    time with staggered launches and new content being added, rather
+    than centering around a single one-shot launch as packaged
+    software is.
+  
+      I'm sorry but this is insulting to the industry.  Its like
+      saying there is no way a book publisher can publish a
+      magazine. Sure the model is different. Packaged games, like
+      books,are all about acquisition-- the original sale.  Online
+      games are exactly like magazines, while acquisition is
+      important. retention is the key to real money.
+  
+      This is exactly why they are so good for the game industry.  In
+      the old model every game has to be marketed, sold and then the
+      process is doen all over. And that marketing is very expensive.
+      Acquisition is the hrad part of any sales mode.  With MM online
+      games once yo uhave acquired subscribers you keep them ,and keep
+      makign money, as long as you put a reasonable amount into
+      keeping the service they paid for interesting to them.
+  
+      But saying publishers can't grok this is calling them low grade
+      morons who can only mechanically do what they have done before.
+      This isn't exactly phd level economics here and there is an
+      existing successful industry to emulate.
+  
+    #5. Everything developers know from making single-player games is
+    wrong in MMOGs. Well known formulas of discovery and secrets don't
+    apply to online communities, and cheats that in a single-player
+    game affect only the player who chooses to use one can ruin the
+    experience of hundreds and even thousands of paying subscribers in
+    a persistent world game. Walton also pointed out the importance of
+    documentation and maintenance issues to MMOGs that often fall by
+    the wayside in single-player-game development.
+  
+      The last one was insulting to people who publish games, this one
+      is insulting to those who design and develop them.
+  
+      "Well known formulas" (formulae, properly) are a road straight
+      to chapter 11 in ANY entertainment medium.  People crave new
+      experience and the only reliable "formula" there has ever been
+      in entertainment is "be different."
+  
+      Good game deisgners and developers are pushing the envelope
+      daily in their work-- thats their job.  Sure there are new
+      challenges in the MM space but thats what makes it interesting
+      and fun!  And the fact that so much design hasn't been done yet
+      means theres a ton of low hanging fruit before we get to the "oh
+      god what do we do THIS time" phase.
+  
+    #4. The Internet sucks as a commercial delivery platform. Not only
+    that, when players have a bad Internet experience, whatever the
+    reason, they blame the game providers.
+  
+      Frankly, this sounds like a bad artist blaming his medium.
+  
+      All new game paltforms bring with them new challenges and
+      limitations. Designing around and for them is the essence of
+      real game design.
+  
+      I haven't noticed Sony suffering for the problems of the
+      medium. or Bioware.  Are there new challenegs?Sure.  Thats what
+      we are paid for-- to solve them.
+  
+    #3. Customer service is hard. Walton cited customer service as the
+    single biggest cost variable in online game development, and the
+    ramifications of the customer service strategy and project
+    planning are far-reaching. Walton pointed out that whereas in most
+    traditional businesses customer service is a cost center whose
+    expense is to be minimized (like the call center you phone to
+    complain about your cable bill), in MMOGs it is essentially the
+    entire business. And that 24x7x365 business is extremely
+    people-intensive, which by definition is costly and messy.
+  
+      Okay a few comments. First one is this: "...in MMOGs it (the
+      call cnter) is essentially the entire business."
+  
+      To be blunt: Only if you have a crapy service.  The vast
+      majority of the time the customer should be happily using your
+      service.  If they arent then thwres something very wrong with
+      it.
+  
+      If telcos operated like MMOLRPGs today do then yes, their call
+      center woudl be flooded with complaints/questions/issues.  but
+      they don't. They deliver the service reliable, as promised and
+      as expected.
+  
+      Quality of Service on todays MM games is terrible, there is no
+      doubt. Thats someplace the Sun Sim Server halps.  It provides
+      the tools necessary to allow game developer to reach the "5
+      nines" that telcos tlak about-- where the service is up and
+      functioning 99.999% of the time.  We do that for the telcos,
+      we're going to do it for online game services.
+  
+      Once you are AT the telco stage the question is how do you
+      minimize the cost of even that?  Well again the telcos (who Sun
+      is very familair with and works intensely with today) have some
+      standard answers.  The first is automation.  As much as possible
+      is handled by computer systems.  On the second line, they go to
+      ecomonies of scale in large call centers. In many cases they
+      actually outsource these call centers to companies that
+      specialize in 24x7x365 service.  All you need to do this is a
+      scale of usership thats appropriate.
+  
+      AND again thats where the Sim Server comes in, by making the
+      game hosting epicenter possible. With a single administration
+      team and call center servicing all games installed in the call
+      center you can share expenses with all the other game publishers
+      uisng that provider.  The hosting provider handles user
+      accounts, customer service and the rest and you pay a small
+      amount per account as "your share."
+  
+    #2. There are lots of legal issues. These issues range from
+    terms-of-service contracts to end user license agreements,
+    frivolous lawsuits, the commonplace use of "volunteers" to help
+    administer the game, IP protection, and the question of legal
+    ownership of virtual "property." All these laws and regulations
+    are in constant flux, which put legal issues so high up on
+    Walton's list. His advice? Get good lawyers and be sure to budget
+    to protect your IP.
+  
+  
+      Where has he been?  Certainly not in the US.
+  
+      Anyone who runs an IP based business without an IP and contract
+      lawyer is 100% certifiably insane.  Any packaged game developer
+      who signs publishers' contracts without a lawyer's assistance
+      will be out of business within a year.
+  
+      My parents have had a 2 person IP company (print text and
+      photography) for 40 years. I grew up knowing the name of their
+      lawyer as well as I knew the names of any of their friends.
+  
+      This is a non-issue because anyone in a real business already
+      has to deal with this, MM or not.  Where it comes to the
+      specifics of TOS and billinf contracts, again a service provider
+      who handles that for you will have standard stuff of their own
+      from their pet shark.
+  
+    and last but not least....
+  
+    And Gordon Walton's #1 reason You Don't Want to Make a Massively
+    Multiplayer Game;
+  
+    #1. They cost too much money to build and launch! This of course
+    is the ultimate gotcha that turns the best laid plans of mice and
+    game developers to very costly muck. Development costs continue to
+    rise, and, in Walton's words, "the faster you go, the slower you
+    get there."
+  
+      Today, he's right.  To go online for massively multiplayer you
+      need to build a machine room designed to handle your maximum
+      expected load. Thats very expensive.
+  
+      We put a million dollars into our machine room at TEN before we
+      even put in any computers. (Switches, racks, climate control,
+      telco equiptment, fire supression, statid supression, power back
+      up, etc).
+  
+      Even if you cheat on that stuff (which will come back to haunt
+      you) you still have to build out a machine back end itself
+      capable of handling your maximal load. Failure to do so can
+      result in the "success disaster" wher you get too many users to
+      handle, your system goes down in flames, and you gain a
+      permenant reputation as a crappy game.
+  
+      Whats worse, that means a lot of equiptemnt sitting ideal adding
+      to your ongoing operating costs. Try to do fail-over by simple
+      replication and youve just doubled that cost.  Fill it up past
+      expected maximal capacity and you are in shard-ville and have
+      another set of mostly unused hardware again.
+  
+      The Sim Sever addresses this on two levels. To begin with, you
+      can invest in a minimal set of hardware.  Because it scales
+      symetrically, handling additional load is as simple as calling
+      up your Sun rep and slapping in some more blades as your user
+      base expands.
+  
+      More so, when deployed in a hosted environment you can start by
+      using a fraction of a blade.  You pay the hoster a micro-payment
+      per user account.  As your user base grows you automatically
+      user more resources and pay him for those new accounts.  Your
+      costs scale as your incoem scales and you can make money from
+      the very first day.  In fact, you can make as much money from 5
+      games that only ever reach 500 accounts as you would from one
+      game that has 2500 accounts.
+  
+      As I may have mentioned we already have a very very major
+      outsourced computing resources supplier (one of the biggest in
+      the world but I can't name names) who wants to do just this--
+      encourage a market of hundreds of niche games rather then juat a
+      few big ones.  The ones of those that take off and become huge,
+      thats gravy for everyone involved.
+  
+    So in short, which of Gordon's 10 does the Sim Server adress?  My
+    answer is every one thats real!
+  --<cut>--
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:luca0001: |
+  From: Luca Girardo <girardo@computer.org>
+  Date: Fri, 02 Apr 2004 11:38:36 +0200
+  Subject: Re: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the first one :))
+
+  At 14:54 31.03.2004, ceo wrote:
+
+  > His summary is "So in short, which of Gordon's 10 does the Sim
+  > Server adress?  My answer is every one thats real!" which I find
+  > somewhat blinkered. It appears he chooses to ignore all the
+  > non-technical problems, including issues of maintenance, customer
+  > support, ongoing development, etc.
+
+  I do not think he is ignoring all the non-technical problems. His
+  answers are fitting if you consider the MMOG as a standard
+  distributed legacy system. And following that model, if you have a
+  good architecture, you have solved all your problems. Is that true?
+  Yes and no. Yes, a robust distributed server architecture is a huge
+  benefit and it is a factor to take in consideration with a growing
+  customer numbers and possibly multiple MMOGs. And if you look at
+  Jeff's answers, you see they are correct. Correct as long as you see
+  the MMOG just a standard legacy system and you just try to analyze
+  the impact of the software architecture. The problem is that a MMOG
+  is more then a software architecture and it is more then a standard
+  distributed legacy system. The fact that Jeff is ignoring this fact
+  in his answers make me wonder why that: absence of experience in the
+  MMOG field (therefore this limited model view) or because would like
+  to market the Sim Server Technology (see here for a short
+  description
+
+    http://www.javagaming.org/cgi-bin/JGNetForums/YaBB.cgi?board=News;action=display;num=1080684805
+
+  as the final and unique solution (see Chris comment "...I know that
+  there are others that have been building companies doing similar
+  things, but we think we have a unique solution here..." at
+
+    http://www.javagaming.org/cgi-bin/JGNetForums/YaBB.cgi?board=News;action=display;num=1080684805;start=15
+
+  for all the problems developers will encounter during the creation
+  and development of a MMOG.  Or is again an example of Gordons reason
+  #9 why not invest and make a MMOG?
+
+  It could also be interesting to initiate an in-depth discussion of
+  Gordon's 10 reasons with their implications for all the different
+  aspects of a MMOG (and not only software architecture even if that
+  is one of the principal aspects).
+
+  Luca Girardo
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:ceo00002: |
+  From: ceo <ceo@grexengine.com>
+  Date: Sat, 03 Apr 2004 08:31:22 +0100
+  Subject: Re: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the firstone :))
+
+  Michael Sellers wrote:
+
+  > For an example from a different but equally necessary area, I
+  > talked with Chris Mellissinos and others in Sun's booth at GDC
+  > about the lack of strong 3D solutions for Java game development
+  > for example, but they seemed unphased.  It's going to be a good
+  > year at least before Xith3D, LWJGL, the new open-sourced Java3D,
+  > or other similar solutions provide something really usable in this
+  > area -- and meanwhile the Torque engine was wowing them in the
+  > nVidia booth (and is available to indies for $100 or to
+  > corporations for $500!).
+
+  Incidentally, commercial java games developers have been trying to
+  get Sun's GTG (and Chris Mellisinos in particular) to see Torque and
+  Blitz Basic as direct "competitors" (in terms of platform rather
+  than just financially).
+
+  The developer of one of the recent OpenGL java games set up
+  necessary licensing arrangements etc for Sun to have a Torque-esque
+  package (using 3rd party libs) but the GTG have had no interest. So,
+  I wouldn't expect anything from Sun on this any time soon.
+
+  > Sun appears to be trying to foist enterprise solutions in both
+  > hardware and software on the game development market.  From where
+  > I sit at least, it isn't working.
+
+  Hmm. According to Chris Mellisinos they were swamped at the GDC by
+  "major games companies" who feel that Sun have finally solved the
+  problems of MMO games. According to him, and other Sun staff there,
+  Sun has the "holy grail". AFAIAA these are not the marketing dept,
+  most seem to be actual developers. (NB: quotes taken from Sun's
+  forums; the signal-to-noise ratio on this topic is very very low and
+  absolutely full of flamebait so I don't think it's worth quoting en
+  masse; the forums live on www.javagaming.org for any who are
+  interested)
+
+  According to Jeff, the author, his system is "the answer to just
+  about every need of MM games today", because:
+
+  "you could take the etnire online population of Everquest and put
+  tjem in one shard and allow unfettered access to any region.  A
+  system that uses all its available CPU power all the time and still
+  can have ANY of those CPUs fail without the clients noticing.
+
+  Add orthongonal persistance that makes the entire world dynamic and
+  ensures the entire game state is always recoverable within a few
+  moments of total system failure, gauranteed referrential integrity
+  that eliminates dupe bugs (all of which it does)" [sic]
+
+  "IMO this system has some unique proeprties and, as my third actual
+  attempt at such a system, is probably as close or closer to 'right'
+  then any of the other systems out there."
+
+  Perhaps that makes it clearer how he feels it's special.
+
+  On a couple of occasions I have asked Jeff to subscribe to MUD-DEV
+  and become active but perhaps he is too busy. He used to be a
+  subscriber (there's a couple of posts from him in the archives back
+  around 1997).
+
+  I noticed he also came out with this:
+
+  "IMHO it is your job as game designed to design griefless games.  If
+  you create lots of ways for players to harass each other then yes
+  you will deal witha lot of harassment complaints.  This is something
+  most online games though have already figured out."[sic]
+
+  ...which brings up some interesting questions about where the
+  responsibility for handling certain problems of MMOG dev is going to
+  lie in the future. I take the path that commercial middleware cannot
+  afford to simply ignore every problem other than raw performance
+  (c.f. Gamasutra's review of Butterfly.net and Tera Zona, and the
+  overall comment that neither really did enough to help game
+  developers).
+
+  FYI Jeff's previous experience includes involvement in the
+  not-released Dark Sun Online 2, and TEN.
+
+  Adam M
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:luca0002: |
+  From: Luca Girardo <girardo@computer.org>
+  Date: Fri, 02 Apr 2004 11:38:36 +0200
+  Subject: Re: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the first one :))
+
+  At 14:54 31.03.2004, ceo wrote:
+
+  > His summary is "So in short, which of Gordon's 10 does the Sim
+  > Server adress?  My answer is every one thats real!" which I find
+  > somewhat blinkered. It appears he chooses to ignore all the
+  > non-technical problems, including issues of maintenance, customer
+  > support, ongoing development, etc.
+
+  I do not think he is ignoring all the non-technical problems. His
+  answers are fitting if you consider the MMOG as a standard
+  distributed legacy system. And following that model, if you have a
+  good architecture, you have solved all your problems. Is that true?
+  Yes and no. Yes, a robust distributed server architecture is a huge
+  benefit and it is a factor to take in consideration with a growing
+  customer numbers and possibly multiple MMOGs. And if you look at
+  Jeff's answers, you see they are correct. Correct as long as you see
+  the MMOG just a standard legacy system and you just try to analyze
+  the impact of the software architecture. The problem is that a MMOG
+  is more then a software architecture and it is more then a standard
+  distributed legacy system. The fact that Jeff is ignoring this fact
+  in his answers make me wonder why that: absence of experience in the
+  MMOG field (therefore this limited model view) or because would like
+  to market the Sim Server Technology (see here for a short
+  description
+
+    http://www.javagaming.org/cgi-bin/JGNetForums/YaBB.cgi?board=News;action=display;num=1080684805
+
+  as the final and unique solution (see Chris comment "...I know that
+  there are others that have been building companies doing similar
+  things, but we think we have a unique solution here..." at
+
+    http://www.javagaming.org/cgi-bin/JGNetForums/YaBB.cgi?board=News;action=display;num=1080684805;start=15
+
+  for all the problems developers will encounter during the creation
+  and development of a MMOG.  Or is again an example of Gordons reason
+  #9 why not invest and make a MMOG?
+
+  It could also be interesting to initiate an in-depth discussion of
+  Gordon's 10 reasons with their implications for all the different
+  aspects of a MMOG (and not only software architecture even if that
+  is one of the principal aspects).
+
+  Luca Girardo
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:mike0001: |
+  From: "Mike Rozak" <Mike@mxac.com.au>
+  Date: Sun, 4 Apr 2004 07:53:07 +0930
+  Subject: Re: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the firstone :))
+
+  >From ceo@grexengine.com:
+
+  > At the GDC Sun released a new technology, a protype MMOG server
+  > system.  I'm guessing quite a few people on this list saw it (I'd
+  > be interested to know what you thought).
+
+  I don't know how good Sun's platform is, but their strategy raises a
+  few questions:
+
+    - Has anyone signed on for this server system? (Usually such
+    announcements include a list of partners.)
+
+    - Of the 100 MMORPG in development, how many of the ones that
+    survive past their first year will actually throw out their
+    existing server code to use Sun's?
+
+    - From now on, how many MMORPGs will be written from scratch?
+    (They're the most likely candidates for Sun's system.)
+
+    - What are the strategic reasons why Sun is pushing this system?
+    Is it only to make money directly from the sales of the server
+    system? Is it to keep MMORPG servers from using Linux/Windows? Is
+    it to promote Java on the client so that MMORPG clients will run
+    on non-Windows OS? Is Sun trying to componentize the MMORPG
+    market, thus devaluaing it, and preventing another Microsoft from
+    forming?
+
+
+  Mike Rozak
+  http://www.mxac.com.au
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:raph0001: |
+  From: "Koster, Raph" <rkoster@soe.sony.com>
+  Date: Thu, 1 Apr 2004 23:14:34 -0800
+  Subject: RE: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the firstone :))
+
+  From: ceo
+
+  >   Jeff's 10 Answers to Gordon
+
+  This post was worth reading just to see someone call Gordon Walton
+  naive, particularly about online games.
+
+  That said, and no offense to the folks at Sun, the naivete is most
+  likely on the other foot. (Can naivete be worn on feet?) Gordon has
+  quite a lot of experience to back him up, and this guy doesn't seem
+  to have any.
+
+  To broaden the discussion a little to the general topic of server
+  middleware/server codebases: what's the general feeling of the list
+  on this issue? My personal take is that middleware generally makes
+  too many assumptions that end up constraining the eventual game
+  design--plus, you have to rewrite most of it anyway or end up with
+  generic stuff. This has seemed to me to be true with muds and true
+  with MMOGs.
+
+  I'm generally a big fan of constraints when working on something,
+  yet at the same time there are many avenues for design exploration
+  which can get curtailed very early on by the limits of architecture
+  (not too many ecological sims within Diku codebases, not too many
+  castle siege warfare systems in MUSHes, and so on).
+
+  -Raph
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:michael1: |
+  From: "Michael Sellers" <mike@onlinealchemy.com>
+  Date: Fri, 2 Apr 2004 11:32:28 -0600
+  Subject: RE: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the firstone :))
+
+  Ceo wrote:
+
+  > At the GDC Sun released a new technology, a protype MMOG server
+  > system. I'm guessing quite a few people on this list saw it (I'd
+  > be interested to know what you thought).
+
+  > It was built by someone at Sun's "Game Technology Group", who have
+  > had a slightly shakey start, being both a rallying point for the
+  > java games dev community, but also burning a lot of bridges with
+  > said community.
+
+  I didn't see the server at GDC, but as a purely technical piece of
+  the puzzle it may be worth looking into.  A quick google on this
+  didn't turn up anything though, which I thought was interesting.
+
+  > The developer apparently hadn't heard of Gordon's "10 Reasons"
+  > talk from GDC03, and seemed to feel that the few key problems
+  > solves by their tech was the holy grail for MMOG development that
+  > would make it easy and cost-effective.
+
+  Having read the responses to the javagaming.org thread, this guy
+  comes off like someone who knows little about MMP development or
+  deployment.  Unfortunately, this seems to me to be something of a
+  pattern coming from Sun.
+
+  For an example from a different but equally necessary area, I talked
+  with Chris Mellissinos and others in Sun's booth at GDC about the
+  lack of strong 3D solutions for Java game development for example,
+  but they seemed unphased.  It's going to be a good year at least
+  before Xith3D, LWJGL, the new open-sourced Java3D, or other similar
+  solutions provide something really usable in this area -- and
+  meanwhile the Torque engine was wowing them in the nVidia booth (and
+  is available to indies for $100 or to corporations for $500!).
+
+  Sun appears to be trying to foist enterprise solutions in both
+  hardware and software on the game development market.  From where I
+  sit at least, it isn't working.
+
+  Mike Sellers
+  Online Alchemy
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:ceo00002: |
+  From: ceo <ceo@grexengine.com>
+  Date: Sat, 03 Apr 2004 08:31:22 +0100
+  Subject: Re: [MUD-Dev] re: Sun's Sim Server and Gordon's 10 Reasons (the firstone :))
+
+  Michael Sellers wrote:
+
+  > For an example from a different but equally necessary area, I
+  > talked with Chris Mellissinos and others in Sun's booth at GDC
+  > about the lack of strong 3D solutions for Java game development
+  > for example, but they seemed unphased.  It's going to be a good
+  > year at least before Xith3D, LWJGL, the new open-sourced Java3D,
+  > or other similar solutions provide something really usable in this
+  > area -- and meanwhile the Torque engine was wowing them in the
+  > nVidia booth (and is available to indies for $100 or to
+  > corporations for $500!).
+
+  Incidentally, commercial java games developers have been trying to
+  get Sun's GTG (and Chris Mellisinos in particular) to see Torque and
+  Blitz Basic as direct "competitors" (in terms of platform rather
+  than just financially).
+
+  The developer of one of the recent OpenGL java games set up
+  necessary licensing arrangements etc for Sun to have a Torque-esque
+  package (using 3rd party libs) but the GTG have had no interest. So,
+  I wouldn't expect anything from Sun on this any time soon.
+
+  > Sun appears to be trying to foist enterprise solutions in both
+  > hardware and software on the game development market.  From where
+  > I sit at least, it isn't working.
+
+  Hmm. According to Chris Mellisinos they were swamped at the GDC by
+  "major games companies" who feel that Sun have finally solved the
+  problems of MMO games. According to him, and other Sun staff there,
+  Sun has the "holy grail". AFAIAA these are not the marketing dept,
+  most seem to be actual developers. (NB: quotes taken from Sun's
+  forums; the signal-to-noise ratio on this topic is very very low and
+  absolutely full of flamebait so I don't think it's worth quoting en
+  masse; the forums live on www.javagaming.org for any who are
+  interested)
+
+  According to Jeff, the author, his system is "the answer to just
+  about every need of MM games today", because:
+
+  "you could take the etnire online population of Everquest and put
+  tjem in one shard and allow unfettered access to any region.  A
+  system that uses all its available CPU power all the time and still
+  can have ANY of those CPUs fail without the clients noticing.
+
+  Add orthongonal persistance that makes the entire world dynamic and
+  ensures the entire game state is always recoverable within a few
+  moments of total system failure, gauranteed referrential integrity
+  that eliminates dupe bugs (all of which it does)" [sic]
+
+  "IMO this system has some unique proeprties and, as my third actual
+  attempt at such a system, is probably as close or closer to 'right'
+  then any of the other systems out there."
+
+  Perhaps that makes it clearer how he feels it's special.
+
+  On a couple of occasions I have asked Jeff to subscribe to MUD-DEV
+  and become active but perhaps he is too busy. He used to be a
+  subscriber (there's a couple of posts from him in the archives back
+  around 1997).
+
+  I noticed he also came out with this:
+
+  "IMHO it is your job as game designed to design griefless games.  If
+  you create lots of ways for players to harass each other then yes
+  you will deal witha lot of harassment complaints.  This is something
+  most online games though have already figured out."[sic]
+
+  ...which brings up some interesting questions about where the
+  responsibility for handling certain problems of MMOG dev is going to
+  lie in the future. I take the path that commercial middleware cannot
+  afford to simply ignore every problem other than raw performance
+  (c.f. Gamasutra's review of Butterfly.net and Tera Zona, and the
+  overall comment that neither really did enough to help game
+  developers).
+
+  FYI Jeff's previous experience includes involvement in the
+  not-released Dark Sun Online 2, and TEN.
+
+  Adam M
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev

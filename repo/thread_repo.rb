@@ -159,9 +159,16 @@ class ThreadRepo
       thread.messagize MessageRepo.find_all(thread.call_numbers)
       yield thread
     end
-    # Finally, try all earlier threads from the list
+    # try all earlier threads from the list
     previous_threads(message).each do |thread|
       #puts "previous potential #{thread.call_number}"
+      thread.messagize MessageRepo.find_all(thread.call_numbers)
+      yield thread
+    end
+    # Finally, try later messages - if this becomes the root it'll drag the
+    # thread forward in time
+    next_threads(message).each do |thread|
+      #puts "next potential #{thread.call_number}"
       thread.messagize MessageRepo.find_all(thread.call_numbers)
       yield thread
     end
