@@ -216,6 +216,7 @@ class Container
     children.each do |container|
       container.dump depth + 1
     end
+    nil
   end
 
 end

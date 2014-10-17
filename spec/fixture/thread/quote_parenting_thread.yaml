@@ -1,0 +1,1262 @@
+---
+# from mud-dev/2004/03
+:parentings:
+  011Vc6TI@generated-message-id.chibrary.org: 
+  007FdBCq@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  011Vc6To@generated-message-id.chibrary.org: 007FdBCq@generated-message-id.chibrary.org
+  00Q0KMMq@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  JzbOKdI8@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  00ikzK5Y@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  00Q0KMNc@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  007FfNb6@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  JyzsySHY@generated-message-id.chibrary.org: 007FfNb6@generated-message-id.chibrary.org
+  JzbFOGhM@generated-message-id.chibrary.org: 007FfNb6@generated-message-id.chibrary.org
+  011MfkwK@generated-message-id.chibrary.org: JyzsySHY@generated-message-id.chibrary.org
+  JyzsyTLs@generated-message-id.chibrary.org: JyzsyTLc@generated-message-id.chibrary.org
+  JyzsyTLc@generated-message-id.chibrary.org: 00Q0KMNc@generated-message-id.chibrary.org
+  Jyzt0fk8@generated-message-id.chibrary.org: JyzsyTLc@generated-message-id.chibrary.org
+  JzbOIPqK@generated-message-id.chibrary.org: JyzsyTLc@generated-message-id.chibrary.org
+  JzIdfdSK@generated-message-id.chibrary.org: JzbOIPqK@generated-message-id.chibrary.org
+  007FfNaa@generated-message-id.chibrary.org: JzbOIPqK@generated-message-id.chibrary.org
+  00ikzL96@generated-message-id.chibrary.org: 011VeIro@generated-message-id.chibrary.org
+  011VeIro@generated-message-id.chibrary.org: Jyzt0fk8@generated-message-id.chibrary.org
+  00ikzK64@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+:raw_emails:
+  011Vc6TI: |
+    From: Brian Hook <brianhook@pyrogon.com>
+    Date: Tue, 9 Mar 2004 12:52:07 -0500
+    Subject: [MUD-Dev] Parser engines
+
+    I've been looking at the various input parsers in different MUDs
+    (although I haven't had a chance to look at commercial text MUDs),
+    and by and large the parser technology seems to be roughly
+    early-Infocom, if that.
+
+    This is in contrast to the parsers in interactive fiction engines
+    such as INFORM or Hugo, which can support fairly elaborate
+    statements (exception clauses, context analysis ("take off helm"
+    vs. "take helm"), enumerant modifiers slightly more exotic than "get
+    2.bag", etc.).
+
+    So several questions:
+
+      - what MUDs do have IF-quality parsers?
+
+      - assuming I'm correct that most MUDs (Diku and LP derivatives)
+      don't have IF-quality parsers, is there a good reason for this and
+      is this an impediment to less combat oriented, more puzzle
+      oriented play?
+
+    My guess for the second question above is that many players don't
+    care about the quality of a parser so long as the basic commands
+    they want are there ("kill orc"), and that a lot of the features in
+    IF-engines (which are normally puzzle oriented, not combat
+    oriented), are considered fluff or irrelevant to most combat MUD
+    players.
+
+    Brian
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  007FdBCq: |
+    From: <ext.Christer.Enfors@tietoenator.com>
+    Date: Wed, 10 Mar 2004 13:26:34 +0100
+    Subject: RE: [MUD-Dev] Parser engines
+
+    From: Brian Hook [mailto:brianhook@pyrogon.com]
+
+    > I've been looking at the various input parsers in different MUDs
+    > (although I haven't had a chance to look at commercial text MUDs),
+    > and by and large the parser technology seems to be roughly
+    > early-Infocom, if that.
+
+    Have you looked at the "natural language parser" used by MudOS
+    (LPMud driver) and Lima (mudlib)? It's the best one I've seen so
+    far. IIRC, it's able to handle things such as:
+
+      > look at the first orc's second shiny sword
+
+    It also makes it easy to create "verbs". For each verb, you can add
+    a set of rules that the parser matches against the input, to see if
+    the input is correct. For example, the rules for the "search" verb
+    are as follows:
+
+      "OBJ"
+      "OBJ with OBJ"
+      "for STR"
+      "for STR in OBJ"
+      "OBJ for STR"
+      "OBJ with OBJ for STR"
+      "OBJ for STR with OBJ"
+      "for STR in OBJ with OBJ"
+
+    where OBJ means object, and STR means string (LIV, not used here,
+    means living (player / NPC)). In all these cases, OBJ can be things
+    like
+
+      "sword"
+      "my sword"
+      "my third sword"
+      "my rusty sword"
+      "bubba's shiny sword"
+
+    and so on. The verb doesn't need to take this into account, the
+    parser handles it automatically. All the verb has to do is create a
+    function for each of its rules, that will receive the input if the
+    driver finds a match.
+
+    --=20
+    Christer Enfors, AKA Dannil
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  011Vc6To: |
+    From: Sean Middleditch <elanthis@awesomeplay.com>
+    Date: Thu, 11 Mar 2004 09:49:20 -0500
+    Subject: RE: [MUD-Dev] Parser engines
+
+    On Wed, 2004-03-10 at 07:26, ext.Christer.Enfors@tietoenator.com wrote:
+    > From: Brian Hook [mailto:brianhook@pyrogon.com]
+
+    >> I've been looking at the various input parsers in different MUDs
+    >> (although I haven't had a chance to look at commercial text
+    >> MUDs), and by and large the parser technology seems to be roughly
+    >> early-Infocom, if that.
+
+    > Have you looked at the "natural language parser" used by MudOS
+    > (LPMud driver) and Lima (mudlib)? It's the best one I've seen so
+    > far. IIRC, it's able to handle things such as:
+
+    >   > look at the first orc's second shiny sword
+
+    > It also makes it easy to create "verbs". For each verb, you can
+    > add a set of rules that the parser matches against the input, to
+    > see if the input is correct. For example, the rules for the
+    > "search" verb are as follows:
+
+    This all sounds fairly similar to AweMUD's handler.  The code isn't
+    quite as modularized as this, but close.  Commands (verbs) are
+    specified as a format string, and the functions for looking up
+    objects/characters/etc handle quite a few things such as "my sword"
+    vs "the sword" and "fourth orc" vs "other orc" and all that.  Code
+    is all BSD licensed and in C++, if that's what you need for your
+    project.
+
+    An example command that works is: "get the third sword from in my
+    backpack" Plus short-cutting is in throughout the code, so the above
+    could also be written as "get #3 sw fr in my ba".  The "my" keyword
+    is fairly important in some situation, it ensures that only objects
+    on your person are searched, so a command like "put sw in back"
+    won't accidently put it in a backpack on the ground or anything like
+    that.
+
+    --
+    Sean Middleditch <elanthis@awesomeplay.com>
+    AwesomePlay Productions, Inc.
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  00Q0KMMq: |
+    From: "T. Alexander Popiel" <popiel@wolfskeep.com>
+    Date: Wed, 10 Mar 2004 13:39:34 -0800
+    Subject: [MUD-Dev] Re: Parser engines
+
+    Brian Hook <brianhook@pyrogon.com> wrote:
+
+    > I've been looking at the various input parsers in different MUDs
+    > (although I haven't had a chance to look at commercial text MUDs),
+    > and by and large the parser technology seems to be roughly
+    > early-Infocom, if that.
+
+    > This is in contrast to the parsers in interactive fiction engines
+
+    Most MUDs are at ADVENT and DUNGEON level verb-noun stuff, though
+    (barely) more complex forms are used for multi-object actions, etc.
+    MUSH (and PennMUSH in particular) is on the slightly more complex
+    side in that it has a fairly elaborate noun-matcher, yielding stuff
+    like "give my 3rd box=this here 2nd marble"... but that
+    functionality is almost never used.
+
+    > So several questions:
+
+    >   - what MUDs do have IF-quality parsers?
+
+    None that I know of.  There've been several experiments in that
+    direction, all of which have been abandoned, AFAIK.
+
+    >   - assuming I'm correct that most MUDs (Diku and LP derivatives)
+    >   don't have IF-quality parsers, is there a good reason for this
+    >   and is this an impediment to less combat oriented, more puzzle
+    >   oriented play?
+
+    Yes, there's a good reason for it, and no, it isn't an impediment to
+    puzzle-oriented play (which is not uncommon on MUSHes).  The reason
+    is that in a multi-player environment, getting the command to the
+    server quickly (so you can interact with the other people in
+    realtime) is more important than having beautiful syntax.  Fewer
+    words is faster to type, so people can issue more commands in the
+    same timeframe, keeping the game moving.
+
+    > My guess for the second question above is that many players don't
+    > care about the quality of a parser so long as the basic commands
+    > they want are there
+
+    This is certainly true.
+
+    > and that a lot of the features in IF-engines [...] are considered
+    > fluff or irrelevant to most combat MUD players.
+
+    This is also true, though certainly not limited to combat MUDs.  If
+    you can type "get cardboard's grey" and "give machine=marble" to
+    accomplish the equivalent of "put the grey marble from the cardboard
+    box into the machine", and it takes half the time to type and a
+    quarter of the thought to come up with the two commands as opposed
+    to the pretty sentence, then the people who are doing this or
+    similar over and over in a multiplayer setting will pick the two
+    commands.
+
+    Another thing to consider is the amount of time that people spend
+    typing commands in MUDs vs. in IF games.  In a MUD, you tend to be
+    either issuing commands every few seconds or idling.  In an IF game,
+    you tend to be either moving from location to location with
+    'n.n.n.e.s.e.e.w.' (with brevity equal to a MUD), or pondering a
+    puzzle, issuing a brief spurt of commands every few minutes.
+
+    Thirdly, consider how long a person spends playing a game.  For
+    MUDs, you can reasonably expect that people will be playing the game
+    for a few months to years.  With an IF game, people work through
+    them in days to weeks.  Thus, there's a lot more time in a MUD to
+    learn its particular command structure, instead of making it accept
+    any odd sentence you throw at it.
+
+    So no, the simplicity of the parsers in MUDs is not because the MUD
+    developers haven't thought about making them accept more complex
+    syntax, but rather because with a MUD the players will adopt (after
+    a short learning period) the simplest form of command that's
+    available, because it's faster to use.  There's no point in having a
+    complex parsing engine that is a maintenance hassle for the devs and
+    nobody uses.
+
+    - Alex
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JzbOKdI8: |
+    From: Lars Duening <lars@bearnip.com>
+    Date: Wed, 10 Mar 2004 17:30:29 -0700
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Mar 9, 2004, at 10:52 AM, Brian Hook wrote:
+
+    >   - assuming I'm correct that most MUDs (Diku and LP derivatives)
+    >   don't have IF-quality parsers, is there a good reason for this
+    >   and is this an impediment to less combat oriented, more puzzle
+    >   oriented play?
+
+    > My guess for the second question above is that many players don't
+    > care about the quality of a parser so long as the basic commands
+    > they want are there
+
+    That is one reason, at least as far as LPs are concerned. Other
+    reasons are that writing a good parser is not trivial, and
+    traditional LPMud drivers offer little, if any, support for it.
+
+    --
+    Lars Duening; lars@bearnip.com
+    GPG Key: http://www.bearnip.com/lars/lars-duening.gpgkey
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  00ikzK5Y: |
+    From: Hans-Henrik Staerfeldt <hhs@cbs.dtu.dk>
+    Date: Wed, 10 Mar 2004 10:44:22 +0100
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Tuesday 09 March 2004 18:52, Brian Hook wrote:
+
+    > I've been looking at the various input parsers in different MUDs
+    > (although I haven't had a chance to look at commercial text MUDs),
+    > and by and large the parser technology seems to be roughly
+    > early-Infocom, if that.
+
+    > This is in contrast to the parsers in interactive fiction engines
+    > such as INFORM or Hugo, which can support fairly elaborate
+    > statements (exception clauses, context analysis ("take off helm"
+    > vs. "take helm"), enumerant modifiers slightly more exotic than
+    > "get 2.bag", etc.).
+
+    > So several questions:
+
+    >   - what MUDs do have IF-quality parsers?
+
+    >   - assuming I'm correct that most MUDs (Diku and LP derivatives)
+    >   don't have IF-quality parsers, is there a good reason for this
+    >   and is this an impediment to less combat oriented, more puzzle
+    >   oriented play?
+
+    > My guess for the second question above is that many players don't
+    > care about the quality of a parser so long as the basic commands
+    > they want are there ("kill orc"), and that a lot of the features
+    > in IF-engines (which are normally puzzle oriented, not combat
+    > oriented), are considered fluff or irrelevant to most combat MUD
+    > players.
+
+    I agree. My only good answer is that the parsers we made was in the
+    need-to-have category, while full IF-quality parsers are in the
+    nice-to-have category :-). I did look at some english parsing
+    efforts (some written in PROLOG, and no, I don't remember which)
+    during development, but without extensive use of the features in the
+    game itself, I saw no big gain in using it.
+
+    Later I looked at this subject to be able to make better AI ... as
+    in NPC's that could take complex instructions told by a PC (or NPC)
+    in english and execute them, which I felt would add significantly to
+    gameplay. However I gave up on the complexity of the task.
+
+    --
+    --Hans-Henrik St=E6rfeldt
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  00Q0KMNc: |
+    From: "Malcolm W. Tester II" <malcolm.tester@comcast.net>
+    Date: Wed, 10 Mar 2004 11:11:09 -0700
+    Subject: RE: [MUD-Dev] Parser engines
+
+    Brian Hook wrote:
+
+    > So several questions:
+
+    >   - what MUDs do have IF-quality parsers?
+
+    >   - assuming I'm correct that most MUDs (Diku and LP derivatives)
+    >   don't have IF-quality parsers, is there a good reason for this
+    >   and is this an impediment to less combat oriented, more puzzle
+    >   oriented play?
+
+    I've been involved with a couple of places, both LP derived, who
+    have quite a bit more intelligence than just 'kill orc'.  Syntax
+    such as "take the sword 3 from bag 5" or "put sword on ground in bag
+    2" or "get torch from bag on ground" or "search under [the] [blue]
+    bed", "search behind [the] [blue] bed", "search [the] [blue] bed",
+    which produce 3 different results.
+
+    The muds are not identical, since written by different people,
+    obviously.  But much more advanced than the average mud, imo.  The
+    biggest difference I see between crappy parsers and decent parsers,
+    is the type of person who codes it.  And in general, it seems
+    Americans are lazier about it.  I am an American, so I have a right
+    to call us lazy :) Both of the parsers in these muds were written by
+    other nationalitys.  One was by a German guy, the other was by a
+    Swedish guy.  Both are based off the original lp 2.4.5.  Could they
+    be even better?  Yeah.  Re-write them from scratch, use the modern
+    LDmud driver (if you're going LP), and they could be improved.  But,
+    it's been 10-12 years since these muds were started, and now they
+    are huge and full of things, and it's quite possible something as
+    integral as the parser, being re-written, could break things.  So it
+    isn't likely to happen when you have 10,000+ rooms.
+
+    > My guess for the second question above is that many players don't
+    > care about the quality of a parser so long as the basic commands
+    > they want are there ("kill orc"), and that a lot of the features
+    > in IF-engines (which are normally puzzle oriented, not combat
+    > oriented), are considered fluff or irrelevant to most combat MUD
+    > players.
+
+    As far as combat is concerned, one of the muds has a great parser
+    because it is as much quest-centric as it is combat-centric.  Quests
+    are pushed there, and they are smart and challenging.  Some of which
+    wouldn't be possible without a decent parser.  On the other mud,
+    quests aren't pushed as hard, but they still tend to be smarter than
+    otherwise possible if you used a generic parser.  I think that Dikus
+    tend to be more combat "KILL KILL KILL" than LPs, except for the
+    countless muds with less-than-knowledgable admins who cannot do
+    anything except make k3wl monsters.
+
+    Malc
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  007FfNb6: |
+    From: Brian Hook <brianhook@pyrogon.com>
+    Date: Sat, 13 Mar 2004 11:38:43 -0500
+    Subject: Re: [MUD-Dev] Parser engines
+
+    Thanks to everyone for their replies.
+
+    It looks like my fundamental assumption -- that it just isn't
+    necessary to have a very elaborate parser -- is probably the most
+    accurate.  I doubt that better parsers were somehow eluding the
+    technical capabilities MUD server authors =3D)
+
+    My original parser was a very simple "force the user to adapt to me"
+    style coupled with "terse and effective style".  Everything was
+    decomposed into the basic format:
+
+      <verb> [<dobj>] [[<prep>] <idobj>]
+
+    It handled a lot of the sentence simplification through plain text
+    substitution instead of some elaborate pattern matching.  I also
+    just flat out ignored all prepositions, originally thinking that the
+    parser would be simple enough that differentiating between "look
+    under box", "look in box", "look on box" and "look with box" would
+    just map to "look box" and get handled.
+
+    As for the pattern matching system some have mentioned, that's
+    basically what Hugo, TADS and Inform all do.  A verb is specified
+    with an ordered set of grammars that in turn map to a specific
+    function, e.g.
+
+      Verb get
+         "get" "out" --> Exit
+         "get" "in" --> Enter
+         "get" <multi> -- Take
+         "get" <multi> "from" <obj> -- RemoveFrom
+      etc. etc.
+
+    Then I realized that at some point complexity is unavoidable,
+    specifically with disambiguation (which sword?  which key?).  I'm
+    really not fond of unintuitive (to non MUD players) forms like:
+
+      > get 2 sword
+      > get 2.sword
+
+    That just strikes me as...messy.  Also, handling group w/ exceptions
+    was proving cumbersome when trying to hack into my simplistic
+    parser, i.e.
+
+      > get all swords except the rusty sword from the backpack
+
+    So I'm writing a parser that lies somewhere between the full on
+    complexity and robustness of an IF-level parser, and the simplicity
+    of a typical MUD parser.
+
+    I still require most sentences to decompose into verb, direct
+    object, preposition and indirect object, but I don't use a grammar
+    to dispatch, I just have a high level parser for each verb type.
+
+    Thanks for all the responses!
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JyzsySHY: "From: Helps Family <helpsfamily@pxi.net>\nDate: Fri, 26 Mar 2004 12:51:48
+    -0700\nSubject: Re: [MUD-Dev] Parser engines\n\nBrian Hook wrote:\n\n> Then I
+    realized that at some point complexity is unavoidable,\n> specifically with disambiguation
+    (which sword?  which key?).  I'm\n> really not fond of unintuitive (to non MUD
+    players) forms like:\n\n>   > get 2 sword\n>   > get 2.sword\n\n> That just strikes
+    me as...messy.\n\nI've got an amusing contradictory anecdote for this. I wrote
+    my MUD\nparser to properly handle\n\n   > get second sword\n\nand\n\n   > get
+    the 59th sword and the 61st sword.\n\nHowever, it did NOT handle get 2.sword --
+    I'd never used it before,\nso didn't think to implement it. Most of our active
+    players are\nfirst-time MUDders, and they found the second/2nd form\nintuitive.
+    However, one of our players had MUDded before, and\nexpected it to work:\n\n  http://simud.org/forums/thread/1480#4367
+    (or see end of post for a copy)\n\nSo even if it strikes you as \"messy,\" you
+    may find that players will\nexpect it to work anyway, proper English or not. When
+    I responded that\nthe player should try \"second tree\" instead of \"2.tree\".
+    She said she\nhadn't thought of that, and would try it.\n\nPerhaps this goes some
+    way to answering the original question -- MUD\nparsers are written the way they
+    are because players expect them to be\nwritten the way they always have been.\n\n--
+    Adam Helps\n\n----------\n\nSince this list is archived, I've quoted the relevant
+    forum posts in\ncase the link ever breaks:\n\nRusalka\t\tmultiple trees\t2004-01-25
+    00:53:33\n\n  I just noticed that whilst standing in a room with an empty banana\n
+    \ tree and an apple tree, I can only pick from the (first) empty\n  banana tree.
+    I tried picking from the apple tree but that doesn't\n  seem to be working.\n\n
+    \ One way to get around this might be to designate subsequent trees\n  as \"2.tree,\"
+    \"3.tree,\" and so forth. Then I could \"pick apple from\n  2.tree.\"\n\n(In reply
+    to Rusalka -- multiple trees)\nAcius\t\tUm... \t2004-01-26 00:41:52\n\n  Did you
+    try 'pick apple from second tree'? You can also abbreviate\n  it pick apple from
+    2nd tree; You can also do 'pick apple from\n  nearest tree', 'pick apple from
+    furthest apple tree', and even\n  silly things like 'pick apple from second furthest
+    apple tree'.\n\n(In reply to Acius -- Um...)\nMalap\t\tsyntax\t2004-01-26 14:52:38\n\n
+    \ The #.noun syntax is well-established on muds and worth\n  supporting. I remember
+    looking into it once a few months ago; a\n  wizard (I forget who) asked to check
+    something out for them, and I\n  forgot all about it until seeing Rusalka's post.\n\n(In
+    reply to Malap -- syntax)\nAcius\t\t#.noun syntax \t2004-02-10 02:01:36\n\n  OK,
+    all present should now honor this syntax. In the process, I\n  rooted out a rather
+    ugly little bug where \"get 2nd pine cone\"\n  would get \"two pine cones\", because
+    pine cones are a stackable\n  object. It was a fairly obscure bug, but it's fixed
+    anyway...\n\n  This thread has died now, I think, and I'm going to make another\n
+    \ attempt to close it ;-)\n\n(In reply to Acius -- Um...)\nRusalka\t\tseconds
+    \t2004-01-28 23:08:10\n\n  Didn't think of that; will try it! Thanks!\n_______________________________________________\nMUD-Dev
+    mailing list\nMUD-Dev@kanga.nu\nhttps://www.kanga.nu/lists/listinfo/mud-dev\n"
+  JzbFOGhM: |
+    From: "Robert Zubek" <rob@cs.northwestern.edu>
+    Date: Fri, 2 Apr 2004 15:16:47 -0600
+    Subject: RE: [MUD-Dev] Parser engines
+
+    From: Brian Hook
+
+    > Also, handling group w/ exceptions was proving cumbersome when
+    > trying to hack into my simplistic parser, i.e.
+
+    >   > get all swords except the rusty sword from the backpack
+
+    > So I'm writing a parser that lies somewhere between the full on
+    > complexity and robustness of an IF-level parser, and the
+    > simplicity of a typical MUD parser.
+
+    > I still require most sentences to decompose into verb, direct
+    > object, preposition and indirect object, but I don't use a grammar
+    > to dispatch, I just have a high level parser for each verb type.
+
+    I just though, you may want to check out the Link Grammar by
+    Temperley et al. (www.link.cs.cmu.edu - you can try it online at
+    their web page).  I've been using it for about a year now for a
+    conversational NPC system, and been very happy with the
+    performance. While imperative voice commands are slightly different
+    from conversations, the grammar is quite robust and might be able to
+    handle them as well.
+
+    When I fed your sample sentence through, I got the following
+    constituent tree (sans links or parts of speech):
+
+      (S (VP get
+             (NP all swords)
+             (PP except
+                 (NP the rusty sword))
+             (PP from
+                 (NP the backpack))))
+
+    which strikes me as a very good parse - it groups the object as the
+    main noun phrase, the exception into one prepositional clause, the
+    source into the other.
+
+    Then you can assign semantic roles by following the parse
+    tree. Agent performing the action comes from following S->NP, action
+    is S->VP, patient of the action from S->VP->NP, the method from
+    S->VP->PP, location from S->VP->PP for some particular prepositions,
+    and so on.  This gives a set of bound roles such as:
+
+      Action:   get
+      Agent:    <null> [ imperative voice! ;) ]
+      Patient:  all swords
+      Method:   except the rusty sword
+      Location: from the backpack
+
+    And that makes entity disambiguation must easier. :)
+
+    Rob
+
+    PS. By the way, the link parser also picked up the ambiguity in that
+    statement. One of the valid parses was:
+
+      (S (VP get
+             (NP all swords)
+             (PP except
+                 (NP (NP the rusty sword)
+                     (PP from
+                         (NP the backpack))))))
+
+    :)
+
+    --
+    Robert Zubek
+    http://www.cs.northwestern.edu/~rob
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  011MfkwK: |
+    From: Travis Casey <efindel@earthlink.net>
+    Date: Sat, 3 Apr 2004 19:49:26 -0500
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Friday 26 March 2004 14:51, Helps Family wrote:
+    > Brian Hook wrote:
+
+    >> Then I realized that at some point complexity is unavoidable,
+    >> specifically with disambiguation (which sword?  which key?).  I'm
+
+    >> really not fond of unintuitive (to non MUD players) forms like:
+
+    >>  > get 2 sword
+    >>  > get 2.sword
+
+    >> That just strikes me as...messy.
+
+    > I've got an amusing contradictory anecdote for this. I wrote my
+    > MUD parser to properly handle
+
+    >   > get second sword
+
+    > and
+
+    >   > get the 59th sword and the 61st sword.
+
+    > However, it did NOT handle get 2.sword -- I'd never used it
+    > before, so didn't think to implement it. Most of our active
+    > players are first-time MUDders, and they found the second/2nd form
+    > intuitive. However, one of our players had MUDded before, and
+    > expected it to work:
+
+    My experience is that "#.object" is mostly a Diku (and derivatives)
+    thing.  I've mostly worked on LPs, and the equivalent on the ones I
+    worked on was:
+
+      > get sword 2
+
+    To me, this seems to make more sense.  Part of that is probably
+    because I'm more used to it, but there are a few reasons that spring
+    to mind:
+
+      - It approximates expressions that English speakers actually use:
+
+         "Do you want to pick door one, door two, or door three?"
+
+    is something that one might actually hear said, and "door two" would
+    be a natural response.  Changing from spelling out the number to
+    using numerals makes intuitive sense as well.
+
+      - With a sophisticated parser, one may want to support things like:
+
+        "get 2 swords"
+
+    for a character to pick up two swords when there's more than two
+    present.  "get 2 sword" is only one key-slip away from that; IMHO,
+    it's better if minor key slips result in errors, instead of a
+    different valid command.  Note as well that this gets more fun when
+    dealing with things that do not change in the plural form; e.g.,
+    "get 2 deer".
+
+      - adding in the . helps differentiate, but there's still the
+      potential problem of "2.deer" being only a keyslip from "2 deer".
+
+      - One common objection I've seen to "second sword" or "2nd sword"
+      is that "2.sword" is faster to type... but "sword 2" is just as
+      fast to type as "2.sword".
+
+    >   http://simud.org/forums/thread/1480#4367 (or see end of post for a
+    >   copy)
+
+    > So even if it strikes you as "messy," you may find that players
+    > will expect it to work anyway, proper English or not. When I
+    > responded that the player should try "second tree" instead of
+    > "2.tree". She said she hadn't thought of that, and would try it.
+
+    > Perhaps this goes some way to answering the original question --
+    > MUD parsers are written the way they are because players expect
+    > them to be written the way they always have been.
+
+    Note that many mudders seem to stick with whatever sort of mud they
+    started with.  Idioms that are common on, say, Dikus, are not
+    necessarily common on other sorts of muds, and vice-versa.
+
+    --
+           |\      _,,,---,,_     Travis S. Casey  <efindel@earthlink.net>
+     ZZzz  /,`.-'`'    -.  ;-;;,_   No one agrees with me.  Not even me.
+          |,4-  ) )-,_..;\ (  `'-'
+         '---''(_/--'  `-'\_)
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JyzsyTLs: |
+    From: Nathan Yospe <nyospe@mac.com>
+    Date: Mon, 15 Mar 2004 18:59:40 -0800
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Mar 11, 2004, at 3:48 PM, Mike Rozak wrote:
+    > Malcolm W. Tester II wrote:
+
+    >> is the type of person who codes it.  And in general, it seems
+    >> Americans are lazier about it.  I am an American, so I have a
+    >> right to call us lazy :) Both of the parsers in these muds were
+    >> written by other nationalitys.  One was by a German guy, the
+    >> other was by a Swedish guy.  Both are based off the original lp
+    >> 2.4.5.  Could they
+
+    > Speaking of other languages, does anyone have experience with GOOD
+    > parsers that work with languages whose grammar/origin is very
+    > different from English? (Has anyone ever tried?)
+
+    > For example: Japanese (3 character sets, no spaces, verb at end,
+    > enter text with an IME), Chinese (2 character sets, no spaces,
+    > enter text with an IME), Arabic (non-Roman character set, enter
+    > text with an IME, ???), or even Finnish (which I've been told
+    > likes to combine verbs and nouns, or something of the sort). The
+    > Inform designers guide discusses porting to English's cousins like
+    > French and German, but not the more distant language groups.
+
+    It's not cheap, or appropriate for the faint of heart, but check out
+    Inxight's LinguistX (http://www.inxight.com/products/oem/linguistx/)
+    for a complete licensed solution...
+
+    Look under the features link.  And see the supported languages under
+    technical specifications.
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JyzsyTLc: |
+    From: "Mike Rozak" <Mike@mxac.com.au>
+    Date: Fri, 12 Mar 2004 09:18:41 +0930
+    Subject: Re: [MUD-Dev] Parser engines
+
+    Malcolm W. Tester II wrote:
+
+    > is the type of person who codes it.  And in general, it seems
+    > Americans are lazier about it.  I am an American, so I have a
+    > right to call us lazy :) Both of the parsers in these muds were
+    > written by other nationalitys.  One was by a German guy, the other
+    > was by a Swedish guy.  Both are based off the original lp 2.4.5.
+    > Could they
+
+    Speaking of other languages, does anyone have experience with GOOD
+    parsers that work with languages whose grammar/origin is very
+    different from English? (Has anyone ever tried?)
+
+    For example: Japanese (3 character sets, no spaces, verb at end,
+    enter text with an IME), Chinese (2 character sets, no spaces, enter
+    text with an IME), Arabic (non-Roman character set, enter text with
+    an IME, ???), or even Finnish (which I've been told likes to combine
+    verbs and nouns, or something of the sort). The Inform designers
+    guide discusses porting to English's cousins like French and German,
+    but not the more distant language groups.
+
+    I posted on rec.arts.int-fiction and received a helpful response
+    about some of the oddities about Japanese. No one else seems to have
+    any info.
+
+    I am interested in localization, so one concern I have (but which
+    most people won't) is that if I spend a huge amount of time writing
+    an awesome english parser "aggressively attack the second orc to the
+    right of the tree" (to exaggerate) then:
+
+      a) No sane person will be able to localize the same functionality
+      into other languages. (I don't know enough other languages to do
+      localization myself.)
+
+      b) All the wonderful parsing will be unseen by most users because
+      they don't need it, even in an IF oriented enviornment. Users on
+      rec.arts.int-fiction don't seem too keen on going beyond anything
+      in TADs or Inform, which implies to me that maybe it's not
+      necessary.
+
+    I have been thinking about parsing lately. If you intend to write
+    one, here are some other things to think about:
+
+      a) You might eventually want to connect speech recognition to your
+      parser so users can speak the commands. For this to work you need
+      to compile your entire grammer into a CFG (context-free grammar)
+      (BNF format or whatever).  If you start with a CFG model, speech
+      recognition will be easy to add at some point in the future. If
+      you use another approach then it will be very difficult to bolt
+      speech recognition on top.
+
+      b) It seems to me that the parser for commands is different than
+      the parser you'll need for modelling conversations with NPCs. I
+      haven't thought enough about this yet, but conversations will
+      probably need some sort of probabilitsic heuristic. "Tell me about
+      King Leopold?", "What do you know about the king?", "Who is lord
+      Leopold?", and "Does the local monarch have anything interesting
+      in his castle?" all mean the same thing to a NPC, but a CFG won't
+      do so well.
+
+      c) If you talk to a professional linguist they'll probably tell
+      you the first step is to determine each words' part-of-speech,
+      which is a non-trivial problem. I have some links for possible
+      solutions to this problem. Once you have POS you can generate a
+      parse tree based on the POS associations of the language (Adj
+      before N, in English, etc.). This then lets you identify
+      verb-phrase, subject, object, etc. You can also use a word-net
+      and/or thesaurus for synonyms. If you talk to a professional
+      linguist you'll spend the rest of your life writing your parser.
+
+      d) The more "correct" your parsing solution is, the more parts
+      you'll be able to use when going from concept to sentence, such as
+      verb/noun agreement in "<name> is too big to fit in your bag." If
+      <name> is "the piano" your text is ok, but if <name> is "the gold
+      ingots" you need to change "is" to "are". Other languages have it
+      far worse. The more NLP information your app has around, the
+      better it can resolve these issues.
+
+    Mike Rozak
+    http://www.mxac.com.au
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  Jyzt0fk8: |
+    From: "Jason Slaughter" <rexrhino@hotmail.com>
+    Date: Fri, 12 Mar 2004 17:45:10 -0500
+    Subject: Re: [MUD-Dev] Parser engines
+
+    Mike Rozak <Mike@mxac.com.au>  wrote
+
+    > I am interested in localization, so one concern I have (but which
+    > most people won't) is that if I spend a huge amount of time
+    > writing an awesome english parser "aggressively attack the second
+    > orc to the right of the tree" (to exaggerate) then:
+
+    >   a) No sane person will be able to localize the same
+    >   functionality into other languages. (I don't know enough other
+    >   languages to do localization myself.)
+
+    >   b) All the wonderful parsing will be unseen by most users
+    >   because they don't need it, even in an IF oriented
+    >   enviornment. Users on rec.arts.int-fiction don't seem too keen
+    >   on going beyond anything in TADs or Inform, which implies to me
+    >   that maybe it's not necessary.
+
+    If you are going for something that is easy to localize/translate, I
+    would eliminate the parser and instead go to an icon based point &
+    click interface. Many people hate the idea of a point & click
+    interface, but I have never understood why typing "insert key into
+    door" is any more immersive or fulfilling than clicking on a key and
+    then on a door. I suppose the person might want to slide the key
+    under the door instead of opening the door... Or perhaps set the key
+    on the door and leave it there. But those cases are so rare that the
+    player would not lose anything by having the system automatically
+    understand what they want to do by context (so, if in order to solve
+    the puzzle as the coder intended, you need to put the key under the
+    door, the system would just assume you mean this).
+
+    A while back I was trying to come up with the most simplistic model
+    that can pretty much catch all the interactions in a MUD as a mental
+    experiment... and I found that nearly every action I can think of
+    can be expressed in a object/target relationship. The object need
+    not necessarily be an object, it could be a skill or ability or
+    magic, but it all comes down to situations like LOOK
+    (object/ability) ROOM (target). Or, to open the door as above would
+    be KEY (object) DOOR(target). It is pretty simple to come up with a
+    matrix of object types crossed with object types and action types,
+    and then have a function for each cell on the matrix. I have played
+    all the classic infocom adventures, and I have played Myst and the
+    classic LucasArts games (Monkey Island, etc.), and while I quite
+    enjoyed the infocom adventures, possibly more so than the newer
+    games, I don't think that entering commands in a text parser as
+    opposed to a point and click interface is what made them more
+    compelling or immersive.
+
+    The interface I created in my test program had a list of icons that
+    represented all non-object actions (look, stand, sit, jump), as well
+    as all objects, and then you click on objects visible in a third
+    person view window. But even if your game was completely text based,
+    a point and click interface like this would still work You could
+    have a text list of actions and objects on person... and then click
+    on the list for the action and on the word of the object you want to
+    act on in your text description, and have it do exactly the same
+    thing. (on a side note, have there ever been any point and click
+    text based interactive fiction?) And even though that type of
+    interface seems almost painfully simple in order to model all the
+    types of interactions available in MUDs and IF at first glance, it
+    can really do almost anything and it is joyously easy to program and
+    use.
+
+    Of course, it sounds like your area of interest is in parsers, so
+    that isn't to say you shouldn't use a parser. I just wanted to
+    suggest some alternatives.
+
+    Jason
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JzbOIPqK: |
+    From: Miroslav Silovic <miroslav.silovic@avl.com>
+    Date: Fri, 12 Mar 2004 09:53:34 -0500
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Thu, 2004-03-11 at 18:48, Mike Rozak wrote:
+
+    > For example: Japanese (3 character sets, no spaces, verb at end,
+    > enter text with an IME), Chinese (2 character sets, no spaces,
+    > enter text with an IME), Arabic (non-Roman character set, enter
+    > text with an IME, ???), or even Finnish (which I've been told
+    > likes to combine verbs and nouns, or something of the sort). The
+    > Inform designers guide discusses porting to English's cousins like
+    > French and German, but not the more distant language groups.
+
+    Being a native speaker of a Slavic language (Croatian, to be
+    precise), I can tell you that any heavily inflected language is a
+    real chore to work with. It's not just parsing, even outputting a
+    barely grammatically correct prose (without worrying about the
+    style) is quite a bit of a challenge. The problem is that output
+    grammar is heavily context-sensitive. For example (dog = pas, bird =
+    ptica, black = crn):
+
+      You see a black bird.           Vidis crnu pticu.
+      You see a black dog.            Vidis crnog psa.
+      You see two black dogs.         Vidis dva crna psa.
+      You see five black dogs.        Vidis pet crnih pasa.
+      You<plural> see a black dog.    Vidite crnog psa.
+      _You_ see a black bird.         Ti vidis crnu pticu.
+      Black dog bit you.              Crni pas te je ugrizao.
+      Black bird bit you.             Crna ptica te je ugrizla.
+      Black bird bit _you_.           Crna ptica je ugrizla tebe.
+
+    Note different cases for numbers 1, 2-4, >4, the verb form depending
+    on the subject's gender, elided subjects ('you' has to be elided
+    from the first 5 sentences, otherwise the sentence means that _you_
+    (and not somebody else) see something), and adjectives mutating
+    depending on their own case and on the gender of their noun. While
+    Croatian only has 7 noun cases, which is significantly fewer than 16
+    from Finnish, it has oodles of declinations that are impossible to
+    get right without resorting to a rather unwieldy dictionary.
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  JzIdfdSK: |
+    From: "Mike Rozak" <Mike@mxac.com.au>
+    Date: Sun, 14 Mar 2004 10:36:42 +0930
+    Subject: Re: [MUD-Dev] Parser engines
+
+    >From Miroslav Silovic:
+
+    > Note different cases for numbers 1, 2-4, >4, the verb form
+    > depending on the subject's gender, elided subjects ('you' has to
+    > be elided from the first 5 sentences, otherwise the sentence means
+    > that _you_ (and not somebody else) see something), and adjectives
+    > mutating depending on their own case and on the gender of their
+    > noun. While Croatian only has 7 noun cases, which is significantly
+    > fewer than 16 from Finnish, it has oodles of declinations that are
+    > impossible to get right without resorting to a rather unwieldy
+    > dictionary.
+
+    Thanks. Yet another issue... (I'm not at all sure how to deal with
+    this one in an elegant manner.)
+
+    Mike Rozak
+    http://www.mxac.com.au
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  007FfNaa: |
+    From: Artur Biesiadowski <abies@adres.pl>
+    Date: Mon, 15 Mar 2004 20:35:44 +0100
+    Subject: Re: [MUD-Dev] Parser engines
+
+    Miroslav Silovic wrote:
+
+    > Being a native speaker of a Slavic language (Croatian, to be
+    > precise), I can tell you that any heavily inflected language is a
+    > real chore to work with. It's not just parsing, even outputting a
+    > barely grammatically correct prose (without worrying about the
+    > style) is quite a bit of a challenge.
+
+    On the other hand, if you will implement such parser/sentence
+    creator, you basically got most Slavic languages covered. Looking at
+    Croatian example, Polish would have exactly the same order for each
+    case, exactly the same differences (also 7 noun cases). I think same
+    it true for Russian and Slovakian - probably more languages from
+    same area.
+
+    I don't know if you have noticed, but Slavic languages have two
+    forms of plural, depending on number of things. I don't know if
+    ranges are same in all languages, but in Polish it is one word for
+    2-4, 22-24, 32-34, x2-x4 and different word for 5-21, 25-31, 35-41,
+    x5-(x+1)1 :)
+
+    IMHO, best solution is just to tell 'learn English'. If you want to
+    participate in online community, it is a must - what is a benefit of
+    localized parser if you will not be able to understand other living
+    person ?
+
+    Artur
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  00ikzL96: |
+    From: Travis Casey <efindel@earthlink.net>
+    Date: Tue, 30 Mar 2004 23:43:22 -0500
+    Subject: Re: [MUD-Dev] Parser engines
+
+    On Saturday 13 March 2004 01:18, Mike Rozak wrote:
+    > Jason Slaughter wrote:
+
+    >> If you are going for something that is easy to
+    >> localize/translate, I would eliminate the parser and instead go
+    >> to an icon based point & click interface...
+
+    > Actually, I'm interested in both point-and-click and parsers. Most
+    > actions can be handled with point-and-click (like in Myst or
+    > Monkey island) but some just don't translate well. I'd rather come
+    > up with a solution that allows both, and lets the player and
+    > author decide which works best where. (I suspect that some puzzles
+    > will require commands though. Part of the reason that Myst's
+    > puzzles are the way they are, and zork's puzzles are the way they
+    > are, is because one uses clicks and the other a parser.) Menus are
+    > another alternative, depending upon the situation.
+
+    There was an old PC game, "Castle of the Winds", that for the most
+    part was simply a Roguelike game with a more limited plot and a GUI.
+
+    However, it had a *good* GUI.  Let me see if I can describe
+    it... and keep in mind that it's been some ten years since I played
+    it, so forgive any errors.
+
+    The main screen was the GUI Roguelike part.  Not too much of
+    interest there, except for nice little status bars for hit points
+    and mana.
+
+    The part I liked, though, was the inventory control.  Click the
+    "inventory" button, and a screen came up with multiple parts:
+
+      - on the left, an outline of the character's body, with the
+      locations on it that equipment could be put -- the hands, ring
+      fingers, neck (for amulets and such), head, torso, feet, back,
+      etc.
+
+      - on the right, two panes -- one with a window for each container
+      the character had, and the bottom one being "the floor", showing
+      the icons of whatever things were in grasping reach for your
+      character.  Double-clicking containers on the floor opened them,
+      opening up a window showing what was in that container.  Each
+      container had a display of how much space it had, vs. how much was
+      being used.
+
+      - at the bottom, a percentage bar showing what percentage of your
+      carrying capacity you were carrying, plus the actual weights, a
+      display of your current armor class, and a counter for how much
+      money you were carrying.
+
+    To pick something up and put it in a bag, you simply dragged and
+    dropped it from "the floor" to the window for the bag you wanted to
+    put it in.  To wear a suit of armor, you dragged it onto your torso.
+    Nice and intuitive.  You could put pretty much anything "in your
+    hands"... but only up to two objects (one in each hand), and having,
+    say, a helmet in your hands did not improve your AC.  You could
+    shift-click and/or control-click to select multiple items, or do
+    rubber-band drags for selections, and then drag them around in
+    reasonable ways (i.e., between containers or between a container and
+    the floor, but not onto the body).
+
+    If you dragged something onto an occupied location, you'd
+    automatically drop whatever was in that location on the floor.
+
+    It gave a realistic system of containers and carrying things, while
+    making it simple for people to use and keep track of.
+
+    > Because I expect both modalities, I'm not as concerned about
+    > making the "perfect parser" as I might be. However, text (or
+    > speech recognition) is very necessary for NPC conversations
+    > (unless you want to limit NPC conversations to menus), so a good
+    > parser for conversations is important. In thinking about command
+    > parsers I was hoping that I'd find way to to produce a better
+    > conversation parser, but I don't think the two overlap much since
+    > commands have a (mostly) fixed syntax with an obvious grammar,
+    > while conversational syntax is all over the place and identifying
+    > keywords/phrases is usually more important that word order.
+
+    One thing that can be helpful, without involving *parsing* per se at
+    all, is making commands smarter.  How many times have you seen
+    something like this:
+
+      There is a chest here.
+
+      > look chest
+      It's a battered old wooden chest.
+
+      > look in chest
+      You'd have to open it first!
+
+      > open chest
+      You open the chest.
+
+      > look in chest
+      Items in the chest:
+        red sword, bag
+
+      > wield red sword
+      You don't have that.
+
+      > get red sword
+      There is no red sword here.
+
+      > get red sword from chest.
+      Taken.
+
+      > wield red sword
+      You are already wielding something.
+
+      > i
+      You are carrying:
+        blue sword
+        dagger
+        plate armor
+
+      > unwield blue sword
+      You unwield the blue sword.
+
+      > wield red sword
+      Syntax: wield <item> in [right hand | left hand]
+
+      > wielded
+        nothing (in right hand)
+        dagger (in left hand)
+
+      > wield red sword in right hand
+      Wielded.
+
+      > drop blue sword in chest
+      You do not have a "blue sword in chest".
+
+      > put blue sword in chest
+      You put the blue sword in the chest.
+
+    Okay... so maybe that's a little exaggerated.  But still, I've seen
+    muds that were nearly that bad.  I've seen others that allowed
+    things like:
+
+      > get red sword from chest and wield it
+
+    But still... there's a lot there that the commands should simply
+    handle for you.  Ideally, it ought to look more like this: (Adding
+    notes in parentheses.)
+
+      There is a chest here.
+
+      > look chest
+      Items in the chest:
+        red sword, bag
+
+      (looking *in* a container is probably more common than looking
+      *at* it.  Reasonable defaults are nice)
+
+      > wield red sword
+      Syntax: wield <item> in [right hand | left hand]
+
+      > i
+      You are carrying:
+        blue sword (wielded in right hand)
+        dagger (wielded in left hand)
+        plate armor (worn)
+
+      > wield red sword in right hand
+      You get the red sword from the chest.
+      You unwield the blue sword.
+      Wielded.
+
+      > drop blue sword in chest
+      You put the blue sword in the chest.
+
+    Of course, in Castle of the Winds' interface, what you'd do would
+    be:
+
+      - press the inventory button
+
+      - double-click the chest
+
+      - drag the red sword onto the character's right hand
+
+      - drag the blue sword from the floor to the chest
+
+    Nice and simple.  And note that effectively, there's only two verbs
+    -- double-click for "open", and click-and-drag, which substitutes
+    for a mud's "get", "put", "drop", "wield", "wear", and possibly
+    more, depending on the mud.  "look" is effectively assumed as part
+    of "open".  Information about what's "wielded" or "worn" (and in
+    what location) is automatically given.
+
+    >> (on a side note, have there ever been any point and click text
+    >> based interactive fiction?)
+
+    > Kind of. Some IF allow you to click on keyword in the description
+    > (such as "north") and automatically "go north", or (I think) even
+    > examine objects.
+
+    Some also include information bars, with buttons that can be clicked
+    on.  E.g., I've played text games on my palm which had a button bar
+    on the bottom with buttons for the directions, and a button for
+    inventory.  (Why?  Because it's a lot easier on the Palm to tap the
+    "E" button three times than to write 'e' then do the "enter" stroke
+    three times, or even than to tap "east" three times in the
+    text... since the location of "east" may well be different in each
+    list of exits.
+
+    (E.g.:
+
+      obvious exits:  north, northeast, east, south, west
+
+      obvious exits:  north, east, west
+
+      obvious exits:  east, south, west
+
+    --
+           |\      _,,,---,,_     Travis S. Casey  <efindel@earthlink.net>
+     ZZzz  /,`.-'`'    -.  ;-;;,_   No one agrees with me.  Not even me.
+          |,4-  ) )-,_..;\ (  `'-'
+         '---''(_/--'  `-'\_)
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  011VeIro: |
+    From: "Mike Rozak" <Mike@mxac.com.au>
+    Date: Sat, 13 Mar 2004 15:48:45 +0930
+    Subject: Re: [MUD-Dev] Parser engines
+
+    Jason Slaughter wrote:
+
+    > If you are going for something that is easy to localize/translate,
+    > I would eliminate the parser and instead go to an icon based point
+    > & click interface...
+
+    Actually, I'm interested in both point-and-click and parsers. Most
+    actions can be handled with point-and-click (like in Myst or Monkey
+    island) but some just don't translate well. I'd rather come up with
+    a solution that allows both, and lets the player and author decide
+    which works best where. (I suspect that some puzzles will require
+    commands though. Part of the reason that Myst's puzzles are the way
+    they are, and zork's puzzles are the way they are, is because one
+    uses clicks and the other a parser.) Menus are another alternative,
+    depending upon the situation.
+
+    Because I expect both modalities, I'm not as concerned about making
+    the "perfect parser" as I might be. However, text (or speech
+    recognition) is very necessary for NPC conversations (unless you
+    want to limit NPC conversations to menus), so a good parser for
+    conversations is important. In thinking about command parsers I was
+    hoping that I'd find way to to produce a better conversation parser,
+    but I don't think the two overlap much since commands have a
+    (mostly) fixed syntax with an obvious grammar, while conversational
+    syntax is all over the place and identifying keywords/phrases is
+    usually more important that word order.
+
+    > (on a side note, have there ever been any point and click text
+    > based interactive fiction?)
+
+    Kind of. Some IF allow you to click on keyword in the description
+    (such as "north") and automatically "go north", or (I think) even
+    examine objects.
+
+    Mike Rozak
+    http://www.mxac.com.au
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  00ikzK64: "From: Brian Hook <hook_l@bookofhook.com>\nDate: Fri, 2 Apr 2004 20:33:38
+    -0500\nSubject: RE: [MUD-Dev] Parser engines\n\nFWIW, I revamped things considerably
+    once I realized I was hitting a\nlimit by trying to decompose ALL sentences into
+    V NP [[PP] NP].\nSeveral obvious examples where this fails:\n\n  > say hello everyone\n
+    \ You say, \"Hello everyone\"\n\n  > avarian, say destro mestro klagaro\n  Avarian
+    says, \"destro mestro klagaro\"\n\n  > tell oz Dude, I think this is broken\n
+    \ You tell oz, \"Dude, I think this is broken\"\n\n  > sudo create item 9212\n
+    \ You create a bronze spear\n\nWith sufficient special casing it can still be
+    handled, but I\ndecided that going to a system more IF-like was the best idea.
+    \ Of\ncourse, I had to figure this out the hard way by iteratively coming\nup
+    with different approaches, until I finally started defining verbs\nin terms of
+    grammars, and voila, I was back to an Inform/Hugo/TADS\ngrammar system.\n\nNow
+    my parser flow kind of works like this:\n\n  -- Get actor for sentences like \"dave,
+    shoot the orc\"\n  actor =3D parse_actor( line )\n  if actor =3D=3D nil\n\tactor
+    =3D client\n  end\n\n  -- Get the verb\n  verb =3D parse_verb( line )\n\n  verb(
+    actor, line )\n\nEach verb function then calls appropriate helper routines in
+    order\nto validate the incoming syntax, grab noun phrases (with or without\nconstraints),
+    resolve/disambiguate, and then dispatches accordingly.\nI didn't define a separate
+    grammar altogether a la Hugo/Inform/TADs,\nbut that's mostly laziness on my part.\n\nSo
+    far it works really well.  The bulk of verbs decompose into the\ncanonical form
+    and thus have very similar snippets of code (which is\none reason a grammar driven
+    version would probably be better in the\nlong run).\n\nBrian\nwww.bookofhook.com\n_______________________________________________\nMUD-Dev
+    mailing list\nMUD-Dev@kanga.nu\nhttps://www.kanga.nu/lists/listinfo/mud-dev\n"

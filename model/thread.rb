@@ -142,6 +142,7 @@ class Thread
         next if message_id == container.message_id or potential_parent.child_of? container
         count = potential_parent.message.lines_matching direct_quotes
         if count > best
+          best = count
           chosen_parent = potential_parent
           break if count == direct_quotes.size
         end

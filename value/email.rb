@@ -238,8 +238,14 @@ class Email
     body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
   end
 
-  def lines_matching quotes
-    quotes.collect { |q| (body.include? q) ? 1 : 0 }.inject(0, &:+)
+  def non_quotes
+    body.scan(/^[^>].*/)
+  end
+  memoize :non_quotes
+
+  def lines_matching quoted
+    unwrapped = non_quotes.join(' ') # some quoters wrap funny
+    quoted.collect { |q| (unwrapped.include? q) ? 1 : 0 }.inject(0, &:+)
   end
 end
 

@@ -316,6 +316,31 @@ describe Thread do
       expect(thread.send(:safe_to_thread?, c_actual_parent, c_child)).to be_true
     end
   end
+
+  describe "real world quoting" do
+    let(:fixture) { YAML::load_file('spec/fixture/thread/quote_parenting_thread.yaml') }
+    let(:parentings) { fixture[:parentings] }
+    let(:raw_emails) { fixture[:raw_emails] }
+
+    it "parents correctly" do
+      root_cn, root_email = raw_emails.first
+      raw_emails.delete root_cn
+      root = Message.from_string(root_email, root_cn, 'slug')
+
+      t = Thread.new 'slug', root
+      raw_emails.each do |call_number, email|
+        next unless parentings.keys.include? "#{call_number}@generated-message-id.chibrary.org"
+        t << Message.from_string(email, call_number, 'slug')
+      end
+
+      parentings.each do |child, parent|
+        c = t.containers[MessageId.new child]
+        expect(c.parent.try(:message_id)).to eq(parent), "Child #{child} had wrong parent:"
+      end
+
+    end
+  end
+
 end
 
 end

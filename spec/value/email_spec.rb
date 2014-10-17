@@ -352,6 +352,11 @@ describe Email do
       e = Email.new "\n\n> quote\nresponse"
       expect(e.lines_matching ['response']).to eq(1)
     end
+
+    it "does not count this message's quotes" do
+      e = Email.new "\n\n> quote\nresponse"
+      expect(e.lines_matching ['quote']).to eq(0)
+    end
   end
 end
 
