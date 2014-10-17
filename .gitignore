@@ -2,5 +2,3 @@ archive
 cachedhash
 zipruby
 *.swp
-
-script/one-off.rb
