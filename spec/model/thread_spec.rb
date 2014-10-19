@@ -321,16 +321,16 @@ describe Thread do
     let(:fixture) { YAML::load_file('spec/fixture/thread/quote_parenting_thread.yaml') }
     let(:parentings) { fixture[:parentings] }
     let(:raw_emails) { fixture[:raw_emails] }
+    let(:messages) { Hash[ raw_emails.map { |cn, email| [cn, Message.from_string(email, cn, 'slug')] } ] }
 
     it "parents correctly" do
-      root_cn, root_email = raw_emails.first
-      raw_emails.delete root_cn
-      root = Message.from_string(root_email, root_cn, 'slug')
+      root_cn, root_message = messages.first
+      messages.delete root_cn
 
-      t = Thread.new 'slug', root
-      raw_emails.each do |call_number, email|
+      t = Thread.new 'slug', root_message
+      messages.to_a.shuffle.each do |call_number, message|
         next unless parentings.keys.include? "#{call_number}@generated-message-id.chibrary.org"
-        t << Message.from_string(email, call_number, 'slug')
+        t << message
       end
 
       parentings.each do |child, parent|
@@ -338,6 +338,23 @@ describe Thread do
         expect(c.parent.try(:message_id)).to eq(parent), "Child #{child} had wrong parent:"
       end
 
+    end
+  end
+
+  describe "regression in messages not getting adopted" do
+    let(:fixture) { YAML::load_file('spec/fixture/thread/fails_adoption.yaml') }
+
+    it "does parent message" do
+      first = Message.from_string(fixture[:first], 'first001', 'slug')
+      second = Message.from_string(fixture[:second], 'second02', 'slug')
+      addition = Message.from_string(fixture[:addition], 'addition', 'slug')
+      t = Thread.new 'slug', first
+      t << second
+      t << addition
+      expect(t.containers.count).to eq(3)
+      expect(t.root.call_number).to eq('first001')
+      expect(t.root.children.first.call_number).to eq('addition')
+      expect(t.containers[second.message_id].parent.call_number).to eq('addition')
     end
   end
 

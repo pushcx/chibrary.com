@@ -4,6 +4,8 @@ require_relative 'container'
 
 module Chibrary
 
+class FailedToParent < RuntimeError ; end
+
 class Thread
   # Main algorithm based on http://www.jwz.org/doc/threading.html
 
@@ -137,7 +139,7 @@ class Thread
       # children, as this may be a reply to a reply that's also missing
       # its references but hasn't been sorted in yet.)
       best = 0
-      @containers.each do |message_id, potential_parent|
+      containers.each do |message_id, potential_parent|
         next if potential_parent.empty?
         next if message_id == container.message_id or potential_parent.child_of? container
         count = potential_parent.message.lines_matching direct_quotes
@@ -150,6 +152,7 @@ class Thread
       chosen_parent ||= root
       container.orphan
       chosen_parent.adopt container
+      raise FailedToParent if container.parent.nil?
     end
   end
 

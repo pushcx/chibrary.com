@@ -239,6 +239,7 @@ class Email
   end
 
   def non_quotes
+    # TODO shit, this is matching p breaks like "foo\n\n>bar" as "\n>bar"
     body.scan(/^[^>].*/)
   end
   memoize :non_quotes

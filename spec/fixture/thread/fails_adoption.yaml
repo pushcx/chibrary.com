@@ -1,0 +1,146 @@
+---
+:first: |
+  From: Matt Mihaly <the_logos@ironrealms.com>
+  Date: Tue, 2 Mar 2004 19:00:30 +0000 (GMT)
+  Subject: RE: [MUD-Dev] Character Restraint & Capture.
+
+  On Tue, 2 Mar 2004, Matt Mihaly wrote:
+
+  > So write out a design or show me a workable example. I'm just
+  > giving you the benefit of 7+ years of practical, commercial,
+  > hands-on design/admin-side experience.
+
+  Sorry, I just noted that you (Jester) had already put up your
+  design. I see others already pointed out some of the ways players
+  will abuse it via mules, etc.
+
+  My major comment, though, is that I apparently misunderstood your
+  aim.  This isn't a justice system. It's a system for complicating
+  PK. For instance, in this system, I could in-role rape you (via
+  emotes or whatever), you could kill me for it, and I'm suddenly the
+  victim, able to take out a bounty on you. This is what I meant about
+  systems like this just being a new way to grief people.
+  Fundamentally, your code will never be capable of recognizing what
+  most people recognize as 'justice.' Human admin/judges are one
+  solution, but have their own problems, all of which are seen in your
+  typical 3rd world justice systems.
+
+  --matt
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:second: |
+  From: Paul Schwanz <pschwanz@comcast.net>
+  Date: Thu, 11 Mar 2004 10:35:17 -0500
+  Subject: Re: [MUD-Dev] Character Restraint & Capture.
+
+  Damion Schubert wrote:
+  > From: Paul Schwanz
+  >> Matt Mihaly wrote:
+
+  >>> *boggle* We have these systems in place in all our games. Using
+  >>> these city powers isn't about 'justice' for most players. It's
+  >>> about manipulating them to cause the maximum amount of pain to
+  >>> your enemies. For instance, cities have been known to lure (using
+  >>> various methods from coded methods to just just convincing them
+  >>> to) others into their city and then declare them persona non
+  >>> grata after that person is in the middle of the city, then call
+  >>> the city guards to kill the 'intruder.'
+
+  >> *boggle back* And you couldn't figure out a way keep that from
+  >> happening?!?  Perhaps the guards don't kill you withing the first
+  >> 30 minutes.  Rather, they just "escort" you off the city's
+  >> territory.  You seem to be confusing poor implementations with
+  >> poor concepts.
+
+  > Then you get a system where the guards stand by and watch the
+  > interlopers butcher, harass, mudrape their citizens.  Then you
+  > have to code special rules to allow the guildmaster to deal with
+  > players who are an imminent threat.
+
+  Huh?  At the first signs of butchering, the guards would immediately
+  approach offenders, restrain them, and escort them from the city.
+  As to harassment or mudrape, I'm assuming that citizens would still
+  have an "ignore" option available to them.  In addition, I don't
+  think it gets too complicated to say that the
+  Justicar/Governor/President/Monarch can issue an orange flag in
+  addition to being able to remove them.  Perhaps he can even
+  designate others who have the ability to issue what is basically a
+  city ban.  In fact, I would think the Ruler would be able to label
+  and entire external community with orange flags if such was
+  desireable, thus putting that community at war with his own.  In any
+  case, even without any of these extra rules, under the original
+  system you described, the citizens could still kill the offender and
+  then petition to have the flag they received for their action
+  removed by the Justicar.
+
+  I'm not saying Player Justice isn't difficult, but I am saying that,
+  properly implemented, I believe it offers additional methods for
+  dealing with injustice that can be useful for offloading some of the
+  work-load from admins, giving players a feeling of responsibility
+  and ownership for their own community, and making for a more
+  interesting game.
+
+  --Phin
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
+:addition: |
+  From: Paul Schwanz <pschwanz@comcast.net>
+  Date: Thu, 11 Mar 2004 10:35:17 -0500
+  Subject: Re: [MUD-Dev] Character Restraint & Capture.
+
+  Damion Schubert wrote:
+  > From: Paul Schwanz
+  >> Matt Mihaly wrote:
+
+  >>> *boggle* We have these systems in place in all our games. Using
+  >>> these city powers isn't about 'justice' for most players. It's
+  >>> about manipulating them to cause the maximum amount of pain to
+  >>> your enemies. For instance, cities have been known to lure (using
+  >>> various methods from coded methods to just just convincing them
+  >>> to) others into their city and then declare them persona non
+  >>> grata after that person is in the middle of the city, then call
+  >>> the city guards to kill the 'intruder.'
+
+  >> *boggle back* And you couldn't figure out a way keep that from
+  >> happening?!?  Perhaps the guards don't kill you withing the first
+  >> 30 minutes.  Rather, they just "escort" you off the city's
+  >> territory.  You seem to be confusing poor implementations with
+  >> poor concepts.
+
+  > Then you get a system where the guards stand by and watch the
+  > interlopers butcher, harass, mudrape their citizens.  Then you
+  > have to code special rules to allow the guildmaster to deal with
+  > players who are an imminent threat.
+
+  Huh?  At the first signs of butchering, the guards would immediately
+  approach offenders, restrain them, and escort them from the city.
+  As to harassment or mudrape, I'm assuming that citizens would still
+  have an "ignore" option available to them.  In addition, I don't
+  think it gets too complicated to say that the
+  Justicar/Governor/President/Monarch can issue an orange flag in
+  addition to being able to remove them.  Perhaps he can even
+  designate others who have the ability to issue what is basically a
+  city ban.  In fact, I would think the Ruler would be able to label
+  and entire external community with orange flags if such was
+  desireable, thus putting that community at war with his own.  In any
+  case, even without any of these extra rules, under the original
+  system you described, the citizens could still kill the offender and
+  then petition to have the flag they received for their action
+  removed by the Justicar.
+
+  I'm not saying Player Justice isn't difficult, but I am saying that,
+  properly implemented, I believe it offers additional methods for
+  dealing with injustice that can be useful for offloading some of the
+  work-load from admins, giving players a feeling of responsibility
+  and ownership for their own community, and making for a more
+  interesting game.
+
+  --Phin
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev

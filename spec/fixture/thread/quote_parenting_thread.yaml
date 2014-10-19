@@ -21,6 +21,8 @@
   00ikzL96@generated-message-id.chibrary.org: 011VeIro@generated-message-id.chibrary.org
   011VeIro@generated-message-id.chibrary.org: Jyzt0fk8@generated-message-id.chibrary.org
   00ikzK64@generated-message-id.chibrary.org: 011Vc6TI@generated-message-id.chibrary.org
+  00Q0KMN6@generated-message-id.chibrary.org: JyzsyTLc@generated-message-id.chibrary.org
+  011VeJvc@generated-message-id.chibrary.org: 00Q0KMN6@generated-message-id.chibrary.org
 :raw_emails:
   011Vc6TI: |
     From: Brian Hook <brianhook@pyrogon.com>
@@ -1260,3 +1262,102 @@
     and thus have very similar snippets of code (which is\none reason a grammar driven
     version would probably be better in the\nlong run).\n\nBrian\nwww.bookofhook.com\n_______________________________________________\nMUD-Dev
     mailing list\nMUD-Dev@kanga.nu\nhttps://www.kanga.nu/lists/listinfo/mud-dev\n"
+  00Q0KMN6: |
+    From: Manuel Lanctot <pacu@sympatico.ca>
+    Date: Fri, 12 Mar 2004 03:29:05 -0500
+    Subject: Re: [good] Re: [MUD-Dev] Parser engines
+
+    On March 11, 2004 06:48 pm, Mike Rozak wrote:
+
+    > Speaking of other languages, does anyone have experience with GOOD
+    > parsers that work with languages whose grammar/origin is very
+    > different from English? (Has anyone ever tried?)
+
+    > For example: Japanese (3 character sets, no spaces, verb at end,
+    > enter text with an IME), Chinese (2 character sets, no spaces,
+    > enter text with an IME), Arabic (non-Roman character set, enter
+    > text with an IME, ???), or even Finnish (which I've been told
+    > likes to combine verbs and nouns, or something of the sort). The
+    > Inform designers guide discusses porting to English's cousins like
+    > French and German, but not the more distant language groups.
+
+    Well, I wouldn't call French a cousin of English since it has Latin
+    roots but anyway... There's MultiMUD which is all from French. I
+    didn't spend a lot of time there but the parser seemed to work with
+    general French particularities. They say they've been inspired by
+    Circle but I would guess the parser is original.
+
+      MultiMUD: valinor.no-ip.org:6022
+
+    >   d) The more "correct" your parsing solution is, the more parts
+    >   you'll be able to use when going from concept to sentence, such
+    >   as verb/noun agreement in "<name> is too big to fit in your
+    >   bag." If <name> is "the piano" your text is ok, but if <name> is
+    >   "the gold ingots" you need to change "is" to "are". Other
+    >   languages have it far worse. The more NLP information your app
+    >   has around, the better it can resolve these issues.
+
+    That's the biggest challenge IMO. The English language is absurdly
+    simple compared to some others. Sticking with French, this language
+    has two possible genders for every noun: "masculin" (male) and
+    "feminin" (female). Some nouns, like table, chair, river, etc. are
+    "feminine" - which changes the pronoun in front of it. I simply
+    can't imagine a dynamic parser recognizing which word is which
+    gender. And I'm not even talking about singular/plural - there are
+    hundreds
+    
+    of exceptions. Basically, you'd need a dictionnary database with all
+    the exceptions (I think there are around 10,000 syntax exceptions in
+    French). And I guess French is not the worst language.
+
+    My point is: My MUD will be in English because I'm too lazy to write
+    a completely new parser based on another language. But I figure
+    coding one for Esperanto could be even easier than one in
+    English. ;)
+
+    --
+    Manuel Lanct=F4t
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
+  011VeJvc: |
+    From: Travis Casey <efindel@earthlink.net>
+    Date: Tue, 30 Mar 2004 22:32:28 -0500
+    Subject: Re: [good] Re: [MUD-Dev] Parser engines
+
+    On Friday 12 March 2004 03:29, Manuel Lanctot wrote:
+
+    > That's the biggest challenge IMO. The English language is absurdly
+    > simple compared to some others. Sticking with French, this
+    > language has two possible genders for every noun: "masculin"
+    > (male) and "feminin" (female). Some nouns, like table, chair,
+    > river, etc. are "feminine" - which changes the pronoun in front of
+    > it. I simply can't imagine a dynamic parser recognizing which word
+    > is which gender. And I'm not even talking about singular/plural -
+    > there are hundreds
+
+    > of exceptions. Basically, you'd need a dictionnary database with
+    > all the exceptions (I think there are around 10,000 syntax
+    > exceptions in French). And I guess French is not the worst
+    > language.
+
+    Why worry about it?  The genders of inanimate objects are utterly
+    arbitrary.  Simply accept both forms of the pronouns as valid.  (For
+    that matter, trying to accept only the "grammatically correct"
+    version is likely to cause problems, since people will make
+    mistakes... and since different dialects may have differences in the
+    gender they assign to things.)
+
+    Now, it is a problem for sentence generation... but for parsing, it
+    shouldn't be much of one.
+
+    --
+          |\      _,,,---,,_     Travis S. Casey  <efindel@earthlink.net>
+    ZZzz  /,`.-'`'    -.  ;-;;,_   No one agrees with me.  Not even me.
+          |,4-  ) )-,_..;\ (  `'-'
+        '---''(_/--'  `-'\_)
+    _______________________________________________
+    MUD-Dev mailing list
+    MUD-Dev@kanga.nu
+    https://www.kanga.nu/lists/listinfo/mud-dev
