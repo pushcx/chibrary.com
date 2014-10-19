@@ -212,7 +212,8 @@ class Container
   # Debugging --------------------------------------------------------
 
   def dump depth=0
-    puts "  " * depth + self.to_s
+    puts "  " * depth + "#{message.from} #{message.date.strftime('%m-%d')} #{message.call_number}"
+    children.sort!
     children.each do |container|
       container.dump depth + 1
     end
