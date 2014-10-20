@@ -347,6 +347,26 @@ describe Email do
     end
   end
 
+  describe '#new_text' do
+    let(:email) { Email.new "\n\n> > deep quote\n> direct quote\nresponse\n\n\n> after break\n" }
+
+    it "includes original text" do
+      expect(email.new_text).to include('response')
+    end
+
+    it "does not include quotes" do
+      expect(email.new_text).to_not include('direct quote')
+    end
+
+    it "does not include nested quotes" do
+      expect(email.new_text).to_not include('deep quote')
+    end
+
+    it "does not include quotes after paragraph breaks (regression)" do
+      expect(email.new_text).to_not include('after break')
+    end
+  end
+
   describe '#lines_matching' do
     it 'counts the lines that match any of the lines given' do
       e = Email.new "\n\n> quote\nresponse"

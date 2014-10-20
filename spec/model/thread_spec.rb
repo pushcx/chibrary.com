@@ -351,10 +351,10 @@ describe Thread do
       t = Thread.new 'slug', first
       t << second
       t << addition
+      containers_from_root = t.collect.select { |c| !c.empty? }
       expect(t.containers.count).to eq(3)
-      expect(t.root.call_number).to eq('first001')
-      expect(t.root.children.first.call_number).to eq('addition')
-      expect(t.containers[second.message_id].parent.call_number).to eq('addition')
+      expect(containers_from_root.count).to eq(3)
+      expect(containers_from_root.map(&:call_number).sort).to eq(['addition', 'first001', 'second02'])
     end
   end
 

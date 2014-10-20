@@ -238,15 +238,13 @@ class Email
     body.scan(/^> *[^>].+/).collect { |q| q.sub(/^> */, '') }
   end
 
-  def non_quotes
-    # TODO shit, this is matching p breaks like "foo\n\n>bar" as "\n>bar"
-    body.scan(/^[^>].*/)
+  def new_text
+    body.split("\n").select { |l| l !~ /^>/ }.join(' ') # some quoters wrap funny
   end
-  memoize :non_quotes
+  memoize :new_text
 
   def lines_matching quoted
-    unwrapped = non_quotes.join(' ') # some quoters wrap funny
-    quoted.collect { |q| (unwrapped.include? q) ? 1 : 0 }.inject(0, &:+)
+    quoted.collect { |q| (new_text.include? q) ? 1 : 0 }.inject(0, &:+)
   end
 end
 
