@@ -53,7 +53,7 @@ class Thread
     # Warning: doesn't check lists, ThreadRepo.thread_for does
     return true if message_ids.include? message.message_id
     return true if n_subjects.include? message.n_subject
-    return containers.values.any? { |c| c.message.lines_matching(message.direct_quotes) > 0 }
+    return containers.values.any? { |c| c.message.lines_matching(message.direct_quotes) > 3 }
   end
 
   def << message_or_container
