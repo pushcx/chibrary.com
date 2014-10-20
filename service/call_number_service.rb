@@ -12,7 +12,7 @@ module Chibrary
 class CallNumberService
   attr_reader :ris, :sis
 
-  SHUFFLE_TABLE = [41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28]
+  SHUFFLE_TABLE = [3, 15, 20, 26, 6, 25, 23, 0, 16, 41, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28]
 
   def initialize ris=RunIdService.new, sis=SequenceIdService.new
     @ris = ris

@@ -73,7 +73,7 @@ describe CallNumberService do
 
     it "always shuffles the same way" do
       cns = spec_cns
-      expect(cns.stable_bitstring_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJK')).to eq('Ffkq6pn0g3iKGwvy1c7Cxo2aeB5Hdtrzl8I49uAjDJEhmbs')
+      expect(cns.stable_bitstring_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJK')).to eq('3fkq6pn0gFiKGwvy1c7Cxo2aeB5Hdtrzl8I49uAjDJEhmbs')
     end
   end
 
@@ -87,7 +87,7 @@ describe CallNumberService do
       # length. Nothing else needs to be changed because a longer call number
       # will never dupe a shorter one.
       expect(CALL_NUMBER_BITS).to eq(47)
-      expect(CallNumberService::SHUFFLE_TABLE).to eq([41, 15, 20, 26, 6, 25, 23, 0, 16, 3, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28])
+      expect(CallNumberService::SHUFFLE_TABLE).to eq([3, 15, 20, 26, 6, 25, 23, 0, 16, 41, 18, 46, 42, 32, 31, 34, 1, 12, 7, 38, 33, 24, 2, 10, 14, 37, 5, 43, 13, 29, 27, 35, 21, 8, 44, 4, 9, 30, 36, 19, 39, 45, 40, 17, 22, 11, 28])
     end
   end
 end
