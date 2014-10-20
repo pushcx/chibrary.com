@@ -22,6 +22,7 @@ GEM
     daemons (1.1.9)
     diff-lcs (1.2.5)
     eventmachine (1.0.3)
+    excon (0.40.0)
     haml (4.0.4)
       tilt
     hpricot (0.8.6)
@@ -110,6 +111,7 @@ DEPENDENCIES
   activesupport
   adamantium
   base62
+  excon
   haml
   hpricot
   htmlentities

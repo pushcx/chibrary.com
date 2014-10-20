@@ -1,4 +1,5 @@
 require 'riak'
+require 'excon'
 
 require_relative 'riak_bucket'
 
@@ -57,7 +58,7 @@ module RiakRepo
     end
 
     def db_client
-      $riak_client ||= Riak::Client.new(protocol: "pbc", pb_port: 8087)
+      $riak_client ||= Riak::Client.new(protocol: "pbc", pb_port: 8087, :http_backend => :Excon)
     end
   end
 end

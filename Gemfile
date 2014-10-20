@@ -9,6 +9,7 @@ gem 'sinatra-partial'
 gem 'thin'
 
 # db
+gem 'excon'
 gem 'redis'
 gem 'riak-client'
 gem 'sidekiq'
