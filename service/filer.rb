@@ -4,6 +4,7 @@ require_relative '../service/call_number_service'
 require_relative '../model/message'
 require_relative '../repo/message_repo'
 require_relative '../repo/list_address_repo'
+require_relative '../worker/month_count_worker'
 require_relative '../worker/thread_worker'
 
 module Chibrary
