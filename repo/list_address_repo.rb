@@ -12,6 +12,7 @@ class ListAddressRepo
 
   def self.find_list_by_addresses addresses
     slug = bucket.get_any(addresses).values.find { |v| v.present? }
+    raise NotFound if slug.nil?
     ListRepo.find(slug)
   end
 end

@@ -13,7 +13,7 @@ class ListRepo
   end
 
   def extract_key
-    list.slug
+    list.slug.to_s
   end
 
   def self.build_key slug
@@ -22,7 +22,7 @@ class ListRepo
 
   def serialize
     {
-      slug:        list.slug,
+      slug:        list.slug.to_s,
       name:        list.name,
       description: list.description,
       homepage:    list.homepage,

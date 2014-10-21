@@ -17,7 +17,7 @@ describe ListAddressRepo do
       ListAddressRepo.find_list_by_addresses(['list@example.com', 'other@example.com'])
     end
 
-    it 'returns NullList if no address is found' do
+    it 'raises if no address is found' do
       bucket_stub :get_any, ['bad@example.com'], { 'bad@example.com' => nil }
       ListRepo.stub(:find).with(nil).and_raise(NotFound)
       expect {
