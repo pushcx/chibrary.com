@@ -1,0 +1,47 @@
+--- !ruby/object:Message 
+source: archive
+call_number: 005k839P
+message_id: 005k839P@generated-message-id.listlibrary.net
+references: []
+
+subject: "[MUD-Dev] The last days of Discord PVP server on EQ"
+date: 1990-01-01 09:22:06 Z
+from: Frank Crowell <frankc@maddog.com>
+no_archive: false
+key: list/mud-dev/message/1990/01/005k839P@generated-message-id.listlibrary.net
+slug: mud-dev
+message: |
+  Message-Id: <005k839P@generated-message-id.listlibrary.net>
+  X-ListLibrary-Added-Header: Message-Id
+  From: "Frank Crowell" <frankc@maddog.com>
+  Date: Mon, 1 Jan 1990 01:22:06 -0800
+  Subject: [MUD-Dev] The last days of Discord PVP server on EQ
+  
+  In December EQ opened a new PVP server with a new set of rules. The
+  server is called Discord and is part of a promotional campaign for
+  the new EQ expansion. This server will end tomorrow.
+  
+  The server has a level limit of 50 and includes only the old world
+  stuff.  Players start at level 1 and become PVP-ready at level 6.
+  If any player dies for any reason, they go back to level 1 and lose
+  everything in the bank.  If a player kills another player, the
+  killer gets to loot everything from the victim.  The experience
+  gained from mob kill is about twice normal so leveling is faster
+  than normal even with crappy gear.
+  
+  Darkenbane, a PVP guild, has posted a few articles
+  
+    http://www.darkenbane.com/
+  
+  about their experience on Discord including how the alliances
+  evolved from a free-for-all world to race alliancies and finally to
+  a large common alliance.
+  
+  maddy
+  
+  --
+  Discharge status: alive but without permission
+  _______________________________________________
+  MUD-Dev mailing list
+  MUD-Dev@kanga.nu
+  https://www.kanga.nu/lists/listinfo/mud-dev
