@@ -189,7 +189,7 @@ puts "fixed #{fixed}"
 #ts.dump
 
 # resets the call numbers and empties the db:
-#require 'riak' ; client = Riak::Client.new(:protocol => "pbc", :pb_port => 8087) ; client.buckets.each { |b| b.keys.each { |k| b.delete k } } ; require 'redis' ; Redis.new.set 'run_id', 0 ; require 'sidekiq' ; Sidekiq::Queue.new.clear
+#require 'riak' ; client = Riak::Client.new(:protocol => "pbc", :pb_port => 8087) ; client.buckets.each { |b| b.keys.each { |k| b.delete k } } ; require 'redis' ; Redis.new.set 'run_id', 0 ; require 'sidekiq' ; Sidekiq::Queue.new.clear ; Sidekiq::Queue.new('thread').clear ; Sidekiq::Queue.new('month_count').clear
 #ListRepo.new(List.new('mud-dev')).store
 
 # drops all threads and redoes a couple months of mud-dev
