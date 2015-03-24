@@ -9,8 +9,6 @@ class NullList
     @slug = '_null_list'
     @name = 'NillList'
   end
-
-  def null? ; true ; end
 end
 
 class List
@@ -36,8 +34,6 @@ class List
       homepage == other.homepage
     )
   end
-
-  def null? ; false ; end
 end
 
 end # Chibrary

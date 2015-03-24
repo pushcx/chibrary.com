@@ -14,7 +14,7 @@ class MessageId
   def valid?
     !raw.empty? and raw.length <= 120 and has_id?
   end
-  
+
   def has_id?
     raw =~ /\A<?[a-zA-Z0-9%+\-\.=_]+@[a-zA-Z0-9_\-\.]+>?\Z/
   end
