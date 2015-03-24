@@ -1,5 +1,5 @@
 require_relative '../rspec'
-require_relative '../../model/message'
+require_relative '../../entity/message'
 
 module Chibrary
 

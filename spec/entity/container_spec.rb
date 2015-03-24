@@ -1,7 +1,7 @@
 require_relative '../rspec'
 require_relative '../../value/summary'
-require_relative '../../model/container'
-require_relative '../../model/message'
+require_relative '../../entity/container'
+require_relative '../../entity/message'
 
 module Chibrary
 

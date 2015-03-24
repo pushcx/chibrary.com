@@ -1,6 +1,6 @@
 require 'base64'
 
-require_relative '../model/thread'
+require_relative '../entity/thread'
 require_relative 'riak_repo'
 require_relative 'message_repo'
 require_relative 'summary_container_repo'

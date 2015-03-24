@@ -1,6 +1,6 @@
 require_relative 'summary_repo'
 require_relative '../value/message_id'
-require_relative '../model/container'
+require_relative '../entity/container'
 
 module Chibrary
 

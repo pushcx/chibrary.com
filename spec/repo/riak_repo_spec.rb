@@ -11,7 +11,7 @@ describe RiakRepo do
     def serialize ; {} ; end
   end
 
-  it 'gives the repo class a bucket named for the model' do
+  it 'gives the repo class a bucket named for the entity' do
     client = double('client')
     client.should_receive('bucket').with('example').and_return(double('bucket', name: 'example'))
     ExampleRepo.should_receive(:db_client).and_return(client)

@@ -1,6 +1,6 @@
 require_relative '../value/message_id'
 require_relative '../value/summary'
-require_relative '../model/message'
+require_relative 'message'
 
 module Chibrary
 

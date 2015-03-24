@@ -1,5 +1,5 @@
 require_relative 'riak_repo'
-require_relative '../model/list'
+require_relative '../entity/list'
 
 module Chibrary
 

@@ -1,7 +1,7 @@
 require 'sidekiq'
 
 require_relative '../value/call_number'
-require_relative '../model/thread'
+require_relative '../entity/thread'
 require_relative '../repo/message_repo'
 require_relative '../repo/thread_repo'
 

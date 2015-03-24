@@ -1,6 +1,6 @@
 require_relative '../rspec'
 require_relative '../../value/summary'
-require_relative '../../model/container'
+require_relative '../../entity/container'
 require_relative '../../repo/summary_repo'
 require_relative '../../repo/summary_container_repo'
 

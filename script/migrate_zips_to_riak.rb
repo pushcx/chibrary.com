@@ -5,7 +5,7 @@
 require 'yaml'
 require 'json'
 require_relative '../value/slug'
-require_relative '../model/list'
+require_relative '../entity/list'
 require_relative '../service/filer'
 require_relative '../lib/storage'
 include Chibrary

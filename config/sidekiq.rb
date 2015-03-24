@@ -13,6 +13,6 @@ Sidekiq.configure_client do |config|
   config.redis = { url: 'redis://redis.example.com:6379/0', namespace: 'sidekiq', size: 1 }
 end
 
-Dir["lib/**/*.rb", 'model/**/*.rb'].each { |l| require l }
+Dir["lib/**/*.rb", 'entity/**/*.rb'].each { |l| require l }
 
 Dir["worker/**/*.rb"].each { |l| require l }

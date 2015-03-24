@@ -1,8 +1,8 @@
 require_relative '../rspec'
 require_relative '../../value/message_id'
 require_relative '../../value/thread_link'
-require_relative '../../model/message'
-require_relative '../../model/thread'
+require_relative '../../entity/message'
+require_relative '../../entity/thread'
 
 module Chibrary
 

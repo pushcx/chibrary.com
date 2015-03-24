@@ -7,5 +7,5 @@ require 'rubygems'
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
 # Some helper constants for path-centric logic
-Dir["lib/**/*.rb", 'value/**/*.rb', 'model/**/*.rb', 'repo/**/*.rb', 'worker/**/*.rb'].each { |f| require f }
+Dir["lib/**/*.rb", 'value/**/*.rb', 'entity/**/*.rb', 'repo/**/*.rb', 'worker/**/*.rb'].each { |f| require f }
 include Chibrary
