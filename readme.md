@@ -8,9 +8,10 @@ Chibrary is also an experiement in object-oriented design, see my talk for more 
 https://push.cx/2015/railsconf
 
 Influences:
-_ Sandi Metz: Practical Object-Oriented Design in Ruby, Magic Tricks of Testing _ J.B. Rainsberger: Integration Tests Are A Scam
-_ Gary Bernhardt: Boundaries; Functional Core, Imperative Shell
-_ Eric Evans: Domain Driven Design
+* Sandi Metz: Practical Object-Oriented Design in Ruby, Magic Tricks of Testing _ J.B. Rainsberger: Integration Tests Are A Scam
+* Gary Bernhardt: Boundaries; Functional Core, Imperative Shell
+* J.B. Rainsberger: Integrated Tests Are a Scam
+* Eric Evans: Domain Driven Design
 
 # Install
 
