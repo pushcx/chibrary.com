@@ -17,7 +17,7 @@ class CallNumber
   end
 
   def valid?
-    str =~ /\A[a-zA-Z0-9]{8}\Z/
+    str =~ /\A[a-zA-Z0-9]{8}\z/
   end
 
   def == other

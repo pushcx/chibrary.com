@@ -33,6 +33,7 @@ describe CallNumber do
       expect { CallNumber.new('asdf--12') }.to raise_error(InvalidCallNumber)
       expect { CallNumber.new('asdf__12') }.to raise_error(InvalidCallNumber)
       expect { CallNumber.new('asdf"\'12') }.to raise_error(InvalidCallNumber)
+      expect { CallNumber.new("asdf1234\n") }.to raise_error(InvalidCallNumber)
     end
   end
 
